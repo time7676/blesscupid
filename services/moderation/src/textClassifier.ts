@@ -1,6 +1,6 @@
 import type { Decision, HardCategory, ModerationResult, SoftFlag } from "./types.js";
 import { loadBannedPhrases, type BannedPhrase } from "./bannedPhrases.js";
-import { normalizeForMatch } from "./textNormalize.js";
+import { lettersOnly, normalizeForMatch } from "./textNormalize.js";
 import {
   OpenAIModerationClient,
   OpenAIModerationError,
@@ -81,9 +81,10 @@ export class TextClassifier {
 
   async classify(text: string): Promise<ModerationResult> {
     const normalized = normalizeForMatch(text);
+    const compact = lettersOnly(text);
 
     // Pass 1: banned phrase match.
-    const phraseHits = this.matchBannedPhrases(normalized);
+    const phraseHits = this.matchBannedPhrases(normalized, compact);
     const hardPhraseHit = phraseHits.find((h) => h.severity === "hard");
     if (hardPhraseHit) {
       return {
@@ -123,10 +124,13 @@ export class TextClassifier {
     };
   }
 
-  private matchBannedPhrases(normalized: string): BannedPhrase[] {
+  private matchBannedPhrases(normalized: string, compact: string): BannedPhrase[] {
     const hits: BannedPhrase[] = [];
     for (const p of this.bannedPhrases) {
-      if (normalized.includes(p.needle)) hits.push(p);
+      const needleCompact = p.needle.replace(/[^a-z]/g, "");
+      if (normalized.includes(p.needle) || compact.includes(needleCompact)) {
+        hits.push(p);
+      }
     }
     return hits;
   }

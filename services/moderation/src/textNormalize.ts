@@ -21,3 +21,13 @@ export function normalizeForMatch(input: string): string {
   s = s.replace(/\s+/g, " ").trim();
   return s;
 }
+
+/**
+ * Letters-only fallback form. Catches obfuscation that crosses word
+ * boundaries (e.g. "s.e.n.d  n u d e s" → "sendnudes"). Banned-phrase
+ * matching checks both `normalizeForMatch` and `lettersOnly` of the input
+ * against the same transforms of each needle.
+ */
+export function lettersOnly(input: string): string {
+  return normalizeForMatch(input).replace(/[^a-z]/g, "");
+}
