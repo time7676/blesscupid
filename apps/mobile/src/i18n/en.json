@@ -1,0 +1,130 @@
+{
+  "_pastor_status": "Pastor-approved (BLE-53). Canonical source: docs/copy/moderation-pastor.md.",
+  "covenant": {
+    "title": "Our Holy Code of Conduct",
+    "body": "Welcome. Before you join, we ask you to covenant to a few things.\n\nMarriage-minded. You're here because you want a spouse, not a hookup, not a pen-pal, not validation. This community is for people walking toward the altar.\n\nFaith-rooted. You name Jesus as Lord. We're not in the business of testing anyone's theology, but the front door of this room is the Christian faith.\n\nClothes-on. No nudes, no body-shots, no sexual chat. Your photos and messages will be moderated. We will hold back what crosses the line, and we will tell you why.\n\nHonourable. You will not pressure another member for photos, off-platform contact, or a meeting before they're ready. You will not lie about your age, your status, or your intentions.\n\nHonest. If you mess up — and we all will — confession and repair beat hiding.\n\nBy tapping \"I covenant before God\", you agree to these together with our Terms and Privacy Policy. We will keep faith with you in return: we will protect your dignity, we will moderate visibly, and we will not sell you to anyone.",
+    "acceptCta": "I covenant before God",
+    "declineCta": "Not ready yet"
+  },
+  "ageGate": {
+    "title": "When were you born?",
+    "body": "BlessCupid is for adults seeking marriage. We require you to be 18+.",
+    "errorUnderage": "BlessCupid is for those 18 and older. We're glad you came — please return when you can."
+  },
+  "faith": {
+    "denomination": {
+      "title": "Which tradition do you belong to?",
+      "options": {
+        "catholic": "Catholic",
+        "protestant": "Protestant",
+        "orthodox": "Orthodox",
+        "other": "Other Christian"
+      }
+    },
+    "attendance": {
+      "title": "How often do you attend church?",
+      "options": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "occasional": "Occasionally",
+        "rarely": "Rarely"
+      }
+    },
+    "baptized": {
+      "title": "Have you been baptized?",
+      "yes": "Yes",
+      "no": "No"
+    },
+    "marriageIntent": {
+      "title": "What's your timeline for marriage?",
+      "options": {
+        "within_1y": "Within a year",
+        "within_2y": "Within two years",
+        "within_5y": "Within five years",
+        "open_timeline": "Open timeline"
+      }
+    },
+    "spiritualGifts": {
+      "title": "What spiritual gifts do you sense in your life?",
+      "helper": "Optional. Pick up to three.",
+      "options": {
+        "teaching": "Teaching",
+        "service": "Service",
+        "mercy": "Mercy",
+        "exhortation": "Exhortation",
+        "giving": "Giving",
+        "leadership": "Leadership",
+        "evangelism": "Evangelism",
+        "hospitality": "Hospitality"
+      }
+    },
+    "submit": "Continue",
+    "errors": {
+      "tooManyGifts": "You can pick up to three.",
+      "incomplete": "Please answer every question before continuing.",
+      "saveFailed": "We couldn't save your answers. Please try again."
+    }
+  },
+  "profile": {
+    "basics": { "title": "Tell us about yourself" },
+    "bio": {
+      "title": "Share a few words about you",
+      "helper": "What do you love about your faith? What are you praying for?"
+    }
+  },
+  "photo": {
+    "requirements": {
+      "title": "Add a clear face photo",
+      "body": "We require a clear photo of your face so others can connect with the real you. Please avoid body-only photos."
+    },
+    "rejection": {
+      "no_face_detected": "We couldn't find a face in this photo. Please try one where your face is clearly visible — that's how others get to know you.",
+      "face_too_small": "Your face is a little small in this one. Could you try a closer shot? A clear face helps real conversation.",
+      "multiple_faces": "We saw more than one face. For your primary photo, please upload one of just you. (Group photos are great for a secondary slot.)",
+      "low_confidence": "We couldn't get a clear read on this photo — maybe the lighting or angle. Please try another.",
+      "unsafe": "This photo doesn't fit our Holy Code of Conduct. BlessCupid is a clothes-on, face-forward space. Please choose a different photo."
+    }
+  },
+  "bio": {
+    "rejection": {
+      "block": "Your bio didn't fit our Holy Code of Conduct, so we couldn't publish it as written. A reminder: this space is marriage-minded, faith-rooted, and clothes-on in tone. Please rewrite and try again.",
+      "review": "Thank you. Your bio is being read by our team — we'll let you know within a day. While you wait, you can still browse and pray for whoever crosses your screen."
+    }
+  },
+  "moderation": {
+    "message": {
+      "block": "That message didn't fit our Holy Code of Conduct, so we held it back. BlessCupid is for marriage-minded conversation — let's keep talking, just not like that.",
+      "blockToast": "We held that one back — it crossed our Holy Code of Conduct. Try again, friend.",
+      "blockSexual": "We're a marriage-minded space, so we kept that message off the thread. When in doubt, ask: would I say this in front of a pastor?"
+    },
+    "thread": {
+      "softWarning": {
+        "offPlatform": "Heads up — moving fast off-platform is the most common way things go wrong on faith-based dating. Take your time. If they're the one, they'll wait for the right pace.",
+        "offPlatformEscalated": "A note from our team: this thread has been flagged for fast off-platform pressure. We're not stopping the conversation, but we're watching it. Please slow down.",
+        "photoRequest": "Heads up — photo requests early in a thread are a common pattern that leads to harm. You don't owe anyone a photo to prove yourself. Take your time."
+      }
+    }
+  },
+  "reviewer": {
+    "queue": {
+      "itemHeader": "Message held for review — sender {senderHandle}, recipient {recipientHandle}, thread age {threadAgeHours}h.",
+      "reason": {
+        "hardBlock": "Auto-blocked: matched banned phrase \"{needle}\". Sender saw the standard block reason. Thread is intact; this entry is for audit only.",
+        "borderline": "Borderline: {category} score {score}. Held before delivery. Decide: deliver, block, or warn the sender.",
+        "softFlag": {
+          "off_platform_pressure": "Soft flag — off-platform meet pressure. Message delivered. Watch this thread for grooming pattern.",
+          "photo_request": "Soft flag — photo request. Message delivered. If escalating in this thread, intervene.",
+          "contact_info_share": "Soft flag — contact info shared. Message delivered. Common at end of healthy threads; review timing."
+        }
+      }
+    },
+    "action": {
+      "deliver": "Deliver this message",
+      "block": "Drop and tell sender",
+      "warn": "Deliver but warn sender"
+    },
+    "note": {
+      "template": "{reviewerHandle} on {timestamp}: {decision}. {freeTextNote}"
+    }
+  }
+}
