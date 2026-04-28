@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import type { AuthTokens } from './api';
+import type { AuthTokens } from './api.js';
 
 const ACCESS_KEY = 'bc.access';
 const REFRESH_KEY = 'bc.refresh';

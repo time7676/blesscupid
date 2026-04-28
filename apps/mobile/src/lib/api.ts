@@ -1,9 +1,7 @@
-import Constants from 'expo-constants';
-
-const fromEnv = process.env.EXPO_PUBLIC_API_BASE_URL;
-const fromConfig = (Constants.expoConfig?.extra as { apiBaseUrl?: string } | undefined)
-  ?.apiBaseUrl;
-const API_BASE_URL = fromEnv || fromConfig || 'http://localhost:3000';
+// API client. Base URL is read from the EXPO_PUBLIC_API_BASE_URL env var so
+// it can be overridden per-build (LAN IP for device dev, prod URL for prod).
+declare const process: { env: Record<string, string | undefined> };
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
 export class ApiError extends Error {
   constructor(
@@ -29,10 +27,11 @@ export async function apiFetch<T>(
     },
   });
   const text = await res.text();
-  const body = text ? JSON.parse(text) : {};
+  const body = text ? (JSON.parse(text) as Record<string, unknown>) : {};
   if (!res.ok) {
-    const code = (body as { code?: string }).code ?? `http_${res.status}`;
-    throw new ApiError(res.status, code, (body as { message?: string }).message ?? code);
+    const code = (body.code as string | undefined) ?? `http_${res.status}`;
+    const msg = (body.message as string | undefined) ?? code;
+    throw new ApiError(res.status, code, msg);
   }
   return body as T;
 }
@@ -59,6 +58,24 @@ export function loginEmail(input: { email: string; password: string }): Promise<
   return apiFetch<AuthTokens>('/auth/login/email', {
     method: 'POST',
     body: JSON.stringify(input),
+  });
+}
+
+export function signupOAuth(input: {
+  provider: 'apple' | 'google';
+  idToken: string;
+  dob: string;
+}): Promise<AuthTokens> {
+  return apiFetch<AuthTokens>('/auth/signup/oauth', {
+    method: 'POST',
+    body: JSON.stringify(input),
+  });
+}
+
+export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
+  return apiFetch<AuthTokens>('/auth/refresh', {
+    method: 'POST',
+    body: JSON.stringify({ refreshToken }),
   });
 }
 
