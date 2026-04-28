@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ObservabilityModule } from './observability/observability.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { OnboardingModule } from './onboarding/onboarding.module.js';
@@ -13,6 +14,7 @@ import { AccountModule } from './account/account.module.js';
 
 @Module({
   imports: [
+    ObservabilityModule,
     HealthModule,
     PrismaModule,
     AuthModule,

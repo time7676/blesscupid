@@ -17,7 +17,9 @@
     "test": "turbo run test",
     "mobile": "pnpm --filter @blesscupid/mobile",
     "api": "pnpm --filter @blesscupid/api",
-    "shared": "pnpm --filter @blesscupid/shared"
+    "shared": "pnpm --filter @blesscupid/shared",
+    "deploy:api": "./scripts/deploy-api.sh",
+    "build:mobile": "./scripts/build-mobile.sh"
   },
   "devDependencies": {
     "turbo": "^2.1.3",

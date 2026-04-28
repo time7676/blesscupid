@@ -12,6 +12,7 @@ import { LoginScreen } from './src/screens/auth/Login.js';
 import { SignupScreen } from './src/screens/auth/Signup.js';
 import { ProfileScreen } from './src/screens/Profile.js';
 import { useAuth } from './src/lib/auth-store.js';
+import { initObservability } from './src/lib/observability/index.js';
 import type { OnboardingStackParamList } from './src/navigation/types.js';
 
 const Stack = createNativeStackNavigator<OnboardingStackParamList>();
@@ -21,6 +22,7 @@ export default function App() {
 
   useEffect(() => {
     hydrate();
+    void initObservability();
   }, [hydrate]);
 
   if (!hydrated) {
