@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid — Direction 1: Cathedral Light · Home (Daily Intention)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1A1A24;
+    --ink-soft: #3F3F4A;
+    --sandstone: #F4ECDF;
+    --sandstone-deep: #EFE4D2;
+    --parchment: #FAF7F0;
+    --parchment-2: #FFFDF7;
+    --gold: #C8A24B;
+    --gold-soft: #E5C97D;
+    --indigo: #2A3470;
+    --hairline: rgba(26, 26, 36, 0.12);
+    --hairline-soft: rgba(26, 26, 36, 0.06);
+    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #2a2a30;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+  }
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  .device {
+    width: 390px;
+    height: 844px;
+    background: var(--parchment);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 47px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .status-right { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+  .top-row {
+    padding: 14px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .wordmark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 500;
+    font-size: 22px;
+    letter-spacing: 0.005em;
+    color: var(--ink);
+  }
+  .wordmark .glyph {
+    color: var(--gold);
+    font-style: normal;
+    margin: 0 2px;
+  }
+  .top-row .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    background: var(--parchment-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  .date-row {
+    padding: 24px 32px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .date-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .date-label .ornament {
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .date-value {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+  }
+
+  .greeting {
+    padding: 14px 32px 0;
+    flex-shrink: 0;
+  }
+  .greeting h1 {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .greeting h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--indigo);
+  }
+
+  .intention-card {
+    margin: 18px 24px 0;
+    padding: 22px 24px 22px;
+    background: var(--parchment-2);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .badge-rail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .badge-rail .pip {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--gold);
+    box-shadow: 0 0 0 4px rgba(200, 162, 75, 0.18);
+  }
+  .badge-rail .label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+  }
+  .intention-headline {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.18;
+    letter-spacing: -0.012em;
+    color: var(--ink);
+    margin-bottom: 12px;
+  }
+  .intention-body {
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .divider {
+    height: 1px;
+    background: var(--hairline);
+    margin: 18px 0 16px;
+  }
+  .verse-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    margin-bottom: 10px;
+  }
+  .verse {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--ink);
+  }
+  .verse-cite {
+    margin-top: 10px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+  }
+
+  .meta-grid {
+    margin-top: auto;
+    padding-top: 18px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .meta-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .meta-cell .k {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+  }
+  .meta-cell .v {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 26px;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .meta-cell .v small {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-left: 6px;
+    letter-spacing: 0.02em;
+  }
+
+  .reveal {
+    margin: 16px 24px 0;
+    padding: 16px 18px;
+    background: var(--ink);
+    color: var(--parchment);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .reveal-text {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--parchment);
+  }
+  .reveal-text small {
+    display: block;
+    font-weight: 400;
+    color: rgba(250, 247, 240, 0.6);
+    font-size: 11.5px;
+    margin-top: 3px;
+    letter-spacing: 0.01em;
+  }
+  .reveal-cta {
+    background: var(--parchment);
+    color: var(--ink);
+    border: none;
+    border-radius: 2px;
+    padding: 10px 18px;
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .tabbar {
+    margin-top: 14px;
+    padding: 10px 14px 22px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--hairline);
+    background: var(--parchment);
+    flex-shrink: 0;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    padding: 6px 8px;
+  }
+  .tab.active { color: var(--ink); }
+  .tab.active .glyph { color: var(--gold); }
+  .tab .glyph {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: var(--ink-soft);
+  }
+
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--ink);
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-right">
+        <span>•••</span>
+        <span>􀙇</span>
+        <span>􀛨</span>
+      </div>
+    </div>
+
+    <div class="top-row">
+      <div class="wordmark">Bless<span class="glyph">✦</span>Cupid</div>
+      <div class="icon-btn">⌕</div>
+    </div>
+
+    <div class="date-row">
+      <div class="date-label"><span class="ornament"></span>Today</div>
+      <div class="date-value">Tue · 28 Apr</div>
+    </div>
+
+    <div class="greeting">
+      <h1>Good morning,<br/><em>Daniel.</em></h1>
+    </div>
+
+    <div class="intention-card">
+      <div class="badge-rail">
+        <div class="pip"></div>
+        <span class="label">Daily intention</span>
+      </div>
+      <div class="intention-headline">
+        You have one new connection waiting. Take a breath before you decide.
+      </div>
+      <div class="intention-body">
+        We hold three profiles for you each day — chosen with care, not algorithmically pumped. There is no rush.
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="verse-label">Today's verse</div>
+      <div class="verse">"Be still, and know that I am God."</div>
+      <div class="verse-cite">Psalm 46:10 · NIV</div>
+
+      <div class="meta-grid">
+        <div class="meta-cell">
+          <span class="k">Today</span>
+          <span class="v">3 <small>profiles</small></span>
+        </div>
+        <div class="meta-cell">
+          <span class="k">Conversations</span>
+          <span class="v">2 <small>open</small></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="reveal-text">
+        Reveal today's profiles
+        <small>or come back this evening — they'll wait.</small>
+      </div>
+      <button class="reveal-cta">Reveal →</button>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab active"><span class="glyph">◐</span>Today</div>
+      <div class="tab"><span class="glyph">◇</span>People</div>
+      <div class="tab"><span class="glyph">⌘</span>Threads</div>
+      <div class="tab"><span class="glyph">○</span>You</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

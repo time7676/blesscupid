@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid — Direction 2: Garden Hours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --brown: #3B2A21;
+    --brown-soft: #6B5547;
+    --cream: #FBF6EC;
+    --cream-deep: #F2E9D6;
+    --terracotta: #C36F4A;
+    --terracotta-dark: #A95837;
+    --sage: #6E7E5C;
+    --rose: #D9A89A;
+    --hairline: rgba(59, 42, 33, 0.14);
+    --serif: 'Newsreader', 'GT Sectra', Georgia, serif;
+    --sans: 'Outfit', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #2a2a30;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    color: var(--brown);
+  }
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  .device {
+    width: 390px;
+    height: 844px;
+    background: var(--cream);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 47px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--brown);
+    flex-shrink: 0;
+  }
+  .top-nav {
+    padding: 8px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .top-nav .back {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--cream-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: var(--brown);
+  }
+  .top-nav .wordmark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 18px;
+    color: var(--brown);
+    letter-spacing: 0.01em;
+  }
+  .top-nav .wordmark .amp { color: var(--terracotta); }
+  .top-nav .icon-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--brown);
+  }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 20px 130px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 22px;
+    border: 1px solid var(--hairline);
+    overflow: hidden;
+    box-shadow: 0 2px 0 rgba(59, 42, 33, 0.04);
+  }
+  .card .portrait {
+    width: 100%;
+    height: 290px;
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255,255,255,0.6) 0%, rgba(255,255,255,0) 50%),
+      linear-gradient(160deg, #E8C9B4 0%, #C58E76 60%, #6E7E5C 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .card .portrait::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255,255,255,0.10) 0%, transparent 30%),
+      radial-gradient(circle at 88% 80%, rgba(0,0,0,0.10) 0%, transparent 35%);
+    mix-blend-mode: soft-light;
+  }
+  .portrait-tag {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    background: rgba(251, 246, 236, 0.92);
+    backdrop-filter: blur(6px);
+    color: var(--brown);
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: 999px;
+  }
+  .portrait-note {
+    position: absolute;
+    bottom: 14px;
+    right: 16px;
+    background: rgba(59, 42, 33, 0.55);
+    backdrop-filter: blur(8px);
+    color: var(--cream);
+    font-family: var(--sans);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 999px;
+  }
+  .card .body {
+    padding: 18px 22px 4px;
+  }
+  .heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .name {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    color: var(--brown);
+  }
+  .age {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    color: var(--brown-soft);
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--brown-soft);
+    margin-bottom: 14px;
+  }
+  .meta-row .dot {
+    width: 3px; height: 3px; border-radius: 50%;
+    background: var(--brown-soft);
+    align-self: center;
+  }
+  .badges {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 0 22px 14px;
+  }
+  .badge {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--brown);
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--hairline);
+    background: var(--cream-deep);
+  }
+  .badge.tradition {
+    background: #F1E2D6;
+    color: var(--terracotta-dark);
+    border-color: rgba(195, 111, 74, 0.25);
+  }
+  .badge.tradition::before {
+    content: '✦';
+    margin-right: 6px;
+    color: var(--terracotta);
+  }
+  .prompt {
+    margin: 2px 22px 18px;
+    padding: 14px 16px 16px;
+    background: var(--cream-deep);
+    border-radius: 16px;
+    border-left: 3px solid var(--sage);
+  }
+  .prompt-q {
+    font-family: var(--sans);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--sage);
+    margin-bottom: 10px;
+  }
+  .prompt-a {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 19px;
+    line-height: 1.35;
+    color: var(--brown);
+  }
+
+  .actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px 24px 32px;
+    background: linear-gradient(180deg, transparent, var(--cream) 38%);
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .pass {
+    flex: 1;
+    background: transparent;
+    color: var(--brown);
+    border: 1px solid var(--hairline);
+    padding: 14px 16px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 999px;
+  }
+  .reach {
+    flex: 1.4;
+    background: var(--terracotta);
+    color: var(--cream);
+    border: none;
+    padding: 14px 18px;
+    font-family: var(--sans);
+    font-size: 14.5px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    border-radius: 999px;
+    box-shadow: 0 4px 14px rgba(195, 111, 74, 0.32);
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--brown);
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div style="display:flex;gap:6px;align-items:center;font-size:13px"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+    </div>
+
+    <div class="top-nav">
+      <div class="back">‹</div>
+      <div class="wordmark">Bless<span class="amp">·</span>Cupid</div>
+      <div class="icon-btn">⟡</div>
+    </div>
+
+    <div class="scroll">
+      <div class="card">
+        <div class="portrait">
+          <span class="portrait-tag">Profile · 1 of 4 today</span>
+          <span class="portrait-note">stand-in — see mood board</span>
+        </div>
+        <div class="body">
+          <div class="heading-row">
+            <div class="name">Maria&nbsp;Inés</div>
+            <div class="age">29</div>
+          </div>
+          <div class="meta-row">
+            <span>Lives in Quezon City</span>
+            <span class="dot"></span>
+            <span>Architect</span>
+            <span class="dot"></span>
+            <span>3.2 km away</span>
+          </div>
+        </div>
+        <div class="badges">
+          <span class="badge tradition">Roman Catholic</span>
+          <span class="badge">Mass weekly</span>
+          <span class="badge">Wants children</span>
+          <span class="badge">Cebuano · English</span>
+        </div>
+        <div class="prompt">
+          <div class="prompt-q">A FAITH I'M STILL GROWING IN</div>
+          <div class="prompt-a">"Patience — that the slow seasons are still being tended. I'm learning to trust them."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="pass">Not this one</button>
+      <button class="reach">Reach out →</button>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

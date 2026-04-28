@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid — Direction 3: Quiet Modern</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --white: #F8F8F4;
+    --white-2: #FFFFFF;
+    --charcoal: #14181F;
+    --charcoal-soft: #4A5260;
+    --slate: #4F6273;
+    --moss: #C0CEC0;
+    --ochre: #B89668;
+    --hairline: rgba(20, 24, 31, 0.08);
+    --hairline-strong: rgba(20, 24, 31, 0.16);
+    --serif: 'Fraunces', 'Newsreader', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #2a2a30;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    color: var(--charcoal);
+  }
+  body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    margin: 0;
+  }
+  .device {
+    width: 390px;
+    height: 844px;
+    background: var(--white);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 47px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--charcoal);
+    flex-shrink: 0;
+  }
+  .top-row {
+    padding: 14px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .wordmark {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--charcoal);
+  }
+  .wordmark .dot { color: var(--ochre); }
+  .top-row .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--charcoal-soft);
+    font-size: 14px;
+  }
+
+  .date-row {
+    padding: 28px 24px 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .date-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--slate);
+  }
+  .date-value {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--charcoal-soft);
+  }
+
+  .greeting {
+    padding: 12px 24px 0;
+    flex-shrink: 0;
+  }
+  .greeting h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: 34px;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--charcoal);
+  }
+  .greeting h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--slate);
+  }
+
+  .intention-card {
+    margin: 18px 20px 0;
+    padding: 22px 22px 20px;
+    background: var(--white-2);
+    border: 1px solid var(--hairline);
+    border-radius: 18px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 1px 0 rgba(20, 24, 31, 0.03);
+  }
+  .badge-rail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  .badge-rail .pip {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--moss);
+    box-shadow: 0 0 0 4px rgba(192, 206, 192, 0.35);
+  }
+  .badge-rail .label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--slate);
+  }
+  .intention-headline {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    color: var(--charcoal);
+    margin-bottom: 14px;
+  }
+  .intention-body {
+    font-family: var(--sans);
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: var(--charcoal-soft);
+  }
+  .divider {
+    height: 1px;
+    background: var(--hairline);
+    margin: 16px 0;
+  }
+  .verse-label {
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--slate);
+    margin-bottom: 8px;
+  }
+  .verse {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 17px;
+    line-height: 1.5;
+    color: var(--charcoal-soft);
+  }
+  .verse-cite {
+    margin-top: 8px;
+    font-family: var(--sans);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--ochre);
+  }
+
+  .meta-grid {
+    margin-top: auto;
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .meta-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .meta-cell .k {
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--slate);
+  }
+  .meta-cell .v {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 22px;
+    line-height: 1.1;
+    color: var(--charcoal);
+  }
+  .meta-cell .v small {
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--charcoal-soft);
+    margin-left: 4px;
+  }
+
+  .reveal {
+    margin: 16px 20px 0;
+    padding: 16px 18px;
+    background: var(--charcoal);
+    color: var(--white);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .reveal-text {
+    font-family: var(--sans);
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: var(--white);
+  }
+  .reveal-text small {
+    display: block;
+    font-weight: 400;
+    color: rgba(248, 248, 244, 0.62);
+    font-size: 11.5px;
+    margin-top: 2px;
+  }
+  .reveal-cta {
+    background: var(--white);
+    color: var(--charcoal);
+    border: none;
+    border-radius: 999px;
+    padding: 9px 16px;
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+
+  .tabbar {
+    margin-top: 14px;
+    padding: 10px 14px 22px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid var(--hairline);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    font-family: var(--sans);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--charcoal-soft);
+    padding: 6px 8px;
+  }
+  .tab.active {
+    color: var(--charcoal);
+  }
+  .tab .glyph {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--charcoal);
+    border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div style="display:flex;gap:6px;align-items:center;font-size:13px"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+    </div>
+
+    <div class="top-row">
+      <div class="wordmark">blesscupid<span class="dot">.</span></div>
+      <div class="icon-btn">⌕</div>
+    </div>
+
+    <div class="date-row">
+      <div class="date-label">Today</div>
+      <div class="date-value">Tue · 28 Apr</div>
+    </div>
+
+    <div class="greeting">
+      <h1>Good morning,<br/><em>Daniel.</em></h1>
+    </div>
+
+    <div class="intention-card">
+      <div class="badge-rail">
+        <div class="pip"></div>
+        <span class="label">Daily intention</span>
+      </div>
+      <div class="intention-headline">
+        You have one new connection waiting. Take a breath before you decide.
+      </div>
+      <div class="intention-body">
+        We hold three profiles for you each day — chosen with care, not algorithmically pumped. There is no rush.
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="verse-label">Today's verse</div>
+      <div class="verse">"Be still, and know that I am God."</div>
+      <div class="verse-cite">Psalm 46:10 · NIV</div>
+
+      <div class="meta-grid">
+        <div class="meta-cell">
+          <span class="k">Today</span>
+          <span class="v">3 <small>profiles</small></span>
+        </div>
+        <div class="meta-cell">
+          <span class="k">Conversations</span>
+          <span class="v">2 <small>open</small></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="reveal-text">
+        Reveal today's profiles
+        <small>or come back this evening — they'll wait.</small>
+      </div>
+      <button class="reveal-cta">Reveal →</button>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab active"><span class="glyph">◐</span>Today</div>
+      <div class="tab"><span class="glyph">◇</span>People</div>
+      <div class="tab"><span class="glyph">⌘</span>Threads</div>
+      <div class="tab"><span class="glyph">○</span>You</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>
