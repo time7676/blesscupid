@@ -1,21 +1,133 @@
-import { View, Text, Button, ScrollView } from 'react-native';
+import { useRef, useState } from 'react';
+import {
+  Alert,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { COVENANT_VERSION } from '@blesscupid/shared';
 import type { OnboardingStackParamList } from '../../navigation/types.js';
 import { copy } from '../../i18n/copy.js';
+import { ApiError, acceptCovenant } from '../../lib/api.js';
+import { useAuth } from '../../lib/auth-store.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingCovenant'>;
 
-// TODO(BLE-7c): wire POST /onboarding/covenant. Block continue until pastor copy ships (BLE-7f).
+const SCROLL_THRESHOLD = 24;
+
 export function OnboardingCovenantScreen({ navigation }: Props) {
+  const accessToken = useAuth((s) => s.accessToken);
+  const [reachedBottom, setReachedBottom] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const layoutHeightRef = useRef(0);
+  const contentHeightRef = useRef(0);
+
+  function maybeAutoUnlock() {
+    if (
+      !reachedBottom &&
+      layoutHeightRef.current > 0 &&
+      contentHeightRef.current > 0 &&
+      contentHeightRef.current <= layoutHeightRef.current + SCROLL_THRESHOLD
+    ) {
+      setReachedBottom(true);
+    }
+  }
+
+  function onScroll(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    if (reachedBottom) return;
+    const { layoutMeasurement, contentOffset, contentSize } = e.nativeEvent;
+    const distanceFromBottom =
+      contentSize.height - layoutMeasurement.height - contentOffset.y;
+    if (distanceFromBottom <= SCROLL_THRESHOLD) setReachedBottom(true);
+  }
+
+  async function onAccept() {
+    if (!accessToken) {
+      Alert.alert('Session expired', 'Please sign in again.');
+      return;
+    }
+    setBusy(true);
+    try {
+      await acceptCovenant(accessToken, {
+        version: COVENANT_VERSION,
+        acceptedAt: new Date().toISOString(),
+      });
+      navigation.navigate('OnboardingFaith');
+    } catch (err) {
+      const code = err instanceof ApiError ? err.code : 'covenant_failed';
+      Alert.alert('Could not save covenant', code);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  const acceptDisabled = !reachedBottom || busy;
+
   return (
-    <View style={{ flex: 1, padding: 24 }}>
-      <Text style={{ fontSize: 24, fontWeight: '600', marginVertical: 24 }}>{copy.covenant.title}</Text>
-      <ScrollView style={{ flex: 1, marginBottom: 16 }}>
-        <Text>{copy.covenant.body}</Text>
+    <View style={styles.container}>
+      <Text style={styles.title}>{copy.covenant.title}</Text>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        onScroll={onScroll}
+        scrollEventThrottle={32}
+        onLayout={(e) => {
+          layoutHeightRef.current = e.nativeEvent.layout.height;
+          maybeAutoUnlock();
+        }}
+        onContentSizeChange={(_w, h) => {
+          contentHeightRef.current = h;
+          maybeAutoUnlock();
+        }}
+      >
+        <Text style={styles.body}>{copy.covenant.body}</Text>
       </ScrollView>
-      <Button title={copy.covenant.acceptCta} onPress={() => navigation.navigate('OnboardingFaith')} />
-      <View style={{ height: 12 }} />
-      <Button title={copy.covenant.declineCta} onPress={() => navigation.goBack()} />
+
+      {!reachedBottom && (
+        <Text style={styles.hint}>Scroll to the end to continue.</Text>
+      )}
+
+      <Pressable
+        style={[styles.primary, acceptDisabled && styles.disabled]}
+        disabled={acceptDisabled}
+        onPress={onAccept}
+      >
+        <Text style={styles.primaryText}>
+          {busy ? 'Saving…' : copy.covenant.acceptCta}
+        </Text>
+      </Pressable>
+      <Pressable
+        style={styles.secondary}
+        disabled={busy}
+        onPress={() => navigation.goBack()}
+      >
+        <Text style={styles.secondaryText}>{copy.covenant.declineCta}</Text>
+      </Pressable>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: '#fff' },
+  title: { fontSize: 24, fontWeight: '600', marginBottom: 16, color: '#1a1a1a' },
+  scroll: { flex: 1, marginBottom: 12 },
+  scrollContent: { paddingBottom: 16 },
+  body: { fontSize: 16, lineHeight: 24, color: '#333' },
+  hint: { color: '#888', marginBottom: 8 },
+  primary: {
+    backgroundColor: '#1a1a1a',
+    padding: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  primaryText: { color: '#fff', fontWeight: '600', fontSize: 16 },
+  disabled: { opacity: 0.4 },
+  secondary: { padding: 14, alignItems: 'center' },
+  secondaryText: { color: '#1a1a1a', fontWeight: '500' },
+});

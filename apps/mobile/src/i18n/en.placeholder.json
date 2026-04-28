@@ -30,7 +30,6 @@
         "rarely": "Rarely"
       }
     },
-    "baptized": { "title": "Have you been baptized?" },
     "marriageIntent": {
       "title": "What's your timeline for marriage?",
       "options": {
@@ -42,8 +41,25 @@
     },
     "spiritualGifts": {
       "title": "What spiritual gifts do you sense in your life?",
-      "helper": "Optional. Pick up to three."
-    }
+      "helper": "Optional. Pick up to three.",
+      "options": {
+        "teaching": "Teaching",
+        "service": "Service",
+        "mercy": "Mercy",
+        "exhortation": "Exhortation",
+        "giving": "Giving",
+        "leadership": "Leadership",
+        "evangelism": "Evangelism",
+        "hospitality": "Hospitality"
+      }
+    },
+    "baptized": { "title": "Have you been baptized?", "yes": "Yes", "no": "No" },
+    "errors": {
+      "incomplete": "Please answer every required question.",
+      "tooManyGifts": "Choose at most three spiritual gifts.",
+      "saveFailed": "Could not save your answers."
+    },
+    "submit": "Continue"
   },
   "profile": {
     "basics": { "title": "Tell us about yourself" },

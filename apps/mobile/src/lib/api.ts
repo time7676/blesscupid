@@ -79,4 +79,31 @@ export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
   });
 }
 
+import type {
+  CovenantAcceptInput,
+  FaithQuestionnaireInput,
+} from '@blesscupid/shared';
+
+export function acceptCovenant(
+  token: string,
+  input: CovenantAcceptInput,
+): Promise<{ ok: true }> {
+  return apiFetch('/onboarding/covenant', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export function saveFaith(
+  token: string,
+  input: FaithQuestionnaireInput,
+): Promise<{ ok: true }> {
+  return apiFetch('/onboarding/faith', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
 export { API_BASE_URL };
