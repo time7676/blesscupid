@@ -8,6 +8,7 @@ export class ApiError extends Error {
     public status: number,
     public code: string,
     message: string,
+    public body: Record<string, unknown> = {},
   ) {
     super(message);
   }
@@ -31,7 +32,7 @@ export async function apiFetch<T>(
   if (!res.ok) {
     const code = (body.code as string | undefined) ?? `http_${res.status}`;
     const msg = (body.message as string | undefined) ?? code;
-    throw new ApiError(res.status, code, msg);
+    throw new ApiError(res.status, code, msg, body);
   }
   return body as T;
 }
@@ -103,6 +104,67 @@ export function saveFaith(
     method: 'POST',
     token,
     body: JSON.stringify(input),
+  });
+}
+
+export type PhotoContentType = 'image/jpeg' | 'image/png' | 'image/heic';
+
+export interface PhotoUploadUrl {
+  photoId: string;
+  uploadUrl: string;
+  storageKey: string;
+  expiresIn: number;
+  contentType: PhotoContentType;
+}
+
+export interface PhotoFinalizeResult {
+  photoId: string;
+  status: 'approved' | 'processing' | 'rejected';
+  face: {
+    faceCount: number;
+    largestFaceAreaRatio: number;
+    hasFace: boolean;
+    passes: boolean;
+    reasons: string[];
+  };
+}
+
+export interface PhotoRejectionPayload {
+  code: 'photo_rejected';
+  reasons: string[];
+  unsafeLabels: string[];
+}
+
+export function requestPhotoUpload(
+  token: string,
+  input: { position: number; contentType: PhotoContentType },
+): Promise<PhotoUploadUrl> {
+  return apiFetch<PhotoUploadUrl>('/photos/upload-url', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export async function putToS3(
+  uploadUrl: string,
+  body: Blob,
+  contentType: PhotoContentType,
+): Promise<void> {
+  const res = await fetch(uploadUrl, {
+    method: 'PUT',
+    headers: { 'content-type': contentType },
+    body,
+  });
+  if (!res.ok) {
+    throw new ApiError(res.status, 's3_upload_failed', `S3 PUT failed: ${res.status}`);
+  }
+}
+
+export function finalizePhoto(token: string, photoId: string): Promise<PhotoFinalizeResult> {
+  return apiFetch<PhotoFinalizeResult>(`/photos/${photoId}/finalize`, {
+    method: 'POST',
+    token,
   });
 }
 

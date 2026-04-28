@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { randomUUID } from 'node:crypto';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PhotoModerationService } from '../moderation/photo-moderation.service.js';
+import { S3StorageService } from './s3-storage.service.js';
 
 interface RequestUploadInput {
   position: number;
@@ -13,6 +14,7 @@ export class PhotosService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly moderation: PhotoModerationService,
+    private readonly storage: S3StorageService,
   ) {}
 
   async createUploadUrl(userId: string, input: RequestUploadInput) {
@@ -30,9 +32,11 @@ export class PhotosService {
       },
     });
 
-    // TODO(BLE-7d): replace with real pre-signed PUT URL via @aws-sdk/s3-request-presigner.
-    const uploadUrl = `https://placeholder.invalid/upload/${storageKey}`;
-    return { photoId, uploadUrl, storageKey };
+    const { uploadUrl, expiresIn } = await this.storage.createPresignedPut(
+      storageKey,
+      input.contentType,
+    );
+    return { photoId, uploadUrl, storageKey, expiresIn, contentType: input.contentType };
   }
 
   async finalize(userId: string, photoId: string) {
@@ -47,8 +51,44 @@ export class PhotosService {
     });
 
     const result = await this.moderation.moderate(photo.storageKey);
+    const isBlocked = result.decision === 'block';
+    const faceFailed = !result.face.passes;
 
-    if (result.decision === 'block') {
+    // Block path: hard reject + write ModerationItem so reviewers can audit.
+    if (isBlocked) {
+      await this.prisma.photo.update({
+        where: { id: photoId },
+        data: {
+          status: 'rejected',
+          faceCount: result.face.faceCount,
+          faceAreaRatio: result.face.largestFaceAreaRatio,
+          rejectionReasons: result.face.reasons,
+          unsafeLabels: result.unsafeLabels,
+        },
+      });
+      await this.prisma.moderationItem.create({
+        data: {
+          userId,
+          kind: 'photo',
+          subjectId: photoId,
+          rawContent: photo.storageKey,
+          decision: 'block',
+          status: 'rejected',
+          categories: result.unsafeLabels.length > 0 ? result.unsafeLabels : result.face.reasons,
+          provider: 'rekognition',
+        },
+      });
+      throw new BadRequestException({
+        code: 'photo_rejected',
+        // copy:photo.rejection — Pastor-owned. Server returns reasons; client picks copy by reason.
+        reasons: result.face.reasons,
+        unsafeLabels: result.unsafeLabels,
+      });
+    }
+
+    // Face-failure path: gracious rejection so user retries with a clearer photo.
+    // No ModerationItem — this is user error, not a flagged-content audit trail.
+    if (faceFailed) {
       await this.prisma.photo.update({
         where: { id: photoId },
         data: {
@@ -61,17 +101,16 @@ export class PhotosService {
       });
       throw new BadRequestException({
         code: 'photo_rejected',
-        // copy:photo.rejection — Pastor-owned. Server returns reasons; client picks copy by reason.
         reasons: result.face.reasons,
         unsafeLabels: result.unsafeLabels,
       });
     }
 
-    const status = result.decision === 'allow' ? 'approved' : 'processing';
+    // Allow path.
     await this.prisma.photo.update({
       where: { id: photoId },
       data: {
-        status,
+        status: 'approved',
         faceCount: result.face.faceCount,
         faceAreaRatio: result.face.largestFaceAreaRatio,
         rejectionReasons: result.face.reasons,
@@ -79,24 +118,9 @@ export class PhotosService {
       },
     });
 
-    if (result.decision === 'review') {
-      await this.prisma.moderationItem.create({
-        data: {
-          userId,
-          kind: 'photo',
-          subjectId: photoId,
-          rawContent: photo.storageKey,
-          decision: 'review',
-          status: 'pending',
-          categories: result.face.reasons,
-          provider: 'rekognition',
-        },
-      });
-    }
-
     return {
       photoId,
-      status,
+      status: 'approved' as const,
       face: result.face,
     };
   }
