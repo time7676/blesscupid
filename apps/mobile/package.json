@@ -9,8 +9,9 @@
     "ios": "expo run:ios",
     "android": "expo run:android",
     "lint": "echo 'lint: mobile (noop until eslint configured)'",
+    "lint:moderation-copy": "node scripts/lint-moderation-copy.mjs",
     "typecheck": "tsc --noEmit -p tsconfig.json",
-    "test": "echo 'no mobile tests yet'"
+    "test": "node --test scripts/lint-moderation-copy.test.mjs"
   },
   "dependencies": {
     "@blesscupid/shared": "workspace:*",

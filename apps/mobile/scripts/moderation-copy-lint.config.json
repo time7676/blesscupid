@@ -1,0 +1,51 @@
+{
+  "$comment": "Source: BLE-42 Moderation Playbook Appendix B. Build-fail regex set + template contracts.",
+  "banned_phrases": [
+    {
+      "pattern": "(?i)you\\s+violated",
+      "rule": "HCoC §5.1 — punitive framing",
+      "suggest": "This part doesn't fit our community's posture."
+    },
+    {
+      "pattern": "(?i)you\\s+have\\s+been\\s+warned",
+      "rule": "HCoC §5.1 — threat framing",
+      "suggest": "Heads up — a similar message in the next 90 days would mean a 7-day pause."
+    },
+    {
+      "pattern": "(?i)a\\s+real\\s+(christian|catholic|believer)",
+      "rule": "HCoC §3.3 — spiritual abuse",
+      "suggest": "Our community holds to [specific doctrinal point]. This message goes against that."
+    },
+    {
+      "pattern": "(?i)if\\s+you\\s+(trusted|loved|believed in)\\s+god",
+      "rule": "HCoC §3.3 — spiritual coercion",
+      "suggest": "(Never appropriate from the platform.)"
+    },
+    {
+      "pattern": "(?i)(repeat\\s+offender|\\boffender\\b)",
+      "rule": "HCoC §5.1 — carceral language",
+      "suggest": "Third time within 90 days."
+    },
+    {
+      "pattern": "(?i)\\bsinner\\b",
+      "rule": "Theological weaponization",
+      "suggest": "Describe the behavior and the rule, never the person's spiritual state."
+    },
+    {
+      "pattern": "(?i)we\\s+expect\\s+better",
+      "rule": "HCoC §5.1 — shame framing",
+      "suggest": "We think this isn't who you are. Want another shot at this?"
+    },
+    {
+      "pattern": "(?i)permanently\\s+banned",
+      "rule": "HCoC §5.2 — closes door without reinstatement language",
+      "suggest": "Closed at this time. Reinstatement possible after [time/condition]."
+    }
+  ],
+  "required_in_t2_plus_templates": ["{{rule_id}}"],
+  "required_in_t3_plus_templates": ["{{rule_id}}", "{{appeal_url}}"],
+  "freshness": {
+    "warn_after_days": 30,
+    "fail_after_days": 60
+  }
+}
