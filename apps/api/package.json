@@ -13,7 +13,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "worker:hard-delete": "node --import tsx/esm src/scripts/run-hard-delete-worker.ts"
   },
   "dependencies": {
     "@aws-sdk/client-rekognition": "^3.1038.0",

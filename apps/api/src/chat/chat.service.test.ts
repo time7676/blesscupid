@@ -125,7 +125,17 @@ function buildPipeline(opts: {
 }
 
 function makeChatService(prisma: FakePrisma, pipeline: ModerationPipeline): ChatService {
-  return new ChatService(prisma as never, pipeline as ChatModerationPipeline);
+  // BLE-10 added a third constructor arg: a moderation store used for the
+  // bidirectional block check. Tests don't exercise blocks here — pass a
+  // stub that always reports "not blocked".
+  const noBlocks = {
+    isBlocked: async () => false,
+  } as unknown as ConstructorParameters<typeof ChatService>[2];
+  return new ChatService(
+    prisma as never,
+    pipeline as ChatModerationPipeline,
+    noBlocks,
+  );
 }
 
 const ALICE = '11111111-1111-1111-1111-111111111111';

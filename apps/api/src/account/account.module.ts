@@ -6,11 +6,12 @@ import { AccountController } from './account.controller.js';
 import { AccountDeletionService } from './account-deletion.service.js';
 import { BioController } from './bio.controller.js';
 import { BioService } from './bio.service.js';
+import { HardDeleteWorker } from './hard-delete.worker.js';
 
 @Module({
   imports: [PrismaModule, ModerationModule, JwtModule.register({})],
   controllers: [AccountController, BioController],
-  providers: [AccountDeletionService, BioService],
-  exports: [AccountDeletionService],
+  providers: [AccountDeletionService, BioService, HardDeleteWorker],
+  exports: [AccountDeletionService, HardDeleteWorker],
 })
 export class AccountModule {}

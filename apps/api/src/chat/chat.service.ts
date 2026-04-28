@@ -2,6 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import type { MessageInput, PipelineOutcome } from '@blesscupid/moderation';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { ChatModerationPipeline } from './moderation-pipeline.provider.js';
+import { PrismaModerationStore } from './prisma-moderation-store.js';
 
 export interface SendMessageInput {
   threadId: string;
@@ -23,11 +24,24 @@ export class ChatService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly pipeline: ChatModerationPipeline,
+    private readonly moderationStore: PrismaModerationStore,
   ) {}
 
   async sendMessage(senderUserId: string, input: SendMessageInput): Promise<SendMessageResult> {
     if (senderUserId === input.recipientUserId) {
       throw new BadRequestException({ code: 'cannot_message_self' });
+    }
+
+    // BLE-10 — bidirectional block check. If either party blocked the other,
+    // silently return `blocked`; never persist the message and never tell the
+    // sender it was a block (acceptance: blocks are silent).
+    if (await this.isBlockedEitherWay(senderUserId, input.recipientUserId)) {
+      return {
+        status: 'blocked',
+        reasons: ['recipient_unavailable'],
+        flags: [],
+        reviewerNote: '',
+      };
     }
 
     const moderationInput: MessageInput = {
@@ -121,7 +135,7 @@ export class ChatService {
   }
 
   async listThreadMessages(userId: string, threadId: string) {
-    return this.prisma.message.findMany({
+    const rows = await this.prisma.message.findMany({
       where: {
         threadId,
         OR: [{ senderUserId: userId }, { recipientUserId: userId }],
@@ -140,5 +154,25 @@ export class ChatService {
         deliveredAt: true,
       },
     });
+    if (rows.length === 0) return rows;
+    // BLE-10 — hide all history if either party has blocked the other.
+    const counterparty =
+      rows[0]!.senderUserId === userId
+        ? rows[0]!.recipientUserId
+        : rows[0]!.senderUserId;
+    if (await this.isBlockedEitherWay(userId, counterparty)) {
+      return [];
+    }
+    return rows;
+  }
+
+  /** Bidirectional block check — used by send + history paths. */
+  private async isBlockedEitherWay(
+    userAId: string,
+    userBId: string,
+  ): Promise<boolean> {
+    if (userAId === userBId) return false;
+    if (await this.moderationStore.isBlocked(userAId, userBId)) return true;
+    return this.moderationStore.isBlocked(userBId, userAId);
   }
 }
