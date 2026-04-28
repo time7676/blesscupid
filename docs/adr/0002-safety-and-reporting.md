@@ -2,6 +2,7 @@
 
 Status: Accepted (BLE-10)
 Date: 2026-04-28
+Last revised: 2026-04-28 (v2 — added Prisma binding in `apps/api`)
 Owner: Founding Engineer
 
 ## Context
