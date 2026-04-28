@@ -101,7 +101,7 @@ export class OpenAIModerationError extends Error {
   constructor(
     message: string,
     public readonly status: number,
-    public readonly cause?: Error,
+    public override readonly cause?: Error,
   ) {
     super(message);
     this.name = "OpenAIModerationError";

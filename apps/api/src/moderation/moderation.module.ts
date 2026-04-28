@@ -11,6 +11,6 @@ import { RekognitionPhotoModerator } from './providers/rekognition-photo.provide
     OpenAITextModerator,
     RekognitionPhotoModerator,
   ],
-  exports: [TextModerationService, PhotoModerationService],
+  exports: [TextModerationService, PhotoModerationService, OpenAITextModerator, RekognitionPhotoModerator],
 })
 export class ModerationModule {}

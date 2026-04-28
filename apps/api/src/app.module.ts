@@ -5,8 +5,25 @@ import { OnboardingModule } from './onboarding/onboarding.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
 import { PhotosModule } from './photos/photos.module.js';
 import { HealthModule } from './health/health.module.js';
+import { ChatModule } from './chat/chat.module.js';
+import { ReportsModule } from './reports/reports.module.js';
+import { BlocksModule } from './blocks/blocks.module.js';
+import { AdminModule } from './admin/admin.module.js';
+import { AccountModule } from './account/account.module.js';
 
 @Module({
-  imports: [HealthModule, PrismaModule, AuthModule, OnboardingModule, ModerationModule, PhotosModule],
+  imports: [
+    HealthModule,
+    PrismaModule,
+    AuthModule,
+    OnboardingModule,
+    ModerationModule,
+    PhotosModule,
+    ChatModule,
+    ReportsModule,
+    BlocksModule,
+    AdminModule,
+    AccountModule,
+  ],
 })
 export class AppModule {}
