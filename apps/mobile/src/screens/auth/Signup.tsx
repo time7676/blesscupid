@@ -12,7 +12,12 @@ import {
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { checkAgeGate, MINIMUM_AGE } from '@blesscupid/shared';
 import type { OnboardingStackParamList } from '../../navigation/types.js';
-import { ApiError, signupEmail, signupOAuth } from '../../lib/api.js';
+import {
+  ApiError,
+  getOnboardingState,
+  signupEmail,
+  signupOAuth,
+} from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
 import {
   APPLE_AVAILABLE,
@@ -20,6 +25,7 @@ import {
   signInWithApple,
   useGoogleSignIn,
 } from '../../lib/oauth.js';
+import { routeForNextStep } from '../../lib/onboarding-route.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Signup'>;
 
@@ -28,15 +34,10 @@ export function SignupScreen({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState('');
-  const [accepted, setAccepted] = useState(false);
   const [busy, setBusy] = useState(false);
   const google = useGoogleSignIn();
 
   function precheck(): boolean {
-    if (!accepted) {
-      Alert.alert('Covenant', 'You must accept the Holy Code of Conduct to continue.');
-      return false;
-    }
     const gate = checkAgeGate(dob);
     if (!gate.ok) {
       Alert.alert('Age check', `You must be at least ${MINIMUM_AGE} to sign up.`);
@@ -45,13 +46,24 @@ export function SignupScreen({ navigation }: Props) {
     return true;
   }
 
+  async function routeAfterAuth(accessToken: string) {
+    try {
+      const state = await getOnboardingState(accessToken);
+      const target = routeForNextStep(state.nextStep);
+      navigation.reset({ index: 0, routes: [{ name: target }] });
+    } catch {
+      // Fall back to covenant — never drop a fresh user straight on Profile.
+      navigation.reset({ index: 0, routes: [{ name: 'OnboardingCovenant' }] });
+    }
+  }
+
   async function onSubmit() {
     if (!precheck()) return;
     setBusy(true);
     try {
       const tokens = await signupEmail({ email: email.trim(), password, dob });
       await setSession(tokens);
-      navigation.reset({ index: 0, routes: [{ name: 'Profile' }] });
+      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'signup_failed';
       Alert.alert('Signup failed', code);
@@ -68,7 +80,7 @@ export function SignupScreen({ navigation }: Props) {
         provider === 'apple' ? await signInWithApple() : await google.promptAsync();
       const tokens = await signupOAuth({ provider, idToken, dob });
       await setSession(tokens);
-      navigation.reset({ index: 0, routes: [{ name: 'Profile' }] });
+      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       if (err instanceof OAuthCancelledError) return;
       const code = err instanceof ApiError ? err.code : `${provider}_signin_failed`;
@@ -111,13 +123,9 @@ export function SignupScreen({ navigation }: Props) {
           onChangeText={setDob}
         />
 
-        <Pressable style={styles.checkboxRow} onPress={() => setAccepted((v) => !v)}>
-          <View style={[styles.checkbox, accepted && styles.checkboxOn]} />
-          {/* PASTOR_COPY_REQUIRED: covenant acceptance copy pending Pastor review (BLE-7f). */}
-          <Text style={styles.checkboxText}>
-            I accept the BlessCupid Holy Code of Conduct.
-          </Text>
-        </Pressable>
+        <Text style={styles.covenantHint}>
+          On the next screen you'll review and accept the BlessCupid Holy Code of Conduct.
+        </Text>
 
         <Pressable
           style={[styles.primary, busy && styles.disabled]}
@@ -171,16 +179,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     fontSize: 16,
   },
-  checkboxRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 16, gap: 10 },
-  checkbox: {
-    width: 22,
-    height: 22,
-    borderWidth: 1,
-    borderColor: '#1a1a1a',
-    borderRadius: 4,
-  },
-  checkboxOn: { backgroundColor: '#1a1a1a' },
-  checkboxText: { flex: 1, color: '#1a1a1a' },
+  covenantHint: { color: '#555', marginVertical: 12, fontSize: 13, lineHeight: 18 },
   primary: {
     marginTop: 8,
     backgroundColor: '#1a1a1a',

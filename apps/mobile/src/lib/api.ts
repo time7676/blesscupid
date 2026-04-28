@@ -83,7 +83,26 @@ export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
 import type {
   CovenantAcceptInput,
   FaithQuestionnaireInput,
+  OnboardingStep,
 } from '@blesscupid/shared';
+
+export interface OnboardingStateResponse {
+  ageVerifiedAdult: boolean;
+  covenantSigned: boolean;
+  faithComplete: boolean;
+  profileComplete: boolean;
+  hasPhoto: boolean;
+  bioApproved: boolean;
+  onboardingStep: OnboardingStep;
+  nextStep: OnboardingStep;
+}
+
+export function getOnboardingState(token: string): Promise<OnboardingStateResponse> {
+  return apiFetch<OnboardingStateResponse>('/onboarding/state', {
+    method: 'GET',
+    token,
+  });
+}
 
 export function acceptCovenant(
   token: string,
