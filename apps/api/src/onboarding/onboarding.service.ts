@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import {
   COVENANT_VERSION,
+  nextStep,
   type BioInput,
   type CovenantAcceptInput,
   type FaithQuestionnaireInput,
@@ -28,14 +29,21 @@ export class OnboardingService {
       this.prisma.photo.count({ where: { userId, status: { in: ['approved', 'uploaded', 'processing'] } } }),
     ]);
 
-    return {
+    const snapshot = {
       ageVerifiedAdult: user.ageVerifiedAdult,
       covenantSigned: !!covenant,
       faithComplete: !!faith,
       profileComplete: !!profile,
       hasPhoto: photoCount > 0,
       bioApproved: profile?.bioApproved ?? false,
+    };
+
+    return {
+      ...snapshot,
       onboardingStep: profile?.onboardingStep ?? 'age_gate',
+      // Server-authoritative next step. Mobile must route to this after signup
+      // and after each onboarding submit, instead of hard-coding navigation.
+      nextStep: nextStep(snapshot),
     };
   }
 
