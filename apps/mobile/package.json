@@ -1,0 +1,35 @@
+{
+  "name": "@blesscupid/mobile",
+  "version": "0.1.0",
+  "description": "BlessCupid mobile app (Expo / React Native)",
+  "private": true,
+  "main": "index.ts",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo run:ios",
+    "android": "expo run:android",
+    "lint": "echo 'lint: mobile (noop until eslint configured)'",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "echo 'no mobile tests yet'"
+  },
+  "dependencies": {
+    "@blesscupid/shared": "workspace:*",
+    "expo": "~51.0.0",
+    "expo-auth-session": "~5.5.0",
+    "expo-image-picker": "~15.0.0",
+    "expo-secure-store": "~13.0.0",
+    "expo-status-bar": "~1.12.0",
+    "react": "18.2.0",
+    "react-native": "0.74.5",
+    "@react-navigation/native": "^6.1.18",
+    "@react-navigation/native-stack": "^6.10.0",
+    "react-native-screens": "~3.31.1",
+    "react-native-safe-area-context": "~4.10.5",
+    "zod": "^3.23.8",
+    "zustand": "^4.5.5"
+  },
+  "devDependencies": {
+    "@types/react": "~18.2.79",
+    "typescript": "^5.6.3"
+  }
+}

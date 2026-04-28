@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid — Direction 1: Cathedral Light</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1A1A24;
+    --ink-soft: #3F3F4A;
+    --sandstone: #F4ECDF;
+    --parchment: #FAF7F0;
+    --gold: #C8A24B;
+    --indigo: #2A3470;
+    --hairline: rgba(26, 26, 36, 0.12);
+    --serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%;
+    background: #2a2a30;
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+    color: var(--ink);
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+  .device {
+    width: 390px;
+    height: 844px;
+    background: var(--parchment);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+  .status-bar {
+    height: 47px;
+    padding: 14px 24px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--sans);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .status-right { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+  .progress-rail {
+    height: 2px;
+    margin: 0 24px;
+    background: var(--hairline);
+    border-radius: 1px;
+    flex-shrink: 0;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 40%;
+    background: var(--gold);
+    border-radius: 1px;
+  }
+  .step-meta {
+    padding: 28px 32px 0;
+    font-family: var(--sans);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .step-meta .ornament {
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: var(--gold);
+    vertical-align: middle;
+    margin-right: 10px;
+  }
+  .question {
+    padding: 18px 32px 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: 38px;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    flex-shrink: 0;
+  }
+  .question em {
+    font-style: italic;
+    color: var(--indigo);
+  }
+  .helper {
+    padding: 16px 32px 0;
+    font-family: var(--sans);
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    flex-shrink: 0;
+  }
+  .options {
+    padding: 28px 24px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    flex: 1;
+  }
+  .option {
+    background: var(--sandstone);
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    cursor: pointer;
+    transition: border-color 200ms;
+  }
+  .option.selected {
+    border-color: var(--gold);
+    background: #FBF3E2;
+  }
+  .option .marker {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 1.5px solid var(--ink-soft);
+    flex-shrink: 0;
+    margin-top: 2px;
+    position: relative;
+  }
+  .option.selected .marker {
+    border-color: var(--gold);
+  }
+  .option.selected .marker::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--gold);
+    border-radius: 50%;
+  }
+  .option .body { flex: 1; }
+  .option .label {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .option .sub {
+    font-family: var(--sans);
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--ink-soft);
+  }
+  .footer {
+    padding: 12px 24px 36px;
+    background: linear-gradient(180deg, transparent, rgba(250, 247, 240, 0.95) 30%, var(--parchment));
+    flex-shrink: 0;
+  }
+  .footer-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .skip {
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid var(--hairline);
+    padding-bottom: 2px;
+  }
+  .cta {
+    background: var(--ink);
+    color: var(--parchment);
+    border: none;
+    padding: 14px 28px;
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+  .home-indicator {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 134px;
+    height: 5px;
+    background: var(--ink);
+    border-radius: 3px;
+  }
+  /* Wordmark placeholder lockup, not used on this screen but referenced in header */
+</style>
+</head>
+<body>
+  <div class="device" id="device">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-right">
+        <span>•••</span>
+        <span>􀙇</span>
+        <span>􀛨</span>
+      </div>
+    </div>
+
+    <div class="progress-rail"><div class="progress-fill"></div></div>
+
+    <div class="step-meta">
+      <span class="ornament"></span>STEP 4 OF 10 — A LITTLE ABOUT YOUR FAITH
+    </div>
+
+    <h1 class="question">
+      What does prayer<br>look like in <em>your</em> week?
+    </h1>
+
+    <p class="helper">No wrong answer. We use this to suggest people whose rhythm of faith feels close to yours.</p>
+
+    <div class="options">
+      <div class="option">
+        <span class="marker"></span>
+        <div class="body">
+          <div class="label">Daily — it grounds my mornings</div>
+          <div class="sub">A consistent rhythm. Quiet time, devotionals, or set hours.</div>
+        </div>
+      </div>
+      <div class="option selected">
+        <span class="marker"></span>
+        <div class="body">
+          <div class="label">A few times a week</div>
+          <div class="sub">Not always at the same time, but it's part of how I live.</div>
+        </div>
+      </div>
+      <div class="option">
+        <span class="marker"></span>
+        <div class="body">
+          <div class="label">Sundays and seasons</div>
+          <div class="sub">Liturgy, mass, or church gathering carries most of it.</div>
+        </div>
+      </div>
+      <div class="option">
+        <span class="marker"></span>
+        <div class="body">
+          <div class="label">I'm finding my way back</div>
+          <div class="sub">Faith matters, but the practice is a work in progress.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="footer-actions">
+        <a class="skip" href="#">Skip for now</a>
+        <button class="cta">Continue</button>
+      </div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

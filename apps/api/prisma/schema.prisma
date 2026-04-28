@@ -1,0 +1,217 @@
+// BlessCupid API — Prisma schema
+// Postgres. UUID PKs. Strict separation between auth identity and profile/faith data.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Denomination {
+  catholic
+  protestant
+  orthodox
+  other
+}
+
+enum Gender {
+  male
+  female
+}
+
+enum MarriageIntent {
+  within_1y
+  within_2y
+  within_5y
+  open_timeline
+}
+
+enum ChurchAttendance {
+  weekly
+  monthly
+  occasional
+  rarely
+}
+
+enum SpiritualGift {
+  teaching
+  service
+  mercy
+  exhortation
+  giving
+  leadership
+  evangelism
+  hospitality
+}
+
+enum OAuthProvider {
+  apple
+  google
+}
+
+enum OnboardingStep {
+  age_gate
+  covenant
+  faith_questionnaire
+  profile_basics
+  first_photo
+  bio
+  done
+}
+
+enum ModerationKind {
+  text_bio
+  text_message
+  photo
+}
+
+enum ModerationDecision {
+  allow
+  review
+  block
+}
+
+enum ModerationStatus {
+  pending
+  approved
+  rejected
+}
+
+enum PhotoStatus {
+  uploaded
+  processing
+  approved
+  rejected
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid
+  email           String   @unique
+  passwordHash    String?  // null when only OAuth-linked
+  dob             DateTime @db.Date
+  ageVerifiedAdult Boolean @default(false)
+  emailVerified   Boolean  @default(false)
+  isSuspended     Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  oauthAccounts   OAuthAccount[]
+  sessions        Session[]
+  covenants       CovenantSignature[]
+  faithProfile    FaithProfile?
+  profile         Profile?
+  photos          Photo[]
+  moderationItems ModerationItem[]
+
+  @@index([email])
+}
+
+model OAuthAccount {
+  id          String        @id @default(uuid()) @db.Uuid
+  userId      String        @db.Uuid
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider    OAuthProvider
+  providerSub String
+  createdAt   DateTime      @default(now())
+
+  @@unique([provider, providerSub])
+  @@index([userId])
+}
+
+model Session {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @db.Uuid
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  refreshTokenHash String  @unique
+  userAgent       String?
+  ip              String?
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  createdAt       DateTime @default(now())
+
+  @@index([userId])
+}
+
+// Holy Code of Conduct acceptance. Versioned. Pastor signs the canonical text.
+model CovenantSignature {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  version     String
+  acceptedAt  DateTime @default(now())
+  ipAddress   String?
+  userAgent   String?
+
+  @@unique([userId, version])
+  @@index([userId])
+}
+
+model FaithProfile {
+  id               String           @id @default(uuid()) @db.Uuid
+  userId           String           @unique @db.Uuid
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  denomination     Denomination
+  churchAttendance ChurchAttendance
+  baptized         Boolean
+  marriageIntent   MarriageIntent
+  spiritualGifts   SpiritualGift[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+}
+
+model Profile {
+  id             String         @id @default(uuid()) @db.Uuid
+  userId         String         @unique @db.Uuid
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName    String
+  gender         Gender
+  city           String
+  countryCode    String         @db.Char(2)
+  bio            String?
+  bioApproved    Boolean        @default(false)
+  onboardingStep OnboardingStep @default(age_gate)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  @@index([countryCode, city])
+}
+
+model Photo {
+  id                 String      @id @default(uuid()) @db.Uuid
+  userId             String      @db.Uuid
+  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storageKey         String      @unique
+  position           Int
+  status             PhotoStatus @default(uploaded)
+  faceCount          Int?
+  faceAreaRatio      Float?
+  rejectionReasons   String[]    @default([])
+  unsafeLabels       String[]    @default([])
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
+
+  @@index([userId, position])
+}
+
+model ModerationItem {
+  id          String             @id @default(uuid()) @db.Uuid
+  userId      String?            @db.Uuid
+  user        User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  kind        ModerationKind
+  subjectId   String?            // photo id, message id, etc.
+  rawContent  String?            // text or storage ref
+  decision    ModerationDecision
+  status      ModerationStatus   @default(pending)
+  categories  String[]           @default([])
+  provider    String
+  rawScore    Float?
+  reviewerNote String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([status, createdAt])
+  @@index([userId])
+}

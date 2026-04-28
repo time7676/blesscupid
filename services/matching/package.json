@@ -1,0 +1,19 @@
+{
+  "name": "@blesscupid/matching",
+  "version": "0.1.0",
+  "description": "BlessCupid faith-aligned matching engine v1 (rules-based)",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0",
+    "@types/node": "^20.12.0"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "_pastor_status": "PLACEHOLDER — pending Pastor sign-off. Do not ship to production.",
+  "covenant": {
+    "title": "Our Holy Code of Conduct",
+    "body": "[PASTOR_COPY_REQUIRED] Body of the Holy Code of Conduct: marriage-minded intent, no sexual content, no harassment, mutual respect.",
+    "acceptCta": "I covenant before God",
+    "declineCta": "Not ready yet"
+  },
+  "ageGate": {
+    "title": "When were you born?",
+    "body": "BlessCupid is for adults seeking marriage. We require you to be 18+.",
+    "errorUnderage": "BlessCupid is for those 18 and older. We're glad you came — please return when you can."
+  },
+  "faith": {
+    "denomination": {
+      "title": "Which tradition do you belong to?",
+      "options": {
+        "catholic": "Catholic",
+        "protestant": "Protestant",
+        "orthodox": "Orthodox",
+        "other": "Other Christian"
+      }
+    },
+    "attendance": {
+      "title": "How often do you attend church?",
+      "options": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "occasional": "Occasionally",
+        "rarely": "Rarely"
+      }
+    },
+    "baptized": { "title": "Have you been baptized?" },
+    "marriageIntent": {
+      "title": "What's your timeline for marriage?",
+      "options": {
+        "within_1y": "Within a year",
+        "within_2y": "Within two years",
+        "within_5y": "Within five years",
+        "open_timeline": "Open timeline"
+      }
+    },
+    "spiritualGifts": {
+      "title": "What spiritual gifts do you sense in your life?",
+      "helper": "Optional. Pick up to three."
+    }
+  },
+  "profile": {
+    "basics": { "title": "Tell us about yourself" },
+    "bio": {
+      "title": "Share a few words about you",
+      "helper": "What do you love about your faith? What are you praying for?"
+    }
+  },
+  "photo": {
+    "requirements": {
+      "title": "Add a clear face photo",
+      "body": "We require a clear photo of your face so others can connect with the real you. Please avoid body-only photos."
+    },
+    "rejection": {
+      "no_face_detected": "We couldn't see a face in your photo. Please try a photo where your face is clearly visible.",
+      "face_too_small": "Your face appears small in this photo. Please try a closer photo where your face is clearly visible.",
+      "multiple_faces": "We saw more than one person. Please upload a photo of just you.",
+      "low_confidence": "We couldn't get a clear read on the photo. Please try another.",
+      "unsafe": "This photo doesn't meet our community standards. Please review the Holy Code of Conduct and try another."
+    }
+  },
+  "bio": {
+    "rejection": {
+      "block": "This bio doesn't meet our community standards. Please review the Holy Code of Conduct and try again.",
+      "review": "Thank you. Our team is reviewing your bio. You'll be notified shortly."
+    }
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "@blesscupid/moderation",
+  "version": "0.1.0",
+  "description": "BlessCupid moderation pipeline — text + image + queue. Holy guardrails as code.",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "@types/bun": "^1.1.0",
+    "@types/node": "^20.12.0"
+  }
+}
