@@ -46,6 +46,11 @@ android/.gradle/
 android/build/
 android/app/build/
 
+# Store credentials (never commit)
+apps/mobile/credentials/
+play-service-account.json
+asc-api-key.p8
+
 # Testing
 coverage/
 .nyc_output/

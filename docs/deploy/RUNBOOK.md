@@ -16,8 +16,8 @@ brew install --cask sentry-cli       # for source-map upload (optional)
 
 - **Fly.io** — `fly auth login`. Create app once: `fly launch --no-deploy --copy-config --config apps/api/fly.toml`.
 - **Expo** — `eas login`. Project linked via `apps/mobile/app.json` slug.
-- **Apple Developer** — paid program enrolled. EAS submit needs an App Store Connect API key; configure with `eas credentials`.
-- **Google Play** — service-account JSON for the internal track; configure with `eas credentials`.
+- **Apple Developer** — paid program enrolled. EAS submit needs an App Store Connect API key; configure with `eas credentials`. Full setup walkthrough: [`CREDENTIALS.md`](./CREDENTIALS.md).
+- **Google Play** — service-account JSON for the internal track; configure with `eas credentials`. Full setup walkthrough: [`CREDENTIALS.md`](./CREDENTIALS.md).
 - **Sentry** — two projects: `blesscupid-api` (Node) and `blesscupid-mobile` (React Native).
 - **PostHog** — one project; same project key for api + mobile is fine since events are namespaced.
 
