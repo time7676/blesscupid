@@ -9,10 +9,34 @@
     "ios": {
       "bundleIdentifier": "com.blesscupid.app",
       "supportsTablet": false,
-      "usesAppleSignIn": true
+      "usesAppleSignIn": true,
+      "infoPlist": {
+        "NSCameraUsageDescription": "BlessCupid memerlukan akses kamera untuk verifikasi wajah (selfie liveness) sehingga setiap profil benar-benar manusia. (TODO BLE-Pastor: teks final menunggu approval Pastor.)",
+        "NSPhotoLibraryUsageDescription": "BlessCupid memerlukan akses album foto agar Anda dapat memilih foto profil. Foto akan diperiksa moderasi sebelum tampil. (TODO BLE-Pastor: teks final menunggu approval Pastor.)",
+        "NSPhotoLibraryAddUsageDescription": "BlessCupid menyimpan salinan foto profil yang sudah disetujui ke album Anda. (TODO BLE-Pastor: teks final menunggu approval Pastor.)"
+      }
     },
     "android": {
-      "package": "com.blesscupid.app"
-    }
+      "package": "com.blesscupid.app",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.READ_MEDIA_IMAGES"
+      ]
+    },
+    "plugins": [
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "BlessCupid memerlukan akses kamera untuk verifikasi wajah (selfie liveness) sehingga setiap profil benar-benar manusia. (TODO BLE-Pastor: teks final menunggu approval Pastor.)"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "BlessCupid memerlukan akses album foto agar Anda dapat memilih foto profil. Foto akan diperiksa moderasi sebelum tampil. (TODO BLE-Pastor: teks final menunggu approval Pastor.)"
+        }
+      ]
+    ]
   }
 }
