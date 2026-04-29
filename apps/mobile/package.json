@@ -8,6 +8,9 @@
     "start": "expo start",
     "ios": "expo run:ios",
     "android": "expo run:android",
+    "storybook": "EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED=1 expo start",
+    "storybook:ios": "EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED=1 expo run:ios",
+    "storybook:android": "EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED=1 expo run:android",
     "lint": "echo 'lint: mobile (noop until eslint configured)'",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "echo 'no mobile tests yet'"
@@ -17,6 +20,7 @@
     "@blesscupid/shared": "workspace:*",
     "@expo-google-fonts/cormorant-garamond": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
+    "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/native": "^6.1.18",
     "@react-navigation/native-stack": "^6.10.0",
     "expo": "~51.0.0",
@@ -35,6 +39,9 @@
     "zustand": "^4.5.5"
   },
   "devDependencies": {
+    "@storybook/addon-ondevice-actions": "^7.6.20",
+    "@storybook/addon-ondevice-controls": "^7.6.20",
+    "@storybook/react-native": "^7.6.20",
     "@types/react": "~18.2.79",
     "typescript": "^5.6.3"
   }
