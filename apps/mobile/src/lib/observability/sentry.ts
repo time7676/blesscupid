@@ -19,28 +19,13 @@ export async function initMobileSentry(): Promise<void> {
     console.log('[obs] EXPO_PUBLIC_SENTRY_DSN not set — error reporting disabled');
     return;
   }
-  try {
-    const mod = (await import('@sentry/react-native').catch(() => null)) as
-      | (SentryRN & { default?: SentryRN })
-      | null;
-    if (!mod) {
-      // eslint-disable-next-line no-console
-      console.warn('[obs] @sentry/react-native not installed');
-      return;
-    }
-    const sdk = (mod.default ?? mod) as SentryRN;
-    sdk.init({
-      dsn,
-      environment: process.env.EXPO_PUBLIC_ENV ?? 'production',
-      tracesSampleRate: 0.1,
-      attachStacktrace: true,
-      enableAutoSessionTracking: true,
-    });
-    sentry = sdk;
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('[obs] Sentry init failed', err);
-  }
+  // Sentry SDK is intentionally not bundled into the Expo Go build — Metro
+  // statically traces dynamic imports and pulls in @sentry/* transitive deps
+  // that aren't part of this workspace install. Re-enable in a custom dev
+  // client by restoring the dynamic `await import('@sentry/react-native')`.
+  void dsn;
+  // eslint-disable-next-line no-console
+  console.log('[obs] Sentry disabled in this bundle');
 }
 
 export function captureException(err: unknown): void {

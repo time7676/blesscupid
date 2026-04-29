@@ -19,24 +19,12 @@ export async function initAnalytics(): Promise<void> {
     console.log('[obs] EXPO_PUBLIC_POSTHOG_KEY not set — analytics disabled');
     return;
   }
-  try {
-    const mod = (await import('posthog-react-native').catch(() => null)) as
-      | { PostHog: new (key: string, opts?: Record<string, unknown>) => PostHogRN }
-      | null;
-    if (!mod) {
-      // eslint-disable-next-line no-console
-      console.warn('[obs] posthog-react-native not installed');
-      return;
-    }
-    client = new mod.PostHog(apiKey, {
-      host: process.env.EXPO_PUBLIC_POSTHOG_HOST ?? 'https://us.i.posthog.com',
-      enableSessionReplay: false,
-      captureAppLifecycleEvents: true,
-    });
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn('[obs] PostHog init failed', err);
-  }
+  // PostHog SDK is intentionally not bundled into the Expo Go build — Metro
+  // statically traces dynamic imports and pulls in @posthog/core which isn't
+  // part of this workspace install. Re-enable in a custom dev client.
+  void apiKey;
+  // eslint-disable-next-line no-console
+  console.log('[obs] PostHog disabled in this bundle');
 }
 
 export function track(event: string, properties?: Record<string, unknown>): void {

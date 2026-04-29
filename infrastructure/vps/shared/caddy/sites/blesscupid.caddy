@@ -1,0 +1,21 @@
+# BlessCupid API + admin panel
+# Place this file at /srv/_shared/caddy/sites/blesscupid.caddy on the VPS
+
+api.blesscupid.com {
+  reverse_proxy blesscupid-api:3000
+  encode gzip
+  header /* {
+    # CORS for mobile app + web admin
+    Access-Control-Allow-Origin "*"
+    Access-Control-Allow-Methods "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+    Access-Control-Allow-Headers "Authorization, Content-Type, X-Requested-With"
+  }
+}
+
+# Static uploads (KTP images, profile photos)
+# R2 is preferred; this is a fallback for local disk mode.
+# assets.blesscupid.com {
+#   root * /var/www/blesscupid/assets
+#   file_server
+#   encode gzip
+# }

@@ -45,12 +45,28 @@ interface GoogleHookResult {
 
 // Wraps expo-auth-session's Google provider hook. Resolves to an id_token.
 export function useGoogleSignIn(): GoogleHookResult {
+  // Placeholder client IDs let the hook initialize when OAuth env vars are
+  // unset (e.g. local Expo Go without secrets). promptAsync will reject with
+  // a clear error before any network call is made.
+  const PLACEHOLDER = 'placeholder.apps.googleusercontent.com';
+  const iosClientId =
+    process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ?? PLACEHOLDER;
+  const androidClientId =
+    process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ?? PLACEHOLDER;
+  const webClientId =
+    process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ??
+    process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID ??
+    PLACEHOLDER;
+  const googleConfigured =
+    !!process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID ||
+    !!process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID ||
+    !!process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ||
+    !!process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID;
+
   const [request, response, promptInternal] = Google.useIdTokenAuthRequest({
-    iosClientId: process.env.EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID,
-    androidClientId: process.env.EXPO_PUBLIC_GOOGLE_ANDROID_CLIENT_ID,
-    clientId:
-      process.env.EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID ??
-      process.env.EXPO_PUBLIC_GOOGLE_CLIENT_ID,
+    iosClientId,
+    androidClientId,
+    clientId: webClientId,
   });
 
   const [resolver, setResolver] = useState<{
@@ -78,9 +94,17 @@ export function useGoogleSignIn(): GoogleHookResult {
   }, [response, resolver]);
 
   return {
-    ready: !!request,
+    ready: !!request && googleConfigured,
     promptAsync: () =>
       new Promise<{ idToken: string }>((resolve, reject) => {
+        if (!googleConfigured) {
+          reject(
+            new Error(
+              'google_signin_not_configured: set EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID / ANDROID / WEB',
+            ),
+          );
+          return;
+        }
         setResolver({ resolve, reject });
         void promptInternal();
       }),

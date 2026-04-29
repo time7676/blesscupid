@@ -14,11 +14,80 @@ export class ApiError extends Error {
   }
 }
 
+// Dev-only mock dispatcher. When __DEV__ is true and there's no backend
+// running, every call returns a happy-path response keyed off the URL path.
+// Set EXPO_PUBLIC_DISABLE_API_MOCK=1 to bypass the mock and hit a real API.
+function devMockResponse(path: string, method: string): unknown {
+  if (path.startsWith('/auth/')) {
+    return {
+      userId: 'dev-test-user',
+      accessToken: 'dev-test-access-token',
+      refreshToken: 'dev-test-refresh-token',
+      expiresIn: 3600,
+    };
+  }
+  if (path === '/onboarding/state') {
+    return {
+      ageVerifiedAdult: true,
+      covenantSigned: false,
+      faithComplete: false,
+      profileComplete: false,
+      hasPhoto: false,
+      bioApproved: false,
+      onboardingStep: 'covenant',
+      nextStep: 'covenant',
+    };
+  }
+  if (path === '/onboarding/questionnaire') {
+    return { ok: true };
+  }
+  if (path === '/onboarding/q3-redirect') {
+    return { ok: true, intent: 'friendship' };
+  }
+  if (path === '/onboarding/welcomed-tags') {
+    return { ok: true, welcomedTags: [], welcomedTagVisibility: {} };
+  }
+  if (path === '/photos/upload-url') {
+    return {
+      photoId: 'dev-photo-id',
+      uploadUrl: 'https://dev.invalid/upload',
+      storageKey: 'dev/photo.jpg',
+      expiresIn: 600,
+      contentType: 'image/jpeg',
+    };
+  }
+  if (/^\/photos\/.*\/finalize$/.test(path)) {
+    return {
+      photoId: 'dev-photo-id',
+      status: 'approved',
+      face: {
+        faceCount: 1,
+        largestFaceAreaRatio: 0.4,
+        hasFace: true,
+        passes: true,
+        reasons: [],
+      },
+    };
+  }
+  // Default: ok response. Logging helps spot routes that need a richer mock.
+  // eslint-disable-next-line no-console
+  console.log(`[api-mock] ${method} ${path} -> { ok: true }`);
+  return { ok: true };
+}
+
 export async function apiFetch<T>(
   path: string,
   init: RequestInit & { token?: string } = {},
 ): Promise<T> {
   const { token, headers, ...rest } = init;
+  // Dev-only short-circuit. Lets the whole onboarding flow be walked end-to-end
+  // without a running NestJS API.
+  if (__DEV__ && process.env.EXPO_PUBLIC_DISABLE_API_MOCK !== '1') {
+    const method = (rest.method ?? 'GET').toUpperCase();
+    // eslint-disable-next-line no-console
+    console.log(`[api-mock] ${method} ${path}`);
+    return devMockResponse(path, method) as T;
+  }
   const res = await fetch(`${API_BASE_URL}${path}`, {
     ...rest,
     headers: {

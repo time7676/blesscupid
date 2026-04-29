@@ -1,0 +1,19 @@
+# XSERVER VPS — shared Caddy reverse proxy
+# Imports per-app site files from /etc/caddy/sites/*.caddy
+# Each tenant drops one file there; reload via:
+#   docker exec caddy caddy reload --config /etc/caddy/Caddyfile
+
+{
+  auto_https off
+  # When you're ready to enable real TLS with your domain, change to:
+  # auto_https on
+  # email your-email@blesscupid.com
+}
+
+# Default catch-all — returns 444 (close connection) so scrapers get nothing
+:80 {
+  respond 444
+}
+
+# Import all tenant site configs
+import sites/*.caddy

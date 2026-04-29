@@ -96,9 +96,13 @@ function OnboardingApp() {
 // Top-level `import` would always force Metro to resolve `@storybook/react-native`
 // even in production builds with the flag off.
 function loadStorybook(): React.ComponentType {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const mod = require('../../.storybook/index');
-  return (mod.default ?? mod) as React.ComponentType;
+  // Storybook is disabled in Expo Go bundles. To re-enable, install
+  // @storybook/react-native + on-device addons and restore the require
+  // below (Metro statically resolves all `require()` calls regardless of
+  // runtime gates, so the import has to live in a separate dev entry).
+  throw new Error(
+    'Storybook not available in this bundle. Run `pnpm storybook` for the design-system playground.',
+  );
 }
 
 export default function App() {

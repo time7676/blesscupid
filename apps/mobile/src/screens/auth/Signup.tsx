@@ -161,6 +161,32 @@ export function SignupScreen({ navigation }: Props) {
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.linkText}>Already have an account? Sign in</Text>
         </Pressable>
+
+        {__DEV__ && (
+          <Pressable
+            style={[styles.devSkipBtn, busy && styles.disabled]}
+            disabled={busy}
+            onPress={async () => {
+              setBusy(true);
+              try {
+                await setSession({
+                  userId: 'dev-test-user',
+                  accessToken: 'dev-test-access-token',
+                  refreshToken: 'dev-test-refresh-token',
+                  expiresIn: 3600,
+                } as Parameters<typeof setSession>[0]);
+                navigation.reset({
+                  index: 0,
+                  routes: [{ name: 'OnboardingCovenant' }],
+                });
+              } finally {
+                setBusy(false);
+              }
+            }}
+          >
+            <Text style={styles.devSkipText}>Dev: skip login</Text>
+          </Pressable>
+        )}
       </View>
     </KeyboardAvoidingView>
   );
@@ -204,4 +230,14 @@ const styles = StyleSheet.create({
   googleBtnText: { color: '#1f1f1f', fontWeight: '600', fontSize: 16 },
   linkRow: { padding: 16, alignItems: 'center' },
   linkText: { color: '#1a1a1a', fontWeight: '600' },
+  devSkipBtn: {
+    marginTop: 8,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: '#fef3c7',
+    borderWidth: 1,
+    borderColor: '#f59e0b',
+    alignItems: 'center',
+  },
+  devSkipText: { color: '#92400e', fontWeight: '600', fontSize: 14 },
 });

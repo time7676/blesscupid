@@ -47,6 +47,12 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
   }
 
   async function onAccept() {
+    // Dev bypass: skip the API call so the screen advances even without a
+    // real backend session. Re-enables the original guard in production.
+    if (__DEV__) {
+      navigation.navigate('OnboardingFaith');
+      return;
+    }
     if (!accessToken) {
       Alert.alert('Session expired', 'Please sign in again.');
       return;
@@ -66,7 +72,9 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
     }
   }
 
-  const acceptDisabled = !reachedBottom || busy;
+  // In __DEV__ skip the scroll-to-bottom gate so the Accept button is always
+  // tappable for screen-flow testing.
+  const acceptDisabled = (!__DEV__ && !reachedBottom) || busy;
 
   return (
     <View style={styles.container}>

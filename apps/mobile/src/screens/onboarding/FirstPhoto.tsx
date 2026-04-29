@@ -109,6 +109,15 @@ export function OnboardingFirstPhotoScreen({ navigation }: Props) {
         <Text style={{ color: '#b00020', marginBottom: 16 }}>{error}</Text>
       ) : null}
       <Button title="Choose photo" onPress={pickAndUpload} disabled={busy} />
+      {__DEV__ && (
+        <View style={{ marginTop: 12 }}>
+          <Button
+            title="Dev: skip photo"
+            color="#92400e"
+            onPress={() => navigation.navigate('OnboardingBio')}
+          />
+        </View>
+      )}
     </View>
   );
 }

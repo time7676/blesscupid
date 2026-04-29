@@ -130,6 +130,13 @@ enum OAuthProvider {
   google
 }
 
+enum KycStatus {
+  none
+  pending
+  approved
+  rejected
+}
+
 enum OnboardingStep {
   age_gate
   covenant
@@ -326,6 +333,9 @@ model User {
   dob              DateTime @db.Date
   ageVerifiedAdult Boolean  @default(false)
   emailVerified    Boolean  @default(false)
+  phoneNumber      String?  @unique
+  phoneVerifiedAt  DateTime?
+  kycStatus        KycStatus @default(none)
   isSuspended      Boolean  @default(false)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
@@ -360,6 +370,7 @@ model User {
 
   pastorRelationships  PastorRelationship[] @relation("RelationshipPastor")
   auditedRelationships PastorRelationship[] @relation("RelationshipAudited")
+  kycSubmissions       KycSubmission[]      @relation("UserKyc")
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -374,6 +385,7 @@ model User {
   quietHours Json?
 
   @@index([email])
+  @@index([phoneNumber])
   @@index([deletedAt])
 }
 
@@ -922,4 +934,28 @@ model PastorModeRelationship {
   @@index([auditedUserId, status])
   @@index([pastorUserId, status])
   @@index([status, endedAt])
+}
+
+// KYC submission — Indonesian KTP + selfie for identity verification.
+// Manual admin review with AWS Rekognition face-match as assist.
+model KycSubmission {
+  id               String    @id @default(uuid()) @db.Uuid
+  userId           String    @db.Uuid
+  user             User      @relation("UserKyc", fields: [userId], references: [id], onDelete: Cascade)
+  nik              String // 16-digit Indonesian NIK
+  fullName         String
+  dob              DateTime  @db.Date
+  ktpImageUrl      String
+  selfieImageUrl   String
+  status           KycStatus @default(pending)
+  faceMatchScore   Float?
+  reviewerId       String?   @db.Uuid
+  rejectionReason  String?
+  submittedAt      DateTime  @default(now())
+  reviewedAt       DateTime?
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([userId])
+  @@index([status, submittedAt])
+  @@index([nik])
 }

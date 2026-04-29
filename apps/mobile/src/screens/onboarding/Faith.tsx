@@ -118,6 +118,11 @@ export function OnboardingFaithScreen({ navigation }: Props) {
   }, [intent, tradition, traditionOther, isDating, seeking, marriageOpen]);
 
   async function onSubmit() {
+    // Dev bypass: skip API + validation so testing can advance freely.
+    if (__DEV__) {
+      navigation.navigate('OnboardingProfileBasics');
+      return;
+    }
     if (!accessToken) {
       Alert.alert('Session expired', 'Please sign in again.');
       return;
@@ -339,8 +344,8 @@ export function OnboardingFaithScreen({ navigation }: Props) {
       {error && <Text style={styles.error}>{error}</Text>}
 
       <Pressable
-        style={[styles.primary, (busy || !ready) && styles.disabled]}
-        disabled={busy || !ready}
+        style={[styles.primary, (busy || (!__DEV__ && !ready)) && styles.disabled]}
+        disabled={busy || (!__DEV__ && !ready)}
         onPress={onSubmit}
       >
         <Text style={styles.primaryText}>
