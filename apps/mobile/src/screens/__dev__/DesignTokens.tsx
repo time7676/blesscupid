@@ -4,10 +4,19 @@ import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
   BottomNav,
   Button,
+  Checkbox,
+  Dropdown,
   FormInput,
+  ModeCard,
+  OTPInput,
+  PhoneInput,
+  ProgressDots,
   RadioCard,
   Screen,
   StepRail,
+  TabToggle,
+  Toast,
+  VerseCard,
   color,
   fontFamily,
   fontSize,
@@ -71,10 +80,18 @@ const TYPE_SAMPLES: { role: keyof typeof typeTokens; label: string }[] = [
   { role: 'eyebrow', label: 'EYEBROW — section label' },
 ];
 
+type IntentKey = 'pacaran' | 'persahabatan' | 'komunitas';
+
 export function DevDesignTokensScreen({ navigation }: Props) {
   const [radio, setRadio] = useState<string | null>('option-b');
   const [text, setText] = useState('');
   const [activeTab, setActiveTab] = useState<NavTabKey>('today');
+  const [phone, setPhone] = useState('');
+  const [otp, setOtp] = useState('');
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('signup');
+  const [agreed, setAgreed] = useState(false);
+  const [tradition, setTradition] = useState<string | null>(null);
+  const [intent, setIntent] = useState<IntentKey>('pacaran');
 
   return (
     <Screen edges={['top', 'left', 'right']}>
@@ -124,6 +141,95 @@ export function DevDesignTokensScreen({ navigation }: Props) {
               selected={radio === 'option-c'}
               onPress={() => setRadio('option-c')}
             />
+          </View>
+        </Section>
+
+        <Section title="Tab toggle">
+          <TabToggle
+            options={[
+              { value: 'login', label: 'Masuk' },
+              { value: 'signup', label: 'Daftar' },
+            ]}
+            value={authMode}
+            onChange={setAuthMode}
+          />
+        </Section>
+
+        <Section title="Progress dots">
+          <ProgressDots current={2} total={4} />
+        </Section>
+
+        <Section title="Phone input">
+          <PhoneInput value={phone} onChange={setPhone} defaultCountry="ID" />
+        </Section>
+
+        <Section title="OTP input">
+          <OTPInput value={otp} onChange={setOtp} length={6} />
+        </Section>
+
+        <Section title="Mode card">
+          <View style={styles.stack}>
+            <ModeCard
+              mode="pacaran"
+              title="Pacaran"
+              description="Kamu sedang mencari relasi yang serius dan menuju pernikahan."
+              icon={<Text style={{ fontSize: 24 }}>♡</Text>}
+              selected={intent === 'pacaran'}
+              onToggle={() => setIntent('pacaran')}
+            />
+            <ModeCard
+              mode="persahabatan"
+              title="Persahabatan"
+              description="Kamu mau membangun lingkar pertemanan yang sehat dan seiman."
+              icon={<Text style={{ fontSize: 24 }}>☼</Text>}
+              selected={intent === 'persahabatan'}
+              onToggle={() => setIntent('persahabatan')}
+            />
+          </View>
+        </Section>
+
+        <Section title="Checkbox">
+          <Checkbox
+            checked={agreed}
+            onChange={setAgreed}
+            label="Saya membaca Holy Code dan setuju untuk menghormatinya."
+          />
+        </Section>
+
+        <Section title="Dropdown">
+          <Dropdown
+            value={tradition}
+            placeholder="Tradisi iman"
+            options={[
+              { value: 'catholic', label: 'Katolik' },
+              { value: 'protestant', label: 'Protestan' },
+              { value: 'orthodox', label: 'Ortodoks' },
+            ]}
+            onChange={setTradition}
+            searchable
+          />
+        </Section>
+
+        <Section title="Verse card">
+          <View style={styles.stack}>
+            <VerseCard
+              variant="hero"
+              text="Berikanlah kepada Tuhan kemuliaan nama-Nya, sembahlah Tuhan dengan berhiaskan kekudusan!"
+              reference="Mazmur 29:2"
+            />
+            <VerseCard
+              variant="compact"
+              text="Bergembiralah karena harapan, sabarlah dalam kesesakan, dan bertekunlah dalam doa."
+              reference="Roma 12:12"
+            />
+          </View>
+        </Section>
+
+        <Section title="Toast">
+          <View style={styles.stack}>
+            <Toast variant="success" message="Foto berhasil diunggah." />
+            <Toast variant="warning" message="Cek koneksi sebelum melanjutkan." />
+            <Toast variant="critical" message="Kode OTP tidak cocok. Coba lagi." />
           </View>
         </Section>
 
