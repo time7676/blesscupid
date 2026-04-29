@@ -12,6 +12,7 @@ import { BlocksModule } from './blocks/blocks.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { AccountModule } from './account/account.module.js';
 import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module.js';
+import { PastorModeRelationshipModule } from './pastor-mode-relationship/pastor-mode-relationship.module.js';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module
     AdminModule,
     AccountModule,
     PastorModeGateModule,
+    PastorModeRelationshipModule,
   ],
 })
 export class AppModule {}

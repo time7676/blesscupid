@@ -502,3 +502,54 @@ model AccountDeletionRequest {
 
   @@index([status, hardDeleteScheduledAt])
 }
+
+// BLE-131 — Pastor-mode relationship between an audited user and a pastor.
+// Lifecycle: pending → active → ended_*. See PastorModeRelationshipStatus.
+//
+// 1:1 audited-side rule:
+//   - At most one row per auditedUserId in status=`active` at a time.
+//   - Multiple `pending` rows allowed (audited can have several queued
+//     invites pre-accept) but only one accept may succeed; once active,
+//     subsequent accept attempts must error with `already_paired` and
+//     surface the gate copy on Surface 2.
+//   - Closed history (`ended_by_*`, `declined_by_audited`, `expired`) is
+//     unbounded — the audited user keeps a permanent read-only journal of
+//     past walks (per BLE-132 audited-mirror retention).
+//
+// 1:N pastor-side rule:
+//   - pastorUserId may have N concurrent active rows (one pastor can walk
+//     beside many disciples).
+//
+// Enforcement layers:
+//   1) Application: PastorModeRelationshipService.accept() runs in a
+//      Serializable transaction, reads the audited user's active row,
+//      and rejects with HTTP 409 + gate copy if one exists.
+//   2) Database: a partial unique index
+//      `pastor_mode_relationship_one_active_per_audited` on
+//      `(auditedUserId) WHERE status='active'` is added by
+//      `prisma db execute` against an idempotent SQL file
+//      (`apps/api/prisma/sql/0001_pastor_mode_relationship_partial_unique.sql`).
+//      Prisma's schema language does not yet support partial unique
+//      indexes, but `prisma db push` does NOT drop indexes that aren't in
+//      the schema, so the partial unique survives subsequent pushes.
+model PastorModeRelationship {
+  id              String                       @id @default(uuid()) @db.Uuid
+  auditedUserId   String                       @db.Uuid
+  audited         User                         @relation("PastorModeAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
+  pastorUserId    String                       @db.Uuid
+  pastor          User                         @relation("PastorModePastor", fields: [pastorUserId], references: [id], onDelete: Cascade)
+  status          PastorModeRelationshipStatus @default(pending)
+  invitedAt       DateTime                     @default(now())
+  acceptedAt      DateTime?
+  endedAt         DateTime?
+  inviteNote      String?
+  // BLE-132 hook: when status flips to ended_by_audited, this records the
+  // moment the pastor's transcript admin must seal by (ended + 24h).
+  pastorSealDueAt DateTime?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+
+  @@index([auditedUserId, status])
+  @@index([pastorUserId, status])
+  @@index([status, endedAt])
+}
