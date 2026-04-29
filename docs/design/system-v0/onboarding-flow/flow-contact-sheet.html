@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid v0 onboarding — flow contact sheet (BLE-155)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  body {
+    background: #2a2a30;
+    padding: var(--space-8);
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-7);
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+  .frame {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .frame-meta {
+    color: rgba(255,255,255,0.7);
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+  }
+  .device { box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+  .status-bar {
+    height: 47px;
+    padding: 14px var(--space-6) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: var(--weight-semibold);
+    color: var(--color-ink);
+  }
+  .status-right { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+  .step-rail-wrap { padding-top: var(--space-7); }
+  .step-rail {
+    height: var(--border-thick);
+    margin: 0 var(--space-6);
+    background: var(--color-hairline);
+    border-radius: 1px;
+  }
+  .step-rail-fill {
+    height: 100%;
+    background: var(--color-gold);
+    border-radius: 1px;
+  }
+  .step-meta {
+    padding: var(--space-7) var(--space-7) 0;
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+
+  /* — welcome — */
+  .welcome-body { padding: var(--space-8) var(--space-7) var(--space-6); flex: 1; }
+  .welcome-headline {
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-hero);
+    line-height: var(--lh-hero);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+    margin-top: var(--space-4);
+  }
+  .welcome-headline em {
+    font-style: italic;
+    font-weight: var(--weight-medium);
+    color: var(--color-indigo);
+  }
+  .lede {
+    font-family: var(--font-sans);
+    font-size: var(--size-body-lg);
+    line-height: var(--lh-body);
+    color: var(--color-ink-soft);
+    margin-top: var(--space-6);
+  }
+  .bullets { margin-top: var(--space-7); display: flex; flex-direction: column; gap: var(--space-3); }
+  .bullet { display: flex; gap: var(--space-3); align-items: flex-start; }
+  .bullet-pip { width: 6px; height: 6px; border-radius: 50%; background: var(--color-gold); margin-top: 9px; flex-shrink: 0; }
+  .bullet-text {
+    font-family: var(--font-sans);
+    font-size: var(--size-body);
+    line-height: var(--lh-body);
+    color: var(--color-ink);
+  }
+  .footer {
+    padding: var(--space-3) var(--space-6) var(--space-7);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+  .footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  /* — buttons — */
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-parchment);
+    border: none;
+    padding: 14px 28px;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-xs);
+  }
+  .btn-primary.full { width: 100%; }
+  .btn-primary.is-disabled { background: var(--color-hairline); color: var(--color-ink-soft); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-indigo);
+    border: none;
+    border-bottom: var(--border-thin) solid var(--color-hairline);
+    border-radius: 0;
+    padding: 12px 18px;
+    font-family: var(--font-sans);
+    font-size: var(--size-label);
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+  }
+
+  /* — radio cards — */
+  .question {
+    padding: var(--space-5) var(--space-7) 0;
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-hero);
+    line-height: var(--lh-hero);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+  }
+  .question em {
+    font-style: italic;
+    font-weight: var(--weight-medium);
+    color: var(--color-indigo);
+  }
+  .helper {
+    padding: var(--space-4) var(--space-7) 0;
+    font-family: var(--font-sans);
+    font-size: var(--size-body);
+    line-height: var(--lh-body);
+    color: var(--color-ink-soft);
+  }
+  .options {
+    padding: var(--space-7) var(--space-7) var(--space-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    flex: 1;
+  }
+  .option {
+    background: var(--color-sandstone);
+    border: var(--border-thin) solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 18px var(--space-5);
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .option.is-selected {
+    border-color: var(--color-gold);
+    background: var(--color-sandstone-warm);
+  }
+  .option .marker {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: var(--border-medium) solid var(--color-ink-soft);
+    margin-top: 2px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .option.is-selected .marker {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 4px var(--color-gold-halo);
+  }
+  .option.is-selected .marker::after {
+    content: '';
+    position: absolute;
+    inset: 3px;
+    background: var(--color-gold);
+    border-radius: 50%;
+  }
+  .option .body { flex: 1; }
+  .option .label {
+    font-family: var(--font-serif);
+    font-size: 19px;
+    font-weight: var(--weight-medium);
+    line-height: var(--lh-tight);
+    color: var(--color-ink);
+    margin-bottom: var(--space-1);
+  }
+  .option .sub {
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    line-height: var(--lh-body);
+    color: var(--color-ink-soft);
+  }
+
+  /* — form input — */
+  .field {
+    padding: var(--space-7) var(--space-7) 0;
+  }
+  .field-label {
+    font-family: var(--font-sans);
+    font-size: var(--size-label);
+    font-weight: var(--weight-medium);
+    color: var(--color-ink);
+    letter-spacing: var(--tracking-label);
+    margin-bottom: 6px;
+  }
+  .field-label .req { color: var(--color-gold); margin-left: 4px; }
+  .field-textarea {
+    width: 100%;
+    min-height: 120px;
+    padding: 14px var(--space-4);
+    font-family: var(--font-sans);
+    font-size: var(--size-body-lg);
+    line-height: var(--lh-body);
+    color: var(--color-ink);
+    background: var(--color-parchment);
+    border: var(--border-thin) solid var(--color-gold);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 0 0 4px var(--color-gold-halo);
+  }
+  .field-help {
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    color: var(--color-ink-soft);
+    margin-top: 6px;
+  }
+
+  /* — daily intention preview — */
+  .preview-eyebrow {
+    padding: var(--space-5) var(--space-7) 0;
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .preview-headline {
+    padding: var(--space-3) var(--space-7) 0;
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+  }
+  .preview-headline em {
+    font-style: italic;
+    font-weight: var(--weight-medium);
+    color: var(--color-indigo);
+  }
+  .intention-card {
+    margin: var(--space-7) var(--space-7) var(--space-5);
+    background: var(--color-parchment-raised);
+    border: var(--border-thin) solid var(--color-hairline-soft);
+    border-radius: var(--radius-md);
+    padding: var(--space-6) var(--space-5);
+  }
+  .badge-rail { display: flex; align-items: center; gap: var(--space-2); }
+  .pip { width: 6px; height: 6px; border-radius: 50%; background: var(--color-gold); }
+  .pip-label {
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+  }
+  .intention-headline {
+    margin-top: var(--space-4);
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-h3);
+    line-height: var(--lh-h3);
+    color: var(--color-ink);
+  }
+  .intention-body {
+    margin-top: var(--space-3);
+    font-family: var(--font-sans);
+    font-size: var(--size-body);
+    line-height: var(--lh-body);
+    color: var(--color-ink-soft);
+  }
+  .divider { height: 1px; background: var(--color-hairline-soft); margin: var(--space-5) 0; }
+  .verse {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.35;
+    color: var(--color-indigo);
+    margin-top: var(--space-2);
+  }
+  .verse-cite {
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    color: var(--color-ink-soft);
+    margin-top: var(--space-2);
+    letter-spacing: var(--tracking-label);
+  }
+  .preview-note {
+    padding: 0 var(--space-7);
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    color: var(--color-ink-soft);
+    line-height: var(--lh-body);
+  }
+
+  /* — bottom nav — */
+  .tabbar {
+    position: absolute;
+    left: 0; right: 0; bottom: 22px;
+    padding: 10px 14px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: var(--border-thin) solid var(--color-hairline);
+    background: var(--color-parchment);
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    padding: 6px var(--space-2);
+  }
+  .tab .glyph {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: var(--color-ink-soft);
+  }
+  .tab.is-active { color: var(--color-ink); }
+  .tab.is-active .glyph { color: var(--color-gold); }
+  .tab .badge { position: relative; }
+  .tab .badge::after {
+    content: '';
+    position: absolute;
+    top: -2px; right: -4px;
+    width: 6px; height: 6px;
+    background: var(--color-gold);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--color-parchment);
+  }
+
+  /* — done — */
+  .done-body { padding: var(--space-9) var(--space-7) 0; flex: 1; }
+</style>
+</head>
+<body>
+
+  <!-- 1. Welcome -->
+  <div class="frame">
+    <div class="frame-meta">1 · welcome</div>
+    <div class="device">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+      </div>
+      <div class="welcome-body">
+        <span class="eyebrow"><span class="ornament"></span>WELCOME</span>
+        <h1 class="welcome-headline">A different kind of<br/><em>dating.</em></h1>
+        <p class="lede">BlessCupid holds three profiles for you each day, chosen with care. There is no infinite scroll, no streaks, no urgency. Just the time to listen well.</p>
+        <div class="bullets">
+          <div class="bullet"><span class="bullet-pip"></span><span class="bullet-text">Faith-first matching, not selfie-first.</span></div>
+          <div class="bullet"><span class="bullet-pip"></span><span class="bullet-text">Every message is moderated before it lands.</span></div>
+          <div class="bullet"><span class="bullet-pip"></span><span class="bullet-text">Three profiles a day. The rest can wait.</span></div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn-primary full">Begin</button>
+        <small style="font-family:var(--font-sans);font-size:var(--size-caption);color:var(--color-ink-soft);line-height:var(--lh-body);">We use a few short questions to understand your rhythm of faith. Skip any that don't fit.</small>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 2. Faith tradition -->
+  <div class="frame">
+    <div class="frame-meta">2 · faith tradition (radio cards)</div>
+    <div class="device">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+      </div>
+      <div class="step-rail-wrap">
+        <div class="step-rail"><div class="step-rail-fill" style="width:25%;"></div></div>
+        <div class="step-meta">STEP 1 OF 4 — A LITTLE ABOUT YOUR FAITH</div>
+      </div>
+      <h1 class="question">Where does your<br/>faith <em>begin?</em></h1>
+      <p class="helper">No wrong answer. We use this to suggest people whose tradition feels close to yours.</p>
+      <div class="options">
+        <div class="option">
+          <span class="marker"></span>
+          <div class="body">
+            <div class="label">Catholic</div>
+            <div class="sub">Mass, sacraments, the church year carries the rhythm.</div>
+          </div>
+        </div>
+        <div class="option is-selected">
+          <span class="marker"></span>
+          <div class="body">
+            <div class="label">Protestant</div>
+            <div class="sub">Baptist, evangelical, Reformed, Pentecostal, non-denominational.</div>
+          </div>
+        </div>
+        <div class="option">
+          <span class="marker"></span>
+          <div class="body">
+            <div class="label">Orthodox</div>
+            <div class="sub">Eastern, Oriental, or another orthodox tradition.</div>
+          </div>
+        </div>
+        <div class="option">
+          <span class="marker"></span>
+          <div class="body">
+            <div class="label">I'm still finding my way</div>
+            <div class="sub">Faith matters, but the practice is a work in progress.</div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <div class="footer-row">
+          <button class="btn-ghost">Skip for now</button>
+          <button class="btn-primary">Continue</button>
+        </div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 3. Faith statement -->
+  <div class="frame">
+    <div class="frame-meta">3 · faith statement (form input)</div>
+    <div class="device">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+      </div>
+      <div class="step-rail-wrap">
+        <div class="step-rail"><div class="step-rail-fill" style="width:50%;"></div></div>
+        <div class="step-meta">STEP 2 OF 4 — A LITTLE ABOUT YOUR FAITH</div>
+      </div>
+      <h1 class="question">In your own words —<br/><em>what does faith feel like</em> on a Tuesday?</h1>
+      <p class="helper">Pastor copy lock arrives next; for v0 we use this placeholder to show the input primitive. Take your time.</p>
+      <div class="field">
+        <label class="field-label">Your faith, in your own words<span class="req">*</span></label>
+        <textarea class="field-textarea">Patience — that the slow seasons are still being tended.</textarea>
+        <span class="field-help">61/240</span>
+      </div>
+      <div style="flex:1"></div>
+      <div class="footer">
+        <div class="footer-row">
+          <button class="btn-ghost">Back</button>
+          <button class="btn-primary">Continue</button>
+        </div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 4. Daily intention preview -->
+  <div class="frame">
+    <div class="frame-meta">4 · daily intention preview</div>
+    <div class="device">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+      </div>
+      <div class="step-rail-wrap">
+        <div class="step-rail"><div class="step-rail-fill" style="width:75%;"></div></div>
+        <div class="step-meta">STEP 3 OF 4 — A TASTE OF THE DAILY RHYTHM</div>
+      </div>
+      <div class="preview-eyebrow"><span class="ornament"></span>HERE'S WHAT TODAY WILL LOOK LIKE</div>
+      <h2 class="preview-headline">Three profiles a day,<br/><em>chosen with care.</em></h2>
+      <div class="intention-card">
+        <div class="badge-rail"><div class="pip"></div><span class="pip-label">Daily intention</span></div>
+        <div class="intention-headline">We hold three profiles for you each morning. There is no rush.</div>
+        <div class="intention-body">Take a breath before you decide. The list does not refresh on swipe — only with tomorrow's parchment.</div>
+        <div class="divider"></div>
+        <span class="pip-label">Today's verse</span>
+        <div class="verse">"Be still, and know that I am God."</div>
+        <div class="verse-cite">Psalm 46:10 · NIV</div>
+      </div>
+      <p class="preview-note">The card you see at sign-in is rendered with the same tokens — gold pip, communion serif, parchment-raised surface. No streaks or counters anywhere.</p>
+      <div style="flex:1"></div>
+      <div class="footer" style="padding-bottom:90px;">
+        <div class="footer-row">
+          <button class="btn-ghost">Back</button>
+          <button class="btn-primary">Continue</button>
+        </div>
+      </div>
+      <div class="tabbar">
+        <div class="tab is-active"><span class="glyph">◐</span>Today</div>
+        <div class="tab"><span class="glyph"><span class="badge">◇</span></span>People</div>
+        <div class="tab"><span class="glyph">⌘</span>Threads</div>
+        <div class="tab"><span class="glyph">○</span>You</div>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+  <!-- 5. Done -->
+  <div class="frame">
+    <div class="frame-meta">5 · done</div>
+    <div class="device">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>􀙇</span><span>􀛨</span></div>
+      </div>
+      <div class="step-rail-wrap">
+        <div class="step-rail"><div class="step-rail-fill" style="width:100%;"></div></div>
+        <div class="step-meta">STEP 4 OF 4 — YOU'RE SET</div>
+      </div>
+      <div class="done-body">
+        <span class="eyebrow"><span class="ornament"></span>WELCOME IN</span>
+        <h1 class="welcome-headline">Take a breath.<br/><em>We're glad you're here.</em></h1>
+        <p class="lede">When you're ready, we'll set up your account. Faith details, a portrait, and your first three profiles arrive tomorrow morning.</p>
+      </div>
+      <div class="footer">
+        <button class="btn-primary full">Continue to sign up</button>
+      </div>
+      <div class="home-indicator"></div>
+    </div>
+  </div>
+
+</body>
+</html>
