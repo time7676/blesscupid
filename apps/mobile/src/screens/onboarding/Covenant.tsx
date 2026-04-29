@@ -85,7 +85,15 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
           maybeAutoUnlock();
         }}
       >
-        <Text style={styles.body}>{copy.covenant.body}</Text>
+        {/* BLE-124 — Pastor v1 covenant. Order: intro → seven clauses →
+            acknowledgment → same-sex redirect note. Verbatim from
+            /BLE/issues/BLE-41#document-user-covenant. */}
+        <Text style={styles.body}>{copy.covenant.intro}</Text>
+        <Text style={[styles.body, styles.spacer]}>{copy.covenant.body}</Text>
+        <Text style={[styles.acknowledgment, styles.spacer]}>
+          {copy.covenant.acknowledgment}
+        </Text>
+        <Text style={[styles.body, styles.spacer]}>{copy.covenant.sameSexNote}</Text>
       </ScrollView>
 
       {!reachedBottom && (
@@ -118,6 +126,8 @@ const styles = StyleSheet.create({
   scroll: { flex: 1, marginBottom: 12 },
   scrollContent: { paddingBottom: 16 },
   body: { fontSize: 16, lineHeight: 24, color: '#333' },
+  acknowledgment: { fontSize: 16, lineHeight: 24, color: '#1a1a1a', fontStyle: 'italic' },
+  spacer: { marginTop: 16 },
   hint: { color: '#888', marginBottom: 8 },
   primary: {
     backgroundColor: '#1a1a1a',

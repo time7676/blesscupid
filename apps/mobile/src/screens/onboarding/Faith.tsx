@@ -1,100 +1,195 @@
-import { useState } from 'react';
+// BLE-124 — onboarding questionnaire v1 (Q2-Q9) + Q3 same-sex redirect modal.
+// Pastor-signed copy in apps/mobile/src/i18n/en.json (loaded via `copy`).
+//
+// Privacy contract enforced by this screen:
+//   Q3 same-sex selection NEVER posts a same-sex match preference. The
+//   submit response sets `q3Redirect: true` and the modal is the only
+//   thing that writes account state (acceptQ3Redirect).
+//   Q7 welcomed-tag visibility defaults to false per tag and stays
+//   locally hidden until the user opts in from settings.
+//   Q9 bio seed is optional; on `block` we surface the soft-flag.
+import { useMemo, useState } from 'react';
 import {
   Alert,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import {
-  type ChurchAttendance,
-  type Denomination,
-  type MarriageIntent,
-  type SpiritualGift,
-  FaithQuestionnaireSchema,
+  type Intent,
+  type MarriageOpen,
+  type PracticeTag,
+  type Q3RedirectOutcome,
+  type QuestionnaireSubmitInput,
+  type Seeking,
+  type Tradition,
+  type WalkStage,
+  type WelcomedTag,
+  QUESTIONNAIRE_LIMITS,
+  QuestionnaireSubmitSchema,
 } from '@blesscupid/shared';
 import type { OnboardingStackParamList } from '../../navigation/types.js';
 import { copy } from '../../i18n/copy.js';
-import { ApiError, saveFaith } from '../../lib/api.js';
+import { ApiError, acceptQ3Redirect, saveQuestionnaire } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingFaith'>;
 
-const DENOMINATIONS: Denomination[] = ['catholic', 'protestant', 'orthodox', 'other'];
-const ATTENDANCES: ChurchAttendance[] = ['weekly', 'monthly', 'occasional', 'rarely'];
-const INTENTS: MarriageIntent[] = ['within_1y', 'within_2y', 'within_5y', 'open_timeline'];
-const GIFTS: SpiritualGift[] = [
-  'teaching',
-  'service',
-  'mercy',
-  'exhortation',
-  'giving',
-  'leadership',
-  'evangelism',
-  'hospitality',
+const INTENT_OPTIONS: Intent[] = ['dating', 'friendship', 'community', 'unspecified'];
+const SEEKING_OPTIONS: Seeking[] = ['woman', 'man', 'same_sex', 'unspecified'];
+const TRADITION_OPTIONS: Tradition[] = [
+  'catholic',
+  'protestant_evangelical',
+  'protestant_pentecostal',
+  'protestant_reformed',
+  'protestant_mainline',
+  'orthodox',
+  'other_christian',
+  'still_figuring',
 ];
-
-const MAX_GIFTS = 3;
+const WALK_STAGE_OPTIONS: WalkStage[] = [
+  'lifelong',
+  'came_later',
+  'recent_convert',
+  'returning',
+  'doubting_exploring',
+  'prefer_not_to_say',
+];
+const MARRIAGE_OPEN_OPTIONS: MarriageOpen[] = ['yes', 'maybe', 'no'];
+const WELCOMED_TAGS: WelcomedTag[] = [
+  'previously_married',
+  'single_parent',
+  'widowed',
+  'convert_from_non_christian',
+  'church_hurt',
+];
+const PRACTICE_TAGS: PracticeTag[] = [
+  'sunday_in_person',
+  'sunday_online',
+  'catholic_mass',
+  'daily_prayer',
+  'small_group',
+  'worship_at_home',
+  'still_finding_a_community',
+];
 
 export function OnboardingFaithScreen({ navigation }: Props) {
   const accessToken = useAuth((s) => s.accessToken);
-  const [denomination, setDenomination] = useState<Denomination | null>(null);
-  const [attendance, setAttendance] = useState<ChurchAttendance | null>(null);
-  const [baptized, setBaptized] = useState<boolean | null>(null);
-  const [intent, setIntent] = useState<MarriageIntent | null>(null);
-  const [gifts, setGifts] = useState<SpiritualGift[]>([]);
+
+  const [intent, setIntent] = useState<Intent | null>(null);
+  const [seeking, setSeeking] = useState<Seeking | null>(null);
+  const [tradition, setTradition] = useState<Tradition | null>(null);
+  const [traditionOther, setTraditionOther] = useState('');
+  const [walkStage, setWalkStage] = useState<WalkStage | null>(null);
+  const [marriageOpen, setMarriageOpen] = useState<MarriageOpen | null>(null);
+  const [welcomedTags, setWelcomedTags] = useState<WelcomedTag[]>([]);
+  const [practiceTags, setPracticeTags] = useState<PracticeTag[]>([]);
+  const [bioSeed, setBioSeed] = useState('');
+
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [bioSeedFlagged, setBioSeedFlagged] = useState(false);
+  const [q3ModalOpen, setQ3ModalOpen] = useState(false);
 
-  function toggleGift(g: SpiritualGift) {
-    setGifts((prev) => {
-      if (prev.includes(g)) return prev.filter((x) => x !== g);
-      if (prev.length >= MAX_GIFTS) {
-        setError(copy.faith.errors.tooManyGifts);
-        return prev;
-      }
-      setError(null);
-      return [...prev, g];
-    });
+  const isDating = intent === 'dating';
+
+  function toggleWelcomed(tag: WelcomedTag) {
+    setWelcomedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
   }
 
+  function togglePractice(tag: PracticeTag) {
+    setPracticeTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag],
+    );
+  }
+
+  const ready = useMemo(() => {
+    if (!intent || !tradition) return false;
+    if (tradition === 'other_christian' && !traditionOther.trim()) return false;
+    if (isDating && (!seeking || !marriageOpen)) return false;
+    return true;
+  }, [intent, tradition, traditionOther, isDating, seeking, marriageOpen]);
+
   async function onSubmit() {
-    if (
-      denomination === null ||
-      attendance === null ||
-      baptized === null ||
-      intent === null
-    ) {
-      setError(copy.faith.errors.incomplete);
-      return;
-    }
     if (!accessToken) {
       Alert.alert('Session expired', 'Please sign in again.');
       return;
     }
+    if (!ready) {
+      setError(copy.questionnaire.errors.incomplete);
+      return;
+    }
 
-    const parsed = FaithQuestionnaireSchema.safeParse({
-      denomination,
-      churchAttendance: attendance,
-      baptized,
-      marriageIntent: intent,
-      spiritualGifts: gifts,
-    });
+    const payload: QuestionnaireSubmitInput = {
+      intent: intent!,
+      seeking: isDating ? seeking ?? undefined : undefined,
+      tradition: tradition!,
+      traditionOther:
+        tradition === 'other_christian' ? traditionOther.trim() : undefined,
+      walkStage: walkStage ?? undefined,
+      marriageOpen: isDating ? marriageOpen ?? undefined : undefined,
+      welcomedTags,
+      // Privacy default: visibility map is empty on submit. Settings UI is
+      // the only place where a user can flip a tag visible.
+      welcomedTagVisibility: {},
+      practiceTags,
+      bioSeed: bioSeed.trim() ? bioSeed.trim() : undefined,
+    };
+
+    const parsed = QuestionnaireSubmitSchema.safeParse(payload);
     if (!parsed.success) {
-      setError(parsed.error.issues[0]?.message ?? copy.faith.errors.incomplete);
+      const code = parsed.error.issues[0]?.message ?? 'incomplete';
+      setError(
+        copy.questionnaire.errors[
+          code as keyof typeof copy.questionnaire.errors
+        ] ?? copy.questionnaire.errors.incomplete,
+      );
       return;
     }
 
     setBusy(true);
     setError(null);
     try {
-      await saveFaith(accessToken, parsed.data);
+      const result = await saveQuestionnaire(accessToken, parsed.data);
+      if (!result.ok && result.code === 'bio_seed_flagged') {
+        // Soft-suggest revision per Holy Code §5.1 — don't silently reject.
+        setBioSeedFlagged(true);
+        return;
+      }
+      if (result.q3Redirect) {
+        setQ3ModalOpen(true);
+        return;
+      }
       navigation.navigate('OnboardingProfileBasics');
     } catch (err) {
-      const code = err instanceof ApiError ? err.code : copy.faith.errors.saveFailed;
+      const code = err instanceof ApiError ? err.code : copy.questionnaire.errors.saveFailed;
       setError(code);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onQ3Outcome(outcome: Q3RedirectOutcome) {
+    if (!accessToken) return;
+    setBusy(true);
+    try {
+      await acceptQ3Redirect(accessToken, { outcome });
+      setQ3ModalOpen(false);
+      if (outcome === 'accept_reroute') {
+        navigation.navigate('OnboardingProfileBasics');
+      } else {
+        navigation.popToTop();
+      }
+    } catch (err) {
+      const code = err instanceof ApiError ? err.code : copy.questionnaire.errors.saveFailed;
+      Alert.alert(copy.questionnaire.errors.saveFailed, code);
     } finally {
       setBusy(false);
     }
@@ -106,81 +201,189 @@ export function OnboardingFaithScreen({ navigation }: Props) {
       contentContainerStyle={styles.content}
       keyboardShouldPersistTaps="handled"
     >
-      <Section title={copy.faith.denomination.title}>
-        {DENOMINATIONS.map((d) => (
+      <Section title={copy.questionnaire.q2.title}>
+        {INTENT_OPTIONS.map((opt) => (
           <RadioRow
-            key={d}
-            label={copy.faith.denomination.options[d]}
-            selected={denomination === d}
-            onPress={() => setDenomination(d)}
+            key={opt}
+            label={copy.questionnaire.q2.options[opt]}
+            selected={intent === opt}
+            onPress={() => setIntent(opt)}
           />
         ))}
       </Section>
 
-      <Section title={copy.faith.attendance.title}>
-        {ATTENDANCES.map((a) => (
+      {isDating && (
+        <Section title={copy.questionnaire.q3.title}>
+          {SEEKING_OPTIONS.map((opt) => (
+            <RadioRow
+              key={opt}
+              label={copy.questionnaire.q3.options[opt]}
+              selected={seeking === opt}
+              onPress={() => setSeeking(opt)}
+            />
+          ))}
+        </Section>
+      )}
+
+      <Section
+        title={copy.questionnaire.q4.title}
+        helper={copy.questionnaire.q4.helper}
+      >
+        {TRADITION_OPTIONS.map((opt) => (
           <RadioRow
-            key={a}
-            label={copy.faith.attendance.options[a]}
-            selected={attendance === a}
-            onPress={() => setAttendance(a)}
+            key={opt}
+            label={copy.questionnaire.q4.options[opt]}
+            selected={tradition === opt}
+            onPress={() => setTradition(opt)}
           />
         ))}
-      </Section>
-
-      <Section title={copy.faith.baptized.title}>
-        <View style={styles.row}>
-          <ToggleChip
-            label={copy.faith.baptized.yes}
-            selected={baptized === true}
-            onPress={() => setBaptized(true)}
+        {tradition === 'other_christian' && (
+          <TextInput
+            style={styles.input}
+            placeholder={copy.questionnaire.q4.otherPrompt}
+            value={traditionOther}
+            onChangeText={setTraditionOther}
+            maxLength={QUESTIONNAIRE_LIMITS.traditionOtherMax}
           />
-          <ToggleChip
-            label={copy.faith.baptized.no}
-            selected={baptized === false}
-            onPress={() => setBaptized(false)}
-          />
-        </View>
-      </Section>
-
-      <Section title={copy.faith.marriageIntent.title}>
-        {INTENTS.map((i) => (
-          <RadioRow
-            key={i}
-            label={copy.faith.marriageIntent.options[i]}
-            selected={intent === i}
-            onPress={() => setIntent(i)}
-          />
-        ))}
+        )}
       </Section>
 
       <Section
-        title={copy.faith.spiritualGifts.title}
-        helper={copy.faith.spiritualGifts.helper}
+        title={copy.questionnaire.q5.title}
+        helper={copy.questionnaire.q5.helper}
+      >
+        {WALK_STAGE_OPTIONS.map((opt) => (
+          <RadioRow
+            key={opt}
+            label={copy.questionnaire.q5.options[opt]}
+            selected={walkStage === opt}
+            onPress={() => setWalkStage(walkStage === opt ? null : opt)}
+          />
+        ))}
+      </Section>
+
+      {isDating && (
+        <Section title={copy.questionnaire.q6.title}>
+          {MARRIAGE_OPEN_OPTIONS.map((opt) => (
+            <RadioRow
+              key={opt}
+              label={copy.questionnaire.q6.options[opt]}
+              selected={marriageOpen === opt}
+              onPress={() => setMarriageOpen(opt)}
+            />
+          ))}
+          {marriageOpen === 'no' && (
+            <Text style={styles.helperInline}>
+              {copy.questionnaire.q6.rerouteOffer}
+            </Text>
+          )}
+        </Section>
+      )}
+
+      <Section
+        title={copy.questionnaire.q7.title}
+        helper={copy.questionnaire.q7.helper}
       >
         <View style={styles.chipsWrap}>
-          {GIFTS.map((g) => (
+          {WELCOMED_TAGS.map((tag) => (
             <ToggleChip
-              key={g}
-              label={copy.faith.spiritualGifts.options[g]}
-              selected={gifts.includes(g)}
-              onPress={() => toggleGift(g)}
+              key={tag}
+              label={copy.questionnaire.q7.options[tag]}
+              selected={welcomedTags.includes(tag)}
+              onPress={() => toggleWelcomed(tag)}
+            />
+          ))}
+        </View>
+        <Text style={styles.helperInline}>
+          {copy.questionnaire.q7.visibilityHelper}
+        </Text>
+      </Section>
+
+      <Section
+        title={copy.questionnaire.q8.title}
+        helper={copy.questionnaire.q8.helper}
+      >
+        <View style={styles.chipsWrap}>
+          {PRACTICE_TAGS.map((tag) => (
+            <ToggleChip
+              key={tag}
+              label={copy.questionnaire.q8.options[tag]}
+              selected={practiceTags.includes(tag)}
+              onPress={() => togglePractice(tag)}
             />
           ))}
         </View>
       </Section>
 
+      <Section
+        title={copy.questionnaire.q9.title}
+        helper={copy.questionnaire.q9.helper}
+      >
+        <TextInput
+          style={[styles.input, styles.textarea]}
+          placeholder={copy.questionnaire.q9.placeholder}
+          value={bioSeed}
+          onChangeText={(t) => {
+            setBioSeed(t);
+            if (bioSeedFlagged) setBioSeedFlagged(false);
+          }}
+          maxLength={QUESTIONNAIRE_LIMITS.bioSeedMax}
+          multiline
+          numberOfLines={3}
+        />
+        {bioSeedFlagged && (
+          <Text style={styles.softFlag}>{copy.questionnaire.q9.softFlag}</Text>
+        )}
+      </Section>
+
       {error && <Text style={styles.error}>{error}</Text>}
 
       <Pressable
-        style={[styles.primary, busy && styles.disabled]}
-        disabled={busy}
+        style={[styles.primary, (busy || !ready) && styles.disabled]}
+        disabled={busy || !ready}
         onPress={onSubmit}
       >
         <Text style={styles.primaryText}>
-          {busy ? 'Saving…' : copy.faith.submit}
+          {busy ? 'Saving…' : copy.questionnaire.submit}
         </Text>
       </Pressable>
+
+      {/* Q3 same-sex redirect modal — verbatim Pastor-frozen copy. */}
+      <Modal
+        visible={q3ModalOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setQ3ModalOpen(false)}
+      >
+        <View style={styles.modalBackdrop}>
+          <View style={styles.modalCard}>
+            <Text style={styles.modalTitle}>
+              {copy.questionnaire.q3.redirect.title}
+            </Text>
+            <Text style={styles.modalBody}>
+              {copy.questionnaire.q3.redirect.body}
+            </Text>
+            <Pressable
+              style={[styles.primary, busy && styles.disabled]}
+              disabled={busy}
+              onPress={() => onQ3Outcome('accept_reroute')}
+            >
+              <Text style={styles.primaryText}>
+                {copy.questionnaire.q3.redirect.acceptCta}
+              </Text>
+            </Pressable>
+            <Pressable
+              style={styles.secondary}
+              disabled={busy}
+              onPress={() => onQ3Outcome('closed_by_user')}
+            >
+              <Text style={styles.secondaryText}>
+                {copy.questionnaire.q3.redirect.closeCta}
+              </Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -236,7 +439,9 @@ function ToggleChip({
       style={[styles.chip, selected && styles.chipOn]}
       onPress={onPress}
     >
-      <Text style={[styles.chipText, selected && styles.chipTextOn]}>{label}</Text>
+      <Text style={[styles.chipText, selected && styles.chipTextOn]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -247,7 +452,7 @@ const styles = StyleSheet.create({
   section: { marginBottom: 28 },
   sectionTitle: { fontSize: 18, fontWeight: '600', color: '#1a1a1a', marginBottom: 6 },
   sectionHelper: { fontSize: 14, color: '#666', marginBottom: 10 },
-  row: { flexDirection: 'row', gap: 12 },
+  helperInline: { fontSize: 13, color: '#666', marginTop: 8 },
   chipsWrap: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   radioRow: {
     flexDirection: 'row',
@@ -266,7 +471,7 @@ const styles = StyleSheet.create({
   },
   radioOn: { borderColor: '#1a1a1a' },
   radioDot: { width: 10, height: 10, borderRadius: 5, backgroundColor: '#1a1a1a' },
-  radioLabel: { fontSize: 16, color: '#1a1a1a' },
+  radioLabel: { fontSize: 16, color: '#1a1a1a', flex: 1 },
   chip: {
     paddingHorizontal: 14,
     paddingVertical: 10,
@@ -278,13 +483,51 @@ const styles = StyleSheet.create({
   chipOn: { backgroundColor: '#1a1a1a', borderColor: '#1a1a1a' },
   chipText: { color: '#1a1a1a', fontSize: 14 },
   chipTextOn: { color: '#fff' },
+  input: {
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 15,
+    color: '#1a1a1a',
+    marginTop: 8,
+  },
+  textarea: { minHeight: 80, textAlignVertical: 'top' },
+  softFlag: { color: '#8a6d00', marginTop: 8, fontSize: 13 },
   error: { color: '#b00020', marginBottom: 12 },
   primary: {
     backgroundColor: '#1a1a1a',
     padding: 16,
     borderRadius: 12,
     alignItems: 'center',
+    marginBottom: 8,
   },
   primaryText: { color: '#fff', fontWeight: '600', fontSize: 16 },
   disabled: { opacity: 0.5 },
+  secondary: { padding: 14, alignItems: 'center' },
+  secondaryText: { color: '#1a1a1a', fontWeight: '500' },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  modalCard: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 24,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1a1a1a',
+    marginBottom: 12,
+  },
+  modalBody: {
+    fontSize: 15,
+    lineHeight: 22,
+    color: '#333',
+    marginBottom: 20,
+  },
 });
