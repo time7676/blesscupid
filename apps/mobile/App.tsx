@@ -1,3 +1,4 @@
+import * as React from 'react';
 import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -23,9 +24,18 @@ import { initObservability } from './src/lib/observability/index.js';
 import { color, useDesignSystemFonts } from './src/lib/design-system/index.js';
 import type { OnboardingStackParamList } from './src/navigation/types.js';
 
+// Storybook RN gate. EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED=1 swaps the app
+// shell for the on-device Storybook UI so designers/QA can flip through every
+// onboarding component variant without booting the full nav stack. The flag is
+// read at module-eval time on purpose — toggling it requires a Metro restart,
+// which keeps the production bundle free of Storybook even when minified.
+const STORYBOOK_ENABLED =
+  process.env.EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED === '1' ||
+  process.env.EXPO_PUBLIC_ONBOARDING_STORYBOOK_ENABLED === 'true';
+
 const Stack = createNativeStackNavigator<OnboardingStackParamList>();
 
-export default function App() {
+function OnboardingApp() {
   const { hydrated, userId, hydrate } = useAuth();
   const { status: fontStatus } = useDesignSystemFonts();
 
@@ -73,6 +83,23 @@ export default function App() {
       </NavigationContainer>
     </SafeAreaProvider>
   );
+}
+
+// Lazy-require Storybook so the bundler only pulls it when the gate flag is on.
+// Top-level `import` would always force Metro to resolve `@storybook/react-native`
+// even in production builds with the flag off.
+function loadStorybook(): React.ComponentType {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const mod = require('../../.storybook/index');
+  return (mod.default ?? mod) as React.ComponentType;
+}
+
+export default function App() {
+  if (STORYBOOK_ENABLED) {
+    const Storybook = loadStorybook();
+    return <Storybook />;
+  }
+  return <OnboardingApp />;
 }
 
 const splashStyles = StyleSheet.create({
