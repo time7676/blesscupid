@@ -16,6 +16,7 @@ Faith-aligned matching engine for BlessCupid. Rules-based v1 (BLE-8).
 - **Mutual interest gate**: chat is locked until both users have expressed interest. No super-likes, no monetized urgency, no hookup framing in code or copy.
 - **PII sanitizer** projects candidates to a public shape — strips email, phone, exact coordinates, score breakdown, and viewer-only state.
 - **Push notification interface** fires only when a NEW match is created (idempotent).
+- **Quiet-hours suppression (BLE-129)** — `NotificationDispatcher` accepts an optional `QuietHoursPredicate` from `@blesscupid/shared`. When set, new-match pushes are dropped silently for recipients currently in their quiet window (Holy Code §7.4 default = Sunday 09:00–11:30 local), and the suppression is recorded for analytics via `onSuppressed`.
 
 ## Layout
 

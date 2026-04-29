@@ -11,6 +11,7 @@ import { ReportsModule } from './reports/reports.module.js';
 import { BlocksModule } from './blocks/blocks.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { AccountModule } from './account/account.module.js';
+import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AccountModule } from './account/account.module.js';
     BlocksModule,
     AdminModule,
     AccountModule,
+    QuietHoursModule,
   ],
 })
 export class AppModule {}
