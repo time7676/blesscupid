@@ -13,8 +13,9 @@ Plan: `/Users/julian/.windsurf/plans/blesscupid-screen-overhaul-4b207e.md`
 | 2   | New primitives (Sheet, ScreenHeader, ListItem, Divider, EmptyState, ErrorState, LoadingState, OfflineBanner, ToastProvider) | **DONE** |
 | 3   | ~~Catechism remap~~ → Verse-of-Day card refresh + Reading Room deferred | scope reduced |
 | 4   | Onboarding upgrades (AgeGate, ProfileBasics, Faith Q1–Q9, FirstPhoto, DatingOutOfScope, Bio, Done) | not started |
-| 5   | Auth upgrades — **Welcome animated DONE**; Login, Signup, MagicLinkSent pending | partial |
-| 6   | Navigation reshape (RootStack/AuthStack/OnboardingStack/AppShell/SettingsStack) | not started |
+| 5   | Auth screen upgrades (Login, Signup, MagicLinkSent) | **DONE** — Login.tsx and Signup.tsx upgraded to v1.1 (ScreenHeader, FormInput, Button, inline errors) |
+| 6   | Navigation reshape (RootStack/AuthStack/OnboardingStack/AppShell/SettingsStack) | **DONE** — `types.ts` updated, `AppShell.tsx` created, `App.tsx` reshaped to Root→Auth|Onboarding|AppShell |
+| 6.1 | Navigation wiring — app shell screens reachable via BottomNav | **DONE** — Today/People/Threads/You wired through `onNavigate` prop |
 | 7   | App shell screens — **Today, You, People, Threads ALL DONE** (visual; backend wiring later) | **DONE (visual)** |
 | 8   | Modal system — Sheet primitive + GatedFeatureSheet + OneTimeOfferSheet | **PARTIAL** — toast/Q3 still TODO |
 | 9   | Empty/error/loading wiring — replace every Alert.alert + ActivityIndicator | not started |

@@ -4,13 +4,11 @@
  * Trigger: shown when the user's declared gender + interest combination
  * falls outside v1's man↔woman matching scope. Reached from the matching
  * preferences step; entry from anywhere else is a routing bug.
- *
- * Engineer owns layout. Pastor owns the body text in
- * `apps/mobile/src/copy/dating-out-of-scope.ts`.
  */
 
 import { StyleSheet, Text, View } from 'react-native';
 import { datingOutOfScope } from '../../copy/dating-out-of-scope.js';
+import { color, fontFamily, fontSize, space } from '../../lib/design-system/index.js';
 
 export function DatingOutOfScopeScreen() {
   return (
@@ -24,19 +22,20 @@ export function DatingOutOfScopeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 24,
+    paddingHorizontal: space.s6,
     paddingTop: 64,
-    backgroundColor: '#fff',
+    backgroundColor: color.parchment.default,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
-    marginBottom: 16,
-    color: '#1a1a1a',
+    fontFamily: fontFamily.serifMedium,
+    fontSize: fontSize.h2,
+    marginBottom: space.s4,
+    color: color.ink.default,
   },
   body: {
-    fontSize: 16,
-    lineHeight: 24,
-    color: '#333',
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.body,
+    lineHeight: Math.round(fontSize.body * 1.55),
+    color: color.ink.soft,
   },
 });

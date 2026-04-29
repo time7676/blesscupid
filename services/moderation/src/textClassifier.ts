@@ -1,11 +1,7 @@
 import type { Decision, HardCategory, ModerationResult, SoftFlag } from "./types.js";
 import { loadBannedPhrases, type BannedPhrase } from "./bannedPhrases.js";
 import { lettersOnly, normalizeForMatch } from "./textNormalize.js";
-import {
-  OpenAIModerationClient,
-  OpenAIModerationError,
-  type OpenAIModerationResultRaw,
-} from "./openaiModeration.js";
+import { scoreText } from "./ruleEngine.js";
 
 /**
  * Thresholds. Conservative defaults until Pastor signs off (PASTOR_COPY_REQUIRED).
@@ -16,67 +12,44 @@ import {
 export const DEFAULT_THRESHOLDS = {
   BLOCK: {
     sexual: 0.7,
-    "sexual/minors": 0.05, // near-zero tolerance.
-    harassment: 0.85,
-    "harassment/threatening": 0.5,
+    sexual_minors: 0.05,
+    harassment_severe: 0.5,
     hate: 0.7,
-    "hate/threatening": 0.4,
-    "self-harm": 0.6,
-    "self-harm/intent": 0.4,
-    "self-harm/instructions": 0.4,
-    violence: 0.85,
-    "violence/graphic": 0.7,
+    self_harm: 0.6,
+    violence_graphic: 0.7,
   } as Record<string, number>,
   QUEUE: {
     sexual: 0.4,
-    "sexual/minors": 0.01,
-    harassment: 0.6,
-    "harassment/threatening": 0.3,
+    sexual_minors: 0.01,
+    harassment_severe: 0.3,
     hate: 0.5,
-    "hate/threatening": 0.25,
-    "self-harm": 0.4,
-    "self-harm/intent": 0.25,
-    "self-harm/instructions": 0.25,
-    violence: 0.7,
-    "violence/graphic": 0.5,
+    self_harm: 0.4,
+    violence_graphic: 0.5,
   } as Record<string, number>,
 };
 
-/** Map OpenAI's category names → our HardCategory taxonomy. */
+/** Map rule engine category names → our HardCategory taxonomy. */
 const CATEGORY_MAP: Record<string, HardCategory> = {
   sexual: "sexual",
-  "sexual/minors": "sexual_minors",
-  "self-harm": "self_harm",
-  "self-harm/intent": "self_harm",
-  "self-harm/instructions": "self_harm",
+  sexual_minors: "sexual_minors",
+  self_harm: "self_harm",
   hate: "hate",
-  "hate/threatening": "hate",
-  harassment: "harassment_severe",
-  "harassment/threatening": "harassment_severe",
-  violence: "violence_graphic",
-  "violence/graphic": "violence_graphic",
+  harassment_severe: "harassment_severe",
+  violence_graphic: "violence_graphic",
 };
 
 export interface TextClassifierConfig {
-  openai: OpenAIModerationClient;
   bannedPhrases?: ReadonlyArray<BannedPhrase>;
   thresholds?: typeof DEFAULT_THRESHOLDS;
-  /**
-   * Behavior when OpenAI is unavailable. Default 'queue': fail-closed.
-   * Never default to 'allow' — that bypasses the holy guardrail.
-   */
-  onProviderError?: "queue" | "block";
 }
 
 export class TextClassifier {
   private readonly bannedPhrases: ReadonlyArray<BannedPhrase>;
   private readonly thresholds: typeof DEFAULT_THRESHOLDS;
-  private readonly onProviderError: "queue" | "block";
 
   constructor(private readonly cfg: TextClassifierConfig) {
     this.bannedPhrases = loadBannedPhrases(cfg.bannedPhrases);
     this.thresholds = cfg.thresholds ?? DEFAULT_THRESHOLDS;
-    this.onProviderError = cfg.onProviderError ?? "queue";
   }
 
   async classify(text: string): Promise<ModerationResult> {
@@ -96,30 +69,15 @@ export class TextClassifier {
       };
     }
 
-    // Pass 2: OpenAI moderation.
-    let providerResult: OpenAIModerationResultRaw;
-    try {
-      providerResult = await this.cfg.openai.moderate(text);
-    } catch (err) {
-      if (!(err instanceof OpenAIModerationError)) throw err;
-      // Fail closed.
-      const decision: Decision = this.onProviderError;
-      return {
-        decision,
-        reasons: [],
-        flags: this.collectSoftFlags(phraseHits),
-        rawScores: { provider_error: 1 },
-        reviewerNote: `provider error: ${err.message} (fail-closed → ${decision})`,
-      };
-    }
-
-    const { decision, reasons } = this.scoreToDecision(providerResult);
+    // Pass 2: rule-based scoring.
+    const scores = scoreText(text);
+    const { decision, reasons } = this.scoreToDecision(scores);
 
     return {
       decision,
       reasons,
       flags: this.collectSoftFlags(phraseHits),
-      rawScores: providerResult.category_scores as unknown as Record<string, number>,
+      rawScores: scores as Record<string, number>,
       reviewerNote: this.buildNote(decision, reasons, phraseHits),
     };
   }
@@ -143,11 +101,10 @@ export class TextClassifier {
     return [...flags];
   }
 
-  private scoreToDecision(raw: OpenAIModerationResultRaw): {
+  private scoreToDecision(scores: Record<string, number>): {
     decision: Decision;
     reasons: HardCategory[];
   } {
-    const scores = raw.category_scores as Record<string, number>;
     const reasons = new Set<HardCategory>();
     let decision: Decision = "allow";
 

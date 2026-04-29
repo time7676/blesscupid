@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import {
   ImageClassifier,
   ModerationPipeline,
-  OpenAIModerationClient,
   TextClassifier,
   type ImageClassifierProvider,
   type ProviderLabel,
@@ -13,9 +12,8 @@ import { PrismaModerationStore } from './prisma-moderation-store.js';
 /**
  * Wires the @blesscupid/moderation lib together with API-side providers.
  *
- * - Text: uses OpenAIModerationClient pointed at OPENAI_API_KEY, defaults to
- *   fail-closed (queue on provider error). Banned-phrase list is the lib
- *   default until the Pastor signs off (see BLE-9).
+ * - Text: uses rule-based TextClassifier (zero external calls).
+ *   Banned-phrase list is the lib default.
  * - Image: bridges the existing RekognitionPhotoModerator into the lib's
  *   ImageClassifierProvider interface so chat attachments share the same
  *   pipeline as profile photos.
@@ -25,11 +23,7 @@ import { PrismaModerationStore } from './prisma-moderation-store.js';
 @Injectable()
 export class ChatModerationPipeline extends ModerationPipeline {
   constructor(rekognition: RekognitionPhotoModerator, store: PrismaModerationStore) {
-    const openaiKey = process.env.OPENAI_API_KEY;
-    const text = new TextClassifier({
-      openai: new OpenAIModerationClient({ apiKey: openaiKey ?? 'missing' }),
-      onProviderError: 'queue',
-    });
+    const text = new TextClassifier({});
 
     const provider: ImageClassifierProvider = {
       detectModerationLabels: async (input) => {

@@ -1,6 +1,13 @@
 # BlessCupid Launch Checklist
 
-## 1. Domain + DNS (5 min)
+## Decisions applied 2026-04-29
+- Pastor copy approved by product owner. No further Pastor review needed.
+- OpenAI replaced with rule-based text moderation (see services/moderation/src/textClassifier.ts).
+- Apple/Google Developer accounts deferred to TestFlight stage.
+- Free tier only for all external services.
+- Verse-of-day auto-generated from JSON (daily cron, see services/verse-of-day/).
+
+## 1. Domain + DNS (5 min) ✅ DONE
 
 - [ ] Point `api.blesscupid.com` A-record to VPS IP: `162.43.39.237`
 - [ ] Optional: point `blesscupid.com` to landing page (Vercel/Netlify/Cloudflare Pages)
@@ -13,7 +20,7 @@ nginx -t && systemctl reload nginx
 certbot --nginx -d api.blesscupid.com
 ```
 
-## 2. Apple Developer Account ($99/yr) — Required for iOS + Sign in with Apple
+## 2. Apple Developer Account ($99/yr) — DEFERRED until TestFlight stage
 
 - [ ] Enroll at https://developer.apple.com/programs/enroll/
 - [ ] Create App ID: `com.blesscupid.app`
@@ -25,10 +32,13 @@ certbot --nginx -d api.blesscupid.com
   - Save to `apps/mobile/credentials/asc-api-key.p8`
   - Note: Key ID + Issuer ID for `eas.json`
 
-## 3. GitHub Repository (5 min)
+## 3. GitHub Repository ✅ DONE
 
-- [ ] Create repo: `https://github.com/<your-username>/blesscupid`
-- [ ] Add remote and push:
+Remote: `https://github.com/time7676/blesscupid.git`
+- [x] Repo exists
+- [x] Remote configured
+- [ ] Push current branch
+- [ ] Set Actions secrets (see §4)
 ```bash
 cd /path/to/ble-development
 git remote add origin https://github.com/<your-username>/blesscupid.git
@@ -45,19 +55,21 @@ In GitHub repo → Settings → Secrets and variables → Actions → New reposi
 | `VPS_USER` | `root` (or your SSH user) |
 | `VPS_SSH_KEY` | Your local SSH private key (`cat ~/.ssh/id_rsa` or the key for `xserver-vps`) |
 
-## 5. Firebase Project (Phone Auth — Free tier: 10k verifications/mo)
+## 5. Firebase Project (Phone Auth — Free tier: 10k verifications/mo) 🔄 IN PROGRESS
 
-- [ ] Create project at https://console.firebase.google.com/
+Account: `j_loh@cocon-inc.co.jp` via Google Auth
+- [ ] Run `firebase login` locally (user will authenticate in browser)
+- [ ] Create/select project in console: https://console.firebase.google.com/
 - [ ] Enable "Phone" authentication method
 - [ ] Download service account key:
   - Project settings → Service accounts → Generate new private key
-- [ ] Base64-encode the JSON (single line for `.env`):
+- [ ] Base64-encode the JSON:
 ```bash
-cat service-account.json | base64 -w 0
+cat service-account.json | base64
 ```
 - [ ] Paste into VPS: `/srv/blesscupid/.env` as `FIREBASE_ADMIN_CREDENTIALS_JSON`
 
-## 6. AWS Account (Rekognition — Free tier: 5k face comparisons/mo for 12mo)
+## 6. AWS Account (Rekognition — Free tier: 5k face comparisons/mo for 12mo) 🔄 IN PROGRESS
 
 - [ ] Create IAM user with policy:
   - `AmazonRekognitionFullAccess`
@@ -65,20 +77,21 @@ cat service-account.json | base64 -w 0
 - [ ] Get Access Key ID + Secret Access Key
 - [ ] Paste into `/srv/blesscupid/.env`
 
-## 7. Cloudflare R2 (Image storage — Free tier: 10GB + 1M ops/mo)
+## 7. Cloudflare R2 (Image storage — Free tier: 10GB + 1M ops/mo) 🔄 IN PROGRESS
 
-- [ ] Create bucket at https://dash.cloudflare.com/ → R2
-- [ ] Generate S3-compatible API token (read + write)
+- [ ] Install Wrangler CLI: `npm install -g wrangler`
+- [ ] Run `wrangler login`
+- [ ] Create bucket: `wrangler r2 bucket create blesscupid-photos-dev`
+- [ ] Generate S3-compatible API token at https://dash.cloudflare.com/ → R2 → Manage R2 API Tokens
 - [ ] Paste endpoint + keys into `/srv/blesscupid/.env`
 
 Alternative: use AWS S3 (same creds as Rekognition).
 
-## 8. OpenAI (Text moderation — Pay-as-you-go, ~$0.002/1K tokens)
+## 8. OpenAI (Text moderation) ❌ REMOVED
 
-- [ ] Create API key at https://platform.openai.com/api-keys
-- [ ] Paste into `/srv/blesscupid/.env`
+Replaced with rule-based engine in `services/moderation/src/textClassifier.ts`. Zero cost, deterministic, no API key.
 
-## 9. Sentry + PostHog (Error tracking + analytics — Both free tier)
+## 9. Sentry + PostHog (Error tracking + analytics — Both free tier) ⬜ TODO
 
 - [ ] Sentry: create project, copy DSN → `SENTRY_DSN`
 - [ ] PostHog: create project, copy API key → `POSTHOG_API_KEY` (mobile)

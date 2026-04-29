@@ -326,6 +326,57 @@ enum PastorEndReason {
   system
 }
 
+// ─── Monetization ─────────────────────────────────────────────────
+
+enum SubscriptionTier {
+  free
+  light
+  open
+  deep
+}
+
+enum BillingCycle {
+  weekly
+  monthly
+  quarterly
+  yearly
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  expired
+  grace_period
+  payment_failed
+}
+
+enum PaymentStatus {
+  pending
+  paid
+  failed
+  refunded
+  cancelled
+}
+
+enum PaymentMethod {
+  credit_card
+  ewallet_ovo
+  ewallet_dana
+  ewallet_linkaja
+  ewallet_gopay
+  ewallet_shopeepay
+  direct_debit
+  virtual_account
+}
+
+enum CoinTransactionType {
+  purchase
+  spend
+  refund
+  grant
+  subscription_bonus
+}
+
 model User {
   id               String   @id @default(uuid()) @db.Uuid
   email            String   @unique
@@ -371,6 +422,12 @@ model User {
   pastorRelationships  PastorRelationship[] @relation("RelationshipPastor")
   auditedRelationships PastorRelationship[] @relation("RelationshipAudited")
   kycSubmissions       KycSubmission[]      @relation("UserKyc")
+
+  // ─── Monetization ─────────────────────────────────────────────────
+  subscriptions        UserSubscription[]
+  coinBalance          UserCoinBalance?
+  coinTransactions     CoinTransaction[]
+  paymentTransactions  PaymentTransaction[]
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -958,4 +1015,105 @@ model KycSubmission {
   @@unique([userId])
   @@index([status, submittedAt])
   @@index([nik])
+}
+
+// ─── Monetization models ──────────────────────────────────────────
+
+model SubscriptionPlan {
+  id          String          @id @default(uuid()) @db.Uuid
+  tier        SubscriptionTier
+  cycle       BillingCycle
+  priceIdr    Int             // stored in smallest currency unit (rupiah)
+  xenditPlanId String?        // external reference if Xendit supports plan objects
+  features    Json            // manifest of included features for mobile rendering
+  coinBonus   Int             @default(0) // bonus coins granted on subscribe
+  isActive    Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  subscriptions UserSubscription[]
+
+  @@unique([tier, cycle])
+}
+
+model UserSubscription {
+  id                  String             @id @default(uuid()) @db.Uuid
+  userId              String             @db.Uuid
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  planId              String             @db.Uuid
+  plan                SubscriptionPlan   @relation(fields: [planId], references: [id])
+  tier                SubscriptionTier
+  status              SubscriptionStatus @default(active)
+  startedAt           DateTime           @default(now())
+  expiresAt           DateTime
+  autoRenew           Boolean            @default(true)
+  xenditRecurringId   String?            // Xendit recurring payment ID
+  xenditPaymentMethod String?            // tokenized payment method ID
+  cancelledAt         DateTime?
+  cancellationReason  String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([userId, status])
+  @@index([expiresAt, status])
+}
+
+model CoinPackage {
+  id            String   @id @default(uuid()) @db.Uuid
+  coinAmount    Int
+  bonusCoins    Int      @default(0)
+  priceIdr      Int
+  xenditProductId String?  // optional external SKU
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  transactions PaymentTransaction[]
+}
+
+model UserCoinBalance {
+  userId    String   @id @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  balance   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model CoinTransaction {
+  id          String              @id @default(uuid()) @db.Uuid
+  userId      String              @db.Uuid
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount      Int                 // positive = credit, negative = debit
+  type        CoinTransactionType
+  balanceAfter Int
+  metadata    Json?               // { feature: "beacon", durationMin: 30 }
+  createdAt   DateTime            @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model PaymentTransaction {
+  id                String        @id @default(uuid()) @db.Uuid
+  userId            String        @db.Uuid
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String        // "subscription" | "coin_package"
+  amountIdr         Int
+  currency          String        @default("IDR")
+  status            PaymentStatus @default(pending)
+  method            PaymentMethod?
+  xenditInvoiceId   String?
+  xenditChargeId    String?
+  xenditRecurringId String?
+  paidAt            DateTime?
+  failedAt          DateTime?
+  failureReason     String?
+  refundedAt        DateTime?
+  metadata          Json?         // { planId, coinPackageId, coinsGranted }
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  coinPackageId     String?       @db.Uuid
+  coinPackage       CoinPackage?    @relation(fields: [coinPackageId], references: [id])
+
+  @@index([userId, status, createdAt])
+  @@index([xenditInvoiceId])
+  @@index([xenditChargeId])
 }

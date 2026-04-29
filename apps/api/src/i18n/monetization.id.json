@@ -1,0 +1,94 @@
+{
+  "tiers": {
+    "free": {
+      "name": "Sahabat",
+      "subtitle": "Mulai perjalanan dengan penuh harap"
+    },
+    "light": {
+      "name": "Langkah Ringan",
+      "subtitle": "Buka ruang untuk berkenalan lebih luas"
+    },
+    "open": {
+      "name": "Hati Terbuka",
+      "subtitle": "Hadapi setiap pertemuan dengan kelapangan dada"
+    },
+    "deep": {
+      "name": "Renung Dalam",
+      "subtitle": "Berjalan dengan maksud dan ketenangan"
+    }
+  },
+  "features": {
+    "swipe": {
+      "label": "Kenali",
+      "description": "Lihat profil orang-orang yang mungkin sejalan"
+    },
+    "superLike": {
+      "label": "Sapa Hangat",
+      "description": "Tunjukkan ketertarikan dengan sungguh-sungguh"
+    },
+    "rewind": {
+      "label": "Renung Ulang",
+      "description": "Lihat kembali seseorang yang tadi lewat"
+    },
+    "boost": {
+      "label": "Berkabar",
+      "description": "Biarkan profilmu terlihat lebih sering hari ini"
+    },
+    "messageBeforeMatch": {
+      "label": "Sapa Lebih Awal",
+      "description": "Kirim salam sebelum saling suka"
+    },
+    "seeWhoLikedYou": {
+      "label": "Lihat yang Menyapa",
+      "description": "Ketahui siapa yang menunjukkan ketertarikan"
+    },
+    "advancedFilter": {
+      "label": "Cari Lebih Tepat",
+      "description": "Saring berdasarkan iman, visi, atau kebiasaan doa"
+    },
+    "incognito": {
+      "label": "Berjalan Diam",
+      "description": "Lihat tanpa terlihat, sampai saatnya tiba"
+    },
+    "readReceipt": {
+      "label": "Tahu Dibaca",
+      "description": "Lihat apakah pesanmu telah sampai"
+    }
+  },
+  "paywall": {
+    "title": "Pilih cara berjalanmu",
+    "subtitle": "Tiap langkah punya makna. Pilih yang sesuai hati saat ini.",
+    "cta_free": "Lanjut sebagai Sahabat",
+    "cta_subscribe": "Berjalan bersama {{tier}}",
+    "disclaimer": "Bisa berhenti kapan saja. Tidak ada paksaan."
+  },
+  "coinShop": {
+    "title": "Sejumlah Koin",
+    "subtitle": "Untuk sapa hangat atau berkabar, sesuai kebutuhan harimu.",
+    "balance": "Koin tersedia: {{count}}",
+    "cta_purchase": "Ambil {{amount}} Koin"
+  },
+  "upsell": {
+    "superLike_exhausted": "Sapa hangat hari ini sudah cukup. Besok bisa lagi.",
+    "swipe_limit": "Hari ini cukup mengenal. Istirahat, renung, besok lanjut.",
+    "boost_prompt": "Ingin berkabar hari ini?"
+  },
+  "settings": {
+    "manage": "Atur Langganan",
+    "cancel": "Istirahat dari Langganan",
+    "restore": "Pulihkan Pembelian"
+  },
+  "checkout": {
+    "title": "Ringkasan",
+    "total": "Total",
+    "method": "Metode pembayaran",
+    "pay": "Konfirmasi",
+    "secure": "Diproses aman oleh Xendit"
+  },
+  "notifications": {
+    "subscription_active": "Langkahmu bersama {{tier}} sudah dimulai.",
+    "subscription_expiring": "Langgananmu akan berakhir {{date}}. Kalau masih ingin berjalan, perpanjang dengan tenang.",
+    "coin_purchased": "{{amount}} koin sudah masuk dompetmu.",
+    "coin_spent": "{{amount}} koin digunakan untuk {{feature}}."
+  }
+}

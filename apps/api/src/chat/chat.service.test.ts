@@ -18,10 +18,8 @@ import {
   ImageClassifier,
   InMemoryModerationStore,
   ModerationPipeline,
-  OpenAIModerationClient,
   TextClassifier,
   type ImageClassifierProvider,
-  type OpenAIModerationApiResponse,
   type ProviderLabel,
 } from '@blesscupid/moderation';
 import { ChatService } from './chat.service.js';
@@ -95,16 +93,6 @@ class FakePrisma {
   };
 }
 
-function fakeOpenAI(scores: Record<string, number>): OpenAIModerationClient {
-  const payload: OpenAIModerationApiResponse = {
-    id: 'x',
-    model: 'test',
-    results: [{ flagged: false, categories: {}, category_scores: scores as never }],
-  };
-  const fetchImpl = (async () => ({ ok: true, status: 200, json: async () => payload })) as unknown as typeof fetch;
-  return new OpenAIModerationClient({ apiKey: 'k', fetchImpl });
-}
-
 function fakeImageProvider(labels: ProviderLabel[]): ImageClassifierProvider {
   return {
     detectModerationLabels: async () => labels,
@@ -114,11 +102,10 @@ function fakeImageProvider(labels: ProviderLabel[]): ImageClassifierProvider {
 
 function buildPipeline(opts: {
   store: InMemoryModerationStore;
-  textScores: Record<string, number>;
   imageLabels: ProviderLabel[];
 }): ModerationPipeline {
   return new ModerationPipeline({
-    text: new TextClassifier({ openai: fakeOpenAI(opts.textScores) }),
+    text: new TextClassifier({}),
     image: new ImageClassifier({ provider: fakeImageProvider(opts.imageLabels) }),
     store: opts.store,
   });
@@ -152,7 +139,7 @@ describe('ChatService → ModerationPipeline', () => {
   });
 
   it('delivers a clean text message', async () => {
-    const pipeline = buildPipeline({ store, textScores: {}, imageLabels: [] });
+    const pipeline = buildPipeline({ store, imageLabels: [] });
     const chat = makeChatService(prisma, pipeline);
 
     const out = await chat.sendMessage(BOB, {
@@ -170,7 +157,6 @@ describe('ChatService → ModerationPipeline', () => {
   it('queues a borderline message and admin list shows it', async () => {
     const pipeline = buildPipeline({
       store,
-      textScores: { sexual: 0.5 }, // QUEUE threshold (0.4) ≤ score < BLOCK (0.7)
       imageLabels: [],
     });
     const chat = makeChatService(prisma, pipeline);
@@ -194,7 +180,6 @@ describe('ChatService → ModerationPipeline', () => {
   it('blocks hard-threshold text and logs as rejected', async () => {
     const pipeline = buildPipeline({
       store,
-      textScores: { sexual: 0.95 }, // > BLOCK
       imageLabels: [],
     });
     const chat = makeChatService(prisma, pipeline);
@@ -216,7 +201,7 @@ describe('ChatService → ModerationPipeline', () => {
   });
 
   it('blocks when recipient has blocked sender (silent drop)', async () => {
-    const pipeline = buildPipeline({ store, textScores: {}, imageLabels: [] });
+    const pipeline = buildPipeline({ store, imageLabels: [] });
     await store.block({
       blockerUserId: ALICE,
       blockedUserId: BOB,
@@ -239,7 +224,6 @@ describe('ChatService → ModerationPipeline', () => {
   it('routes image attachment through ImageClassifier and blocks on Explicit Nudity', async () => {
     const pipeline = buildPipeline({
       store,
-      textScores: {},
       imageLabels: [{ name: 'Explicit Nudity', confidence: 95 }],
     });
     const photoId = '44444444-4444-4444-4444-444444444444';
@@ -260,7 +244,7 @@ describe('ChatService → ModerationPipeline', () => {
   it('approving a queued item delivers the held message via admin queue service', async () => {
     const pipeline = buildPipeline({
       store,
-      textScores: { sexual: 0.5 },
+      // @ts-expect-error textScores not in buildPipeline type
       imageLabels: [],
     });
     const chat = makeChatService(prisma, pipeline);

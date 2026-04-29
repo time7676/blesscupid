@@ -1,12 +1,11 @@
 import { useState } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -26,6 +25,15 @@ import {
   useGoogleSignIn,
 } from '../../lib/oauth.js';
 import { routeForNextStep } from '../../lib/onboarding-route.js';
+import {
+  Button,
+  FormInput,
+  ScreenHeader,
+  color,
+  fontFamily,
+  fontSize,
+  space,
+} from '../../lib/design-system/index.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Signup'>;
 
@@ -35,12 +43,13 @@ export function SignupScreen({ navigation }: Props) {
   const [password, setPassword] = useState('');
   const [dob, setDob] = useState('');
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const google = useGoogleSignIn();
 
   function precheck(): boolean {
     const gate = checkAgeGate(dob);
     if (!gate.ok) {
-      Alert.alert('Age check', `You must be at least ${MINIMUM_AGE} to sign up.`);
+      setError(`You must be at least ${MINIMUM_AGE} to sign up.`);
       return false;
     }
     return true;
@@ -52,12 +61,12 @@ export function SignupScreen({ navigation }: Props) {
       const target = routeForNextStep(state.nextStep);
       navigation.reset({ index: 0, routes: [{ name: target }] });
     } catch {
-      // Fall back to covenant — never drop a fresh user straight on Profile.
       navigation.reset({ index: 0, routes: [{ name: 'OnboardingCovenant' }] });
     }
   }
 
   async function onSubmit() {
+    setError(null);
     if (!precheck()) return;
     setBusy(true);
     try {
@@ -66,13 +75,14 @@ export function SignupScreen({ navigation }: Props) {
       await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'signup_failed';
-      Alert.alert('Signup failed', code);
+      setError(code);
     } finally {
       setBusy(false);
     }
   }
 
   async function onOAuth(provider: 'apple' | 'google') {
+    setError(null);
     if (!precheck()) return;
     setBusy(true);
     try {
@@ -84,7 +94,7 @@ export function SignupScreen({ navigation }: Props) {
     } catch (err) {
       if (err instanceof OAuthCancelledError) return;
       const code = err instanceof ApiError ? err.code : `${provider}_signin_failed`;
-      Alert.alert('Sign-in failed', code);
+      setError(code);
     } finally {
       setBusy(false);
     }
@@ -95,45 +105,50 @@ export function SignupScreen({ navigation }: Props) {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.fill}
     >
-      <View style={styles.container}>
-        <Text style={styles.brand}>BlessCupid</Text>
-        <Text style={styles.title}>Create your account</Text>
+      <ScreenHeader eyebrow="Authentication" title="Create your account" onBack={() => navigation.goBack()} />
+      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+        {error && (
+          <View style={styles.errorPill}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
 
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
+        <FormInput
+          label="Email"
+          placeholder="your@email.com"
           autoCapitalize="none"
           autoCorrect={false}
           keyboardType="email-address"
           value={email}
           onChangeText={setEmail}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Password (min 10 characters)"
+        <View style={styles.gap} />
+        <FormInput
+          label="Password"
+          placeholder="At least 10 characters"
           secureTextEntry
           value={password}
           onChangeText={setPassword}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Date of birth (YYYY-MM-DD)"
+        <View style={styles.gap} />
+        <FormInput
+          label="Date of birth"
+          placeholder="YYYY-MM-DD"
           autoCapitalize="none"
           value={dob}
           onChangeText={setDob}
         />
 
-        <Text style={styles.covenantHint}>
+        <Text style={styles.hint}>
           On the next screen you'll review and accept the BlessCupid Holy Code of Conduct.
         </Text>
 
-        <Pressable
-          style={[styles.primary, busy && styles.disabled]}
+        <Button
+          variant="primary"
+          label={busy ? 'Creating…' : 'Create account'}
           disabled={busy}
           onPress={onSubmit}
-        >
-          <Text style={styles.primaryText}>{busy ? 'Creating…' : 'Create account'}</Text>
-        </Pressable>
+        />
 
         <View style={styles.dividerRow}>
           <View style={styles.dividerLine} />
@@ -142,21 +157,20 @@ export function SignupScreen({ navigation }: Props) {
         </View>
 
         {APPLE_AVAILABLE && (
-          <Pressable
-            style={[styles.providerBtn, styles.appleBtn, busy && styles.disabled]}
+          <Button
+            variant="secondary"
+            label="Continue with Apple"
             disabled={busy}
             onPress={() => onOAuth('apple')}
-          >
-            <Text style={styles.appleBtnText}>Continue with Apple</Text>
-          </Pressable>
+          />
         )}
-        <Pressable
-          style={[styles.providerBtn, styles.googleBtn, (busy || !google.ready) && styles.disabled]}
+        <View style={styles.gap} />
+        <Button
+          variant="secondary"
+          label="Continue with Google"
           disabled={busy || !google.ready}
           onPress={() => onOAuth('google')}
-        >
-          <Text style={styles.googleBtnText}>Continue with Google</Text>
-        </Pressable>
+        />
 
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.linkText}>Already have an account? Sign in</Text>
@@ -164,7 +178,7 @@ export function SignupScreen({ navigation }: Props) {
 
         {__DEV__ && (
           <Pressable
-            style={[styles.devSkipBtn, busy && styles.disabled]}
+            style={styles.devSkipBtn}
             disabled={busy}
             onPress={async () => {
               setBusy(true);
@@ -187,57 +201,44 @@ export function SignupScreen({ navigation }: Props) {
             <Text style={styles.devSkipText}>Dev: skip login</Text>
           </Pressable>
         )}
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  fill: { flex: 1, backgroundColor: '#fff' },
-  container: { flex: 1, padding: 24, paddingTop: 80 },
-  brand: { fontSize: 28, fontWeight: '700', color: '#1a1a1a', marginBottom: 4 },
-  title: { fontSize: 18, color: '#555', marginBottom: 24 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 12,
-    fontSize: 16,
+  fill: { flex: 1, backgroundColor: color.parchment.default },
+  scroll: { padding: 24, paddingBottom: 48 },
+  gap: { height: space.s3 },
+  errorPill: {
+    backgroundColor: color.warning[100],
+    padding: space.s3,
+    borderRadius: 8,
+    marginBottom: space.s3,
   },
-  covenantHint: { color: '#555', marginVertical: 12, fontSize: 13, lineHeight: 18 },
-  primary: {
-    marginTop: 8,
-    backgroundColor: '#1a1a1a',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
+  errorText: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.caption,
+    color: color.warning[700],
   },
-  primaryText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  disabled: { opacity: 0.5 },
-  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: 16, gap: 8 },
-  dividerLine: { flex: 1, height: 1, backgroundColor: '#e0e0e0' },
-  dividerText: { color: '#888' },
-  providerBtn: {
-    padding: 14,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 10,
+  hint: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.label,
+    color: color.ink.soft,
+    marginVertical: space.s3,
+    lineHeight: 18,
   },
-  appleBtn: { backgroundColor: '#000' },
-  appleBtnText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  googleBtn: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#dadce0' },
-  googleBtnText: { color: '#1f1f1f', fontWeight: '600', fontSize: 16 },
-  linkRow: { padding: 16, alignItems: 'center' },
-  linkText: { color: '#1a1a1a', fontWeight: '600' },
+  dividerRow: { flexDirection: 'row', alignItems: 'center', marginVertical: space.s3, gap: 8 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: color.hairline.default },
+  dividerText: { fontFamily: fontFamily.sans, fontSize: fontSize.caption, color: color.ink.soft },
+  linkRow: { padding: space.s3, alignItems: 'center' },
+  linkText: { fontFamily: fontFamily.sansMedium, fontSize: fontSize.body, color: color.ink.default },
   devSkipBtn: {
-    marginTop: 8,
-    padding: 12,
+    marginTop: space.s3,
+    padding: space.s3,
     borderRadius: 10,
-    backgroundColor: '#fef3c7',
-    borderWidth: 1,
-    borderColor: '#f59e0b',
+    backgroundColor: color.gold.default,
     alignItems: 'center',
   },
-  devSkipText: { color: '#92400e', fontWeight: '600', fontSize: 14 },
+  devSkipText: { fontFamily: fontFamily.sansMedium, fontSize: fontSize.body, color: color.ink.default },
 });

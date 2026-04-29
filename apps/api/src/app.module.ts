@@ -20,6 +20,10 @@ import { ModerationActionsModule } from './moderation-actions/moderation-actions
 import { WalkingWithModule } from './walking-with/walking-with.module.js';
 import { PhoneAuthModule } from './phone-auth/phone-auth.module.js';
 import { KycModule } from './kyc/kyc.module.js';
+import { SubscriptionModule } from './subscription/subscription.module.js';
+import { PaymentModule } from './payment/payment.module.js';
+import { CoinModule } from './coin/coin.module.js';
+import { EntitlementModule } from './entitlement/entitlement.module.js';
 
 @Module({
   imports: [
@@ -44,6 +48,10 @@ import { KycModule } from './kyc/kyc.module.js';
     PastorModeRelationshipModule,
     ModerationActionsModule,
     WalkingWithModule,
+    SubscriptionModule,
+    PaymentModule,
+    CoinModule,
+    EntitlementModule,
   ],
 })
 export class AppModule {}

@@ -1,9 +1,7 @@
 import { useRef, useState } from 'react';
 import {
-  Alert,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,6 +13,14 @@ import type { OnboardingStackParamList } from '../../navigation/types.js';
 import { copy } from '../../i18n/copy.js';
 import { ApiError, acceptCovenant } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
+import {
+  Button,
+  ScreenHeader,
+  color,
+  fontFamily,
+  fontSize,
+  space,
+} from '../../lib/design-system/index.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingCovenant'>;
 
@@ -24,6 +30,7 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
   const accessToken = useAuth((s) => s.accessToken);
   const [reachedBottom, setReachedBottom] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const layoutHeightRef = useRef(0);
   const contentHeightRef = useRef(0);
 
@@ -47,14 +54,13 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
   }
 
   async function onAccept() {
-    // Dev bypass: skip the API call so the screen advances even without a
-    // real backend session. Re-enables the original guard in production.
+    setError(null);
     if (__DEV__) {
       navigation.navigate('OnboardingFaith');
       return;
     }
     if (!accessToken) {
-      Alert.alert('Session expired', 'Please sign in again.');
+      setError('Session expired. Please sign in again.');
       return;
     }
     setBusy(true);
@@ -66,19 +72,22 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
       navigation.navigate('OnboardingFaith');
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'covenant_failed';
-      Alert.alert('Could not save covenant', code);
+      setError(code);
     } finally {
       setBusy(false);
     }
   }
 
-  // In __DEV__ skip the scroll-to-bottom gate so the Accept button is always
-  // tappable for screen-flow testing.
   const acceptDisabled = (!__DEV__ && !reachedBottom) || busy;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{copy.covenant.title}</Text>
+      <ScreenHeader
+        eyebrow="Covenant"
+        title={copy.covenant.title}
+        onBack={() => navigation.goBack()}
+        variant="display"
+      />
       <ScrollView
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
@@ -93,9 +102,6 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
           maybeAutoUnlock();
         }}
       >
-        {/* BLE-124 — Pastor v1 covenant. Order: intro → seven clauses →
-            acknowledgment → same-sex redirect note. Verbatim from
-            /BLE/issues/BLE-41#document-user-covenant. */}
         <Text style={styles.body}>{copy.covenant.intro}</Text>
         <Text style={[styles.body, styles.spacer]}>{copy.covenant.body}</Text>
         <Text style={[styles.acknowledgment, styles.spacer]}>
@@ -104,48 +110,76 @@ export function OnboardingCovenantScreen({ navigation }: Props) {
         <Text style={[styles.body, styles.spacer]}>{copy.covenant.sameSexNote}</Text>
       </ScrollView>
 
+      {error && (
+        <View style={styles.errorPill}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
       {!reachedBottom && (
         <Text style={styles.hint}>Scroll to the end to continue.</Text>
       )}
 
-      <Pressable
-        style={[styles.primary, acceptDisabled && styles.disabled]}
-        disabled={acceptDisabled}
+      <Button
+        variant="primary"
+        full
         onPress={onAccept}
-      >
-        <Text style={styles.primaryText}>
-          {busy ? 'Saving…' : copy.covenant.acceptCta}
-        </Text>
-      </Pressable>
-      <Pressable
-        style={styles.secondary}
-        disabled={busy}
+        disabled={acceptDisabled}
+        label={busy ? 'Saving…' : copy.covenant.acceptCta}
+      />
+      <View style={styles.secondarySpacer} />
+      <Button
+        variant="secondary"
+        full
         onPress={() => navigation.goBack()}
-      >
-        <Text style={styles.secondaryText}>{copy.covenant.declineCta}</Text>
-      </Pressable>
+        disabled={busy}
+        label={copy.covenant.declineCta}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 24, paddingTop: 60, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: '600', marginBottom: 16, color: '#1a1a1a' },
-  scroll: { flex: 1, marginBottom: 12 },
-  scrollContent: { paddingBottom: 16 },
-  body: { fontSize: 16, lineHeight: 24, color: '#333' },
-  acknowledgment: { fontSize: 16, lineHeight: 24, color: '#1a1a1a', fontStyle: 'italic' },
-  spacer: { marginTop: 16 },
-  hint: { color: '#888', marginBottom: 8 },
-  primary: {
-    backgroundColor: '#1a1a1a',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 8,
+  container: {
+    flex: 1,
+    paddingHorizontal: space.s6,
+    paddingBottom: space.s6,
+    backgroundColor: color.parchment.default,
   },
-  primaryText: { color: '#fff', fontWeight: '600', fontSize: 16 },
-  disabled: { opacity: 0.4 },
-  secondary: { padding: 14, alignItems: 'center' },
-  secondaryText: { color: '#1a1a1a', fontWeight: '500' },
+  scroll: { flex: 1, marginTop: space.s4, marginBottom: space.s3 },
+  scrollContent: { paddingBottom: space.s4 },
+  body: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.body,
+    lineHeight: Math.round(fontSize.body * 1.55),
+    color: color.ink.soft,
+  },
+  acknowledgment: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: fontSize.body,
+    lineHeight: Math.round(fontSize.body * 1.55),
+    color: color.ink.default,
+    fontStyle: 'italic',
+  },
+  spacer: { marginTop: space.s4 },
+  hint: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.caption,
+    color: color.ink.soft,
+    marginBottom: space.s2,
+    textAlign: 'center',
+  },
+  errorPill: {
+    backgroundColor: color.warning[100],
+    borderRadius: 12,
+    paddingHorizontal: space.s4,
+    paddingVertical: space.s3,
+    marginBottom: space.s3,
+  },
+  errorText: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: fontSize.caption,
+    color: color.warning[700],
+  },
+  secondarySpacer: { height: space.s2 },
 });
