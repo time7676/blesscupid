@@ -1,73 +1,74 @@
 # Onboarding Copy — Pastor Contract
 
-All user-facing strings on the onboarding flow listed below MUST be authored or signed off
-by the Pastor before BLE-7 ships. The engineering team uses placeholder copy with the same
-key set so the layout, character budgets, and i18n string ids are stable.
+All user-facing strings on the onboarding flow listed below were authored or signed off
+by the Pastor (BLE-41) and wired into mobile + API in **BLE-124**. Engineering does
+not author this copy.
 
 **Hard rule (AGENTS.md):** UX copy that touches faith, relationships, or moderation must be
 reviewed by the Pastor before shipping. Engineering does not author this copy.
 
-## Contract
+## Source of truth
 
-For each key:
-- `id`: stable string id used in mobile app + i18n.
-- `purpose`: where it appears.
-- `budget`: max characters (mobile-friendly).
-- `tone`: required tone signal.
-- `placeholder`: current value (engineering stub — must be replaced).
+- [User Covenant v1](/BLE/issues/BLE-41#document-user-covenant) — verbatim seven-clause covenant body, decline note, same-sex redirect note.
+- [Onboarding Questionnaire v1](/BLE/issues/BLE-41#document-onboarding-questionnaire) — Q1–Q9 prompts, options, redirect copy, soft-intro for Q7.
+- [Holy Code of Conduct v1](/BLE/issues/BLE-4#document-holy-code-of-conduct) — predicate references for every gate the questionnaire enforces.
 
-| id | purpose | budget | tone | placeholder |
-|---|---|---|---|---|
-| `covenant.title` | Covenant screen header | 60 | Reverent, warm | "Our Holy Code of Conduct" |
-| `covenant.body` | Covenant body, scrollable | 1500 | Pastoral, scriptural | "[PASTOR_COPY_REQUIRED] Body of the Holy Code of Conduct: marriage-minded intent, no sexual content, no harassment, mutual respect." |
-| `covenant.acceptCta` | Accept button | 30 | Resolute | "I covenant before God" |
-| `covenant.declineCta` | Back/leave | 24 | Gracious | "Not ready yet" |
-| `ageGate.title` | DOB screen header | 50 | Plain | "When were you born?" |
-| `ageGate.body` | Subtext explaining 18+ | 200 | Plain, non-condescending | "BlessCupid is for adults seeking marriage. We require you to be 18+." |
-| `ageGate.errorUnderage` | Underage rejection | 200 | Gracious | "BlessCupid is for those 18 and older. We're glad you came — please return when you can." |
-| `faith.denomination.title` | Question header | 60 | Plain | "Which tradition do you belong to?" |
-| `faith.denomination.options.catholic` | Option label | 30 | Plain | "Catholic" |
-| `faith.denomination.options.protestant` | Option label | 30 | Plain | "Protestant" |
-| `faith.denomination.options.orthodox` | Option label | 30 | Plain | "Orthodox" |
-| `faith.denomination.options.other` | Option label | 30 | Plain | "Other Christian" |
-| `faith.attendance.title` | Question header | 60 | Plain | "How often do you attend church?" |
-| `faith.attendance.options.weekly` | Option | 30 | Plain | "Weekly" |
-| `faith.attendance.options.monthly` | Option | 30 | Plain | "Monthly" |
-| `faith.attendance.options.occasional` | Option | 30 | Plain | "Occasionally" |
-| `faith.attendance.options.rarely` | Option | 30 | Plain | "Rarely" |
-| `faith.baptized.title` | Y/N question | 60 | Plain | "Have you been baptized?" |
-| `faith.marriageIntent.title` | Question header | 80 | Plain | "What's your timeline for marriage?" |
-| `faith.marriageIntent.options.within_1y` | Option | 40 | Plain | "Within a year" |
-| `faith.marriageIntent.options.within_2y` | Option | 40 | Plain | "Within two years" |
-| `faith.marriageIntent.options.within_5y` | Option | 40 | Plain | "Within five years" |
-| `faith.marriageIntent.options.open_timeline` | Option | 40 | Plain | "Open timeline" |
-| `faith.spiritualGifts.title` | Optional question | 80 | Encouraging | "What spiritual gifts do you sense in your life?" |
-| `faith.spiritualGifts.helper` | Subtext | 120 | Pastoral | "Optional. Pick up to three." |
-| `profile.basics.title` | Profile basics screen header | 60 | Plain | "Tell us about yourself" |
-| `profile.bio.title` | Bio screen header | 60 | Plain | "Share a few words about you" |
-| `profile.bio.helper` | Bio guidance | 200 | Pastoral, anti-suggestive | "What do you love about your faith? What are you praying for?" |
-| `photo.requirements.title` | Photo upload screen header | 60 | Plain | "Add a clear face photo" |
-| `photo.requirements.body` | Body explaining the rule | 240 | Gracious | "We require a clear photo of your face so others can connect with the real you. Please avoid body-only photos." |
-| `photo.rejection.no_face_detected` | Error | 200 | Gracious | "We couldn't see a face in your photo. Please try a photo where your face is clearly visible." |
-| `photo.rejection.face_too_small` | Error | 200 | Gracious | "Your face appears small in this photo. Please try a closer photo where your face is clearly visible." |
-| `photo.rejection.multiple_faces` | Error | 200 | Gracious | "We saw more than one person. Please upload a photo of just you." |
-| `photo.rejection.low_confidence` | Error | 200 | Gracious | "We couldn't get a clear read on the photo. Please try another." |
-| `photo.rejection.unsafe` | Error (block) | 200 | Firm but gracious | "This photo doesn't meet our community standards. Please review the Holy Code of Conduct and try another." |
-| `bio.rejection.block` | Bio blocked | 200 | Firm but gracious | "This bio doesn't meet our community standards. Please review the Holy Code of Conduct and try again." |
-| `bio.rejection.review` | Bio held for review | 200 | Patient | "Thank you. Our team is reviewing your bio. You'll be notified shortly." |
+The mobile app loads strings from `apps/mobile/src/i18n/en.json` via `apps/mobile/src/i18n/copy.ts`.
+`COVENANT_VERSION` is bumped to `v1` in `packages/shared/src/onboarding.ts`. Existing
+users with the prior `v0-placeholder` signature must re-accept the covenant before
+re-entering surfaces that require it.
 
-## Engineering checklist for the Pastor handoff
+## Status
 
-- [ ] Pastor reviews each key, edits or replaces placeholder text.
-- [ ] Engineering loads final copy into `apps/mobile/src/i18n/en.json` (or equivalent).
-- [ ] Bio/photo rejection error keys remain stable so the API can return reason codes and
-      the mobile client picks copy.
-- [ ] Final covenant version string updated in `packages/shared/src/onboarding.ts`
-      (`COVENANT_VERSION`) when Pastor signs the canonical covenant text. Each version
-      change requires re-acceptance from existing users.
-- [ ] No copy that frames the product as "hookup", "casual", or romantic-secular ships.
+| Area | Source | i18n key root | Pastor-signed |
+|---|---|---|---|
+| User Covenant body (clauses 1–7) | BLE-41 user-covenant doc | `covenant.body` | yes (v1) |
+| Covenant intro paragraph | BLE-41 user-covenant doc | `covenant.intro` | yes (v1) |
+| Covenant acknowledgment paragraph | BLE-41 user-covenant doc | `covenant.acknowledgment` | yes (v1) |
+| Covenant CTAs ("I agree" / "This isn't for me") | BLE-41 user-covenant doc | `covenant.acceptCta` / `covenant.declineCta` | yes (v1) |
+| "If you tap This isn't for me" copy | BLE-41 user-covenant doc | `covenant.declineNote` | yes (v1) |
+| Same-sex redirect note (covenant page) | BLE-41 user-covenant doc | `covenant.sameSexNote` | yes (v1) |
+| Q1 age gate hard-reject message | BLE-41 questionnaire doc | `ageGate.errorUnderage` | yes (v1) |
+| Q2 surface-routing prompt + 4 options | BLE-41 questionnaire doc | `questionnaire.q2.*` | yes (v1) |
+| Q3 dating-side seeking prompt + 4 options | BLE-41 questionnaire doc | `questionnaire.q3.*` | yes (v1) |
+| Q3 same-sex redirect modal copy (verbatim, frozen) | BLE-41 questionnaire doc | `questionnaire.q3.redirect.*` | yes (v1, frozen) |
+| Q4 tradition prompt + 8 options | BLE-41 questionnaire doc | `questionnaire.q4.*` | yes (v1) |
+| Q5 walk stage prompt + 6 options | BLE-41 questionnaire doc | `questionnaire.q5.*` | yes (v1) |
+| Q6 marriage-open prompt + 3 options | BLE-41 questionnaire doc | `questionnaire.q6.*` | yes (v1) |
+| Q7 welcomed-tags soft intro + 5 options | BLE-41 questionnaire doc | `questionnaire.q7.*` | yes (v1) |
+| Q7 visibility helper line | BLE-41 questionnaire doc | `questionnaire.q7.visibilityHelper` | yes (v1) |
+| Q8 practice-rhythm prompt + 7 options | BLE-41 questionnaire doc | `questionnaire.q8.*` | yes (v1) |
+| Q9 bio-seed prompt + soft-flag copy | BLE-41 questionnaire doc | `questionnaire.q9.*` | yes (v1) |
+| Photo rejection messages | BLE-53 (existing) | `photo.rejection.*` | yes |
+| Bio rejection messages | BLE-53 (existing) | `bio.rejection.*` | yes |
+| Moderation message-level copy | BLE-53 (existing) | `moderation.*` | yes |
+| Reviewer queue copy | BLE-53 (existing) | `reviewer.*` | yes |
 
-## Out-of-scope
+## Frozen strings
 
-Localization beyond English is **not** in BLE-7. Add `en` strings only; ICU/i18n
-pipeline is a separate ticket.
+The Q3 same-sex redirect copy (`questionnaire.q3.redirect.body`) is **frozen** per
+[Holy Code §4.2](/BLE/issues/BLE-4#document-holy-code-of-conduct). Tone changes require Pastor sign-off
+*and* CEO awareness, per the user-covenant doc's versioning note.
+
+## Engineering checklist (closed for BLE-124)
+
+- [x] Pastor signs the canonical covenant text + questionnaire copy.
+- [x] Engineering loads final copy into `apps/mobile/src/i18n/en.json` (verbatim).
+- [x] Bio/photo rejection error keys preserved so the API can return reason codes.
+- [x] `COVENANT_VERSION` bumped to `v1` in `packages/shared/src/onboarding.ts`.
+- [x] No "hookup", "casual", or romantic-secular framing ships in onboarding strings.
+
+## Translation slots
+
+- **English (`en.json`)** — authoritative source, shipped in v1.
+- **Bahasa Indonesia (`id.json`)** — Pastor-reviewed pass before launch (out of scope for
+  BLE-124; tracked separately).
+- **Mandarin Chindo** — reserved for v1.1.
+
+Free-text fields (Q4 "Other", Q9 bio seed) accept any UTF-8 unchanged.
+
+## v1 → v2 review trigger
+
+Re-evaluate **90 days post-launch** or after the **first 1,000 completions**, whichever
+comes first. See [BLE-41 questionnaire v1 → v2 trigger](/BLE/issues/BLE-41#document-onboarding-questionnaire).
+The seven covenant clauses, Q1 age gate, and Q3 v1 dating scope are stable across v2.

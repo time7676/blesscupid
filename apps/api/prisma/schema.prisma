@@ -47,6 +47,84 @@ enum SpiritualGift {
   hospitality
 }
 
+// BLE-124 — Q2 surface-routing intent.
+enum Intent {
+  dating
+  friendship
+  community
+  unspecified
+}
+
+// BLE-124 — Q3 dating-side scope. `same_sex` is recorded only as a redirect
+// outcome trigger; matching engine MUST NOT use it as a preference row
+// (see Holy Code §4.2 / BLE-41 onboarding doc).
+enum Seeking {
+  woman
+  man
+  same_sex
+  unspecified
+}
+
+// BLE-124 — Q4 expanded tradition self-ID. Stored alongside legacy
+// `Denomination` for back-compat with FaithProfile.
+enum Tradition {
+  catholic
+  protestant_evangelical
+  protestant_pentecostal
+  protestant_reformed
+  protestant_mainline
+  orthodox
+  other_christian
+  still_figuring
+}
+
+// BLE-124 — Q5 walk stage. Optional, never returned by public profile API.
+enum WalkStage {
+  lifelong
+  came_later
+  recent_convert
+  returning
+  doubting_exploring
+  prefer_not_to_say
+}
+
+// BLE-124 — Q6 marriage open. `no` triggers friendship re-route flow.
+enum MarriageOpen {
+  yes
+  maybe
+  no
+}
+
+// BLE-124 — Q7 welcomed-group self-ID tags. Stored set; visibility is held
+// in the per-tag map on `Profile.welcomedTagVisibility`.
+enum WelcomedTag {
+  previously_married
+  single_parent
+  widowed
+  convert_from_non_christian
+  church_hurt
+}
+
+// BLE-124 — Q8 faith practice rhythm. Match relevance only — explicit
+// lint rule in services/matching forbids deprioritization based on these.
+enum PracticeTag {
+  sunday_in_person
+  sunday_online
+  catholic_mass
+  daily_prayer
+  small_group
+  worship_at_home
+  still_finding_a_community
+}
+
+// BLE-124 — Q3 redirect audit. Captures whether the user accepted the
+// friendship re-route or chose to close the account. No tag stored on the
+// user identity — Holy Code §4.2: scope, not identity.
+enum Q3RedirectOutcome {
+  accept_reroute
+  closed_by_user
+}
+
 enum OAuthProvider {
   apple
   google
@@ -243,10 +321,49 @@ model Profile {
   bio            String?
   bioApproved    Boolean        @default(false)
   onboardingStep OnboardingStep @default(age_gate)
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+
+  // BLE-124 — onboarding questionnaire v1 fields. All optional from the
+  // schema's POV so legacy rows survive; the API enforces required-when-
+  // dating gates (Q3 seeking, Q6 marriageOpen).
+  intent                Intent?
+  seeking               Seeking?
+  tradition             Tradition?
+  traditionOther        String?
+  walkStage             WalkStage?
+  marriageOpen          MarriageOpen?
+  welcomedTags          WelcomedTag[] @default([])
+  // Per-tag opt-in. Privacy-by-default: any tag absent from the JSON is
+  // treated as `false`. Migration test asserts default `{}` (no public
+  // surfacing) — see services/matching + apps/api privacy lints.
+  welcomedTagVisibility Json          @default("{}")
+  practiceTags          PracticeTag[] @default([])
+  // Q9 bio seed. Stored separately from `bio` so the moderation history is
+  // distinct, and so a flagged seed never silently becomes a published bio.
+  bioSeed               String?
+  bioSeedApproved       Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  q3RedirectEvents Q3RedirectEvent[]
 
   @@index([countryCode, city])
+  @@index([intent])
+}
+
+// BLE-124 — Q3 same-sex redirect audit row. Created when a dating-intent
+// user picks the same-sex option. The user's `Profile.seeking` is set to
+// `same_sex` only as a transient flag; the redirect outcome (`accept_reroute`
+// → `intent=friendship`, `closed_by_user` → soft-delete request) drives all
+// downstream behavior. No same-sex match-preference row is ever written.
+model Q3RedirectEvent {
+  id        String            @id @default(uuid()) @db.Uuid
+  userId    String            @db.Uuid
+  profile   Profile           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  outcome   Q3RedirectOutcome
+  createdAt DateTime          @default(now())
+
+  @@index([userId, createdAt])
 }
 
 model Photo {

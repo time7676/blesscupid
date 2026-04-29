@@ -1,15 +1,123 @@
 {
-  "_pastor_status": "Pastor-approved (BLE-53). Canonical source: docs/copy/moderation-pastor.md.",
+  "_pastor_status": "Pastor-approved v1 (BLE-41 docs: user-covenant + onboarding-questionnaire). Wired in BLE-124. Source of truth: /BLE/issues/BLE-41#document-user-covenant + /BLE/issues/BLE-41#document-onboarding-questionnaire.",
   "covenant": {
-    "title": "Our Holy Code of Conduct",
-    "body": "Welcome. Before you join, we ask you to covenant to a few things.\n\nMarriage-minded. You're here because you want a spouse, not a hookup, not a pen-pal, not validation. This community is for people walking toward the altar.\n\nFaith-rooted. You name Jesus as Lord. We're not in the business of testing anyone's theology, but the front door of this room is the Christian faith.\n\nClothes-on. No nudes, no body-shots, no sexual chat. Your photos and messages will be moderated. We will hold back what crosses the line, and we will tell you why.\n\nHonourable. You will not pressure another member for photos, off-platform contact, or a meeting before they're ready. You will not lie about your age, your status, or your intentions.\n\nHonest. If you mess up — and we all will — confession and repair beat hiding.\n\nBy tapping \"I covenant before God\", you agree to these together with our Terms and Privacy Policy. We will keep faith with you in return: we will protect your dignity, we will moderate visibly, and we will not sell you to anyone.",
-    "acceptCta": "I covenant before God",
-    "declineCta": "Not ready yet"
+    "version": "v1",
+    "title": "BlessCupid User Covenant",
+    "intro": "BlessCupid is a place for Christians — Catholic, Protestant, Pentecostal, Orthodox, mainline — to meet someone with marriage in mind, or to find Christian friends and community. Our v1 dating surface matches men with women only. If that isn't what you're looking for, we're not the right product for you on the dating side. The friendship and community sides are open to everyone over 18 who wants to meet other Christians without a romantic frame.",
+    "body": "1. I'm here with intent. I'm open to marriage, or I'm here for Christian friendship, or I'm here for community. Not for hookups.\n\n2. I'll be myself. My name, my photos, and my faith are real. I won't pretend to be in a tradition I'm not in to date someone.\n\n3. I'll treat the people I meet here as image-bearers of God. No sexual messages or photos before marriage. No demeaning anyone's body, mind, family, or background.\n\n4. I won't use faith as pressure. I won't say \"God told me you're my spouse\" to push someone. I won't ask for money, meetings, or private photos with a spiritual reason attached.\n\n5. I'll disagree gently across traditions. Catholic and Protestant, charismatic and Reformed — same household, different rooms. I can hold my own conviction without calling another tradition fake.\n\n6. I'll welcome the people I'd want to be welcomed back. Divorced, single parents, widowed, recently converted, doubting, hurt by a church before — they belong here.\n\n7. I'll take correction without shame, and offer it the same way. If I cross a line, I'll listen. If I report someone, I'll expect us to be treated like people, not cases.",
+    "acknowledgment": "I've read this and I agree. I understand BlessCupid is for Christian users 18 and up, that the v1 dating surface is man–woman only, and that I'll be held to these seven points the same way I hope to hold others.",
+    "acceptCta": "I agree",
+    "declineCta": "This isn't for me",
+    "declineNote": "That's okay. We'd rather you walk away today than feel pressured into a community you don't want. You can come back anytime.",
+    "sameSexNote": "We saw you, and we're not condemning you. BlessCupid v1 is a man–woman dating product. That's our scope. We don't offer same-sex matching here, and we'd rather be upfront with you than waste your time. The friendship and community surfaces are open to you if you want to use them; the dating side is not the right fit."
   },
   "ageGate": {
     "title": "When were you born?",
-    "body": "BlessCupid is for adults seeking marriage. We require you to be 18+.",
-    "errorUnderage": "BlessCupid is for those 18 and older. We're glad you came — please return when you can."
+    "body": "BlessCupid is for adults 18 and up.",
+    "errorUnderage": "BlessCupid is for adults 18 and up. We can't sign you up here."
+  },
+  "questionnaire": {
+    "submit": "Continue",
+    "skip": "Skip",
+    "errors": {
+      "incomplete": "Please answer this question to continue.",
+      "tooManyTags": "You can pick a few — you don't have to pick them all.",
+      "saveFailed": "We couldn't save your answers. Please try again.",
+      "tradition_other_required": "Please tell us a little about your tradition.",
+      "seeking_required_for_dating": "Please pick one of these options.",
+      "marriage_open_required_for_dating": "Please pick one of these options."
+    },
+    "q2": {
+      "title": "What brings you to BlessCupid?",
+      "options": {
+        "dating": "I'm open to dating with marriage in mind.",
+        "friendship": "I want Christian friends.",
+        "community": "I want to be part of a Christian community.",
+        "unspecified": "I'm not sure yet — show me everything."
+      }
+    },
+    "q3": {
+      "title": "On the dating side, are you looking to meet a woman or a man?",
+      "options": {
+        "woman": "A woman.",
+        "man": "A man.",
+        "same_sex": "I'm looking for someone of the same sex as me.",
+        "unspecified": "I'd rather not say right now."
+      },
+      "redirect": {
+        "title": "We're sorry we can't offer it.",
+        "body": "Thanks for being upfront with us. BlessCupid v1 is a man–woman dating product — that's our current scope. We don't offer same-sex matching here, and we'd rather be upfront with you than waste your time. The friendship and community surfaces are open to you if you'd like to use those; the dating side isn't the right fit for what you're looking for. We're sorry we can't offer it.",
+        "acceptCta": "Use friendship + community instead",
+        "closeCta": "This isn't for me — close my account"
+      }
+    },
+    "q4": {
+      "title": "Which tradition do you call home?",
+      "helper": "You can change this later. It won't be used to filter anyone out — it just helps your matches and feed.",
+      "options": {
+        "catholic": "Catholic",
+        "protestant_evangelical": "Protestant — Evangelical",
+        "protestant_pentecostal": "Protestant — Pentecostal / Charismatic",
+        "protestant_reformed": "Protestant — Reformed / Presbyterian",
+        "protestant_mainline": "Protestant — Mainline (Anglican / Methodist / Lutheran)",
+        "orthodox": "Orthodox",
+        "other_christian": "Other Christian tradition",
+        "still_figuring": "Still figuring it out."
+      },
+      "otherPrompt": "Please share — what tradition do you call home?"
+    },
+    "q5": {
+      "title": "If you'd like to share — where are you in your walk right now?",
+      "helper": "Optional. Skip if you'd rather not say.",
+      "options": {
+        "lifelong": "Lifelong faith.",
+        "came_later": "Came to faith later in life.",
+        "recent_convert": "Recently converted.",
+        "returning": "Returning after a season away.",
+        "doubting_exploring": "Doubting and exploring.",
+        "prefer_not_to_say": "Prefer not to say."
+      }
+    },
+    "q6": {
+      "title": "On dating: are you open to marriage with someone you meet here?",
+      "options": {
+        "yes": "Yes — that's why I'm here.",
+        "maybe": "Maybe — I'd want to take it slow.",
+        "no": "Not right now — I'd rather just meet people."
+      },
+      "rerouteOffer": "We'll move you to friendship + community. You can switch back from settings anytime."
+    },
+    "q7": {
+      "title": "A few of these don't apply to most people, and that's fine — skip any of them.",
+      "helper": "We ask because divorced, widowed, single-parent, and church-hurt users sometimes feel like dating apps weren't built for them. They were built for you here.",
+      "options": {
+        "previously_married": "Previously married (divorced, annulled, or separated long enough that you've moved on).",
+        "single_parent": "Single parent.",
+        "widowed": "Widowed.",
+        "convert_from_non_christian": "Came to faith from a non-Christian family.",
+        "church_hurt": "Returning after a hurt from a previous church."
+      },
+      "visibilityHelper": "These stay private by default. You can choose to show any of them on your profile from settings."
+    },
+    "q8": {
+      "title": "What does your week of faith usually look like?",
+      "helper": "Optional. There's no right answer.",
+      "options": {
+        "sunday_in_person": "Sunday service in person.",
+        "sunday_online": "Sunday service online.",
+        "catholic_mass": "Catholic Mass (weekly or more often).",
+        "daily_prayer": "Daily prayer or quiet time.",
+        "small_group": "Small group / Bible study.",
+        "worship_at_home": "Worship at home.",
+        "still_finding_a_community": "Still finding a community."
+      }
+    },
+    "q9": {
+      "title": "In one or two lines — what does your faith mean to you right now?",
+      "helper": "Optional. You can skip this and write your bio later.",
+      "placeholder": "Optional. Up to 280 characters.",
+      "softFlag": "We held this aside for a quick read. Want to revise it, or send as-is?"
+    }
   },
   "faith": {
     "denomination": {
