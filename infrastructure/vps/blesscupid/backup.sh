@@ -27,8 +27,12 @@ SIZE=$(du -h "${DUMP_FILE}" | cut -f1)
 echo "[backup] ${DUMP_FILE} ${SIZE}"
 
 # 2. Upload to R2 via aws-cli pointed at S3-compat endpoint.
+# AWS_REQUEST_/RESPONSE_CHECKSUM_* avoids aws-cli v2's default CRC32 signing
+# which R2 rejects with SignatureDoesNotMatch.
 AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}" \
 AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}" \
+AWS_REQUEST_CHECKSUM_CALCULATION=when_required \
+AWS_RESPONSE_CHECKSUM_VALIDATION=when_required \
 aws s3 cp "${DUMP_FILE}" "s3://${BACKUP_BUCKET}/${KEY}" \
   --endpoint-url "${S3_ENDPOINT}" \
   --region auto
@@ -40,6 +44,8 @@ echo "[backup] uploaded s3://${BACKUP_BUCKET}/${KEY}"
 # 4. Sanity: warn if backup bucket grows past 8GB (10GB R2 free-tier ceiling).
 USAGE_BYTES=$(AWS_ACCESS_KEY_ID="${S3_ACCESS_KEY_ID}" \
   AWS_SECRET_ACCESS_KEY="${S3_SECRET_ACCESS_KEY}" \
+  AWS_REQUEST_CHECKSUM_CALCULATION=when_required \
+  AWS_RESPONSE_CHECKSUM_VALIDATION=when_required \
   aws s3 ls "s3://${BACKUP_BUCKET}" --recursive --endpoint-url "${S3_ENDPOINT}" --region auto \
   | awk '{ s += $3 } END { print s }')
 USAGE_GB=$(awk -v b="${USAGE_BYTES:-0}" 'BEGIN { printf "%.2f", b / 1024 / 1024 / 1024 }')
