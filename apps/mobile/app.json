@@ -36,7 +36,10 @@
         {
           "photosPermission": "BlessCupid mengakses album foto agar Anda dapat memilih foto profil. Setiap foto ditinjau moderator sebelum tampil, untuk menjaga ruang yang hormat."
         }
-      ]
+      ],
+      "@sentry/react-native",
+      "expo-font",
+      "expo-secure-store"
     ]
   }
 }
