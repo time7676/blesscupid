@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid system v0 — Button</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  .device {
+    padding: var(--space-7) var(--space-6);
+    overflow-y: auto;
+  }
+  .doc-eyebrow {
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-2);
+  }
+  .doc-title {
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+    margin-bottom: var(--space-6);
+  }
+  .doc-section {
+    margin-bottom: var(--space-7);
+  }
+  .doc-section h2 {
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    font-weight: var(--weight-semibold);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-3);
+  }
+  .doc-section .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+  .doc-section .label {
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-1);
+  }
+
+  /* — primary CTA — */
+  .btn-primary {
+    background: var(--color-ink);
+    color: var(--color-parchment);
+    border: none;
+    padding: 14px 28px;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--motion-gentle);
+    transition-property: background-color, transform, opacity;
+  }
+  .btn-primary:hover { background: #2a2a36; }
+  .btn-primary.is-pressed { background: #0f0f15; transform: translateY(1px); }
+  .btn-primary.is-disabled {
+    background: var(--color-hairline);
+    color: var(--color-ink-soft);
+    cursor: not-allowed;
+  }
+
+  /* — secondary — */
+  .btn-secondary {
+    background: var(--color-parchment-raised);
+    color: var(--color-ink);
+    border: var(--border-thin) solid var(--color-hairline);
+    padding: 13px 26px;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--motion-gentle);
+  }
+  .btn-secondary:hover { border-color: var(--color-ink-soft); }
+  .btn-secondary.is-pressed { background: var(--color-sandstone); border-color: var(--color-ink); }
+  .btn-secondary.is-disabled {
+    background: var(--color-parchment-raised);
+    color: var(--color-ink-soft);
+    border-color: var(--color-hairline-soft);
+    cursor: not-allowed;
+  }
+
+  /* — ghost — */
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-ink);
+    border: none;
+    padding: 12px 18px;
+    font-family: var(--font-sans);
+    font-size: var(--size-label);
+    font-weight: var(--weight-medium);
+    border-bottom: var(--border-thin) solid var(--color-hairline);
+    border-radius: 0;
+    cursor: pointer;
+    transition: var(--motion-gentle);
+  }
+  .btn-ghost:hover { color: var(--color-indigo); border-bottom-color: var(--color-indigo); }
+  .btn-ghost.is-pressed { color: var(--color-ink); border-bottom-color: var(--color-ink); }
+  .btn-ghost.is-disabled { color: var(--color-ink-soft); border-bottom-color: var(--color-hairline-soft); cursor: not-allowed; }
+
+  .row {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    flex-wrap: wrap;
+  }
+</style>
+</head>
+<body>
+  <div class="device" style="height:auto;min-height:var(--device-h);">
+    <div class="doc-eyebrow"><span class="ornament"></span>System v0 · Button</div>
+    <h1 class="doc-title">Three variants, three states.</h1>
+
+    <div class="doc-section">
+      <h2>Primary — ink on parchment</h2>
+      <div class="stack">
+        <div>
+          <div class="label">Resting</div>
+          <button class="btn-primary">Continue</button>
+        </div>
+        <div>
+          <div class="label">Pressed</div>
+          <button class="btn-primary is-pressed">Continue</button>
+        </div>
+        <div>
+          <div class="label">Disabled</div>
+          <button class="btn-primary is-disabled" disabled>Continue</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h2>Secondary — outlined parchment-raised</h2>
+      <div class="stack">
+        <div>
+          <div class="label">Resting</div>
+          <button class="btn-secondary">Not this one</button>
+        </div>
+        <div>
+          <div class="label">Pressed</div>
+          <button class="btn-secondary is-pressed">Not this one</button>
+        </div>
+        <div>
+          <div class="label">Disabled</div>
+          <button class="btn-secondary is-disabled" disabled>Not this one</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="doc-section">
+      <h2>Ghost — text + hairline</h2>
+      <div class="stack">
+        <div>
+          <div class="label">Resting</div>
+          <button class="btn-ghost">Skip for now</button>
+        </div>
+        <div>
+          <div class="label">Pressed</div>
+          <button class="btn-ghost is-pressed">Skip for now</button>
+        </div>
+        <div>
+          <div class="label">Disabled</div>
+          <button class="btn-ghost is-disabled" disabled>Skip for now</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

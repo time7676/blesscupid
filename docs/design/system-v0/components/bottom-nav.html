@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid system v0 — Bottom nav</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  .canvas {
+    position: absolute;
+    inset: 47px 0 100px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-7);
+    background: var(--color-parchment);
+    text-align: center;
+    gap: var(--space-3);
+  }
+  .canvas .eyebrow {
+    color: var(--color-ink-soft);
+    margin-bottom: var(--space-2);
+  }
+  .canvas .title {
+    font-family: var(--font-serif);
+    font-weight: var(--weight-regular);
+    font-size: var(--size-h2);
+    line-height: var(--lh-h2);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+  }
+  .canvas .body {
+    font-family: var(--font-sans);
+    font-size: var(--size-body);
+    line-height: var(--lh-body);
+    color: var(--color-ink-soft);
+    max-width: 280px;
+  }
+  .canvas .legend {
+    margin-top: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    font-family: var(--font-sans);
+    font-size: var(--size-caption);
+    color: var(--color-ink-soft);
+  }
+  .canvas .legend .row {
+    display: flex;
+    gap: var(--space-2);
+    align-items: center;
+    justify-content: center;
+  }
+  .canvas .legend .swatch {
+    width: 10px; height: 10px;
+    border-radius: var(--radius-circle);
+  }
+  .canvas .legend .swatch.gold { background: var(--color-gold); }
+  .canvas .legend .swatch.ink  { background: var(--color-ink); }
+  .canvas .legend .swatch.soft { background: var(--color-ink-soft); }
+
+  .tabbar {
+    position: absolute;
+    left: 0; right: 0; bottom: 22px;
+    padding: 10px 14px 0;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: var(--border-thin) solid var(--color-hairline);
+    background: var(--color-parchment);
+  }
+  .tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-ink-soft);
+    padding: 6px var(--space-2);
+    cursor: pointer;
+    transition: var(--motion-gentle);
+  }
+  .tab .glyph {
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: var(--color-ink-soft);
+    transition: var(--motion-gentle);
+  }
+  .tab.is-active { color: var(--color-ink); }
+  .tab.is-active .glyph { color: var(--color-gold); }
+
+  .tab .badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .tab .badge::after {
+    content: '';
+    position: absolute;
+    top: -2px; right: -4px;
+    width: 6px; height: 6px;
+    background: var(--color-gold);
+    border-radius: var(--radius-circle);
+    box-shadow: 0 0 0 2px var(--color-parchment);
+  }
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="canvas">
+      <div class="eyebrow"><span class="ornament"></span>System v0 · Bottom nav</div>
+      <div class="title">Four destinations.<br/>One liturgical accent.</div>
+      <p class="body">
+        Active tab carries gold on the glyph and ink on the label. Inactive tabs use ink-soft. The unread pip is gold, never red.
+      </p>
+      <div class="legend">
+        <div class="row"><span class="swatch gold"></span>active glyph · color.gold</div>
+        <div class="row"><span class="swatch ink"></span>active label · color.ink</div>
+        <div class="row"><span class="swatch soft"></span>resting · color.ink.soft</div>
+      </div>
+    </div>
+
+    <div class="tabbar">
+      <div class="tab is-active"><span class="glyph">◐</span>Today</div>
+      <div class="tab">
+        <span class="glyph"><span class="badge">◇</span></span>
+        People
+      </div>
+      <div class="tab"><span class="glyph">⌘</span>Threads</div>
+      <div class="tab"><span class="glyph">○</span>You</div>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>

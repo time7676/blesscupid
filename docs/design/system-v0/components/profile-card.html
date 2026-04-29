@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>BlessCupid system v0 — Profile card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  .status-bar {
+    height: 47px;
+    padding: 14px var(--space-6) 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    font-weight: var(--weight-semibold);
+    color: var(--color-ink);
+    flex-shrink: 0;
+  }
+  .status-right { display: flex; gap: 6px; align-items: center; font-size: 13px; }
+
+  .top-nav {
+    padding: var(--space-2) var(--space-5) var(--space-3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  .icon-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-circle);
+    border: var(--border-thin) solid var(--color-hairline);
+    background: var(--color-parchment-raised);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-ink-soft);
+    font-size: 14px;
+  }
+  .wordmark {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: var(--weight-medium);
+    font-size: 18px;
+    color: var(--color-ink);
+  }
+  .wordmark .glyph {
+    color: var(--color-gold);
+    font-style: normal;
+    margin: 0 2px;
+  }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px var(--space-5) 130px;
+  }
+
+  .card {
+    background: var(--color-parchment-raised);
+    border-radius: var(--radius-lg);
+    border: var(--border-thin) solid var(--color-hairline);
+    overflow: hidden;
+    box-shadow: var(--shadow-raise);
+  }
+  .portrait {
+    width: 100%;
+    height: 290px;
+    /* Imago Dei placeholder: per mood-board photography stance.
+       Painterly oil-light gradient — NOT an AI face. Real photography
+       replaces this in production via the moderated photos pipeline. */
+    background:
+      radial-gradient(circle at 50% 38%, rgba(255, 253, 247, 0.55) 0%, rgba(255, 253, 247, 0) 50%),
+      linear-gradient(160deg, #EFE4D2 0%, #C8A24B 60%, #2A3470 130%);
+    position: relative;
+    overflow: hidden;
+  }
+  .portrait::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255, 253, 247, 0.10) 0%, transparent 30%),
+      radial-gradient(circle at 88% 80%, rgba(26, 26, 36, 0.10) 0%, transparent 35%);
+    mix-blend-mode: soft-light;
+  }
+  .portrait-tag {
+    position: absolute;
+    top: var(--space-4);
+    left: var(--space-4);
+    background: rgba(250, 247, 240, 0.92);
+    backdrop-filter: blur(6px);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: var(--size-eyebrow);
+    font-weight: var(--weight-medium);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+  }
+  .portrait-note {
+    position: absolute;
+    bottom: 14px;
+    right: var(--space-4);
+    background: rgba(26, 26, 36, 0.55);
+    backdrop-filter: blur(8px);
+    color: var(--color-parchment);
+    font-family: var(--font-sans);
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+  }
+
+  .body {
+    padding: 18px 22px 4px;
+  }
+  .heading-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-bottom: var(--space-2);
+  }
+  .name {
+    font-family: var(--font-serif);
+    font-weight: var(--weight-medium);
+    font-size: 30px;
+    line-height: 1.05;
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+  }
+  .age {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: var(--weight-light);
+    font-size: var(--size-h3);
+    color: var(--color-ink-soft);
+  }
+  .meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    font-family: var(--font-sans);
+    font-size: var(--size-label);
+    color: var(--color-ink-soft);
+    margin-bottom: 14px;
+  }
+  .meta-row .dot {
+    width: 3px; height: 3px; border-radius: var(--radius-circle);
+    background: var(--color-ink-soft);
+    align-self: center;
+  }
+
+  .badges {
+    display: flex;
+    gap: var(--space-2);
+    flex-wrap: wrap;
+    padding: 0 22px 14px;
+  }
+  .badge {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    font-weight: var(--weight-medium);
+    color: var(--color-ink);
+    padding: 6px 12px;
+    border-radius: var(--radius-pill);
+    border: var(--border-thin) solid var(--color-hairline);
+    background: var(--color-sandstone);
+  }
+  .badge.tradition {
+    background: var(--color-sandstone-warm);
+    color: var(--color-ink);
+    border-color: var(--color-gold);
+  }
+  .badge.tradition::before {
+    content: '✦';
+    margin-right: 6px;
+    color: var(--color-gold);
+  }
+
+  .prompt {
+    margin: 2px 22px 18px;
+    padding: 14px var(--space-4) var(--space-4);
+    background: var(--color-parchment-off);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-indigo);
+  }
+  .prompt-q {
+    font-family: var(--font-sans);
+    font-size: 11.5px;
+    font-weight: var(--weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-indigo);
+    margin-bottom: var(--space-2);
+  }
+  .prompt-a {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: var(--weight-regular);
+    font-size: 19px;
+    line-height: var(--lh-h3);
+    color: var(--color-ink);
+  }
+
+  .actions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px var(--space-6) 32px;
+    background: linear-gradient(180deg, transparent, var(--color-parchment) 38%);
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+  }
+  .pass {
+    flex: 1;
+    background: var(--color-parchment-raised);
+    color: var(--color-ink);
+    border: var(--border-thin) solid var(--color-hairline);
+    padding: 14px var(--space-4);
+    font-family: var(--font-serif);
+    font-size: 16px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--motion-gentle);
+  }
+  .pass:hover { border-color: var(--color-ink-soft); }
+  .reach {
+    flex: 1.4;
+    background: var(--color-ink);
+    color: var(--color-parchment);
+    border: none;
+    padding: 14px 18px;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: var(--weight-medium);
+    letter-spacing: var(--tracking-label);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--motion-gentle);
+  }
+  .reach:hover { background: #2a2a36; }
+</style>
+</head>
+<body>
+  <div class="device">
+    <div class="status-bar">
+      <span>9:41</span>
+      <div class="status-right">
+        <span>•••</span>
+        <span>􀙇</span>
+        <span>􀛨</span>
+      </div>
+    </div>
+
+    <div class="top-nav">
+      <div class="icon-btn">‹</div>
+      <div class="wordmark">Bless<span class="glyph">✦</span>Cupid</div>
+      <div class="icon-btn">⟡</div>
+    </div>
+
+    <div class="scroll">
+      <div class="card">
+        <div class="portrait">
+          <span class="portrait-tag">Profile · 1 of 3 today</span>
+          <span class="portrait-note">stand-in — Imago Dei photography (real photo in prod)</span>
+        </div>
+        <div class="body">
+          <div class="heading-row">
+            <div class="name">Maria&nbsp;Inés</div>
+            <div class="age">29</div>
+          </div>
+          <div class="meta-row">
+            <span>Lives in Quezon City</span>
+            <span class="dot"></span>
+            <span>Architect</span>
+            <span class="dot"></span>
+            <span>3.2 km away</span>
+          </div>
+        </div>
+        <div class="badges">
+          <span class="badge tradition">Roman Catholic</span>
+          <span class="badge">Mass weekly</span>
+          <span class="badge">Wants children</span>
+          <span class="badge">Cebuano · English</span>
+        </div>
+        <div class="prompt">
+          <div class="prompt-q">A FAITH I'M STILL GROWING IN</div>
+          <div class="prompt-a">"Patience — that the slow seasons are still being tended. I'm learning to trust them."</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="pass">Not this one</button>
+      <button class="reach">Reach out →</button>
+    </div>
+
+    <div class="home-indicator"></div>
+  </div>
+</body>
+</html>
