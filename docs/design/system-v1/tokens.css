@@ -1,0 +1,200 @@
+/* BlessCupid design system v1 — CSS variable export of tokens v1.
+   Mirrors lib/design-system/tokens.ts after the v1 changes documented in
+   /Users/julian/.windsurf/plans/blesscupid-screen-overhaul-4b207e.md §2.1.
+
+   Deltas vs v0 (docs/design/system-v0/tokens.css):
+   - color.indigo (single token) → color.cobalt (full 50–900 ramp)
+   - color.feedback.warning (single) → ramp 100/500/700 (amber)
+   - color.feedback.success (single) → ramp 100/500/700 (sage)
+   - radius: + xl=20, + xxl=28 (catechism cards)
+   - space: + s11=56
+
+   Hand-authored to mirror tokens.ts one-for-one; do not add hex values to
+   prototype HTML. If you need a value, add it to tokens.ts first then mirror.
+*/
+
+:root {
+  /* ─── color · ink ─── */
+  --color-ink:           #1A1A24;
+  --color-ink-soft:      #3F3F4A;
+  --color-ink-charcoal:  #14181F;
+  --color-ink-hover:     #2A2A36;
+  --color-ink-pressed:   #0F0F15;
+
+  /* ─── color · parchment ─── */
+  --color-parchment:        #FAF7F0;
+  --color-parchment-raised: #FFFDF7;
+  --color-parchment-off:    #F8F8F4;
+
+  /* ─── color · sandstone ─── */
+  --color-sandstone:       #F4ECDF;
+  --color-sandstone-deep:  #EFE4D2;
+  --color-sandstone-warm:  #FBF3E2;
+
+  /* ─── color · gold ─── */
+  --color-gold:       #C8A24B;
+  --color-gold-soft:  #E5C97D;
+  --color-gold-halo:  rgba(200, 162, 75, 0.18);
+
+  /* ─── color · cobalt (NEW v1) ─────────────────────
+     Replaces v0's single --color-indigo. Used for:
+       cobalt-700 → headlineEm accent
+       cobalt-500 → active tab icon, link, focus
+       cobalt-100 → selected-chip surface
+       cobalt-50  → quiet brand-tint background
+  */
+  --color-cobalt-50:  #EEF2FB;
+  --color-cobalt-100: #D6E0F4;
+  --color-cobalt-300: #7FA1DD;
+  --color-cobalt-500: #3D67B8;
+  --color-cobalt-700: #243F7A;
+  --color-cobalt-900: #142447;
+
+  /* ─── color · hairline ─── */
+  --color-hairline:        rgba(26, 26, 36, 0.12);
+  --color-hairline-soft:   rgba(26, 26, 36, 0.06);
+  --color-hairline-strong: rgba(20, 24, 31, 0.16);
+
+  /* ─── color · feedback (RAMPED v1) ──
+     Holy Code §HCoC: warning is amber, never red. Success is sage.
+  */
+  --color-warning-100: #FCEBD2;
+  --color-warning-500: #D08A2C;
+  --color-warning-700: #8C5912;
+  --color-success-100: #E5EFE6;
+  --color-success-500: #5C8A6A;
+  --color-success-700: #3F6149;
+
+  /* Back-compat: v0 single tokens still resolve. */
+  --color-warning: var(--color-warning-700);
+  --color-success: var(--color-success-500);
+
+  /* ─── type ─── */
+  --font-serif: 'Cormorant Garamond', 'EB Garamond', Georgia, serif;
+  --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono:  ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --weight-light:    300;
+  --weight-regular:  400;
+  --weight-medium:   500;
+  --weight-semibold: 600;
+
+  --size-hero:    38px;
+  --size-h2:      26px;
+  --size-h3:      22px;
+  --size-body:    14px;
+  --size-body-lg: 16px;
+  --size-label:   13px;
+  --size-caption: 12.5px;
+  --size-eyebrow: 11px;
+
+  --lh-hero:  1.04;
+  --lh-h2:    1.18;
+  --lh-h3:    1.35;
+  --lh-body:  1.55;
+  --lh-tight: 1.25;
+
+  --tracking-tight:    -0.012em;
+  --tracking-normal:   0;
+  --tracking-label:    0.02em;
+  --tracking-eyebrow:  0.2em;
+
+  /* ─── space ─── */
+  --space-0:  0px;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-7:  32px;
+  --space-8:  40px;
+  --space-9:  56px;
+  --space-10: 72px;
+  --space-11: 56px; /* alias for catechism legacy s9 */
+
+  /* ─── radius ─── */
+  --radius-none:   0px;
+  --radius-xs:     2px;
+  --radius-sm:     4px;
+  --radius-md:     6px;
+  --radius-lg:     12px;
+  --radius-xl:     20px; /* NEW v1 — catechism cards */
+  --radius-xxl:    28px; /* NEW v1 — catechism hero cards */
+  --radius-pill:   999px;
+  --radius-circle: 50%;
+
+  /* ─── border width ─── */
+  --border-thin:   1px;
+  --border-medium: 1.5px;
+  --border-thick:  2px;
+
+  /* ─── elevation ─── */
+  --shadow-none:  none;
+  --shadow-raise: 0 1px 0 rgba(26, 26, 36, 0.04);
+  --shadow-card:  0 1px 2px rgba(20, 24, 31, 0.06);
+  --shadow-modal: 0 12px 32px rgba(20, 24, 31, 0.18);
+
+  /* ─── motion ─── */
+  --duration-instant:  80ms;
+  --duration-gentle:   200ms;
+  --duration-intent:   320ms;
+  --duration-ceremony: 560ms;
+
+  --ease-standard: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --ease-emphatic: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-linear:   linear;
+
+  --motion-gentle:   var(--duration-gentle)   var(--ease-standard);
+  --motion-intent:   var(--duration-intent)   var(--ease-emphatic);
+  --motion-ceremony: var(--duration-ceremony) var(--ease-emphatic);
+
+  /* ─── device ─── */
+  --device-w: 390px;
+  --device-h: 844px;
+  --home-indicator-w: 134px;
+  --home-indicator-h: 5px;
+
+  /* ─── painterly placeholder gradients (until P2 illustrations land) ─
+     Per plan §12.16 — these are the in-code stand-ins for hero art.
+  */
+  --hero-warm-light:
+    radial-gradient(120% 80% at 30% 25%, var(--color-sandstone-warm) 0%, var(--color-parchment) 60%, var(--color-gold-halo) 100%);
+  --hero-cool-light:
+    radial-gradient(120% 80% at 70% 30%, var(--color-cobalt-50) 0%, var(--color-parchment) 60%, var(--color-sandstone) 100%);
+  --hero-dawn:
+    linear-gradient(180deg, var(--color-cobalt-50) 0%, var(--color-sandstone-warm) 55%, var(--color-gold-halo) 100%);
+  --portrait-1: linear-gradient(160deg, var(--color-sandstone-warm) 0%, var(--color-gold-soft) 50%, var(--color-cobalt-300) 100%);
+  --portrait-2: linear-gradient(150deg, var(--color-cobalt-100) 0%, var(--color-parchment) 50%, var(--color-gold-soft) 100%);
+  --portrait-3: linear-gradient(170deg, var(--color-success-100) 0%, var(--color-sandstone) 60%, var(--color-cobalt-300) 100%);
+  --portrait-4: linear-gradient(145deg, var(--color-warning-100) 0%, var(--color-parchment-raised) 55%, var(--color-cobalt-100) 100%);
+  --portrait-5: linear-gradient(155deg, var(--color-cobalt-50) 0%, var(--color-sandstone-deep) 60%, var(--color-gold-soft) 100%);
+  --portrait-6: linear-gradient(165deg, var(--color-sandstone) 0%, var(--color-parchment) 50%, var(--color-success-100) 100%);
+}
+
+/* ─── global resets used by every prototype ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+  background: #1f2027;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  color: var(--color-ink);
+}
+
+/* ─── shared utilities used inline in prototypes ─── */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--size-eyebrow);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.ornament {
+  display: inline-block;
+  width: 18px;
+  height: 1px;
+  background: var(--color-gold);
+  vertical-align: middle;
+  margin-right: 10px;
+}

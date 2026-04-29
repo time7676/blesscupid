@@ -18,6 +18,8 @@ import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module
 import { PastorModeRelationshipModule } from './pastor-mode-relationship/pastor-mode-relationship.module.js';
 import { ModerationActionsModule } from './moderation-actions/moderation-actions.module.js';
 import { WalkingWithModule } from './walking-with/walking-with.module.js';
+import { PhoneAuthModule } from './phone-auth/phone-auth.module.js';
+import { KycModule } from './kyc/kyc.module.js';
 
 @Module({
   imports: [
@@ -26,6 +28,8 @@ import { WalkingWithModule } from './walking-with/walking-with.module.js';
     HealthModule,
     PrismaModule,
     AuthModule,
+    PhoneAuthModule,
+    KycModule,
     OnboardingModule,
     ModerationModule,
     PhotosModule,

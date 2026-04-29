@@ -10,3 +10,5 @@ export * from './liturgical/index.js';
 export * from './verse-of-day/index.js';
 export * from './scheduler/index.js';
 export * from './quiet-hours.js';
+export * from './phone-auth.js';
+export * from './kyc.js';
