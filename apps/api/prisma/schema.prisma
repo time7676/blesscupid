@@ -425,3 +425,19 @@ model AccountDeletionRequest {
 
   @@index([status, hardDeleteScheduledAt])
 }
+
+// BLE-98 — transient verse cache (7-day minimum TTL).
+// Hard rule per BLE-30 / BLE-84: never store verse text in the calendar
+// table or on the client. Source-of-truth is upstream (Sabda / Biblica);
+// this table is rebuilt on demand and purged when expired.
+model VerseCache {
+  ref         String   @db.Text
+  translation String   @db.Text
+  text        String   @db.Text
+  attribution String   @db.Text
+  fetchedAt   DateTime @default(now())
+  expiresAt   DateTime
+
+  @@id([ref, translation])
+  @@index([expiresAt])
+}

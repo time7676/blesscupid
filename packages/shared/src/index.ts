@@ -4,3 +4,5 @@ export * from './onboarding.js';
 export * from './onboarding-flow.js';
 export * from './moderation.js';
 export * from './safety.js';
+export * from './liturgical/index.js';
+export * from './verse-of-day/index.js';
