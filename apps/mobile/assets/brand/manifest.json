@@ -1,0 +1,747 @@
+{
+  "generatedBy": "scripts/generate_brand_assets.py",
+  "assets": [
+    {
+      "key": "wordmark-primary",
+      "path": "assets/brand/logo/wordmark-primary.png",
+      "width": 1400,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "wordmark-inverse",
+      "path": "assets/brand/logo/wordmark-inverse.png",
+      "width": 1400,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "bless-plus-wordmark",
+      "path": "assets/brand/logo/bless-plus-wordmark.png",
+      "width": 1400,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "logo-mark",
+      "path": "assets/brand/logo/logo-mark.png",
+      "width": 512,
+      "height": 512,
+      "kind": "png"
+    },
+    {
+      "key": "logo-mark-inverse",
+      "path": "assets/brand/logo/logo-mark-inverse.png",
+      "width": 512,
+      "height": 512,
+      "kind": "png"
+    },
+    {
+      "key": "wordmark-primary",
+      "path": "assets/brand/logo/wordmark-primary.svg",
+      "width": 1024,
+      "height": 320,
+      "kind": "svg"
+    },
+    {
+      "key": "wordmark-inverse",
+      "path": "assets/brand/logo/wordmark-inverse.svg",
+      "width": 1024,
+      "height": 320,
+      "kind": "svg"
+    },
+    {
+      "key": "bless-plus-wordmark",
+      "path": "assets/brand/logo/bless-plus-wordmark.svg",
+      "width": 1024,
+      "height": 320,
+      "kind": "svg"
+    },
+    {
+      "key": "logo-mark",
+      "path": "assets/brand/logo/logo-mark.svg",
+      "width": 512,
+      "height": 512,
+      "kind": "svg"
+    },
+    {
+      "key": "logo-mark-inverse",
+      "path": "assets/brand/logo/logo-mark-inverse.svg",
+      "width": 512,
+      "height": 512,
+      "kind": "svg"
+    },
+    {
+      "key": "app-icon-ios-master",
+      "path": "assets/brand/app-icon/app-icon-ios-1024.png",
+      "width": 1024,
+      "height": 1024,
+      "kind": "png"
+    },
+    {
+      "key": "ios-app-icon",
+      "path": "ios/BlessCupid/Images.xcassets/AppIcon.appiconset/App-Icon-1024x1024@1x.png",
+      "width": 1024,
+      "height": 1024,
+      "kind": "png"
+    },
+    {
+      "key": "splash-master",
+      "path": "assets/brand/splash/splash.png",
+      "width": 2732,
+      "height": 2732,
+      "kind": "png"
+    },
+    {
+      "key": "ios-splash",
+      "path": "ios/BlessCupid/Images.xcassets/SplashScreenBackground.imageset/image.png",
+      "width": 2732,
+      "height": 2732,
+      "kind": "png"
+    },
+    {
+      "key": "android-adaptive-foreground",
+      "path": "assets/brand/app-icon/android-adaptive-foreground.png",
+      "width": 432,
+      "height": 432,
+      "kind": "png"
+    },
+    {
+      "key": "android-adaptive-background",
+      "path": "assets/brand/app-icon/android-adaptive-background.png",
+      "width": 432,
+      "height": 432,
+      "kind": "png"
+    },
+    {
+      "key": "notification-icon-android",
+      "path": "assets/brand/app-icon/notification-icon-android.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-mdpi-launcher",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher.png",
+      "width": 48,
+      "height": 48,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-mdpi-launcher-round",
+      "path": "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png",
+      "width": 48,
+      "height": 48,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-hdpi-launcher",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
+      "width": 72,
+      "height": 72,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-hdpi-launcher-round",
+      "path": "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
+      "width": 72,
+      "height": 72,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xhdpi-launcher",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xhdpi-launcher-round",
+      "path": "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xxhdpi-launcher",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png",
+      "width": 144,
+      "height": 144,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xxhdpi-launcher-round",
+      "path": "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png",
+      "width": 144,
+      "height": 144,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xxxhdpi-launcher",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png",
+      "width": 192,
+      "height": 192,
+      "kind": "png"
+    },
+    {
+      "key": "mipmap-xxxhdpi-launcher-round",
+      "path": "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png",
+      "width": 192,
+      "height": 192,
+      "kind": "png"
+    },
+    {
+      "key": "tab-today-active",
+      "path": "assets/brand/nav/tab-today-active.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-today-active",
+      "path": "assets/brand/nav/tab-today-active.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-today-inactive",
+      "path": "assets/brand/nav/tab-today-inactive.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-today-inactive",
+      "path": "assets/brand/nav/tab-today-inactive.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-people-active",
+      "path": "assets/brand/nav/tab-people-active.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-people-active",
+      "path": "assets/brand/nav/tab-people-active.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-people-inactive",
+      "path": "assets/brand/nav/tab-people-inactive.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-people-inactive",
+      "path": "assets/brand/nav/tab-people-inactive.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-threads-active",
+      "path": "assets/brand/nav/tab-threads-active.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-threads-active",
+      "path": "assets/brand/nav/tab-threads-active.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-threads-inactive",
+      "path": "assets/brand/nav/tab-threads-inactive.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-threads-inactive",
+      "path": "assets/brand/nav/tab-threads-inactive.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-you-active",
+      "path": "assets/brand/nav/tab-you-active.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-you-active",
+      "path": "assets/brand/nav/tab-you-active.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "tab-you-inactive",
+      "path": "assets/brand/nav/tab-you-inactive.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "tab-you-inactive",
+      "path": "assets/brand/nav/tab-you-inactive.svg",
+      "width": 24,
+      "height": 24,
+      "kind": "svg"
+    },
+    {
+      "key": "glyph-chevron-back",
+      "path": "assets/brand/glyphs/chevron-back.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-chevron-forward",
+      "path": "assets/brand/glyphs/chevron-forward.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-chevron-down",
+      "path": "assets/brand/glyphs/chevron-down.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-chevron-up",
+      "path": "assets/brand/glyphs/chevron-up.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-close",
+      "path": "assets/brand/glyphs/close.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-plus",
+      "path": "assets/brand/glyphs/plus.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-minus",
+      "path": "assets/brand/glyphs/minus.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-check",
+      "path": "assets/brand/glyphs/check.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-check-circle",
+      "path": "assets/brand/glyphs/check-circle.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-search",
+      "path": "assets/brand/glyphs/search.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-bell",
+      "path": "assets/brand/glyphs/bell.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-shield",
+      "path": "assets/brand/glyphs/shield.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-gear",
+      "path": "assets/brand/glyphs/gear.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-report-flag",
+      "path": "assets/brand/glyphs/report-flag.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-block",
+      "path": "assets/brand/glyphs/block.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-heart-outline",
+      "path": "assets/brand/glyphs/heart-outline.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-camera",
+      "path": "assets/brand/glyphs/camera.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-edit-pencil",
+      "path": "assets/brand/glyphs/edit-pencil.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-sign-out",
+      "path": "assets/brand/glyphs/sign-out.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-language-globe",
+      "path": "assets/brand/glyphs/language-globe.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-info-circle",
+      "path": "assets/brand/glyphs/info-circle.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "glyph-lock",
+      "path": "assets/brand/glyphs/lock.png",
+      "width": 96,
+      "height": 96,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-1",
+      "path": "assets/brand/portraits/portrait-placeholder-1.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-2",
+      "path": "assets/brand/portraits/portrait-placeholder-2.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-3",
+      "path": "assets/brand/portraits/portrait-placeholder-3.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-4",
+      "path": "assets/brand/portraits/portrait-placeholder-4.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-5",
+      "path": "assets/brand/portraits/portrait-placeholder-5.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "portrait-placeholder-6",
+      "path": "assets/brand/portraits/portrait-placeholder-6.png",
+      "width": 750,
+      "height": 1000,
+      "kind": "png"
+    },
+    {
+      "key": "welcome-hero",
+      "path": "assets/brand/heroes/welcome-hero.png",
+      "width": 1500,
+      "height": 1800,
+      "kind": "png"
+    },
+    {
+      "key": "done-hero",
+      "path": "assets/brand/heroes/done-hero.png",
+      "width": 1500,
+      "height": 1800,
+      "kind": "png"
+    },
+    {
+      "key": "dating-out-of-scope-hero",
+      "path": "assets/brand/heroes/dating-out-of-scope-hero.png",
+      "width": 1200,
+      "height": 1200,
+      "kind": "png"
+    },
+    {
+      "key": "one-time-offer-band",
+      "path": "assets/brand/heroes/one-time-offer-band.png",
+      "width": 1500,
+      "height": 600,
+      "kind": "png"
+    },
+    {
+      "key": "today-empty",
+      "path": "assets/brand/empty/today-empty.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "people-empty",
+      "path": "assets/brand/empty/people-empty.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "threads-empty",
+      "path": "assets/brand/empty/threads-empty.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "search-empty",
+      "path": "assets/brand/empty/search-empty.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "offline",
+      "path": "assets/brand/empty/offline.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "under-construction",
+      "path": "assets/brand/empty/under-construction.png",
+      "width": 480,
+      "height": 480,
+      "kind": "png"
+    },
+    {
+      "key": "error-network",
+      "path": "assets/brand/error/error-network.png",
+      "width": 360,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "error-server",
+      "path": "assets/brand/error/error-server.png",
+      "width": 360,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "error-unauthorized",
+      "path": "assets/brand/error/error-unauthorized.png",
+      "width": 360,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "error-face-detect",
+      "path": "assets/brand/error/error-face-detect.png",
+      "width": 360,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "error-moderation",
+      "path": "assets/brand/error/error-moderation.png",
+      "width": 360,
+      "height": 360,
+      "kind": "png"
+    },
+    {
+      "key": "verse-card-bg-morning",
+      "path": "assets/brand/verse/verse-card-bg-morning.png",
+      "width": 1080,
+      "height": 1350,
+      "kind": "png"
+    },
+    {
+      "key": "verse-card-bg-midday",
+      "path": "assets/brand/verse/verse-card-bg-midday.png",
+      "width": 1080,
+      "height": 1350,
+      "kind": "png"
+    },
+    {
+      "key": "verse-card-bg-evening",
+      "path": "assets/brand/verse/verse-card-bg-evening.png",
+      "width": 1080,
+      "height": 1350,
+      "kind": "png"
+    },
+    {
+      "key": "parchment-grain",
+      "path": "assets/brand/textures/parchment-grain.png",
+      "width": 1500,
+      "height": 1500,
+      "kind": "png"
+    },
+    {
+      "key": "gold-rule",
+      "path": "assets/brand/textures/gold-rule.svg",
+      "width": 200,
+      "height": 4,
+      "kind": "svg"
+    },
+    {
+      "key": "tradition-catholic",
+      "path": "assets/brand/tradition/catholic.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-protestant-evangelical",
+      "path": "assets/brand/tradition/protestant-evangelical.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-protestant-pentecostal",
+      "path": "assets/brand/tradition/protestant-pentecostal.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-protestant-reformed",
+      "path": "assets/brand/tradition/protestant-reformed.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-protestant-mainline",
+      "path": "assets/brand/tradition/protestant-mainline.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-orthodox",
+      "path": "assets/brand/tradition/orthodox.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-other-christian",
+      "path": "assets/brand/tradition/other-christian.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "tradition-still-figuring",
+      "path": "assets/brand/tradition/still-figuring.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-sunday-in-person",
+      "path": "assets/brand/practice/sunday-in-person.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-sunday-online",
+      "path": "assets/brand/practice/sunday-online.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-catholic-mass",
+      "path": "assets/brand/practice/catholic-mass.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-daily-prayer",
+      "path": "assets/brand/practice/daily-prayer.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-small-group",
+      "path": "assets/brand/practice/small-group.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-worship-at-home",
+      "path": "assets/brand/practice/worship-at-home.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    },
+    {
+      "key": "practice-still-finding-a-community",
+      "path": "assets/brand/practice/still-finding-a-community.png",
+      "width": 64,
+      "height": 64,
+      "kind": "png"
+    }
+  ]
+}

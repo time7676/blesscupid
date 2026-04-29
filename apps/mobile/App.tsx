@@ -103,25 +103,31 @@ function RootApp() {
     );
   }
 
-  // Phase 6 routing gate:
+  // Phase 6 routing gate. We render exactly ONE child stack at a time so
+  // login/logout swap the navigation tree at the root. Without this, the
+  // AuthStack stays mounted after sign-in and `navigation.reset` calls
+  // targeting Onboarding routes silently fail (route name not registered
+  // in the active stack).
+  //
   //   no userId          → Auth flow (animated Welcome)
   //   userId + !done     → Onboarding flow (kept intact)
   //   userId + done      → AppShell (Today / People / Threads / You)
   // TODO: wire onboarding completion flag when backend step tracker lands.
   const hasCompletedOnboarding = false;
-  const initialRoute: keyof RootStackParamList = userId
-    ? hasCompletedOnboarding
-      ? 'AppShell'
-      : 'Onboarding'
-    : 'Auth';
 
   return (
     <SafeAreaProvider>
       <NavigationContainer>
-        <RootStack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-          <RootStack.Screen name="Auth" component={AuthNavigator} />
-          <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
-          <RootStack.Screen name="AppShell" component={AppShell} />
+        <RootStack.Navigator screenOptions={{ headerShown: false }}>
+          {userId ? (
+            hasCompletedOnboarding ? (
+              <RootStack.Screen name="AppShell" component={AppShell} />
+            ) : (
+              <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
+            )
+          ) : (
+            <RootStack.Screen name="Auth" component={AuthNavigator} />
+          )}
         </RootStack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

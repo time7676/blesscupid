@@ -9,13 +9,8 @@ import {
   View,
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type { OnboardingStackParamList } from '../../navigation/types.js';
-import {
-  ApiError,
-  getOnboardingState,
-  loginEmail,
-  signupOAuth,
-} from '../../lib/api.js';
+import type { AuthStackParamList } from '../../navigation/types.js';
+import { ApiError, loginEmail, signupOAuth } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
 import {
   APPLE_AVAILABLE,
@@ -23,7 +18,6 @@ import {
   signInWithApple,
   useGoogleSignIn,
 } from '../../lib/oauth.js';
-import { routeForNextStep } from '../../lib/onboarding-route.js';
 import {
   Button,
   FormInput,
@@ -34,7 +28,7 @@ import {
   space,
 } from '../../lib/design-system/index.js';
 
-type Props = NativeStackScreenProps<OnboardingStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
 
 export function LoginScreen({ navigation }: Props) {
   const setSession = useAuth((s) => s.setSession);
@@ -44,23 +38,18 @@ export function LoginScreen({ navigation }: Props) {
   const [error, setError] = useState<string | null>(null);
   const google = useGoogleSignIn();
 
-  async function routeAfterAuth(accessToken: string) {
-    try {
-      const state = await getOnboardingState(accessToken);
-      const target = routeForNextStep(state.nextStep);
-      navigation.reset({ index: 0, routes: [{ name: target }] });
-    } catch {
-      navigation.reset({ index: 0, routes: [{ name: 'OnboardingCovenant' }] });
-    }
-  }
-
+  // Post-auth navigation is handled by the RootStack at App.tsx — once
+  // setSession() flips userId to non-null, the navigator swaps from
+  // AuthStack to OnboardingStack and mounts the right entry screen. We
+  // deliberately don't call navigation.reset here; doing so on the soon-
+  // to-unmount AuthStack throws "route not registered" for onboarding
+  // route names.
   async function onSubmit() {
     setBusy(true);
     setError(null);
     try {
       const tokens = await loginEmail({ email: email.trim(), password });
       await setSession(tokens);
-      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'login_failed';
       setError(code);
@@ -80,7 +69,6 @@ export function LoginScreen({ navigation }: Props) {
       const placeholderDob = new Date().toISOString().slice(0, 10);
       const tokens = await signupOAuth({ provider, idToken, dob: placeholderDob });
       await setSession(tokens);
-      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       if (err instanceof OAuthCancelledError) return;
       if (err instanceof ApiError && err.code === 'age_gate_failed') {
@@ -131,6 +119,7 @@ export function LoginScreen({ navigation }: Props) {
         <View style={styles.gap} />
         <Button
           variant="primary"
+          full
           label={busy ? 'Signing in…' : 'Sign in'}
           disabled={busy}
           onPress={onSubmit}
@@ -145,6 +134,7 @@ export function LoginScreen({ navigation }: Props) {
         {APPLE_AVAILABLE && (
           <Button
             variant="secondary"
+            full
             label="Continue with Apple"
             disabled={busy}
             onPress={() => onOAuth('apple')}
@@ -153,6 +143,7 @@ export function LoginScreen({ navigation }: Props) {
         <View style={styles.gap} />
         <Button
           variant="secondary"
+          full
           label="Continue with Google"
           disabled={busy || !google.ready}
           onPress={() => onOAuth('google')}

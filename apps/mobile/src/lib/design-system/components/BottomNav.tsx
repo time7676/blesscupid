@@ -1,5 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import type { ImageSourcePropType } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { border, color, fontFamily, fontSize, space } from '../tokens.js';
+import { bottomNavIconSource } from '../../brand/assets.js';
 
 export type NavTabKey = 'today' | 'people' | 'threads' | 'you';
 
@@ -7,6 +9,8 @@ export type NavTab = {
   key: NavTabKey;
   label: string;
   glyph: string;
+  iconActive?: ImageSourcePropType;
+  iconInactive?: ImageSourcePropType;
   badge?: boolean;
 };
 
@@ -17,10 +21,35 @@ export type BottomNavProps = {
 };
 
 const DEFAULT_TABS: NavTab[] = [
-  { key: 'today', label: 'Today', glyph: '◐' },
-  { key: 'people', label: 'People', glyph: '◇', badge: true },
-  { key: 'threads', label: 'Threads', glyph: '⌘' },
-  { key: 'you', label: 'You', glyph: '○' },
+  {
+    key: 'today',
+    label: 'Today',
+    glyph: '◐',
+    iconActive: bottomNavIconSource('today', true),
+    iconInactive: bottomNavIconSource('today', false),
+  },
+  {
+    key: 'people',
+    label: 'People',
+    glyph: '◇',
+    iconActive: bottomNavIconSource('people', true),
+    iconInactive: bottomNavIconSource('people', false),
+    badge: true,
+  },
+  {
+    key: 'threads',
+    label: 'Threads',
+    glyph: '⌘',
+    iconActive: bottomNavIconSource('threads', true),
+    iconInactive: bottomNavIconSource('threads', false),
+  },
+  {
+    key: 'you',
+    label: 'You',
+    glyph: '○',
+    iconActive: bottomNavIconSource('you', true),
+    iconInactive: bottomNavIconSource('you', false),
+  },
 ];
 
 export function BottomNav({ active, tabs = DEFAULT_TABS, onSelect }: BottomNavProps) {
@@ -38,7 +67,16 @@ export function BottomNav({ active, tabs = DEFAULT_TABS, onSelect }: BottomNavPr
             accessibilityLabel={tab.label}
           >
             <View style={styles.glyphWrap}>
-              <Text style={[styles.glyph, isActive ? styles.glyphActive : null]}>{tab.glyph}</Text>
+              {tab.iconActive && tab.iconInactive ? (
+                <Image
+                  source={isActive ? tab.iconActive : tab.iconInactive}
+                  accessibilityIgnoresInvertColors
+                  style={styles.icon}
+                  resizeMode="contain"
+                />
+              ) : (
+                <Text style={[styles.glyph, isActive ? styles.glyphActive : null]}>{tab.glyph}</Text>
+              )}
               {tab.badge ? <View style={styles.badge} /> : null}
             </View>
             <Text style={[styles.label, isActive ? styles.labelActive : null]}>
@@ -80,6 +118,10 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.sans,
     fontSize: 18,
     color: color.ink.soft,
+  },
+  icon: {
+    width: 22,
+    height: 22,
   },
   glyphActive: {
     // v1.1 — amber active state (warning[700]). Gold-default failed AA contrast on parchment.

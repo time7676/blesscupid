@@ -10,13 +10,8 @@ import {
 } from 'react-native';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { checkAgeGate, MINIMUM_AGE } from '@blesscupid/shared';
-import type { OnboardingStackParamList } from '../../navigation/types.js';
-import {
-  ApiError,
-  getOnboardingState,
-  signupEmail,
-  signupOAuth,
-} from '../../lib/api.js';
+import type { AuthStackParamList } from '../../navigation/types.js';
+import { ApiError, signupEmail, signupOAuth } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
 import {
   APPLE_AVAILABLE,
@@ -24,7 +19,6 @@ import {
   signInWithApple,
   useGoogleSignIn,
 } from '../../lib/oauth.js';
-import { routeForNextStep } from '../../lib/onboarding-route.js';
 import {
   Button,
   FormInput,
@@ -35,7 +29,7 @@ import {
   space,
 } from '../../lib/design-system/index.js';
 
-type Props = NativeStackScreenProps<OnboardingStackParamList, 'Signup'>;
+type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
 export function SignupScreen({ navigation }: Props) {
   const setSession = useAuth((s) => s.setSession);
@@ -55,16 +49,9 @@ export function SignupScreen({ navigation }: Props) {
     return true;
   }
 
-  async function routeAfterAuth(accessToken: string) {
-    try {
-      const state = await getOnboardingState(accessToken);
-      const target = routeForNextStep(state.nextStep);
-      navigation.reset({ index: 0, routes: [{ name: target }] });
-    } catch {
-      navigation.reset({ index: 0, routes: [{ name: 'OnboardingCovenant' }] });
-    }
-  }
-
+  // Post-auth nav handled by the RootStack at App.tsx — see the same note
+  // in Login.tsx. Don't reset here; doing so on the soon-to-unmount
+  // AuthStack throws "route not registered" for onboarding route names.
   async function onSubmit() {
     setError(null);
     if (!precheck()) return;
@@ -72,7 +59,6 @@ export function SignupScreen({ navigation }: Props) {
     try {
       const tokens = await signupEmail({ email: email.trim(), password, dob });
       await setSession(tokens);
-      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       const code = err instanceof ApiError ? err.code : 'signup_failed';
       setError(code);
@@ -90,7 +76,6 @@ export function SignupScreen({ navigation }: Props) {
         provider === 'apple' ? await signInWithApple() : await google.promptAsync();
       const tokens = await signupOAuth({ provider, idToken, dob });
       await setSession(tokens);
-      await routeAfterAuth(tokens.accessToken);
     } catch (err) {
       if (err instanceof OAuthCancelledError) return;
       const code = err instanceof ApiError ? err.code : `${provider}_signin_failed`;
@@ -145,6 +130,7 @@ export function SignupScreen({ navigation }: Props) {
 
         <Button
           variant="primary"
+          full
           label={busy ? 'Creating…' : 'Create account'}
           disabled={busy}
           onPress={onSubmit}
@@ -159,6 +145,7 @@ export function SignupScreen({ navigation }: Props) {
         {APPLE_AVAILABLE && (
           <Button
             variant="secondary"
+            full
             label="Continue with Apple"
             disabled={busy}
             onPress={() => onOAuth('apple')}
@@ -167,6 +154,7 @@ export function SignupScreen({ navigation }: Props) {
         <View style={styles.gap} />
         <Button
           variant="secondary"
+          full
           label="Continue with Google"
           disabled={busy || !google.ready}
           onPress={() => onOAuth('google')}
@@ -183,16 +171,15 @@ export function SignupScreen({ navigation }: Props) {
             onPress={async () => {
               setBusy(true);
               try {
+                // Dev shortcut: set a fake session so RootStack swaps from
+                // AuthStack → OnboardingStack. The OnboardingStack mounts
+                // at its first declared screen; no manual reset needed.
                 await setSession({
                   userId: 'dev-test-user',
                   accessToken: 'dev-test-access-token',
                   refreshToken: 'dev-test-refresh-token',
                   expiresIn: 3600,
                 } as Parameters<typeof setSession>[0]);
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'OnboardingCovenant' }],
-                });
               } finally {
                 setBusy(false);
               }

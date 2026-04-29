@@ -8,6 +8,7 @@
 
 import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/types.js';
 import {
@@ -26,6 +27,7 @@ const HERO_HEIGHT = 240;
 type Props = NativeStackScreenProps<AuthStackParamList, 'Welcome'>;
 
 export function WelcomeScreen({ navigation }: Props) {
+  const insets = useSafeAreaInsets();
   const drift = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -83,7 +85,7 @@ export function WelcomeScreen({ navigation }: Props) {
         </View>
       </View>
 
-      <View style={styles.body}>
+      <View style={[styles.body, { paddingBottom: Math.max(insets.bottom, space.s8) }]}>
         <View style={styles.copyBlock}>
           <Text style={styles.eyebrow}>A different kind of dating</Text>
           <Text style={styles.headline}>
@@ -152,7 +154,8 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: space.s7,
     paddingTop: space.s7,
-    paddingBottom: space.s8,
+    // paddingBottom set inline from useSafeAreaInsets so buttons sit above
+    // the home-indicator on iPhones with no bezel.
     justifyContent: 'space-between',
   },
   copyBlock: {

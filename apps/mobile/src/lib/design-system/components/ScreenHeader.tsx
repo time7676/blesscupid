@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { color, fontFamily, fontSize, letterSpacingFor, space, tracking } from '../tokens.js';
+import { BrandGlyph } from '../../brand/BrandGlyph.js';
 
 /**
  * ScreenHeader — top-of-screen pattern.
@@ -29,8 +31,12 @@ export function ScreenHeader({
   trailing,
   variant = 'compact',
 }: ScreenHeaderProps) {
+  // Consume top safe-area inset so the eyebrow doesn't sit under the notch /
+  // status bar. Falls back to space.s5 (20pt) on devices without a top inset.
+  const insets = useSafeAreaInsets();
+  const topPad = Math.max(insets.top, space.s5);
   return (
-    <View style={styles.row}>
+    <View style={[styles.row, { paddingTop: topPad }]}>
       {onBack ? (
         <Pressable
           onPress={onBack}
@@ -39,7 +45,7 @@ export function ScreenHeader({
           hitSlop={12}
           style={styles.back}
         >
-          <Text style={styles.backGlyph}>‹</Text>
+          <BrandGlyph name="chevronBack" size={18} />
         </Pressable>
       ) : (
         <View style={styles.backSpacer} />
@@ -69,7 +75,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-end',
     paddingHorizontal: space.s6,
-    paddingTop: space.s5,
+    // paddingTop is set inline from useSafeAreaInsets so the eyebrow clears
+    // the notch on iPhones with a Dynamic Island / Face ID cutout.
     paddingBottom: space.s2,
     gap: space.s3,
   },
@@ -81,12 +88,6 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   backSpacer: { width: 0 },
-  backGlyph: {
-    fontFamily: fontFamily.sans,
-    fontSize: 22,
-    color: color.ink.soft,
-    lineHeight: 22,
-  },
   body: { flex: 1, minWidth: 0 },
   eyebrow: {
     fontFamily: fontFamily.sansSemibold,
