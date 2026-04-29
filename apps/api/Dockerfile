@@ -21,6 +21,11 @@ COPY --from=build /repo/packages/shared ./packages/shared
 COPY --from=build /repo/apps/api/dist ./apps/api/dist
 COPY --from=build /repo/apps/api/prisma ./apps/api/prisma
 COPY --from=build /repo/apps/api/package.json ./apps/api/package.json
+# pnpm uses isolated node_modules with symlinks into /repo/node_modules/.pnpm.
+# The api package's bins (prisma, nest) and direct deps live here, so it must
+# ship in the runtime image for both `node dist/main.js` and the Fly release
+# command (`prisma migrate deploy`) to resolve modules correctly.
+COPY --from=build /repo/apps/api/node_modules ./apps/api/node_modules
 WORKDIR /repo/apps/api
 EXPOSE 3000
 CMD ["node", "dist/main.js"]
