@@ -84,6 +84,9 @@ import type {
   CovenantAcceptInput,
   FaithQuestionnaireInput,
   OnboardingStep,
+  Q3RedirectInput,
+  QuestionnaireSubmitInput,
+  WelcomedTagsUpdateInput,
 } from '@blesscupid/shared';
 
 export interface OnboardingStateResponse {
@@ -125,6 +128,55 @@ export function saveFaith(
     body: JSON.stringify(input),
   });
 }
+
+export interface QuestionnaireSubmitResponse {
+  ok: boolean;
+  q3Redirect?: boolean;
+  bioSeedFlagged?: boolean;
+  // Soft-suggest revision payload when Q9 bio seed is blocked.
+  code?: 'bio_seed_flagged';
+  decision?: 'block';
+  categories?: string[];
+}
+
+export function saveQuestionnaire(
+  token: string,
+  input: QuestionnaireSubmitInput,
+): Promise<QuestionnaireSubmitResponse> {
+  return apiFetch<QuestionnaireSubmitResponse>('/onboarding/questionnaire', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export interface Q3RedirectResponse {
+  ok: true;
+  intent: 'friendship' | 'closed_by_user';
+}
+
+export function acceptQ3Redirect(
+  token: string,
+  input: Q3RedirectInput,
+): Promise<Q3RedirectResponse> {
+  return apiFetch<Q3RedirectResponse>('/onboarding/q3-redirect', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export function updateWelcomedTags(
+  token: string,
+  input: WelcomedTagsUpdateInput,
+): Promise<{ ok: true; welcomedTags: string[]; welcomedTagVisibility: Record<string, boolean> }> {
+  return apiFetch('/onboarding/welcomed-tags', {
+    method: 'PATCH',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
 
 export type PhotoContentType = 'image/jpeg' | 'image/png' | 'image/heic';
 
