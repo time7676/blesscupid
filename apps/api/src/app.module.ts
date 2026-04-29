@@ -17,6 +17,7 @@ import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
 import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module.js';
 import { PastorModeRelationshipModule } from './pastor-mode-relationship/pastor-mode-relationship.module.js';
 import { ModerationActionsModule } from './moderation-actions/moderation-actions.module.js';
+import { WalkingWithModule } from './walking-with/walking-with.module.js';
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { ModerationActionsModule } from './moderation-actions/moderation-actions
     PastorModeGateModule,
     PastorModeRelationshipModule,
     ModerationActionsModule,
+    WalkingWithModule,
   ],
 })
 export class AppModule {}

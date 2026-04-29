@@ -281,6 +281,44 @@ enum AppealStatus {
   overturned
 }
 
+// BLE-132 — Pastor-mode relationship lifecycle.
+//
+// invited → accepted → walking → revoked → sealed → hard_deleted
+//                                  ↑           ↑
+//                     (user action)│           │ (cron, T+90d)
+//                                  │           │
+//                  pastor cannot   │  pastor 403 on transcripts;
+//                  read transcripts│  journal accessible
+//                  yet (instant)   │
+//
+// Soft-seal (state=sealed) at T+24h after revoke. Hard-delete (state=
+// hard_deleted) at T+90d after seal unless legal_hold=true. Asymmetric:
+// pastor loses transcript access; the audited user keeps her own mirror
+// permanently (`audited_user_pastor_views`, separate user-side schema).
+enum PastorRelationshipState {
+  invited
+  accepted
+  walking
+  revoked
+  sealed
+  hard_deleted
+}
+
+// BLE-133 — discriminator for *who* ended a relationship. Server-internal.
+//
+// MUST NEVER be serialized into Pastor-facing responses. The doctrine is
+// information-symmetric: from Pastor's view, "ended" is "ended" — never
+// "she fired me" vs "I stepped away". The same enum drives the audited
+// user's mirror surface (Surface 6), which IS allowed to show why because
+// it's HER own data.
+enum PastorEndReason {
+  audited_revoked
+  pastor_mundur
+  mutual
+  expired
+  system
+}
+
 model User {
   id               String   @id @default(uuid()) @db.Uuid
   email            String   @unique
@@ -319,6 +357,9 @@ model User {
   pastorModeAttempts     PastorModeGateAttempt[]   @relation("UserPastorModeAttempts")
   pastorModeAsAudited    PastorModeRelationship[]  @relation("PastorModeAudited")
   pastorModeAsPastor     PastorModeRelationship[]  @relation("PastorModePastor")
+
+  pastorRelationships  PastorRelationship[] @relation("RelationshipPastor")
+  auditedRelationships PastorRelationship[] @relation("RelationshipAudited")
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -726,6 +767,94 @@ model AccountDeletionRequest {
   cancelledAt           DateTime?
 
   @@index([status, hardDeleteScheduledAt])
+}
+
+// BLE-132 — Pastor mode relationship (a single audited user paired with a
+// single pastor). Lifecycle in {@link PastorRelationshipState}. Once the
+// audited user revokes (state=revoked), pastor's transcript-read API
+// returns 403 immediately; the *visible* admin sidebar entry flips to
+// "Sudah selesai" after the seal job runs (≤ 24h, T+24h cron).
+//
+// Doctrinal anchor: Wahyu 3:20 — when the door closes, the mentor must
+// withdraw. Indefinite retention is loitering. Hard-delete at T+90d
+// unless `legalHold = true`.
+model PastorRelationship {
+  id            String                  @id @default(uuid()) @db.Uuid
+  pastorUserId  String                  @db.Uuid
+  pastor        User                    @relation("RelationshipPastor", fields: [pastorUserId], references: [id], onDelete: Cascade)
+  auditedUserId String                  @db.Uuid
+  auditedUser   User                    @relation("RelationshipAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
+  state         PastorRelationshipState @default(invited)
+
+  invitedAt    DateTime  @default(now())
+  acceptedAt   DateTime?
+  walkingAt    DateTime?
+  revokedAt    DateTime?
+  sealedAt     DateTime?
+  hardDeletedAt DateTime?
+
+  // BLE-133 — internal-only discriminator. Pastor-facing serializers MUST
+  // strip this. The audited-user mirror (Surface 6) MAY surface it.
+  endReason PastorEndReason?
+
+  // Set by an admin via internal compliance tooling (out of scope for v1
+  // UI). When true, both seal and hard-delete jobs skip the row; the seal
+  // transition still happens, but hard_deleted never does.
+  legalHold Boolean @default(false)
+
+  // Stable identifier surfaced in the 403 body so support tickets can map
+  // back to the seal event. Format: A8F2-YYYY-MM-DD-HH-MM (random prefix +
+  // UTC seal timestamp). Set by the seal job at state=sealed.
+  sealAuditId String?
+
+  notes        PastorNote[]
+  transcripts  TranscriptMessage[]
+
+  @@unique([pastorUserId, auditedUserId])
+  @@index([auditedUserId])
+  // Indexed lookups for the seal + hard-delete jobs respectively.
+  @@index([state, revokedAt])
+  @@index([state, sealedAt])
+}
+
+// BLE-132 — Pastor's own private notes about an audited user. Pastor's
+// data, *not* the audited user's. Survives seal: after T+24h the notes
+// move to the read-only journal surface (still keyed to the relationship,
+// but no transcript JOIN exists in the journal resolver).
+//
+// `auditedUserSnapshot` is populated by the seal job so journal queries
+// never need to JOIN past the sealed boundary. After hard-delete the
+// snapshot is the only handle the pastor still has on who Maya was.
+model PastorNote {
+  id             String             @id @default(uuid()) @db.Uuid
+  relationshipId String             @db.Uuid
+  relationship   PastorRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  body           String             @db.Text
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  // {display_name, avatar_color, walked_for_days}. Populated at seal time.
+  auditedUserSnapshot Json?
+
+  @@index([relationshipId, createdAt])
+}
+
+// BLE-132 — transcript message visible to the pastor on the walking-with
+// admin surface. This is a DIFFERENT entity from {@link Message} (chat
+// between matched users); transcripts are the audited user's
+// devotional/prayer journal entries shared with the pastor.
+//
+// Hard-deleted at T+90d post-seal. Pastor read access flips to 403 at
+// state ∈ {revoked, sealed, hard_deleted}.
+model TranscriptMessage {
+  id             String             @id @default(uuid()) @db.Uuid
+  relationshipId String             @db.Uuid
+  relationship   PastorRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
+  threadId       String             @db.Uuid
+  body           String             @db.Text
+  authoredAt     DateTime           @default(now())
+
+  @@index([relationshipId, threadId, authoredAt])
 }
 
 // BLE-98 — transient verse cache (7-day minimum TTL).
