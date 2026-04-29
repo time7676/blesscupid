@@ -58,16 +58,31 @@ In GitHub repo → Settings → Secrets and variables → Actions → New reposi
 ## 5. Firebase Project (Phone Auth — Free tier: 10k verifications/mo) 🔄 IN PROGRESS
 
 Account: `j_loh@cocon-inc.co.jp` via Google Auth
-- [ ] Run `firebase login` locally (user will authenticate in browser)
-- [ ] Create/select project in console: https://console.firebase.google.com/
+
+### Server (apps/api — admin SDK for token verification)
+- [ ] `firebase login` locally
+- [ ] Create/select project: https://console.firebase.google.com/
 - [ ] Enable "Phone" authentication method
-- [ ] Download service account key:
-  - Project settings → Service accounts → Generate new private key
+- [ ] Project settings → Service accounts → Generate new private key
 - [ ] Base64-encode the JSON:
-```bash
-cat service-account.json | base64
-```
+  ```bash
+  cat service-account.json | base64
+  ```
 - [ ] Paste into VPS: `/srv/blesscupid/.env` as `FIREBASE_ADMIN_CREDENTIALS_JSON`
+
+### Mobile (apps/mobile — Expo Go web SDK)
+The mobile bundle reads `EXPO_PUBLIC_FIREBASE_*` (see `apps/mobile/.env.example`).
+Boot is lazy in `apps/mobile/src/lib/firebase.ts` — null when unset.
+
+- [ ] Project settings → General → Your apps → Add Web app → copy config
+- [ ] Fill `apps/mobile/.env`:
+  - `EXPO_PUBLIC_FIREBASE_API_KEY`
+  - `EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN`
+  - `EXPO_PUBLIC_FIREBASE_PROJECT_ID`
+  - `EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET`
+  - `EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID`
+  - `EXPO_PUBLIC_FIREBASE_APP_ID`
+- [ ] Restart Metro (`pnpm mobile start --clear`) after editing env
 
 ## 6. AWS Account (Rekognition — Free tier: 5k face comparisons/mo for 12mo) 🔄 IN PROGRESS
 
@@ -79,13 +94,24 @@ cat service-account.json | base64
 
 ## 7. Cloudflare R2 (Image storage — Free tier: 10GB + 1M ops/mo) 🔄 IN PROGRESS
 
-- [ ] Install Wrangler CLI: `npm install -g wrangler`
-- [ ] Run `wrangler login`
-- [ ] Create bucket: `wrangler r2 bucket create blesscupid-photos-dev`
-- [ ] Generate S3-compatible API token at https://dash.cloudflare.com/ → R2 → Manage R2 API Tokens
-- [ ] Paste endpoint + keys into `/srv/blesscupid/.env`
+Account ID: `7e20a349cdb3379d8a786faaa993b371`
+S3 endpoint: `https://7e20a349cdb3379d8a786faaa993b371.r2.cloudflarestorage.com`
 
-Alternative: use AWS S3 (same creds as Rekognition).
+API service auto-detects R2 when `S3_ENDPOINT` is set
+(see `apps/api/src/photos/s3-storage.service.ts`).
+
+- [ ] Install Wrangler CLI: `npm install -g wrangler`
+- [ ] `wrangler login`
+- [ ] Create bucket: `wrangler r2 bucket create blesscupid-photos`
+- [ ] Generate S3-compatible API token at https://dash.cloudflare.com/ → R2 → Manage R2 API Tokens (Object Read & Write)
+- [ ] Paste into `/srv/blesscupid/.env`:
+  - `S3_ENDPOINT=https://7e20a349cdb3379d8a786faaa993b371.r2.cloudflarestorage.com`
+  - `S3_ACCESS_KEY_ID=<from token>`
+  - `S3_SECRET_ACCESS_KEY=<from token>`
+  - `PHOTO_BUCKET=blesscupid-photos`
+  - `AWS_REGION=auto` (R2 ignores it but SDK requires a value)
+
+Alternative: use AWS S3 — leave `S3_ENDPOINT` unset and the SDK falls back to AWS creds.
 
 ## 8. OpenAI (Text moderation) ❌ REMOVED
 
@@ -120,15 +146,35 @@ docker logs -f blesscupid-api
 
 ## 11. iOS TestFlight Build
 
+Prerequisites:
+- [ ] Apple Developer enrolment (§2) — `com.blesscupid.app` App ID + ASC entry
+- [ ] `npm install -g eas-cli` (or use `pnpm dlx eas-cli@latest`)
+- [ ] `eas login`
+- [ ] `eas init` inside `apps/mobile/` to attach an EAS project ID
+- [ ] App Store Connect API key downloaded → `apps/mobile/credentials/asc-api-key.p8`
+- [ ] Set EAS secret env vars (so `.env` stays local):
+  ```bash
+  cd apps/mobile
+  eas secret:create --scope project --name EXPO_PUBLIC_FIREBASE_API_KEY --value '<value>'
+  # repeat for the other EXPO_PUBLIC_FIREBASE_* and EXPO_PUBLIC_API_BASE_URL
+  ```
+
+Validate the bundle exports clean before burning a build:
+```bash
+pnpm -F @blesscupid/mobile typecheck
+pnpm -F @blesscupid/mobile exec expo export --platform ios --output-dir /tmp/blesscupid-export
+```
+
+Build + submit:
 ```bash
 cd apps/mobile
-# Fill in eas.json env vars:
-# ASC_APP_ID, APPLE_ID, ASC_API_KEY_ID, ASC_API_KEY_ISSUER_ID
-
-pnpm eas build --platform ios --profile preview
-# then submit to TestFlight:
-pnpm eas submit --platform ios
+pnpm dlx eas-cli@latest build --platform ios --profile preview
+pnpm dlx eas-cli@latest submit --platform ios --latest
 ```
+
+`eas.json` already wires the `submit.production.ios` block to ASC API Key.
+Fill in `ASC_APP_ID`, `APPLE_ID`, `ASC_API_KEY_ID`, `ASC_API_KEY_ISSUER_ID`
+either as EAS secrets or as a local `.env`.
 
 ## 12. KYC Admin Review
 
