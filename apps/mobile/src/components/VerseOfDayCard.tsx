@@ -18,6 +18,7 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  Linking,
   Pressable,
   StyleSheet,
   Text,
@@ -42,6 +43,7 @@ import {
   space,
 } from '../lib/design/tokens.js';
 import { styleForTheme } from '../lib/design/theme-map.js';
+import { buildYouVersionUrl } from '../lib/youversion/index.js';
 
 export type VerseOfDayCardVariant = 'default' | 'feature';
 
@@ -195,8 +197,31 @@ export function VerseOfDayCard({
 
       <Text style={styles.attribution}>{attribution}</Text>
 
+      <YouVersionLink ref={entry.ref} translation={translation} />
+
       {isFeature && <FeatureOrnamentRule position="bottom" />}
     </View>
+  );
+}
+
+function YouVersionLink({ ref, translation }: { ref: string; translation: Translation }) {
+  const handlePress = () => {
+    const url = buildYouVersionUrl(ref, translation);
+    Linking.openURL(url).catch(() => {
+      /* ignore — user can try again or no browser */
+    });
+  };
+
+  return (
+    <Pressable
+      onPress={handlePress}
+      accessibilityRole="link"
+      accessibilityLabel="Buka di aplikasi Alkitab"
+      hitSlop={{ top: 6, bottom: 6, left: 12, right: 12 }}
+      style={styles.youVersionHit}
+    >
+      <Text style={styles.youVersionLabel}>Buka di aplikasi Alkitab</Text>
+    </Pressable>
   );
 }
 
@@ -538,6 +563,19 @@ const styles = StyleSheet.create({
     fontSize: font.size.eyebrow,
     lineHeight: font.size.eyebrow + 5,
     color: color.ink.soft,
+  },
+
+  youVersionHit: {
+    alignSelf: 'flex-start',
+    marginTop: space.s2,
+  },
+  youVersionLabel: {
+    fontFamily: font.family.sans,
+    fontSize: font.size.eyebrow,
+    fontWeight: font.weight.medium,
+    color: color.gold.default,
+    letterSpacing: font.tracking.label,
+    textDecorationLine: 'underline',
   },
 });
 
