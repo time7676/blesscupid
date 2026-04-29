@@ -1,0 +1,37 @@
+name: Deploy to XSERVER VPS
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            REPO_DIR="/srv/blesscupid"
+            cd "$REPO_DIR"
+            git fetch origin
+            git reset --hard "origin/main"
+            docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
+            docker network inspect internal >/dev/null 2>&1 || docker network create internal
+            cd /srv/_shared
+            docker-compose -f docker-compose.shared.yml up -d
+            cd "$REPO_DIR"
+            docker-compose up -d --build
+            docker image prune -af --filter "until=168h" || true
