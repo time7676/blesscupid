@@ -7,6 +7,14 @@ kill_timeout = "5s"
 [build]
   dockerfile = "Dockerfile"
 
+# Runs once per deploy in a release machine before the new VM serves traffic.
+# Applies any pending Prisma migrations against DATABASE_URL. Idempotent —
+# `prisma migrate deploy` is a no-op when the DB is already current. See
+# docs/deploy/RUNBOOK.md §1.5 (Database migrations).
+[deploy]
+  release_command = "node_modules/.bin/prisma migrate deploy"
+  strategy = "rolling"
+
 [env]
   PORT = "3000"
   NODE_ENV = "production"

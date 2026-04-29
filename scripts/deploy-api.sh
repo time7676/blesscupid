@@ -49,6 +49,10 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
 fi
 
 # Deploy.
+# Fly runs `prisma migrate deploy` as the release_command (apps/api/fly.toml
+# [deploy] block) before promoting the new VMs. A failed migration aborts
+# the deploy. See docs/deploy/RUNBOOK.md §1.5 for migration ops.
+echo "[deploy] migrations will run via fly release_command (prisma migrate deploy)"
 exec fly deploy \
   --app "$FLY_APP" \
   --config apps/api/fly.toml \

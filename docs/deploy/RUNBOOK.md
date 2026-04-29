@@ -84,6 +84,57 @@ curl https://blesscupid-api.fly.dev/healthz
 fly logs --app blesscupid-api | head -100
 ```
 
+## 1.5 Database migrations (Prisma)
+
+Migrations live in `apps/api/prisma/migrations/` and are applied automatically
+by Fly's release command on every deploy:
+
+```toml
+# apps/api/fly.toml
+[deploy]
+  release_command = "node_modules/.bin/prisma migrate deploy"
+```
+
+Fly spins up a release machine with the new image, runs `prisma migrate deploy`
+against the production `DATABASE_URL`, and only promotes the new VMs into
+the load balancer if the release command exits 0. A failed migration aborts
+the deploy without affecting the currently-serving VMs.
+
+Operational notes:
+
+- `prisma migrate deploy` only **applies** committed migrations; it never
+  generates new ones and never prompts. Idempotent — re-running on a
+  current DB is a no-op.
+- The baseline `20260429025653_init_schema` covers the schema as of
+  [BLE-169](/BLE/issues/BLE-169) (User, Profile, Photo, FaithProfile,
+  Message + ModerationQueueItem, Block, Report, EvidenceFreeze,
+  ModerationAction, AccountDeletionRequest, **VerseCache**, …). Every
+  schema change after that ships as an additive migration committed
+  alongside the code change that needs it.
+- To verify against a fresh DB locally:
+
+  ```bash
+  docker run -d --rm --name bc-pg -e POSTGRES_PASSWORD=postgres \
+    -e POSTGRES_DB=blesscupid -p 5544:5432 postgres:16-alpine
+  cd apps/api
+  DATABASE_URL='postgresql://postgres:postgres@localhost:5544/blesscupid?schema=public' \
+    pnpm exec prisma migrate deploy
+  pnpm exec prisma migrate diff \
+    --from-url 'postgresql://postgres:postgres@localhost:5544/blesscupid?schema=public' \
+    --to-schema-datamodel prisma/schema.prisma --exit-code
+  # -> "No difference detected." + exit 0
+  ```
+
+- Manual override (one-off, e.g. mid-incident before a deploy lands):
+
+  ```bash
+  fly ssh console --app blesscupid-api -C 'node_modules/.bin/prisma migrate deploy'
+  ```
+
+- Rollback a bad migration: revert the migration commit, ship a new
+  forward-fix migration. **Never** delete a row from `_prisma_migrations`
+  on the production DB — Prisma's history table is append-only.
+
 ## 2. Mobile build (TestFlight + Play internal)
 
 ```bash
