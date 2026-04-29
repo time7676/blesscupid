@@ -39,6 +39,7 @@ const styles = StyleSheet.create({
     backgroundColor: color.hairline.default,
   },
   dotFilled: {
-    backgroundColor: color.indigo.default,
+    // v1.1 — amber, not blue
+    backgroundColor: color.warning[700],
   },
 });

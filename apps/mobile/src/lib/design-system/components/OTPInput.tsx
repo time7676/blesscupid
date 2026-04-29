@@ -114,7 +114,8 @@ const styles = StyleSheet.create({
     backgroundColor: color.parchment.raised,
   },
   cellFilled: {
-    borderColor: color.indigo.default,
+    // v1.1 — amber, not blue
+    borderColor: color.warning[500],
   },
   cellError: {
     borderColor: color.feedback.warning,

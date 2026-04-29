@@ -16,7 +16,8 @@ export type VerseCardProps = {
 };
 
 // Style locked per BLE-22 scripture block spec:
-//   - text/scripture (cobalt-900 → canonical indigo) — never italic
+//   - text/scripture in ink (was canonical indigo; v1.1 retires blue from surfaces)
+//   - never italic (Pastor lock retained)
 //   - body-lg serif on hero, body serif on compact
 //   - 2px gold-soft left rule
 export function VerseCard({ variant, text, reference, illustration }: VerseCardProps) {
@@ -54,7 +55,7 @@ const styles = StyleSheet.create({
   },
   verse: {
     fontFamily: fontFamily.serif,
-    color: color.indigo.default,
+    color: color.ink.default,
     fontStyle: 'normal',
   },
   verseHero: {

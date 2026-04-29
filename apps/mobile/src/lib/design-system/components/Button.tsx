@@ -111,11 +111,12 @@ function stylesFor(variant: ButtonVariant, disabled: boolean, pressed: boolean) 
     : pressed
       ? color.ink.default
       : color.hairline.default;
+  // v1.1 — ghost defaults to ink, not indigo. No blue text accents.
   const ghostColor = disabled
     ? color.ink.soft
     : pressed
-      ? color.ink.default
-      : color.indigo.default;
+      ? color.ink.pressed
+      : color.ink.default;
   return StyleSheet.create({
     container: {
       ...baseContainer,

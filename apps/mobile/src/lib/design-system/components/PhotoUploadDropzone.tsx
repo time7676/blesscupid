@@ -183,7 +183,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.s5,
     paddingVertical: space.s2,
     borderRadius: radius.pill,
-    backgroundColor: color.indigo.default,
+    // v1.1 — buttons are ink, never blue
+    backgroundColor: color.ink.default,
     alignItems: 'center',
     justifyContent: 'center',
   },

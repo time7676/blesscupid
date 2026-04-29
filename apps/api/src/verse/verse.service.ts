@@ -4,7 +4,7 @@
 // persisted into the calendar table or the client. The cache is transient
 // (7-day TTL) and lives behind the API; clients never read it directly.
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { AdapterError, fetchTranslation } from './adapters.js';
 import { attributionFor, type Translation } from './attribution.js';
 import { VerseCacheService } from './cache.service.js';
@@ -51,7 +51,7 @@ export class VerseService {
 
   constructor(
     private readonly cache: VerseCacheService,
-    fetcher?: Fetcher,
+    @Optional() fetcher?: Fetcher,
   ) {
     this.fetcher = fetcher ?? fetchTranslation;
   }

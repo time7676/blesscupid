@@ -7,17 +7,17 @@ Plan: `/Users/julian/.windsurf/plans/blesscupid-screen-overhaul-4b207e.md`
 | # | Phase | Status |
 |---|---|---|
 | 0   | v1.0 anchor prototypes (8 screens + 3 Welcome variants) | DONE |
-| 0.1 | v1.1 iteration — Garden Hours adopted, catechism dropped, modals added | **DONE** — `prototypes/index.html` |
-| 0a  | Approval gate — 👍 v1.1 anchor + modal rows | **BLOCKED on user review** |
-| 1   | Tokens v1.1 in `lib/design-system/tokens.ts` + theme/tokens shim | not started |
-| 2   | New primitives (EmptyState, ErrorState, LoadingState, Sheet, BottomNav, ScreenHeader, ListItem, Divider, OfflineBanner, ToastProvider) | not started |
-| 3   | ~~Catechism remap~~ → **Verse-of-Day card refresh + Reading Room deferred** | scope reduced |
-| 4   | Onboarding upgrades (AgeGate, ProfileBasics, Faith decomposition, FirstPhoto, DatingOutOfScope, Bio, Done) — no catechism in entry flow | not started |
-| 5   | Auth upgrades (Welcome animated, Login, Signup, MagicLinkSent) | not started |
-| 6   | Navigation reshape (Root/Auth/Onboarding/AppShell/Settings) — simpler without catechism stack | not started |
-| 7   | App shell screens (Today w/ metrics + paywall, People, Threads, You w/ plan tier) | not started |
-| 8   | Modal system — Sheet primitive + 4 canonical patterns (toast, one-time offer, gated feature, Q3 redirect) | not started |
-| 9   | Empty/error/loading wiring | not started |
+| 0.1 | v1.1 iteration — Garden Hours adopted, catechism dropped, modals added | DONE — `prototypes/index.html` |
+| 0a  | Approval gate — user said "this is mature, lets move forward" | DONE — implementation greenlit |
+| 1   | Tokens v1.1 in `lib/design-system/tokens.ts` + indigo/feedback alias deprecation | **DONE** |
+| 2   | New primitives (Sheet, ScreenHeader, ListItem, Divider, EmptyState, ErrorState, LoadingState, OfflineBanner, ToastProvider) | **DONE** |
+| 3   | ~~Catechism remap~~ → Verse-of-Day card refresh + Reading Room deferred | scope reduced |
+| 4   | Onboarding upgrades (AgeGate, ProfileBasics, Faith Q1–Q9, FirstPhoto, DatingOutOfScope, Bio, Done) | not started |
+| 5   | Auth upgrades — **Welcome animated DONE**; Login, Signup, MagicLinkSent pending | partial |
+| 6   | Navigation reshape (RootStack/AuthStack/OnboardingStack/AppShell/SettingsStack) | not started |
+| 7   | App shell screens — **Today, You, People, Threads ALL DONE** (visual; backend wiring later) | **DONE (visual)** |
+| 8   | Modal system — Sheet primitive + GatedFeatureSheet + OneTimeOfferSheet | **PARTIAL** — toast/Q3 still TODO |
+| 9   | Empty/error/loading wiring — replace every Alert.alert + ActivityIndicator | not started |
 | 10  | Cleanup — delete `theme/tokens.ts`, `components/catechism/`, `screens/onboarding-v0/`, `screens/catechism/` | not started |
 | 11  | Docs — system-v1 CHANGELOG, copy/PROPOSED-CHANGES, CLAUDE.md | not started |
 

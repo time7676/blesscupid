@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
   },
   optionLabelSelected: {
     fontFamily: fontFamily.sansSemibold,
-    color: color.indigo.default,
+    // v1.1 — amber, not blue
+    color: color.warning[700],
   },
 });

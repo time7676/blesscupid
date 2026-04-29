@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AccountDeletionService } from './account-deletion.service.js';
 
@@ -39,7 +39,7 @@ export class HardDeleteWorker {
   constructor(
     private readonly prisma: PrismaService,
     private readonly deletion: AccountDeletionService,
-    private readonly objectStore?: ObjectStorePort,
+    @Optional() private readonly objectStore?: ObjectStorePort,
   ) {}
 
   async runOnce(): Promise<PurgeReport[]> {

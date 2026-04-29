@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
   },
   labelSelected: {
     fontFamily: fontFamily.sansSemibold,
-    color: color.indigo.default,
+    // v1.1 — amber accent, not blue
+    color: color.warning[700],
   },
 });

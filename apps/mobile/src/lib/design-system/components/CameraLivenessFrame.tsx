@@ -130,7 +130,8 @@ const styles = StyleSheet.create({
   frame: {
     aspectRatio: 3 / 4,
     borderWidth: border.thick,
-    borderColor: color.indigo.default,
+    // v1.1 — gold-soft dashed oval (FirstPhoto prototype)
+    borderColor: color.gold.soft,
     borderRadius: radius.lg,
     backgroundColor: color.sandstone.deep,
     margin: space.s5,
@@ -146,6 +147,6 @@ const styles = StyleSheet.create({
     marginTop: space.s4,
     fontFamily: fontFamily.sansSemibold,
     fontSize: fontSize.body,
-    color: color.indigo.default,
+    color: color.gold.soft,
   },
 });

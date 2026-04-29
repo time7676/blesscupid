@@ -9,7 +9,7 @@
 // Ported from supabase/functions/verse-prefetch (retired scaffold c8eafa69)
 // — same behaviour without Deno / Supabase JS / pg_cron.
 
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { Cron } from '@nestjs/schedule';
 import { PrismaService } from '../prisma/prisma.service.js';
 import type { Translation } from './attribution.js';
@@ -45,7 +45,7 @@ export class VerseWarmerService {
     private readonly prisma: PrismaService,
     private readonly verse: VerseService,
     private readonly cache: VerseCacheService,
-    loader?: CalendarLoader,
+    @Optional() loader?: CalendarLoader,
   ) {
     this.loader = loader ?? (() => this.loadCalendarFromDb());
   }

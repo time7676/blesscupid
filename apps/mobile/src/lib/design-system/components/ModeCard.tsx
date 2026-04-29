@@ -66,9 +66,10 @@ const styles = StyleSheet.create({
     backgroundColor: color.parchment.raised,
   },
   cardSelected: {
+    // v1.1 — amber selection (was indigo)
     borderWidth: border.thick,
-    borderColor: color.indigo.default,
-    backgroundColor: color.sandstone.warm,
+    borderColor: color.warning[500],
+    backgroundColor: color.warning[100],
   },
   iconWrap: {
     width: 40,
@@ -97,7 +98,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: color.indigo.default,
+    backgroundColor: color.warning[700],
   },
   checkGlyph: {
     color: color.parchment.default,

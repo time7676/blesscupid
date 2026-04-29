@@ -82,7 +82,8 @@ const styles = StyleSheet.create({
     color: color.ink.soft,
   },
   glyphActive: {
-    color: color.gold.default,
+    // v1.1 — amber active state (warning[700]). Gold-default failed AA contrast on parchment.
+    color: color.warning[700],
   },
   label: {
     fontFamily: fontFamily.sansMedium,

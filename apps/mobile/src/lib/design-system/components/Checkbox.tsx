@@ -71,8 +71,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   boxChecked: {
-    borderColor: color.indigo.default,
-    backgroundColor: color.indigo.default,
+    // v1.1 — amber selection, not blue
+    borderColor: color.warning[700],
+    backgroundColor: color.warning[700],
   },
   boxError: {
     borderColor: color.feedback.warning,

@@ -41,3 +41,32 @@ export type {
   PhotoUploadDropzoneProps,
   UploadError,
 } from './components/PhotoUploadDropzone.js';
+
+// v1.1 — new primitives (system-v1)
+export { Sheet, SheetEyebrow } from './components/Sheet.js';
+export type { SheetProps, SheetVariant } from './components/Sheet.js';
+export { ScreenHeader } from './components/ScreenHeader.js';
+export type { ScreenHeaderProps } from './components/ScreenHeader.js';
+export { ListItem } from './components/ListItem.js';
+export type { ListItemProps } from './components/ListItem.js';
+export { Divider, GoldRule } from './components/Divider.js';
+export type { DividerProps } from './components/Divider.js';
+export { EmptyState } from './components/EmptyState.js';
+export type { EmptyStateProps } from './components/EmptyState.js';
+export { ErrorState } from './components/ErrorState.js';
+export type { ErrorStateProps, ErrorVariant } from './components/ErrorState.js';
+export {
+  ScreenLoading,
+  InlineLoading,
+  Skeleton,
+  SkeletonCard,
+} from './components/LoadingState.js';
+export type {
+  ScreenLoadingProps,
+  InlineLoadingProps,
+  SkeletonProps,
+} from './components/LoadingState.js';
+export { OfflineBanner } from './components/OfflineBanner.js';
+export type { OfflineBannerProps } from './components/OfflineBanner.js';
+export { ToastProvider, useToast } from './components/ToastProvider.js';
+export type { ToastInput } from './components/ToastProvider.js';
