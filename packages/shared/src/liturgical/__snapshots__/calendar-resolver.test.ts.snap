@@ -1,0 +1,67 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`resolveCalendar — invariants per BLE-97 acceptance > 2026 resolved snapshot is stable for key dates 1`] = `
+{
+  "adventW1": "2026-11-29",
+  "adventW1Source": "advent-shift",
+  "dec24Ref": "Lukas 2:10-11",
+  "dec25Ref": "Lukas 2:13-14",
+  "dec28Ref": "Matius 2:13-15",
+  "dec31Ref": "Mazmur 90:12",
+  "kenaikan": "2026-05-14",
+  "kenaikanRef": "Kisah Para Rasul 1:8-11",
+  "paskah": "2026-04-05",
+  "paskahFeature": true,
+  "paskahRef": "Matius 28:5-7",
+  "pentakosta": "2026-05-24",
+  "pentakostaFeature": true,
+  "pentakostaRef": "Kisah Para Rasul 2:1-4",
+  "rabuAbu": "2026-02-18",
+  "rabuAbuRef": "Yoel 2:12-13",
+  "year": 2026,
+}
+`;
+
+exports[`resolveCalendar — invariants per BLE-97 acceptance > 2027 resolved snapshot is stable for key dates 1`] = `
+{
+  "adventW1": "2027-11-28",
+  "adventW1Source": "advent-shift",
+  "dec24Ref": "Lukas 2:10-11",
+  "dec25Ref": "Lukas 2:13-14",
+  "dec28Ref": "Matius 2:13-15",
+  "dec31Ref": "Mazmur 90:12",
+  "kenaikan": "2027-05-06",
+  "kenaikanRef": "Kisah Para Rasul 1:8-11",
+  "paskah": "2027-03-28",
+  "paskahFeature": true,
+  "paskahRef": "Matius 28:5-7",
+  "pentakosta": "2027-05-16",
+  "pentakostaFeature": true,
+  "pentakostaRef": "Kisah Para Rasul 2:1-4",
+  "rabuAbu": "2027-02-10",
+  "rabuAbuRef": "Yoel 2:12-13",
+  "year": 2027,
+}
+`;
+
+exports[`resolveCalendar — invariants per BLE-97 acceptance > 2030 resolved snapshot is stable for key dates 1`] = `
+{
+  "adventW1": "2030-12-01",
+  "adventW1Source": "advent-shift",
+  "dec24Ref": "Lukas 2:10-11",
+  "dec25Ref": "Lukas 2:13-14",
+  "dec28Ref": "Matius 2:13-15",
+  "dec31Ref": "Mazmur 90:12",
+  "kenaikan": "2030-05-30",
+  "kenaikanRef": "Kisah Para Rasul 1:8-11",
+  "paskah": "2030-04-21",
+  "paskahFeature": true,
+  "paskahRef": "Matius 28:5-7",
+  "pentakosta": "2030-06-09",
+  "pentakostaFeature": true,
+  "pentakostaRef": "Kisah Para Rasul 2:1-4",
+  "rabuAbu": "2030-03-06",
+  "rabuAbuRef": "Yoel 2:12-13",
+  "year": 2030,
+}
+`;
