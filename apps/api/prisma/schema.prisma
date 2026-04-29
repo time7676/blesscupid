@@ -246,6 +246,41 @@ enum PastorModeRelationshipStatus {
   expired
 }
 
+// BLE-63 — Moderation Playbook v1
+//
+// Triage queues per Appendix A.1. Snake-case in DB; mapped to playbook names
+// (`mod-triage`, `mod-appeals`, `ceo-p0`, `pastor-precedent`) at the API edge.
+enum ModerationQueue {
+  mod_triage
+  mod_appeals
+  ceo_p0
+  pastor_precedent
+}
+
+// Routing category per A.4. Distinct from ReportReason: a reporter picks a
+// reason; the server projects that to a category for routing decisions.
+enum ReportCategory {
+  abuse
+  suicidal
+  minor
+  other
+}
+
+// HCoC tier (T1 nudge → T4 ban). Used by moderation_action_log.
+enum ModerationTier {
+  t1
+  t2
+  t3
+  t4
+}
+
+enum AppealStatus {
+  none
+  pending
+  upheld
+  overturned
+}
+
 model User {
   id               String   @id @default(uuid()) @db.Uuid
   email            String   @unique
@@ -267,19 +302,23 @@ model User {
   photos          Photo[]
   moderationItems ModerationItem[]
 
-  sentMessages           Message[]               @relation("MessageSender")
-  receivedMessages       Message[]               @relation("MessageRecipient")
-  reportsSubmitted       Report[]                @relation("ReportReporter")
-  reportsAgainst         Report[]                @relation("ReportReported")
-  blocksAuthored         Block[]                 @relation("BlockBlocker")
-  blocksAgainst          Block[]                 @relation("BlockBlocked")
-  reviewedQueueItems     ModerationQueueItem[]   @relation("QueueReviewer")
-  accountDeletion        AccountDeletionRequest? @relation("UserDeletion")
-  moderationActionsTaken ModerationAction[]      @relation("ActionActor")
-  pastorModeGate         PastorModeGate?         @relation("UserPastorModeGate")
-  pastorModeAttempts     PastorModeGateAttempt[] @relation("UserPastorModeAttempts")
-  pastorModeAsAudited    PastorModeRelationship[] @relation("PastorModeAudited")
-  pastorModeAsPastor     PastorModeRelationship[] @relation("PastorModePastor")
+  sentMessages           Message[]                 @relation("MessageSender")
+  receivedMessages       Message[]                 @relation("MessageRecipient")
+  reportsSubmitted       Report[]                  @relation("ReportReporter")
+  reportsAgainst         Report[]                  @relation("ReportReported")
+  blocksAuthored         Block[]                   @relation("BlockBlocker")
+  blocksAgainst          Block[]                   @relation("BlockBlocked")
+  reviewedQueueItems     ModerationQueueItem[]     @relation("QueueReviewer")
+  accountDeletion        AccountDeletionRequest?   @relation("UserDeletion")
+  moderationActionsTaken ModerationAction[]        @relation("ActionActor")
+  // BLE-63 — audit log relations
+  actionLogsAgainst      ModerationActionLog[]     @relation("ActionLogUser")
+  actionLogsTaken        ModerationActionLog[]     @relation("ActionLogActor")
+  evidenceReads          EvidenceDecryptionAudit[] @relation("EvidenceReader")
+  pastorModeGate         PastorModeGate?           @relation("UserPastorModeGate")
+  pastorModeAttempts     PastorModeGateAttempt[]   @relation("UserPastorModeAttempts")
+  pastorModeAsAudited    PastorModeRelationship[]  @relation("PastorModeAudited")
+  pastorModeAsPastor     PastorModeRelationship[]  @relation("PastorModePastor")
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -496,22 +535,28 @@ model ModerationQueueItem {
 }
 
 model Report {
-  id                 String       @id @default(uuid()) @db.Uuid
-  reporterUserId     String       @db.Uuid
-  reporter           User         @relation("ReportReporter", fields: [reporterUserId], references: [id], onDelete: Cascade)
-  reportedUserId     String       @db.Uuid
-  reported           User         @relation("ReportReported", fields: [reportedUserId], references: [id], onDelete: Cascade)
-  threadId           String?      @db.Uuid
-  messageId          String?      @db.Uuid
+  id                 String          @id @default(uuid()) @db.Uuid
+  reporterUserId     String          @db.Uuid
+  reporter           User            @relation("ReportReporter", fields: [reporterUserId], references: [id], onDelete: Cascade)
+  reportedUserId     String          @db.Uuid
+  reported           User            @relation("ReportReported", fields: [reportedUserId], references: [id], onDelete: Cascade)
+  threadId           String?         @db.Uuid
+  messageId          String?         @db.Uuid
   reason             ReportReason
   freeform           String?
   // BLE-10 triage fields. Safe defaults so existing BLE-9 inserts are unaffected.
-  severity           Int          @default(0)
-  status             ReportStatus @default(open)
+  severity           Int             @default(0)
+  status             ReportStatus    @default(open)
   resolvedAt         DateTime?
-  resolvedByUserId   String?      @db.Uuid
-  moderationActionId String?      @db.Uuid
-  createdAt          DateTime     @default(now())
+  resolvedByUserId   String?         @db.Uuid
+  moderationActionId String?         @db.Uuid
+  // BLE-63 / A.4 — routing category + assigned queue. `category` is derived
+  // from `reason` server-side; `queue` is the routing target. P0 categories
+  // (abuse / suicidal / minor) always land in ceo_p0.
+  category           ReportCategory  @default(other)
+  queue              ModerationQueue @default(mod_triage)
+  autoLockApplied    Boolean         @default(false)
+  createdAt          DateTime        @default(now())
 
   evidenceFreezes   EvidenceFreeze[]   @relation("FreezeReport")
   moderationActions ModerationAction[] @relation("ActionReport")
@@ -519,6 +564,61 @@ model Report {
   @@index([reportedUserId, createdAt])
   @@index([reporterUserId])
   @@index([status, severity, createdAt])
+  @@index([queue, status, createdAt])
+}
+
+// BLE-63 / Appendix A.2 — durable audit log of every moderation action.
+// One row per (user, tier-action). Evidence content stored encrypted at rest
+// (AES-256-GCM, per-record DEK wrapped by `MODERATION_EVIDENCE_KEK`).
+model ModerationActionLog {
+  // action_id
+  id                  String          @id @default(uuid()) @db.Uuid
+  userId              String          @db.Uuid
+  user                User            @relation("ActionLogUser", fields: [userId], references: [id], onDelete: Cascade)
+  actorUserId         String          @db.Uuid
+  actor               User            @relation("ActionLogActor", fields: [actorUserId], references: [id], onDelete: Cascade)
+  tier                ModerationTier
+  ruleId              String
+  predicateId         String?
+  // Evidence ciphertext + IV + GCM tag + wrapped DEK.
+  evidenceCipher      Bytes?
+  evidenceIv          Bytes?
+  evidenceAuthTag     Bytes?
+  evidenceWrappedKey  Bytes?
+  // A.2: defaults true except on P0 (queue-derived; service enforces).
+  evidenceUserVisible Boolean         @default(true)
+  appealUrl           String?
+  appealStatus        AppealStatus    @default(none)
+  // Snapshot at time of action — count of action-log rows in last 90d.
+  priorActions90d     Int             @default(0)
+  pastorReviewedAt    DateTime?
+  queue               ModerationQueue @default(mod_triage)
+  reportId            String?         @db.Uuid
+  notes               String?
+  createdAt           DateTime        @default(now())
+
+  decryptionAudits EvidenceDecryptionAudit[]
+
+  @@index([userId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([queue, createdAt])
+  @@index([tier, createdAt])
+  @@index([appealStatus])
+}
+
+// BLE-63 / A.2 — every plaintext read of evidenceCipher writes a row.
+model EvidenceDecryptionAudit {
+  id           String              @id @default(uuid()) @db.Uuid
+  actionLogId  String              @db.Uuid
+  actionLog    ModerationActionLog @relation(fields: [actionLogId], references: [id], onDelete: Cascade)
+  readerUserId String              @db.Uuid
+  reader       User                @relation("EvidenceReader", fields: [readerUserId], references: [id], onDelete: Cascade)
+  readerRole   UserRole
+  reason       String
+  createdAt    DateTime            @default(now())
+
+  @@index([actionLogId, createdAt])
+  @@index([readerUserId, createdAt])
 }
 
 model Block {

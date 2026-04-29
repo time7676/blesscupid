@@ -1,3 +1,16 @@
+import type { NavigatorScreenParams } from '@react-navigation/native';
+
+export type CatechismStackParamList = {
+  CatechismBeat1Tagline: undefined;
+  CatechismBeat2Modes: undefined;
+  CatechismBeat3Preview: undefined;
+  CatechismBeat4Full: undefined;
+  CatechismBeat5Photo: undefined;
+  CatechismBeat6Faith: undefined;
+  CatechismBeat7Timeline: undefined;
+  CatechismBeat8Welcome: { firstName?: string } | undefined;
+};
+
 export type OnboardingStackParamList = {
   Signup: undefined;
   Login: undefined;
@@ -17,4 +30,6 @@ export type OnboardingStackParamList = {
   V0DailyPreview: { tradition: string; statement: string };
   V0Done: undefined;
   DevDesignTokens: undefined;
+  OnboardingDatingOutOfScope: undefined;
+  Catechism: NavigatorScreenParams<CatechismStackParamList>;
 };

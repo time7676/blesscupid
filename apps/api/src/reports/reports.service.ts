@@ -2,6 +2,7 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { makeReport, type ReportReason } from '@blesscupid/moderation';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { PrismaModerationStore } from '../chat/prisma-moderation-store.js';
+import { routeFromReason } from '../moderation-actions/routing.js';
 
 export interface CreateReportInput {
   reportedUserId: string;
@@ -60,10 +61,32 @@ export class ReportsService {
     // BLE-10 triage fields. moderation/makeReport doesn't know about these,
     // so patch them on after the row is in place.
     const severity = this.computeSeverity(input.reason);
+
+    // BLE-63 / A.4 routing: project reason → category → queue. P0 categories
+    // (abuse / suicidal / minor) bypass classifiers, land in ceo_p0.
+    const decision = routeFromReason(input.reason);
+
     await this.prisma.report.update({
       where: { id: report.id },
-      data: { severity, status: 'open' },
+      data: {
+        severity,
+        status: 'open',
+        category: decision.category,
+        queue: decision.queue,
+      },
     });
+
+    // A.4 — minor: auto-lock account immediately.
+    if (decision.autoLockAccount) {
+      await this.prisma.user.update({
+        where: { id: input.reportedUserId },
+        data: { isSuspended: true },
+      });
+      await this.prisma.report.update({
+        where: { id: report.id },
+        data: { autoLockApplied: true },
+      });
+    }
 
     // Evidence preservation: 90-day server-side freeze on the chat thread.
     if (input.threadId) {
@@ -76,7 +99,14 @@ export class ReportsService {
       });
     }
 
-    return { id: report.id, createdAt: report.createdAt, severity };
+    return {
+      id: report.id,
+      createdAt: report.createdAt,
+      severity,
+      category: decision.category,
+      queue: decision.queue,
+      autoLockApplied: decision.autoLockAccount,
+    };
   }
 
   async listAll(limit = 100) {

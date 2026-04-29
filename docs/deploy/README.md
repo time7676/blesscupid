@@ -2,6 +2,7 @@
 
 - [`RUNBOOK.md`](./RUNBOOK.md) — main → TestFlight + production API
 - [`ALERTS.md`](./ALERTS.md) — on-call alert rules + test cadence
+- [`CREDENTIALS.md`](./CREDENTIALS.md) — one-time Apple + Play credential setup for EAS (BLE-122)
 
 ## Quick reference
 
