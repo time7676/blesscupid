@@ -3,15 +3,13 @@
  *
  * Per system-v1 prototypes §A. RN port of the CSS @keyframes hero-drift —
  * we render a sandstone-warm base with two semi-transparent gold/amber
- * "highlights" that pan horizontally on a slow Animated.loop. No CSS gradient
- * library required — works with stock RN primitives.
- *
- * Replace the painterly band with the real `Welcome hero` PNG (plan §12.3)
- * when available; everything below the hero stays.
+ * "highlights" that pan horizontally on a slow Animated.loop.
  */
 
 import { useEffect, useRef } from 'react';
 import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { AuthStackParamList } from '../../navigation/types.js';
 import {
   Button,
   GoldRule,
@@ -23,16 +21,11 @@ import {
   tracking,
 } from '../../lib/design-system/index.js';
 
-const HERO_HEIGHT = 296;
+const HERO_HEIGHT = 240;
 
-export type WelcomeScreenProps = {
-  onBegin?: () => void;
-  onSignIn?: () => void;
-};
+type Props = NativeStackScreenProps<AuthStackParamList, 'Welcome'>;
 
-export function WelcomeScreen({ onBegin, onSignIn }: WelcomeScreenProps) {
-  // Drift cycle — translate two highlights left/right across the hero band.
-  // Mirrors the CSS keyframes (0% → 50% → 100%, 14s loop).
+export function WelcomeScreen({ navigation }: Props) {
   const drift = useRef(new Animated.Value(0)).current;
   useEffect(() => {
     const loop = Animated.loop(
@@ -68,7 +61,6 @@ export function WelcomeScreen({ onBegin, onSignIn }: WelcomeScreenProps) {
 
   return (
     <View style={styles.root}>
-      {/* Animated hero band */}
       <View style={styles.hero}>
         <Animated.View
           style={[
@@ -91,37 +83,37 @@ export function WelcomeScreen({ onBegin, onSignIn }: WelcomeScreenProps) {
         </View>
       </View>
 
-      {/* Body */}
       <View style={styles.body}>
-        <Text style={styles.eyebrow}>A different kind of dating</Text>
-        <Text style={styles.headline}>
-          Made for those who keep{' '}
-          <Text style={styles.headlineEm}>the faith.</Text>
-        </Text>
-        <Text style={styles.lede}>
-          Three profiles a day. A shared verse. A covenant on how we show up to each other.
-        </Text>
-
-        <View style={styles.bullets}>
-          {[
-            'Three profiles, every morning. No infinite swipe.',
-            'A shared daily verse with whoever you talk to.',
-            'A pastor-signed covenant \u2014 read once, lived daily.',
-          ].map((line) => (
-            <View key={line} style={styles.bulletRow}>
-              <View style={styles.bulletDot} />
-              <Text style={styles.bulletText}>{line}</Text>
-            </View>
-          ))}
+        <View style={styles.copyBlock}>
+          <Text style={styles.eyebrow}>A different kind of dating</Text>
+          <Text style={styles.headline}>
+            Made for those who keep{' '}
+            <Text style={styles.headlineEm}>the faith.</Text>
+          </Text>
+          <Text style={styles.lede}>
+            Three profiles a day. A shared verse. A covenant on how we show up
+            to each other.
+          </Text>
         </View>
 
-        <View style={styles.spacer} />
-
-        <Text style={styles.legalese}>By continuing you agree to our covenant and terms.</Text>
-
-        <Button variant="primary" label="Begin" onPress={onBegin ?? (() => {})} />
-        <View style={{ height: space.s2 }} />
-        <Button variant="ghost" label="I already have an account" onPress={onSignIn ?? (() => {})} />
+        <View style={styles.ctas}>
+          <Text style={styles.legalese}>
+            By continuing you agree to our covenant and terms.
+          </Text>
+          <Button
+            variant="primary"
+            full
+            label="Begin"
+            onPress={() => navigation.navigate('Signup')}
+          />
+          <View style={{ height: space.s3 }} />
+          <Button
+            variant="secondary"
+            full
+            label="I already have an account"
+            onPress={() => navigation.navigate('Login')}
+          />
+        </View>
       </View>
     </View>
   );
@@ -146,7 +138,6 @@ const styles = StyleSheet.create({
     width: '180%',
     height: HERO_HEIGHT,
     opacity: 0.55,
-    // Soft circular falloff approximated via huge borderRadius.
     borderRadius: HERO_HEIGHT,
   },
   heroRule: {
@@ -160,7 +151,15 @@ const styles = StyleSheet.create({
   body: {
     flex: 1,
     paddingHorizontal: space.s7,
-    paddingTop: space.s8,
+    paddingTop: space.s7,
+    paddingBottom: space.s8,
+    justifyContent: 'space-between',
+  },
+  copyBlock: {
+    // copy stays close to the hero; CTA cluster anchors at the bottom.
+  },
+  ctas: {
+    paddingTop: space.s5,
   },
   eyebrow: {
     fontFamily: fontFamily.sansSemibold,
@@ -172,8 +171,8 @@ const styles = StyleSheet.create({
   headline: {
     marginTop: space.s4,
     fontFamily: fontFamily.serif,
-    fontSize: 36,
-    lineHeight: 38,
+    fontSize: 32,
+    lineHeight: 36,
     letterSpacing: -0.4,
     color: color.ink.default,
   },
@@ -182,46 +181,18 @@ const styles = StyleSheet.create({
     color: color.warning[700],
   },
   lede: {
-    marginTop: space.s5,
+    marginTop: space.s4,
     fontFamily: fontFamily.sans,
     fontSize: fontSize.bodyLg,
     lineHeight: Math.round(fontSize.bodyLg * 1.55),
     color: color.ink.soft,
   },
-
-  bullets: {
-    marginTop: space.s6,
-    gap: space.s3,
-  },
-  bulletRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    gap: space.s3,
-  },
-  bulletDot: {
-    marginTop: 7,
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: color.warning[500],
-  },
-  bulletText: {
-    flex: 1,
-    fontFamily: fontFamily.sans,
-    fontSize: fontSize.body,
-    lineHeight: Math.round(fontSize.body * 1.55),
-    color: color.ink.default,
-  },
-
-  spacer: { flex: 1 },
-
   legalese: {
-    marginVertical: space.s4,
+    marginBottom: space.s4,
     textAlign: 'center',
     fontFamily: fontFamily.sans,
     fontSize: fontSize.caption,
     color: color.ink.soft,
     paddingHorizontal: space.s5,
   },
-
 });
