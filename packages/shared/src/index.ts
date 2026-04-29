@@ -6,3 +6,4 @@ export * from './moderation.js';
 export * from './safety.js';
 export * from './liturgical/index.js';
 export * from './verse-of-day/index.js';
+export * from './scheduler/index.js';
