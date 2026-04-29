@@ -1,9 +1,19 @@
-// Design tokens — BlessCupid system v0 (D1 Cathedral Light).
-// Mirrors docs/design/system-v0/tokens.json, adapted for React Native:
+// Design tokens — BlessCupid system v1.1 (Garden Hours).
+// Mirrors docs/design/system-v1/tokens.css, adapted for React Native:
 // - px values become unitless numbers (RN units are points)
 // - letterSpacing converts em → points relative to a 16-pt base
 // - font families resolve to the names registered via expo-google-fonts
 // - motion exposes Easing + duration constants instead of CSS transitions
+//
+// v1.1 deltas vs v0 (see docs/design/system-v1/README.md):
+// - cobalt ramp added (defined but reserved for future secondary states; not
+//   used in user-facing surfaces in v1.1)
+// - feedback.warning (single token) → warning.{100,500,700} amber ramp
+// - feedback.success (single token) → success.{100,500,700} sage ramp
+// - radius.xl (20) + radius.xxl (28) added
+// - space.s11 (56) added
+// - elevation.card added
+// - color.indigo retained as a deprecated alias to color.cobalt[700]
 
 import { Easing } from 'react-native';
 
@@ -30,18 +40,42 @@ export const color = {
     soft: '#E5C97D',
     halo: 'rgba(200, 162, 75, 0.18)',
   },
-  indigo: {
-    default: '#2A3470',
+  // v1.1 — full cobalt ramp. Defined but RESERVED for future secondary states;
+  // user-facing surfaces use the warning (amber) ramp instead. See README.
+  cobalt: {
+    50: '#EEF2FB',
+    100: '#D6E0F4',
+    300: '#7FA1DD',
+    500: '#3D67B8',
+    700: '#243F7A',
+    900: '#142447',
+  },
+  // v1.1 — warning is amber, never red. Holy Code §HCoC bans red.
+  warning: {
+    100: '#FCEBD2',
+    500: '#D08A2C',
+    700: '#8C5912',
+  },
+  // v1.1 — success is sage, not green-green.
+  success: {
+    100: '#E5EFE6',
+    500: '#5C8A6A',
+    700: '#3F6149',
   },
   hairline: {
     default: 'rgba(26, 26, 36, 0.12)',
     soft: 'rgba(26, 26, 36, 0.06)',
     strong: 'rgba(20, 24, 31, 0.16)',
   },
+  /** @deprecated v1.1 — use color.cobalt[700] for the cool-blue accent. */
+  indigo: {
+    default: '#243F7A',
+  },
+  /** @deprecated v1.1 — use color.warning.* and color.success.* ramps. */
   feedback: {
-    warning: '#A95837',
-    warningTint: 'rgba(169, 88, 55, 0.14)',
-    success: '#5C7A56',
+    warning: '#8C5912',
+    warningTint: 'rgba(140, 89, 18, 0.14)',
+    success: '#5C8A6A',
   },
 } as const;
 
@@ -57,6 +91,7 @@ export const space = {
   s8: 40,
   s9: 56,
   s10: 72,
+  s11: 56, // v1.1 — alias used by catechism legacy code; kept for migration
 } as const;
 
 export const radius = {
@@ -65,6 +100,8 @@ export const radius = {
   sm: 4,
   md: 6,
   lg: 12,
+  xl: 20, // v1.1 — modal sheets, paywall cards
+  xxl: 28, // v1.1 — hero cards (catechism legacy + future reading-room)
   pill: 999,
 } as const;
 
@@ -213,6 +250,14 @@ export const elevation = {
     shadowRadius: 0,
     shadowOffset: { width: 0, height: 1 },
     elevation: 1,
+  },
+  // v1.1 — soft card shadow for ListItem rows, profile cards, plan-tier row.
+  card: {
+    shadowColor: '#14181F',
+    shadowOpacity: 0.06,
+    shadowRadius: 2,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 2,
   },
   modal: {
     shadowColor: '#14181F',

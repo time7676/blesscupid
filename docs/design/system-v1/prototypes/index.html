@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<!--
+  BlessCupid system v1 — Anchor prototypes (Phase 0)
+  Plan: /Users/julian/.windsurf/plans/blesscupid-screen-overhaul-4b207e.md §11
+  Built with huashu-design skill (Junior Designer pass).
+
+  WHAT THIS IS
+    A single self-contained design review file. Open in any browser.
+    No server, no build, no deps beyond Google Fonts CDN + React/Babel CDN.
+    Every screen is a real iPhone 14 reference (390×844) IosFrame.
+
+  WHAT THIS IS *NOT*
+    Production code. Implementation code goes in apps/mobile/src/.
+    These prototypes are the visual spec the RN code will match 1:1.
+
+  HOW TO REVIEW
+    1. Top variants — pick A/B/C for the overall design direction.
+    2. Anchor screens — mark each 👍 / ✏️ / ❌ in the §13 table at bottom.
+    3. Hand back; I implement only 👍 screens.
+
+  PLACEHOLDERS (per §12.16)
+    All hero illustrations, portraits, glyphs are CSS gradients + Unicode.
+    Real assets land per the §12 spec — every gradient swaps to <img> in RN.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BlessCupid · system v1 anchor prototypes</title>
+  <link rel="stylesheet" href="../tokens.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    body {
+      padding: 48px 56px 96px;
+      color: var(--color-parchment);
+    }
+    .page-title {
+      font-family: var(--font-serif);
+      font-size: 40px;
+      font-weight: 400;
+      letter-spacing: var(--tracking-tight);
+      line-height: 1.1;
+      max-width: 720px;
+    }
+    .page-title em {
+      font-style: italic;
+      color: var(--color-gold-soft);
+    }
+    .page-meta {
+      margin-top: 12px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: rgba(250, 247, 240, 0.5);
+      letter-spacing: 0.04em;
+    }
+
+    .section-eyebrow {
+      margin-top: 56px;
+      margin-bottom: 4px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 28px;
+      font-weight: 400;
+      letter-spacing: var(--tracking-tight);
+      max-width: 760px;
+      color: var(--color-parchment);
+    }
+    .section-helper {
+      margin-top: 8px;
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.55;
+      color: rgba(250, 247, 240, 0.65);
+      max-width: 660px;
+    }
+
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 48px 40px;
+      margin-top: 32px;
+      align-items: flex-start;
+    }
+    .frame-label {
+      margin-bottom: 12px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      color: rgba(250, 247, 240, 0.55);
+    }
+    .frame-label strong {
+      color: var(--color-parchment);
+      font-weight: 600;
+      letter-spacing: 0;
+      font-family: var(--font-sans);
+    }
+    .frame-label .copy-status {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 6px;
+      background: rgba(200, 162, 75, 0.15);
+      border: 1px solid var(--color-gold);
+      color: var(--color-gold-soft);
+      border-radius: 3px;
+      font-size: 10px;
+    }
+
+    /* Junior Designer assumptions panel — visible at top so reviewers see
+       what I assumed before scrolling into the work. */
+    @keyframes hero-drift {
+      0%   { background-position:   0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position:   0% 50%; }
+    }
+    .hero-animated {
+      background-size: 240% 240% !important;
+      animation: hero-drift 14s cubic-bezier(0.4,0,0.2,1) infinite;
+      will-change: background-position;
+    }
+
+    .assumptions {
+      margin-top: 32px;
+      padding: 24px 28px;
+      background: rgba(200, 162, 75, 0.06);
+      border-left: 2px solid var(--color-gold);
+      border-radius: 0 6px 6px 0;
+      max-width: 880px;
+    }
+    .assumptions h3 {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--color-gold);
+      margin-bottom: 12px;
+    }
+    .assumptions ol {
+      margin: 0;
+      padding-left: 22px;
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: rgba(250, 247, 240, 0.85);
+    }
+    .assumptions ol li { margin-bottom: 6px; }
+    .assumptions ol li code {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--color-gold-soft);
+      padding: 1px 4px;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 2px;
+    }
+
+    /* Review table at bottom */
+    .review-table {
+      width: 100%;
+      border-collapse: collapse;
+      max-width: 880px;
+      margin-top: 24px;
+      font-family: var(--font-sans);
+      font-size: 13px;
+    }
+    .review-table th, .review-table td {
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(250, 247, 240, 0.08);
+      color: rgba(250, 247, 240, 0.85);
+    }
+    .review-table th {
+      font-weight: 600;
+      color: var(--color-gold-soft);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+    .review-table .verdict {
+      font-family: var(--font-mono);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     HEADER
+─────────────────────────────────────────────────────────────────── -->
+<h1 class="page-title">
+  BlessCupid · system <em>v1</em>
+  <br />
+  <span style="font-size: 24px; opacity: 0.7;">Garden Hours · approved direction · v1.1</span>
+</h1>
+<div class="page-meta">
+  Phase 0.1 · catechism dropped · monetization + modals added · ink buttons · animated hero · 390×844
+</div>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     ASSUMPTIONS — Junior Designer pass, show before going deep
+─────────────────────────────────────────────────────────────────── -->
+<aside class="assumptions">
+  <h3>v1.1 — what changed since you reviewed v1.0</h3>
+  <ol>
+    <li>
+      <strong>Garden Hours wins.</strong> Sandstone-warm + gold-soft + amber-ink (warning-700) is
+      the canonical chord. The Welcome hero now <strong>drifts</strong> over 14 seconds — pure CSS
+      keyframes. RN port: <code>react-native-reanimated</code> shared-value loop.
+    </li>
+    <li>
+      <strong>Cobalt is retired</strong> from user-facing surfaces. All italic emphasis, active
+      states, selected chips, and selected radios use the amber ramp instead. Cobalt token stays
+      defined for future secondary states.
+    </li>
+    <li>
+      <strong>All primary buttons are ink-black.</strong> One button color across the app — no
+      blue, no amber buttons. Amber is text/tint accent only.
+    </li>
+    <li>
+      <strong>Catechism is out of the loop.</strong> Beat 1–8 onboarding ceremony is dropped per
+      your direction. Verse-of-day card on Today carries the spiritual thread. Catechism content
+      is preserved in i18n for a future "reading room" feature, not entry-flow. Plan §6 navigation
+      simplifies; plan Phase 3 (Catechism remap) is cancelled and replaced with "Verse-of-Day +
+      Reading Room (deferred)".
+    </li>
+    <li>
+      <strong>Monetization landed gently.</strong> Today now has a "Profile views" card that
+      shows an aggregate metric, then gates the identity reveal behind Bless+. No banner ads,
+      no countdown timers, no shame copy. The pattern is: <em>show the number first, ask for
+      the upgrade second</em>.
+    </li>
+    <li>
+      <strong>You has a plan-tier row.</strong> "Account · Free" or "Bless+ · 12 days left"
+      sits at the top of the settings list with an inline upgrade affordance. Single source of
+      truth for tier status across the app.
+    </li>
+    <li>
+      <strong>New §C section: Modals & overlays.</strong> Four canonical patterns — notification
+      banner, one-time offer, gated-feature paywall, Q3 redirect — that every other modal in the
+      app inherits from. <code>Sheet</code> primitive from plan §3 carries them all.
+    </li>
+    <li>
+      <strong>App loop reaffirmed.</strong> Tinder/Bumble simplicity (open → see today's three →
+      tap → talk) + heavy moderation (face liveness + 1-hour human review) + Christian-specific
+      moments (verse-of-day, covenant ack, faith filtering, pastor-signed redirect on values
+      mismatch). Per your note: "Christians will be happy this exists."
+    </li>
+  </ol>
+</aside>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SECTION A · DIRECTION VARIANTS (Welcome screen, 3 ways)
+─────────────────────────────────────────────────────────────────── -->
+<div class="section-eyebrow">A · Welcome</div>
+<h2 class="section-title">
+  Garden Hours, with a moving hero
+</h2>
+<p class="section-helper">
+  Locked direction. Sandstone-warm → gold-soft → amber-tint, drifting on a 14-second loop. Amber
+  carries italic emphasis throughout the app. Buttons are ink-black, never blue. Cobalt is
+  retired from user-facing surfaces in v1.1.
+</p>
+
+<div id="variants-root" class="grid"></div>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SECTION B · ANCHOR SCREENS (8)
+─────────────────────────────────────────────────────────────────── -->
+<div class="section-eyebrow">B · Anchor screens</div>
+<h2 class="section-title">
+  Six surfaces that decide the loop
+</h2>
+<p class="section-helper">
+  Daily home (Today, with the new metrics + non-intrusive paywall), account surface (You, with
+  plan tier), questionnaire UI (Faith Q1 — locked as the onboarding pattern), the moderation
+  gate (FirstPhoto), and the error gallery. Catechism Beat 1 and Beat 3 are removed per your
+  v1.1 direction; the verse strip on Today carries that thread instead.
+</p>
+
+<div id="anchors-root" class="grid"></div>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SECTION C · MODALS & OVERLAYS (NEW v1.1)
+─────────────────────────────────────────────────────────────────── -->
+<div class="section-eyebrow">C · Modals & overlays</div>
+<h2 class="section-title">
+  Four patterns every other modal inherits from
+</h2>
+<p class="section-helper">
+  Notification banner (top-sheet toast, dismissible), one-time offer (full sheet, founding-member
+  promo), gated-feature paywall (mid-sheet, Bless+ unlock), and the Q3 same-sex redirect (held over
+  from v1.0 — pastor-locked copy). All four sit on the same <code>Sheet</code> primitive listed in
+  plan §3; only contents differ.
+</p>
+
+<div id="modals-root" class="grid"></div>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     SECTION C · REVIEW TABLE
+─────────────────────────────────────────────────────────────────── -->
+<div class="section-eyebrow">D · Approval gate</div>
+<h2 class="section-title">Mark each row 👍 / ✏️ / ❌</h2>
+<p class="section-helper">
+  Only 👍 rows get RN implementation in the next phase. ✏️ rows get a fix-and-re-prototype loop.
+  ❌ rows go back to direction-variant exploration.
+</p>
+
+<table class="review-table">
+  <thead>
+    <tr>
+      <th style="width: 28%">Screen</th>
+      <th style="width: 12%">v1.1 status</th>
+      <th>Notes</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>A · Welcome — Garden Hours, animated</td><td class="verdict">_</td><td>14s drift, ink button, amber italic.</td></tr>
+    <tr><td>B1 · Today (verse + 3 cards + metrics + paywall)</td><td class="verdict">_</td><td>Profile-views card gates identity reveal.</td></tr>
+    <tr><td>B2 · You (with plan-tier row)</td><td class="verdict">_</td><td>Free / Bless+ trial / Bless+ states.</td></tr>
+    <tr><td>B3 · Faith Q1 (intent radio — onboarding pattern)</td><td class="verdict">_</td><td>Locked as the onboarding question template.</td></tr>
+    <tr><td>B4 · First photo (camera + liveness)</td><td class="verdict">_</td><td>Dark mode, gold liveness oval.</td></tr>
+    <tr><td>B5 · Error-state gallery (5 variants)</td><td class="verdict">_</td><td>No red anywhere.</td></tr>
+    <tr><td>C1 · Notification banner (top-sheet toast)</td><td class="verdict">_</td><td>Daily delivery, dismissible.</td></tr>
+    <tr><td>C2 · One-time offer (founding-member promo)</td><td class="verdict">_</td><td>Bless+ trial entry.</td></tr>
+    <tr><td>C3 · Gated feature (Bless+ paywall card)</td><td class="verdict">_</td><td>Profile-views unlock pattern.</td></tr>
+    <tr><td>C4 · Q3 same-sex redirect (Pastor-locked)</td><td class="verdict">_</td><td>Stand-in copy until i18n hook-up.</td></tr>
+  </tbody>
+</table>
+
+<!-- ─────────────────────────────────────────────────────────────────
+     React + Babel CDN
+─────────────────────────────────────────────────────────────────── -->
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+<script type="text/babel" data-presets="react">
+const { createElement: h, useState, Fragment } = React;
+
+/* ═════════════════════════════════════════════════════════════════
+   IosFrame — adapted from huashu-design assets/ios_frame.jsx
+   iPhone 14 reference, parchment background.
+   ═════════════════════════════════════════════════════════════════ */
+const ios = {
+  wrapper: {
+    display: 'inline-block',
+    padding: 12,
+    background: '#000',
+    borderRadius: 60,
+    boxShadow: '0 0 0 2px #1f2937, 0 20px 60px rgba(0,0,0,0.35)',
+    position: 'relative',
+  },
+  screen: {
+    position: 'relative',
+    borderRadius: 48,
+    overflow: 'hidden',
+    background: 'var(--color-parchment)',
+    width: 390,
+    height: 844,
+  },
+  statusBar: {
+    position: 'absolute',
+    top: 0, left: 0, right: 0,
+    height: 54,
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 32px',
+    fontSize: 16, fontWeight: 600,
+    fontFamily: '-apple-system, "SF Pro Text", sans-serif',
+    zIndex: 20, pointerEvents: 'none',
+    color: 'var(--color-ink)',
+  },
+  island: {
+    position: 'absolute', top: 12, left: '50%',
+    transform: 'translateX(-50%)',
+    width: 124, height: 36,
+    background: '#000', borderRadius: 999,
+    zIndex: 30,
+  },
+  content: {
+    position: 'absolute',
+    top: 54, left: 0, right: 0, bottom: 34,
+    overflow: 'hidden',
+  },
+  homeIndicator: {
+    position: 'absolute',
+    bottom: 10, left: '50%',
+    transform: 'translateX(-50%)',
+    width: 134, height: 5,
+    background: 'rgba(26,26,36,0.3)',
+    borderRadius: 999,
+    zIndex: 10,
+  },
+};
+
+function IosFrame({ children, time = '9:41', bg }) {
+  return (
+    <div style={ios.wrapper}>
+      <div style={{ ...ios.screen, background: bg || 'var(--color-parchment)' }}>
+        <div style={ios.statusBar}>
+          <span>{time}</span>
+          <span style={{ fontSize: 13 }}>● ● ●</span>
+        </div>
+        <div style={ios.island} />
+        <div style={ios.content}>{children}</div>
+        <div style={ios.homeIndicator} />
+      </div>
+    </div>
+  );
+}
+
+function FrameLabel({ id, title, copyStatus }) {
+  return (
+    <div className="frame-label">
+      <strong>{id}</strong> · {title}
+      {copyStatus && <span className="copy-status">{copyStatus}</span>}
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   Shared atoms used inline by screens
+   ═════════════════════════════════════════════════════════════════ */
+const screenPad = { padding: '0 24px' };
+
+function PrimaryButton({ children, full = true, variant = 'ink' }) {
+  const bg = variant === 'cobalt' ? 'var(--color-warning-700)' : 'var(--color-ink)';
+  return (
+    <div style={{
+      width: full ? '100%' : 'auto',
+      background: bg,
+      color: 'var(--color-parchment)',
+      padding: '16px 24px',
+      borderRadius: 12,
+      textAlign: 'center',
+      fontFamily: 'var(--font-sans)',
+      fontWeight: 600,
+      fontSize: 15,
+      letterSpacing: 0.1,
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function SecondaryButton({ children }) {
+  return (
+    <div style={{
+      padding: '14px 24px',
+      textAlign: 'center',
+      fontFamily: 'var(--font-sans)',
+      fontSize: 14,
+      fontWeight: 500,
+      color: 'var(--color-ink)',
+    }}>
+      {children}
+    </div>
+  );
+}
+
+function StepRail({ current, total, eyebrow }) {
+  return (
+    <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'center', gap: 8 }}>
+      {Array.from({ length: total }).map((_, i) => (
+        <div key={i} style={{
+          flex: 1, height: 2,
+          background: i < current ? 'var(--color-warning-700)' : 'rgba(26,26,36,0.12)',
+          borderRadius: 999,
+        }} />
+      ))}
+      {eyebrow && (
+        <div style={{
+          marginLeft: 8,
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'var(--color-ink-soft)',
+        }}>{eyebrow}</div>
+      )}
+    </div>
+  );
+}
+
+function Eyebrow({ children, color = 'var(--color-ink-soft)' }) {
+  return (
+    <div style={{
+      fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+      letterSpacing: '0.2em', textTransform: 'uppercase',
+      color,
+    }}>
+      <span style={{
+        display: 'inline-block', width: 18, height: 1,
+        background: 'var(--color-gold)', verticalAlign: 'middle', marginRight: 10,
+      }} />
+      {children}
+    </div>
+  );
+}
+
+function Headline({ children, em }) {
+  return (
+    <div style={{
+      fontFamily: 'var(--font-serif)',
+      fontSize: 32, fontWeight: 400,
+      lineHeight: 1.08,
+      letterSpacing: '-0.012em',
+      color: 'var(--color-ink)',
+    }}>
+      {children}
+      {em && (
+        <span style={{
+          fontStyle: 'italic',
+          color: 'var(--color-warning-700)',
+        }}> {em}</span>
+      )}
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   THREE WELCOME VARIANTS — A / B / C
+   ═════════════════════════════════════════════════════════════════ */
+
+function Welcome() {
+  // Garden Hours — sandstone-warm + gold-soft + amber-tint, drifting on a 14s loop.
+  // The .hero-animated class applies the keyframes from <style>; pure CSS.
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment-raised)' }}>
+      <div className="hero-animated" style={{
+        height: 296,
+        background: 'linear-gradient(135deg, var(--color-sandstone-warm) 0%, var(--color-gold-soft) 35%, var(--color-warning-100) 65%, var(--color-sandstone-warm) 100%)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', bottom: 32, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 56, height: 1,
+          background: 'var(--color-gold)',
+        }} />
+      </div>
+
+      <div style={{ flex: 1, padding: '36px 28px 0', display: 'flex', flexDirection: 'column' }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: 'var(--color-warning-700)',
+        }}>
+          A different kind of dating
+        </div>
+
+        <div style={{
+          marginTop: 16,
+          fontFamily: 'var(--font-serif)',
+          fontSize: 36, fontWeight: 400, lineHeight: 1.06,
+          letterSpacing: '-0.012em',
+          color: 'var(--color-ink)',
+        }}>
+          Made for those who keep <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>the faith.</span>
+        </div>
+
+        <div style={{
+          marginTop: 18,
+          fontFamily: 'var(--font-sans)',
+          fontSize: 15, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)',
+        }}>
+          Three profiles a day. A shared verse. A covenant on how we show up to each other.
+        </div>
+
+        <div style={{ marginTop: 24, display: 'flex', flexDirection: 'column', gap: 10 }}>
+          {[
+            'Three profiles, every morning. No infinite swipe.',
+            'A shared daily verse with whoever you talk to.',
+            'A pastor-signed covenant — read once, lived daily.',
+          ].map((line, i) => (
+            <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <span style={{
+                marginTop: 7, width: 6, height: 6,
+                background: 'var(--color-warning-500)', borderRadius: 999, flexShrink: 0,
+              }} />
+              <span style={{
+                fontFamily: 'var(--font-sans)', fontSize: 13.5, lineHeight: 1.55,
+                color: 'var(--color-ink)',
+              }}>{line}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 11.5, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)', textAlign: 'center', marginBottom: 14,
+        }}>
+          By continuing you agree to our covenant and terms.
+        </div>
+
+        <PrimaryButton variant="ink">Begin</PrimaryButton>
+        <div style={{ height: 12 }} />
+        <SecondaryButton>I already have an account</SecondaryButton>
+        <div style={{ height: 16 }} />
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B1 · TODAY (app-shell home)
+   ═════════════════════════════════════════════════════════════════ */
+function TodayScreen() {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      {/* Header */}
+      <div style={{ padding: '20px 24px 0', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
+        <div>
+          <div style={{
+            fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+            letterSpacing: '0.2em', textTransform: 'uppercase',
+            color: 'var(--color-ink-soft)',
+          }}>Today · Tuesday 29</div>
+          <div style={{
+            marginTop: 6,
+            fontFamily: 'var(--font-serif)', fontSize: 30, fontWeight: 400,
+            letterSpacing: '-0.012em',
+            color: 'var(--color-ink)',
+          }}>
+            Good morning, <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>Julian</span>
+          </div>
+        </div>
+        <div style={{
+          width: 36, height: 36, borderRadius: 999,
+          border: '1px solid var(--color-hairline)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 14, color: 'var(--color-ink-soft)',
+        }}>♡</div>
+      </div>
+
+      {/* Verse strip */}
+      <div style={{
+        margin: '20px 24px 0',
+        padding: '14px 16px',
+        background: 'var(--color-parchment-raised)',
+        border: '1px solid var(--color-hairline-soft)',
+        borderRadius: 14,
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: 'var(--color-gold)',
+        }}>Verse of day · Phil 4:6</div>
+        <div style={{
+          marginTop: 6,
+          fontFamily: 'var(--font-serif)', fontSize: 16, fontStyle: 'italic',
+          fontWeight: 400, lineHeight: 1.35, color: 'var(--color-ink)',
+        }}>
+          "Be anxious for nothing, but in everything by prayer…"
+        </div>
+      </div>
+
+      {/* Three profile cards */}
+      <div style={{ padding: '20px 24px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.18em', textTransform: 'uppercase',
+          color: 'var(--color-ink-soft)',
+        }}>Three for today</div>
+
+        {[
+          { name: 'Naomi', age: 27, place: 'Manila', tradition: 'Catholic', stage: 'lifelong', bg: 'var(--portrait-1)' },
+          { name: 'Ruth', age: 30, place: 'Singapore', tradition: 'Pentecostal', stage: 'came later', bg: 'var(--portrait-3)' },
+          { name: 'Esther', age: 26, place: 'Jakarta', tradition: 'Reformed', stage: 'returning', bg: 'var(--portrait-5)' },
+        ].map((p) => (
+          <div key={p.name} style={{
+            display: 'flex', gap: 14, alignItems: 'stretch',
+            background: 'var(--color-parchment-raised)',
+            borderRadius: 16, overflow: 'hidden',
+            border: '1px solid var(--color-hairline-soft)',
+          }}>
+            <div style={{ width: 88, flexShrink: 0, background: p.bg }} />
+            <div style={{ padding: '14px 16px 14px 0', flex: 1 }}>
+              <div style={{
+                fontFamily: 'var(--font-serif)', fontSize: 19, fontWeight: 500,
+                color: 'var(--color-ink)',
+              }}>
+                {p.name}, <span style={{ fontStyle: 'italic', fontWeight: 400 }}>{p.age}</span>
+              </div>
+              <div style={{
+                marginTop: 4,
+                fontFamily: 'var(--font-sans)', fontSize: 12.5, color: 'var(--color-ink-soft)',
+              }}>{p.place}</div>
+              <div style={{
+                marginTop: 8, display: 'flex', gap: 6,
+              }}>
+                <span style={{
+                  padding: '3px 8px', borderRadius: 999, fontSize: 10.5,
+                  background: 'var(--color-warning-100)', color: 'var(--color-warning-700)',
+                  fontFamily: 'var(--font-sans)', fontWeight: 500,
+                }}>{p.tradition}</span>
+                <span style={{
+                  padding: '3px 8px', borderRadius: 999, fontSize: 10.5,
+                  background: 'var(--color-sandstone)', color: 'var(--color-ink-soft)',
+                  fontFamily: 'var(--font-sans)',
+                }}>{p.stage}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Profile-views metric card — gated reveal (non-intrusive monetization) */}
+      <div style={{
+        margin: '20px 24px 0',
+        padding: '14px 16px',
+        background: 'var(--color-parchment-raised)',
+        border: '1px solid var(--color-hairline-soft)',
+        borderRadius: 14,
+        display: 'flex', alignItems: 'center', gap: 14,
+      }}>
+        {/* Stack of blurred mini-avatars */}
+        <div style={{ display: 'flex', position: 'relative', width: 64, flexShrink: 0 }}>
+          {['var(--portrait-1)', 'var(--portrait-3)', 'var(--portrait-5)'].map((g, i) => (
+            <div key={i} style={{
+              position: 'absolute', left: i * 16,
+              width: 30, height: 30, borderRadius: 999,
+              background: g, filter: 'blur(4px)',
+              border: '2px solid var(--color-parchment-raised)',
+            }} />
+          ))}
+        </div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'var(--color-warning-700)',
+          }}>This week</div>
+          <div style={{
+            marginTop: 2,
+            fontFamily: 'var(--font-serif)', fontSize: 17, fontWeight: 500,
+            color: 'var(--color-ink)', lineHeight: 1.25,
+          }}>
+            <span style={{ fontStyle: 'italic' }}>Six</span> people viewed your profile
+          </div>
+        </div>
+        <div style={{
+          padding: '6px 12px', borderRadius: 999,
+          background: 'var(--color-ink)', color: 'var(--color-parchment)',
+          fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.04em', whiteSpace: 'nowrap', flexShrink: 0,
+        }}>See who</div>
+      </div>
+
+      {/* Bottom nav */}
+      <div style={{ flex: 1 }} />
+      <BottomNav active="today" />
+    </div>
+  );
+}
+
+function BottomNav({ active }) {
+  const tabs = [
+    { id: 'today', label: 'Today', glyph: '◐' },
+    { id: 'people', label: 'People', glyph: '◇' },
+    { id: 'threads', label: 'Threads', glyph: '⌘' },
+    { id: 'you', label: 'You', glyph: '○' },
+  ];
+  return (
+    <div style={{
+      borderTop: '1px solid var(--color-hairline-soft)',
+      padding: '10px 8px 6px',
+      display: 'flex',
+      background: 'var(--color-parchment)',
+    }}>
+      {tabs.map((t) => {
+        const on = t.id === active;
+        return (
+          <div key={t.id} style={{
+            flex: 1, textAlign: 'center', padding: '6px 4px',
+          }}>
+            <div style={{
+              fontSize: 18, lineHeight: 1,
+              color: on ? 'var(--color-warning-700)' : 'var(--color-ink-soft)',
+              opacity: on ? 1 : 0.55,
+            }}>{t.glyph}</div>
+            <div style={{
+              marginTop: 4,
+              fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: on ? 600 : 500,
+              letterSpacing: '0.06em',
+              color: on ? 'var(--color-warning-700)' : 'var(--color-ink-soft)',
+            }}>{t.label}</div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B2 · YOU (account surface)
+   ═════════════════════════════════════════════════════════════════ */
+function YouScreen() {
+  const rows = [
+    { label: 'Edit profile', helper: 'Photo, name, city, intent', glyph: '✎' },
+    { label: 'Faith replies', helper: 'Re-take the questionnaire', glyph: '◇' },
+    { label: 'Notifications', helper: 'Daily delivery time', glyph: '⌕' },
+    { label: 'Privacy', helper: 'Who sees what', glyph: '⌘' },
+    { label: 'Blocked accounts', helper: 'Empty', glyph: '○' },
+    { label: 'Sign out', helper: '', glyph: '⌃', danger: false },
+  ];
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      <div style={{ padding: '24px 24px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: 'var(--color-ink-soft)',
+        }}>You</div>
+
+        <div style={{
+          marginTop: 16, display: 'flex', alignItems: 'center', gap: 16,
+        }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: 999,
+            background: 'var(--portrait-2)',
+            border: '1px solid var(--color-hairline)',
+          }} />
+          <div>
+            <div style={{
+              fontFamily: 'var(--font-serif)', fontSize: 24, fontWeight: 500,
+              letterSpacing: '-0.01em', color: 'var(--color-ink)',
+            }}>
+              Julian, <span style={{ fontStyle: 'italic', fontWeight: 400 }}>32</span>
+            </div>
+            <div style={{
+              marginTop: 4,
+              fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-ink-soft)',
+            }}>Manila · Catholic · came later</div>
+          </div>
+        </div>
+
+        {/* Plan-tier row — single source of truth for account status */}
+        <div style={{
+          marginTop: 18,
+          padding: '14px 16px',
+          background: 'var(--color-parchment-raised)',
+          border: '1px solid var(--color-hairline-soft)',
+          borderRadius: 14,
+          display: 'flex', alignItems: 'center', gap: 12,
+        }}>
+          <div style={{
+            width: 32, height: 32, borderRadius: 8,
+            background: 'linear-gradient(135deg, var(--color-sandstone-warm), var(--color-gold-soft))',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+            fontSize: 14, fontWeight: 500, color: 'var(--color-ink)',
+            flexShrink: 0,
+          }}>+</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{
+              fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+              letterSpacing: '0.18em', textTransform: 'uppercase',
+              color: 'var(--color-warning-700)',
+            }}>Account</div>
+            <div style={{
+              marginTop: 1,
+              fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 600,
+              color: 'var(--color-ink)',
+            }}>Free <span style={{ fontWeight: 400, color: 'var(--color-ink-soft)' }}>· upgrade for daily reveals + Heart-of-Week</span></div>
+          </div>
+          <div style={{
+            padding: '6px 12px', borderRadius: 999,
+            background: 'var(--color-ink)', color: 'var(--color-parchment)',
+            fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+            whiteSpace: 'nowrap', flexShrink: 0,
+          }}>Upgrade</div>
+        </div>
+      </div>
+
+      <div style={{ marginTop: 20, padding: '0 8px' }}>
+        {rows.map((r, i) => (
+          <div key={r.label} style={{
+            display: 'flex', alignItems: 'center', gap: 14,
+            padding: '14px 16px',
+            borderTop: i === 0 ? 'none' : '1px solid var(--color-hairline-soft)',
+          }}>
+            <div style={{
+              width: 28, fontSize: 16, color: 'var(--color-ink-soft)',
+              textAlign: 'center',
+            }}>{r.glyph}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: 'var(--font-sans)', fontSize: 15,
+                fontWeight: 500, color: 'var(--color-ink)',
+              }}>{r.label}</div>
+              {r.helper && (
+                <div style={{
+                  marginTop: 2,
+                  fontFamily: 'var(--font-sans)', fontSize: 12, color: 'var(--color-ink-soft)',
+                }}>{r.helper}</div>
+              )}
+            </div>
+            <div style={{ color: 'var(--color-ink-soft)', fontSize: 14 }}>›</div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <BottomNav active="you" />
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   CATECHISM BEAT 1 + BEAT 3 — REMOVED in v1.1
+   The 8-Beat onboarding ceremony was dropped per user direction
+   (2026-04-29). Verse-of-day card on Today carries the spiritual
+   thread; catechism content stays in i18n for a future "reading
+   room" feature, not the entry flow.
+   ═════════════════════════════════════════════════════════════════ */
+function Beat1Screen_REMOVED_v1_1() {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      <StepRail current={1} total={8} eyebrow="The catechism · 1 of 8" />
+
+      {/* Hero panel */}
+      <div style={{
+        margin: '24px 24px 0',
+        height: 200,
+        background: 'var(--hero-dawn)',
+        borderRadius: 'var(--radius-xxl)',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', bottom: 24, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 64, height: 1,
+          background: 'var(--color-gold)',
+        }} />
+      </div>
+
+      <div style={{ padding: '28px 28px 0' }}>
+        <Eyebrow color="var(--color-warning-700)">A different kind of yes</Eyebrow>
+
+        <div style={{
+          marginTop: 14,
+          fontFamily: 'var(--font-serif)',
+          fontSize: 30, fontWeight: 400, lineHeight: 1.18,
+          letterSpacing: '-0.01em',
+          color: 'var(--color-ink)',
+        }}>
+          We meet to <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>marry well</span>,
+          not to feel chosen. <br />
+          We move at the pace of <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>truth</span>,
+          not the pace of <br />the feed.
+        </div>
+
+        <div style={{
+          marginTop: 18,
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.65,
+          color: 'var(--color-ink-soft)',
+        }}>
+          Take eight quiet minutes. Read what we hold to. Then decide whether to sign in.
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      <div style={{ padding: '0 24px 16px' }}>
+        <PrimaryButton variant="ink">Begin · 8 minutes</PrimaryButton>
+        <div style={{ height: 8 }} />
+        <SecondaryButton>I already have an account</SecondaryButton>
+        <div style={{
+          marginTop: 6,
+          fontFamily: 'var(--font-sans)', fontSize: 11, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)', textAlign: 'center',
+        }}>
+          By continuing you agree to our covenant and terms.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B4 · CATECHISM BEAT 3 (preview — three doctrines + ack)
+   ═════════════════════════════════════════════════════════════════ */
+function Beat3Screen() {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      {/* Top bar */}
+      <div style={{
+        padding: '16px 24px 0',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      }}>
+        <div style={{ fontSize: 18, color: 'var(--color-ink-soft)' }}>‹</div>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: 'var(--color-ink-soft)',
+        }}>3 / 8</div>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          padding: '4px 10px', borderRadius: 999,
+          border: '1px solid var(--color-hairline)',
+          color: 'var(--color-ink-soft)',
+        }}>EN</div>
+      </div>
+
+      <div style={{ padding: '20px 24px 0' }}>
+        <Eyebrow>Our promise · in brief</Eyebrow>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 28, fontWeight: 400,
+          lineHeight: 1.18, letterSpacing: '-0.01em',
+          color: 'var(--color-ink)',
+        }}>
+          Three things we <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>hold to.</span>
+        </div>
+      </div>
+
+      {/* Doctrine card */}
+      <div style={{
+        margin: '20px 24px 0',
+        background: 'var(--color-parchment-raised)',
+        borderRadius: 'var(--radius-xl)',
+        padding: '20px 22px 6px',
+        boxShadow: 'var(--shadow-card)',
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-serif)', fontStyle: 'italic',
+          fontSize: 15, lineHeight: 1.55, fontWeight: 500,
+          color: 'var(--color-cobalt-900)',
+          marginBottom: 16,
+        }}>
+          Marriage is the why. We treat dating as discernment toward it.
+        </div>
+
+        {[
+          { num: 'I', head: 'Marriage is the horizon', line: 'Not the only good, but the one we orient by.' },
+          { num: 'II', head: 'The covenant outlasts the spark', line: 'A vow can carry a marriage when feelings dim.' },
+          { num: 'III', head: 'We move at the pace of truth', line: 'Honesty over momentum. Slow is kind.' },
+        ].map((d, i) => (
+          <div key={d.num} style={{
+            display: 'flex', gap: 14,
+            paddingTop: 12, paddingBottom: 12,
+            borderTop: i === 0 ? 'none' : '1px solid var(--color-hairline-soft)',
+          }}>
+            <div style={{
+              width: 22,
+              fontFamily: 'var(--font-serif)', fontSize: 17, fontWeight: 500,
+              color: 'var(--color-warning-700)', lineHeight: '22px',
+            }}>{d.num}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{
+                fontFamily: 'var(--font-sans)', fontSize: 14, fontWeight: 600,
+                color: 'var(--color-ink)',
+              }}>{d.head}</div>
+              <div style={{
+                marginTop: 2,
+                fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.5,
+                color: 'var(--color-ink-soft)',
+              }}>{d.line}</div>
+            </div>
+          </div>
+        ))}
+
+        <div style={{
+          marginTop: 4, padding: '10px 0',
+          borderTop: '1px solid var(--color-hairline-soft)',
+          textAlign: 'center',
+          fontFamily: 'var(--font-sans)', fontSize: 12.5, fontWeight: 600,
+          color: 'var(--color-warning-700)',
+        }}>
+          Read in full ⌄
+        </div>
+      </div>
+
+      {/* Ack */}
+      <div style={{ padding: '20px 24px 0', display: 'flex', gap: 12 }}>
+        <div style={{
+          marginTop: 2,
+          width: 18, height: 18, borderRadius: 4,
+          border: '1.5px solid var(--color-warning-700)',
+          background: 'var(--color-warning-700)',
+          color: '#fff', fontSize: 12, lineHeight: '14px',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>✓</div>
+        <div>
+          <div style={{
+            fontFamily: 'var(--font-sans)', fontSize: 13.5, lineHeight: 1.5,
+            color: 'var(--color-ink)',
+          }}>I've read this and I'm willing to live by it.</div>
+          <div style={{
+            marginTop: 4,
+            fontFamily: 'var(--font-sans)', fontSize: 11.5, lineHeight: 1.55,
+            color: 'var(--color-ink-soft)',
+          }}>You can always read it again. <strong style={{ color: 'var(--color-ink)' }}>This is a promise, not a paywall.</strong></div>
+        </div>
+      </div>
+
+      <div style={{ flex: 1 }} />
+
+      <div style={{ padding: '0 24px 16px' }}>
+        <PrimaryButton variant="ink">Continue</PrimaryButton>
+        <div style={{ height: 8 }} />
+        <SecondaryButton>Read in full first</SecondaryButton>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B5 · FAITH Q1 (intent — radio cards)
+   ═════════════════════════════════════════════════════════════════ */
+function FaithQ1Screen() {
+  const opts = [
+    { id: 'dating', title: 'Dating', helper: 'Open to marriage in time.', selected: true },
+    { id: 'friendship', title: 'Friendship', helper: 'Just looking for friends in faith.' },
+    { id: 'community', title: 'Community', helper: 'A small group, not one person.' },
+    { id: 'unspecified', title: 'I\'m not sure yet', helper: 'Take me through it.' },
+  ];
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      <StepRail current={1} total={9} eyebrow="Q · 1 of 9" />
+
+      <div style={{ padding: '24px 24px 0' }}>
+        <Eyebrow>What brings you here?</Eyebrow>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 26, fontWeight: 400,
+          letterSpacing: '-0.01em', lineHeight: 1.2,
+          color: 'var(--color-ink)',
+        }}>
+          What are you <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>looking for</span>?
+        </div>
+        <div style={{
+          marginTop: 8,
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)',
+        }}>
+          You can change this later. We use it to decide who you see.
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 24px 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {opts.map((o) => (
+          <div key={o.id} style={{
+            display: 'flex', gap: 14, alignItems: 'flex-start',
+            padding: '14px 16px',
+            background: o.selected ? 'var(--color-warning-100)' : 'var(--color-parchment-raised)',
+            border: '1px solid ' + (o.selected ? 'var(--color-warning-500)' : 'var(--color-hairline-soft)'),
+            borderRadius: 12,
+          }}>
+            <div style={{
+              marginTop: 2,
+              width: 18, height: 18, borderRadius: 999,
+              border: '1.5px solid ' + (o.selected ? 'var(--color-warning-700)' : 'var(--color-hairline-strong)'),
+              background: o.selected ? 'var(--color-warning-700)' : 'transparent',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              {o.selected && <div style={{ width: 8, height: 8, borderRadius: 999, background: '#fff' }} />}
+            </div>
+            <div>
+              <div style={{
+                fontFamily: 'var(--font-sans)', fontSize: 15, fontWeight: 600,
+                color: 'var(--color-ink)',
+              }}>{o.title}</div>
+              <div style={{
+                marginTop: 3,
+                fontFamily: 'var(--font-sans)', fontSize: 12.5, lineHeight: 1.5,
+                color: 'var(--color-ink-soft)',
+              }}>{o.helper}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div style={{ flex: 1 }} />
+      <div style={{ padding: '0 24px 16px' }}>
+        <PrimaryButton variant="ink">Continue</PrimaryButton>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B6 · FAITH Q3 REDIRECT MODAL
+   Pastor-locked copy is ABSENT from this prototype — stand-in copy
+   only. Real strings come from i18n/copy.js when wired in RN.
+   ═════════════════════════════════════════════════════════════════ */
+function FaithQ3ModalScreen() {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)', position: 'relative' }}>
+      {/* dim background showing the underlying screen */}
+      <StepRail current={3} total={9} eyebrow="Q · 3 of 9" />
+      <div style={{ padding: '24px 24px 0', filter: 'blur(2px)', opacity: 0.4 }}>
+        <Eyebrow>Who are you seeking?</Eyebrow>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 26, fontWeight: 400,
+          letterSpacing: '-0.01em', color: 'var(--color-ink)',
+        }}>Tell us who you'd like to meet.</div>
+      </div>
+
+      {/* dimmer */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'rgba(20,24,31,0.45)',
+      }} />
+
+      {/* Modal sheet */}
+      <div style={{
+        position: 'absolute', left: 16, right: 16, top: 156,
+        background: 'var(--color-parchment-raised)',
+        borderRadius: 20,
+        padding: '24px 22px 16px',
+        boxShadow: 'var(--shadow-modal)',
+      }}>
+        <Eyebrow>A note from us</Eyebrow>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 400,
+          letterSpacing: '-0.005em', lineHeight: 1.2,
+          color: 'var(--color-ink)',
+        }}>
+          Same-sex matching is <span style={{ fontStyle: 'italic' }}>not part of</span> what we offer.
+        </div>
+        <div style={{
+          marginTop: 14,
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.6,
+          color: 'var(--color-ink-soft)',
+        }}>
+          We're a Christian platform built for marriage between a man and a woman, and our
+          covenant is signed by pastors who hold that view. We want to be honest with you up
+          front — both because you deserve it and because we believe you'll find a better-fit
+          home elsewhere.
+          <br /><br />
+          We can suggest two affirming Christian dating apps and close your account, or you
+          can stay logged out for now.
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <PrimaryButton variant="ink">Show me the alternatives</PrimaryButton>
+          <div style={{ height: 6 }} />
+          <SecondaryButton>I'd rather just close this</SecondaryButton>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B7 · FIRST PHOTO (camera + liveness oval)
+   ═════════════════════════════════════════════════════════════════ */
+function FirstPhotoScreen() {
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-ink-charcoal)' }}>
+      <StepRail current={5} total={7} eyebrow="Onboarding · 5 of 7" />
+
+      <div style={{ padding: '24px 24px 0' }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+          color: 'var(--color-gold-soft)',
+        }}>
+          <span style={{
+            display: 'inline-block', width: 18, height: 1,
+            background: 'var(--color-gold)', verticalAlign: 'middle', marginRight: 10,
+          }} />
+          A clear face, in your light
+        </div>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 26, fontWeight: 400,
+          letterSpacing: '-0.01em', lineHeight: 1.18,
+          color: 'var(--color-parchment)',
+        }}>
+          Take one <span style={{ fontStyle: 'italic', color: 'var(--color-gold-soft)' }}>real</span> photo.
+        </div>
+        <div style={{
+          marginTop: 8,
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.55,
+          color: 'rgba(250,247,240,0.65)',
+        }}>
+          We check it's actually you, then a moderator approves it. Usually under an hour.
+        </div>
+      </div>
+
+      {/* Camera stage */}
+      <div style={{
+        margin: '24px 24px 0',
+        flex: 1,
+        background: 'rgba(20,24,31,0.6)',
+        borderRadius: 24,
+        position: 'relative',
+        border: '1px solid rgba(250,247,240,0.08)',
+        overflow: 'hidden',
+      }}>
+        {/* Liveness oval */}
+        <div style={{
+          position: 'absolute', top: '50%', left: '50%',
+          transform: 'translate(-50%, -50%)',
+          width: 240, height: 320,
+          borderRadius: '50% / 50%',
+          border: '2px dashed var(--color-gold-soft)',
+          opacity: 0.85,
+        }} />
+        <div style={{
+          position: 'absolute', bottom: 16, left: 16, right: 16,
+          fontFamily: 'var(--font-sans)', fontSize: 11.5,
+          color: 'rgba(250,247,240,0.7)', textAlign: 'center',
+        }}>
+          Center your face, then tap below.
+        </div>
+      </div>
+
+      <div style={{ padding: '20px 24px 16px' }}>
+        <div style={{
+          width: 76, height: 76, borderRadius: 999,
+          background: 'var(--color-parchment)',
+          margin: '0 auto',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 0 0 4px rgba(250,247,240,0.15)',
+        }}>
+          <div style={{ width: 60, height: 60, borderRadius: 999, background: 'var(--color-gold)' }} />
+        </div>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-sans)', fontSize: 12, textAlign: 'center',
+          color: 'rgba(250,247,240,0.6)',
+        }}>
+          or <span style={{ textDecoration: 'underline' }}>choose from library</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   B8 · ERROR-STATE GALLERY (5 variants in one frame)
+   ═════════════════════════════════════════════════════════════════ */
+function ErrorGalleryScreen() {
+  const errors = [
+    { id: 'network',      title: 'No connection',          body: "You're offline. We'll keep your spot.",       cta: 'Try again',     gradient: 'var(--portrait-1)' },
+    { id: 'server',       title: 'Something on our end',   body: 'Our servers are catching their breath.',       cta: 'Try again',     gradient: 'var(--portrait-3)' },
+    { id: 'unauthorized', title: 'Please sign in again',   body: 'For your safety, sessions expire after 30 days.', cta: 'Sign in',    gradient: 'var(--portrait-5)' },
+    { id: 'face',         title: 'Let\'s try one more',    body: "We couldn't see your face clearly. No worries.", cta: 'Retake',      gradient: 'var(--portrait-2)' },
+    { id: 'mod',          title: 'Held for a moment',      body: 'A moderator is taking a closer look. Usually under an hour.', cta: 'Got it', gradient: 'var(--portrait-4)' },
+  ];
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment)' }}>
+      <div style={{ padding: '20px 24px 0' }}>
+        <Eyebrow>Five variants · same shape</Eyebrow>
+        <div style={{
+          marginTop: 8,
+          fontFamily: 'var(--font-serif)', fontSize: 22, fontWeight: 400,
+          letterSpacing: '-0.005em', color: 'var(--color-ink)',
+        }}>
+          Error states, <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>quietly.</span>
+        </div>
+      </div>
+
+      <div style={{ padding: '14px 16px 16px', display: 'flex', flexDirection: 'column', gap: 10, overflow: 'auto' }}>
+        {errors.map((e) => (
+          <div key={e.id} style={{
+            display: 'flex', gap: 12, alignItems: 'center',
+            padding: '12px 14px',
+            background: 'var(--color-parchment-raised)',
+            border: '1px solid var(--color-hairline-soft)',
+            borderRadius: 14,
+          }}>
+            <div style={{
+              width: 56, height: 56, borderRadius: 12,
+              background: e.gradient, flexShrink: 0,
+            }} />
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontFamily: 'var(--font-serif)', fontSize: 15, fontWeight: 500,
+                color: 'var(--color-ink)',
+              }}>{e.title}</div>
+              <div style={{
+                marginTop: 3,
+                fontFamily: 'var(--font-sans)', fontSize: 12, lineHeight: 1.45,
+                color: 'var(--color-ink-soft)',
+                overflow: 'hidden', textOverflow: 'ellipsis',
+              }}>{e.body}</div>
+            </div>
+            <div style={{
+              padding: '6px 12px', borderRadius: 999,
+              background: 'var(--color-ink)', color: 'var(--color-parchment)',
+              fontFamily: 'var(--font-sans)', fontSize: 11, fontWeight: 600,
+              whiteSpace: 'nowrap', flexShrink: 0,
+            }}>{e.cta}</div>
+          </div>
+        ))}
+
+        <div style={{
+          marginTop: 4, padding: '0 6px',
+          fontFamily: 'var(--font-sans)', fontSize: 11, lineHeight: 1.5,
+          color: 'var(--color-ink-soft)',
+        }}>
+          Each illustration slot is a placeholder gradient. Real art per asset spec §12.5.
+          <strong style={{ color: 'var(--color-warning-700)' }}> No red anywhere</strong> — Holy Code §HCoC.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   C1 · NOTIFICATION TOAST (top-sheet banner)
+   Pattern: short-form push/in-app notification. Lives ~96px tall,
+   slides from top, dismissible by swipe-up or tap. Backdrop is the
+   underlying screen (Today), unblurred — toast doesn't take focus.
+   ═════════════════════════════════════════════════════════════════ */
+function NotificationToastScreen() {
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'var(--color-parchment)' }}>
+      {/* Faded Today underneath */}
+      <div style={{ position: 'absolute', inset: 0, opacity: 0.55 }}>
+        <TodayScreen />
+      </div>
+
+      {/* The toast itself */}
+      <div style={{
+        position: 'absolute',
+        top: 12, left: 10, right: 10,
+        background: 'var(--color-parchment-raised)',
+        border: '1px solid var(--color-hairline)',
+        borderRadius: 18,
+        padding: '14px 16px',
+        boxShadow: '0 12px 28px rgba(20,24,31,0.18)',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 12,
+      }}>
+        <div style={{
+          width: 36, height: 36,
+          borderRadius: 10,
+          background: 'linear-gradient(135deg, var(--color-sandstone-warm), var(--color-gold-soft))',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 14, color: 'var(--color-ink)',
+          flexShrink: 0,
+        }}>✦</div>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{
+            fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+            letterSpacing: '0.18em', textTransform: 'uppercase',
+            color: 'var(--color-warning-700)',
+          }}>BlessCupid · 7:00 AM</div>
+          <div style={{
+            marginTop: 2,
+            fontFamily: 'var(--font-serif)', fontSize: 16, fontWeight: 500,
+            color: 'var(--color-ink)', lineHeight: 1.25,
+          }}>
+            Your three are ready
+          </div>
+          <div style={{
+            marginTop: 1,
+            fontFamily: 'var(--font-sans)', fontSize: 11.5, lineHeight: 1.4,
+            color: 'var(--color-ink-soft)',
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+          }}>Naomi, Ruth, Esther — and a verse to read with them.</div>
+        </div>
+        <div style={{ fontSize: 16, color: 'var(--color-ink-soft)', flexShrink: 0 }}>›</div>
+      </div>
+
+      {/* Annotation tag (review-only, not part of UI) */}
+      <div style={{
+        position: 'absolute', bottom: 8, left: 12, right: 12,
+        textAlign: 'center',
+        fontFamily: 'var(--font-mono)', fontSize: 10,
+        color: 'rgba(26,26,36,0.45)',
+      }}>swipe up to dismiss · tap to open Today</div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   C2 · ONE-TIME OFFER (founding-member promo, full sheet)
+   Used for: founding-member trial, holiday promo, milestone unlock.
+   Shown at most twice per user (after day 7, after day 30). Always
+   dismissible. No countdown shame.
+   ═════════════════════════════════════════════════════════════════ */
+function OneTimeOfferScreen() {
+  const benefits = [
+    'See who is drawn to you',
+    'One Heart-of-the-Week — past the queue',
+    'Skip the moderation line as a verified member',
+  ];
+  return (
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column', background: 'var(--color-parchment-raised)' }}>
+      {/* Hero with the same drift treatment as Welcome */}
+      <div className="hero-animated" style={{
+        height: 220,
+        background: 'linear-gradient(135deg, var(--color-sandstone-warm) 0%, var(--color-gold-soft) 50%, var(--color-warning-100) 100%)',
+        position: 'relative', overflow: 'hidden',
+      }}>
+        {/* Ribbon */}
+        <div style={{
+          position: 'absolute', top: 18, left: '50%',
+          transform: 'translateX(-50%)',
+          padding: '6px 14px',
+          background: 'var(--color-ink)', color: 'var(--color-parchment)',
+          borderRadius: 999,
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.2em', textTransform: 'uppercase',
+        }}>Founding member</div>
+        <div style={{
+          position: 'absolute', bottom: 28, left: '50%',
+          transform: 'translateX(-50%)',
+          width: 56, height: 1, background: 'var(--color-gold)',
+        }} />
+      </div>
+
+      <div style={{ flex: 1, padding: '28px 28px 0', display: 'flex', flexDirection: 'column' }}>
+        <div style={{
+          fontFamily: 'var(--font-serif)', fontSize: 30, fontWeight: 400,
+          letterSpacing: '-0.012em', lineHeight: 1.1,
+          color: 'var(--color-ink)',
+        }}>
+          Three months of <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>Bless+</span>, on us.
+        </div>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-sans)', fontSize: 14, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)',
+        }}>
+          You signed up in our first month. As a thank-you, the next ninety days are free.
+        </div>
+
+        <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
+          {benefits.map((b) => (
+            <div key={b} style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <span style={{
+                marginTop: 6, width: 6, height: 6,
+                background: 'var(--color-warning-500)', borderRadius: 999, flexShrink: 0,
+              }} />
+              <span style={{
+                fontFamily: 'var(--font-sans)', fontSize: 14, lineHeight: 1.5,
+                color: 'var(--color-ink)',
+              }}>{b}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ flex: 1 }} />
+
+        <PrimaryButton variant="ink">Start free — 90 days</PrimaryButton>
+        <div style={{ height: 8 }} />
+        <SecondaryButton>Maybe later</SecondaryButton>
+        <div style={{
+          marginTop: 4, marginBottom: 14,
+          fontFamily: 'var(--font-sans)', fontSize: 11, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)', textAlign: 'center',
+        }}>
+          $8.99/month after the trial. Cancel anytime in You.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   C3 · GATED FEATURE (Bless+ paywall card)
+   Triggered when a free user taps "See who" on the Profile-views card.
+   Mid-screen sheet, modal. Pattern reused for: Heart-of-Week, advanced
+   filters, read-receipts, anything Bless+ exclusive.
+   ═════════════════════════════════════════════════════════════════ */
+function GatedFeatureScreen() {
+  return (
+    <div style={{ height: '100%', position: 'relative', background: 'var(--color-parchment)' }}>
+      {/* Faded Today underneath */}
+      <div style={{ position: 'absolute', inset: 0, opacity: 0.45, filter: 'blur(2px)' }}>
+        <TodayScreen />
+      </div>
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(20,24,31,0.42)' }} />
+
+      {/* Modal card */}
+      <div style={{
+        position: 'absolute',
+        left: 16, right: 16, top: '50%',
+        transform: 'translateY(-50%)',
+        background: 'var(--color-parchment-raised)',
+        borderRadius: 22,
+        padding: '24px 22px 18px',
+        boxShadow: '0 24px 60px rgba(20,24,31,0.32)',
+      }}>
+        <div style={{
+          fontFamily: 'var(--font-sans)', fontSize: 10, fontWeight: 600,
+          letterSpacing: '0.22em', textTransform: 'uppercase',
+          color: 'var(--color-warning-700)',
+        }}>
+          <span style={{
+            display: 'inline-block', width: 14, height: 1,
+            background: 'var(--color-gold)', verticalAlign: 'middle', marginRight: 8,
+          }} />
+          Bless+ feature
+        </div>
+        <div style={{
+          marginTop: 12,
+          fontFamily: 'var(--font-serif)', fontSize: 24, fontWeight: 400,
+          letterSpacing: '-0.005em', lineHeight: 1.18,
+          color: 'var(--color-ink)',
+        }}>
+          See who's <span style={{ fontStyle: 'italic', color: 'var(--color-warning-700)' }}>drawn to you</span>.
+        </div>
+
+        {/* Blurred avatar row */}
+        <div style={{ marginTop: 18, display: 'flex', gap: 8 }}>
+          {['var(--portrait-1)', 'var(--portrait-3)', 'var(--portrait-5)', 'var(--portrait-2)', 'var(--portrait-6)'].map((g, i) => (
+            <div key={i} style={{
+              width: 52, height: 52, borderRadius: 999,
+              background: g, filter: 'blur(6px)',
+              border: '1px solid var(--color-hairline)',
+            }} />
+          ))}
+          <div style={{
+            width: 52, height: 52, borderRadius: 999,
+            background: 'var(--color-sandstone)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontFamily: 'var(--font-sans)', fontSize: 12, fontWeight: 600,
+            color: 'var(--color-ink-soft)',
+          }}>+1</div>
+        </div>
+
+        <div style={{
+          marginTop: 14,
+          fontFamily: 'var(--font-sans)', fontSize: 13, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)',
+        }}>
+          Six people viewed your profile this week. Bless+ shows you who they are — so you can
+          make the next move with intention, not guesswork.
+        </div>
+
+        <div style={{ marginTop: 18 }}>
+          <PrimaryButton variant="ink">Unlock — 14 days free</PrimaryButton>
+          <div style={{ height: 4 }} />
+          <SecondaryButton>Not now</SecondaryButton>
+        </div>
+        <div style={{
+          marginTop: 6,
+          fontFamily: 'var(--font-sans)', fontSize: 11, lineHeight: 1.55,
+          color: 'var(--color-ink-soft)', textAlign: 'center',
+        }}>
+          $8.99/month after. Cancel anytime in You.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ═════════════════════════════════════════════════════════════════
+   MOUNT
+   ═════════════════════════════════════════════════════════════════ */
+
+function VariantCard({ id, label, copyStatus, children }) {
+  return (
+    <div>
+      <FrameLabel id={id} title={label} copyStatus={copyStatus} />
+      <IosFrame>{children}</IosFrame>
+    </div>
+  );
+}
+
+function VariantsRoot() {
+  return (
+    <VariantCard id="A" label="Welcome · Garden Hours · animated" copyStatus="PROPOSED">
+      <Welcome />
+    </VariantCard>
+  );
+}
+
+function AnchorsRoot() {
+  return (
+    <Fragment>
+      <VariantCard id="B1" label="Today · home, with metrics + paywall" copyStatus="PROPOSED">
+        <TodayScreen />
+      </VariantCard>
+      <VariantCard id="B2" label="You · with plan-tier row" copyStatus="PROPOSED">
+        <YouScreen />
+      </VariantCard>
+      <VariantCard id="B3" label="Faith Q1 · intent (onboarding pattern)">
+        <FaithQ1Screen />
+      </VariantCard>
+      <VariantCard id="B4" label="First photo · liveness frame" copyStatus="PROPOSED">
+        <FirstPhotoScreen />
+      </VariantCard>
+      <VariantCard id="B5" label="Error-state gallery (5)" copyStatus="PROPOSED">
+        <ErrorGalleryScreen />
+      </VariantCard>
+    </Fragment>
+  );
+}
+
+function ModalsRoot() {
+  return (
+    <Fragment>
+      <VariantCard id="C1" label="Notification · top-sheet toast" copyStatus="PROPOSED">
+        <NotificationToastScreen />
+      </VariantCard>
+      <VariantCard id="C2" label="One-time offer · founding-member promo" copyStatus="PROPOSED">
+        <OneTimeOfferScreen />
+      </VariantCard>
+      <VariantCard id="C3" label="Gated feature · Bless+ paywall" copyStatus="PROPOSED">
+        <GatedFeatureScreen />
+      </VariantCard>
+      <VariantCard id="C4" label="Faith Q3 · same-sex redirect (Pastor-locked)" copyStatus="STAND-IN">
+        <FaithQ3ModalScreen />
+      </VariantCard>
+    </Fragment>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('variants-root')).render(<VariantsRoot />);
+ReactDOM.createRoot(document.getElementById('anchors-root')).render(<AnchorsRoot />);
+ReactDOM.createRoot(document.getElementById('modals-root')).render(<ModalsRoot />);
+</script>
+
+</body>
+</html>

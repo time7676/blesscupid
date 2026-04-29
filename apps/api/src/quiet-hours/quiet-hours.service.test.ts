@@ -23,7 +23,7 @@ class FakePrisma {
       if (!row) return null;
       if (!select) return row;
       const out: Record<string, unknown> = {};
-      for (const k of Object.keys(select)) out[k] = (row as Record<string, unknown>)[k];
+      for (const k of Object.keys(select)) out[k] = (row as unknown as Record<string, unknown>)[k];
       return out;
     },
     update: async ({ where, data }: { where: { id: string }; data: Partial<FakeUserRow> }) => {

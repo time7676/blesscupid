@@ -1,0 +1,54 @@
+# BlessCupid screen overhaul · progress
+
+Plan: `/Users/julian/.windsurf/plans/blesscupid-screen-overhaul-4b207e.md`
+
+## Phase tracker
+
+| # | Phase | Status |
+|---|---|---|
+| 0   | v1.0 anchor prototypes (8 screens + 3 Welcome variants) | DONE |
+| 0.1 | v1.1 iteration — Garden Hours adopted, catechism dropped, modals added | **DONE** — `prototypes/index.html` |
+| 0a  | Approval gate — 👍 v1.1 anchor + modal rows | **BLOCKED on user review** |
+| 1   | Tokens v1.1 in `lib/design-system/tokens.ts` + theme/tokens shim | not started |
+| 2   | New primitives (EmptyState, ErrorState, LoadingState, Sheet, BottomNav, ScreenHeader, ListItem, Divider, OfflineBanner, ToastProvider) | not started |
+| 3   | ~~Catechism remap~~ → **Verse-of-Day card refresh + Reading Room deferred** | scope reduced |
+| 4   | Onboarding upgrades (AgeGate, ProfileBasics, Faith decomposition, FirstPhoto, DatingOutOfScope, Bio, Done) — no catechism in entry flow | not started |
+| 5   | Auth upgrades (Welcome animated, Login, Signup, MagicLinkSent) | not started |
+| 6   | Navigation reshape (Root/Auth/Onboarding/AppShell/Settings) — simpler without catechism stack | not started |
+| 7   | App shell screens (Today w/ metrics + paywall, People, Threads, You w/ plan tier) | not started |
+| 8   | Modal system — Sheet primitive + 4 canonical patterns (toast, one-time offer, gated feature, Q3 redirect) | not started |
+| 9   | Empty/error/loading wiring | not started |
+| 10  | Cleanup — delete `theme/tokens.ts`, `components/catechism/`, `screens/onboarding-v0/`, `screens/catechism/` | not started |
+| 11  | Docs — system-v1 CHANGELOG, copy/PROPOSED-CHANGES, CLAUDE.md | not started |
+
+## Outstanding from user
+
+1. **v1.1 approval gate** (blocking phase 1+):
+   - 👍 / ✏️ / ❌ on the 10 rows in `prototypes/index.html` §D
+2. **Brand assets per plan §12** — revised list (catechism Beat 2–8 heroes dropped). See §12.15 priority order.
+3. **Pastor copy queue** — stand-in copy for Today greeting, You labels, Q3 modal, errors, Bless+ promo body, paywall body. Real strings substituted from `i18n/copy.js` at implementation time.
+4. **Bless+ pricing** — placeholder $8.99/mo + 14/90-day trials. Confirm or override before App Store metadata.
+
+## Decisions locked
+
+- Design system: `lib/design-system` canonical. Cobalt token kept defined but unused in user-facing surfaces (reserved for secondary states).
+- Palette: Garden Hours — sandstone-warm + gold-soft + amber-ink (warning-700) as italic/accent, ink-black for buttons.
+- Navigation: 3-stack split (Auth / Onboarding / AppShell) under Root. **Catechism stack removed.**
+- Scope: polish + post-onboarding shell + empty/error/loading library + modal system + monetization patterns.
+- App loop philosophy: Tinder/Bumble simplicity + heavy moderation (face liveness + 1-hour human review) + Christian-specific moments (verse-of-day, covenant ack, faith filtering, pastor-signed redirect on values mismatch).
+- Monetization posture: "show the metric first, ask for the upgrade second." No banners, no countdown timers, no shame copy.
+- Phase 0 scope: anchor set + iterate. v1.1 = 1 Welcome + 5 anchors + 4 modals = 10 frames.
+
+## Files created so far
+
+- `ble-development/docs/design/system-v1/tokens.css`
+- `ble-development/docs/design/system-v1/prototypes/index.html`
+- `ble-development/docs/design/system-v1/README.md`
+- `ble-development/docs/design/system-v1/progress.txt` (this file)
+
+## Resume here
+
+When the user returns approval marks:
+1. Apply variant choice into `lib/design-system/tokens.ts` (phase 1).
+2. Build primitives listed in phase 2.
+3. From there, every committed phase = one PR.

@@ -58,7 +58,7 @@ export class SealRelationshipsWorker {
           data: { state: 'sealed', sealedAt: now, sealAuditId },
         }),
         this.prisma.pastorNote.updateMany({
-          where: { relationshipId: rel.id, auditedUserSnapshot: { equals: null } },
+          where: { relationshipId: rel.id },
           data: { auditedUserSnapshot: snapshot },
         }),
       ]);
