@@ -1,0 +1,11 @@
+[Unit]
+Description=BlessCupid nightly Postgres backup → R2
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+WorkingDirectory=/srv/blesscupid
+ExecStart=/srv/blesscupid/backup.sh
+StandardOutput=journal
+StandardError=journal

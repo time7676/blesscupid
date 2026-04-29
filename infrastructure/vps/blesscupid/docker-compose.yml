@@ -1,0 +1,76 @@
+# BlessCupid app stack — VPS xserver-vps (162.43.39.237).
+# Location on VPS: /srv/blesscupid/docker-compose.yml
+#
+# Reuses the SHARED Postgres + Caddy in /srv/_shared/. This file ONLY brings
+# up BlessCupid-specific containers: API, Redis, Uptime Kuma.
+#
+# Bring up:    docker compose -f docker-compose.yml up -d --build
+# Logs:        docker compose -f docker-compose.yml logs -f api
+# Down:        docker compose -f docker-compose.yml down
+# Rebuild api: docker compose -f docker-compose.yml up -d --build api
+
+name: blesscupid
+
+networks:
+  proxy:
+    external: true   # shared Caddy network — created by /srv/_shared compose
+  internal:
+    external: true   # shared internal network — postgres lives here
+
+services:
+  api:
+    build:
+      context: ../../..        # repo root, Dockerfile copies apps/api + packages
+      dockerfile: apps/api/Dockerfile
+    container_name: blesscupid-api
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - proxy           # so Caddy can hit blesscupid-api:3000
+      - internal        # so api can reach postgres + redis
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:3000/healthz || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: '1.0'
+
+  redis:
+    image: redis:7-alpine
+    container_name: blesscupid-redis
+    restart: unless-stopped
+    command: ["redis-server", "--requirepass", "${REDIS_PASSWORD:?REDIS_PASSWORD required}", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    networks:
+      - internal
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: '0.5'
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:1
+    container_name: blesscupid-uptime
+    restart: unless-stopped
+    volumes:
+      - uptime_data:/app/data
+    networks:
+      - proxy
+    # Caddy reverse-proxies status.blesscupid.com → uptime-kuma:3001
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+
+volumes:
+  redis_data:
+  uptime_data:
