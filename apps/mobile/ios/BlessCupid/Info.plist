@@ -46,13 +46,13 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>BlessCupid memerlukan akses kamera untuk verifikasi wajah (selfie liveness) sehingga setiap profil benar-benar manusia. (TODO BLE-Pastor: teks final menunggu approval Pastor.)</string>
+    <string>BlessCupid memakai kamera untuk verifikasi wajah singkat (selfie liveness), supaya setiap profil di sini benar-benar manusia—bukan akun palsu atau bot.</string>
     <key>NSMicrophoneUsageDescription</key>
     <string>Allow $(PRODUCT_NAME) to access your microphone</string>
     <key>NSPhotoLibraryAddUsageDescription</key>
-    <string>BlessCupid menyimpan salinan foto profil yang sudah disetujui ke album Anda. (TODO BLE-Pastor: teks final menunggu approval Pastor.)</string>
+    <string>BlessCupid menyimpan salinan foto profil yang sudah disetujui ke album Anda, agar versi yang telah lolos moderasi mudah Anda akses.</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>BlessCupid memerlukan akses album foto agar Anda dapat memilih foto profil. Foto akan diperiksa moderasi sebelum tampil. (TODO BLE-Pastor: teks final menunggu approval Pastor.)</string>
+    <string>BlessCupid mengakses album foto agar Anda dapat memilih foto profil. Setiap foto ditinjau moderator sebelum tampil, untuk menjaga ruang yang hormat.</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>
