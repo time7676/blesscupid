@@ -12,6 +12,7 @@ import { BlocksModule } from './blocks/blocks.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { AccountModule } from './account/account.module.js';
 import { VerseModule } from './verse/verse.module.js';
+import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { VerseModule } from './verse/verse.module.js';
     AdminModule,
     AccountModule,
     VerseModule,
+    QuietHoursModule,
   ],
 })
 export class AppModule {}

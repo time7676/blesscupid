@@ -7,3 +7,4 @@ export * from './safety.js';
 export * from './liturgical/index.js';
 export * from './verse-of-day/index.js';
 export * from './scheduler/index.js';
+export * from './quiet-hours.js';

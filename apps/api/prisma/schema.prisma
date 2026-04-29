@@ -175,6 +175,14 @@ model User {
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
   deletedAt DateTime?
 
+  // BLE-129 — quiet-hours config (Holy Code §7.4 default = Sunday 09:00–11:30
+  // local). `timezone` is an IANA name; `quietHours` is the JSON-serialized
+  // QuietHoursConfig.windows array. Both nullable so legacy users keep working
+  // until they set a timezone via /me settings; the predicate treats a missing
+  // config as "never quiet".
+  timezone   String?
+  quietHours Json?
+
   @@index([email])
   @@index([deletedAt])
 }
