@@ -218,6 +218,34 @@ enum AccountDeletionStatus {
   cancelled
 }
 
+// BLE-136 — Pastor-mode 18+ KYC gate.
+// `none`        = no attempt yet
+// `passed`      = verified adult; pastor-mode surfaces unlocked for this user
+// `neutral_fail`= one neutral failure surface for under-18, OCR fail, doc-quality
+//                 fail, affidavit refused. The user-facing reason is INDISTINGUISHABLE.
+enum PastorModeGateStatus {
+  none
+  passed
+  neutral_fail
+}
+
+enum PastorModeAttestationKind {
+  ktp
+  affidavit
+}
+
+// BLE-131 — Pastor-mode invitation/relationship lifecycle.
+// 1:1 audited-side rule: at most ONE row per auditedUserId in status=`active`.
+// Pastor side has no cap — pastorUserId may have N concurrent active rows.
+enum PastorModeRelationshipStatus {
+  pending
+  active
+  ended_by_audited
+  ended_by_pastor
+  declined_by_audited
+  expired
+}
+
 model User {
   id               String   @id @default(uuid()) @db.Uuid
   email            String   @unique
@@ -248,6 +276,10 @@ model User {
   reviewedQueueItems     ModerationQueueItem[]   @relation("QueueReviewer")
   accountDeletion        AccountDeletionRequest? @relation("UserDeletion")
   moderationActionsTaken ModerationAction[]      @relation("ActionActor")
+  pastorModeGate         PastorModeGate?         @relation("UserPastorModeGate")
+  pastorModeAttempts     PastorModeGateAttempt[] @relation("UserPastorModeAttempts")
+  pastorModeAsAudited    PastorModeRelationship[] @relation("PastorModeAudited")
+  pastorModeAsPastor     PastorModeRelationship[] @relation("PastorModePastor")
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -536,6 +568,51 @@ model ModerationAction {
 // 30 days later (or 0 days when expedited). Frozen chat threads are
 // preserved past the user's hard-delete date and purged when the freeze
 // expires.
+// BLE-136 — current pastor-mode gate state per user. 1:1 with User.
+// Created lazily on first attempt. `attestationKind` records how the user
+// passed (ktp vs affidavit). DOB is intentionally NOT stored here — the gate
+// is a boolean outcome; raw DOB lives only on User.dob (set during signup
+// age gate per existing flow).
+model PastorModeGate {
+  id              String                     @id @default(uuid()) @db.Uuid
+  userId          String                     @unique @db.Uuid
+  user            User                       @relation("UserPastorModeGate", fields: [userId], references: [id], onDelete: Cascade)
+  status          PastorModeGateStatus       @default(none)
+  attestationKind PastorModeAttestationKind?
+  // 24h cooldown: when status=neutral_fail, the user cannot retry until
+  // cooldownUntil < now. Hides which retry path is allowed when (UU ITE
+  // affidavit attempts have a separate cooldown via attempts table).
+  cooldownUntil   DateTime?
+  passedAt        DateTime?
+  // Last decision time, for audit + cooldown reset.
+  decidedAt       DateTime?
+  createdAt       DateTime                   @default(now())
+  updatedAt       DateTime                   @updatedAt
+
+  @@index([status])
+}
+
+// BLE-136 — append-only audit log of every gate attempt. ZERO PII:
+// no NIK, no DOB, no name, no IP, no userAgent. We keep userId for
+// rate-limit + admin spot-checks, but the row body is a status-only
+// audit trail that can survive hard-delete (cascade kept on user delete
+// because it's not legally required to retain post-delete).
+model PastorModeGateAttempt {
+  id              String                    @id @default(uuid()) @db.Uuid
+  userId          String                    @db.Uuid
+  user            User                      @relation("UserPastorModeAttempts", fields: [userId], references: [id], onDelete: Cascade)
+  attestationKind PastorModeAttestationKind
+  outcome         PastorModeGateStatus // either `passed` or `neutral_fail`
+  // Coarse internal reason for ops triage. NEVER surfaced to user. Examples:
+  // 'underage' | 'invalid_dob' | 'future_dob' | 'ktp_ocr_low_confidence' |
+  // 'doc_quality' | 'affidavit_declined' | 'cooldown_active'
+  internalReason  String?
+  createdAt       DateTime                  @default(now())
+
+  @@index([userId, createdAt])
+  @@index([outcome, createdAt])
+}
+
 model AccountDeletionRequest {
   id                    String                @id @default(uuid()) @db.Uuid
   userId                String                @unique @db.Uuid
@@ -565,4 +642,55 @@ model VerseCache {
 
   @@id([ref, translation])
   @@index([expiresAt])
+}
+
+// BLE-131 — Pastor-mode relationship between an audited user and a pastor.
+// Lifecycle: pending → active → ended_*. See PastorModeRelationshipStatus.
+//
+// 1:1 audited-side rule:
+//   - At most one row per auditedUserId in status=`active` at a time.
+//   - Multiple `pending` rows allowed (audited can have several queued
+//     invites pre-accept) but only one accept may succeed; once active,
+//     subsequent accept attempts must error with `already_paired` and
+//     surface the gate copy on Surface 2.
+//   - Closed history (`ended_by_*`, `declined_by_audited`, `expired`) is
+//     unbounded — the audited user keeps a permanent read-only journal of
+//     past walks (per BLE-132 audited-mirror retention).
+//
+// 1:N pastor-side rule:
+//   - pastorUserId may have N concurrent active rows (one pastor can walk
+//     beside many disciples).
+//
+// Enforcement layers:
+//   1) Application: PastorModeRelationshipService.accept() runs in a
+//      Serializable transaction, reads the audited user's active row,
+//      and rejects with HTTP 409 + gate copy if one exists.
+//   2) Database: a partial unique index
+//      `pastor_mode_relationship_one_active_per_audited` on
+//      `(auditedUserId) WHERE status='active'` is added by
+//      `prisma db execute` against an idempotent SQL file
+//      (`apps/api/prisma/sql/0001_pastor_mode_relationship_partial_unique.sql`).
+//      Prisma's schema language does not yet support partial unique
+//      indexes, but `prisma db push` does NOT drop indexes that aren't in
+//      the schema, so the partial unique survives subsequent pushes.
+model PastorModeRelationship {
+  id              String                       @id @default(uuid()) @db.Uuid
+  auditedUserId   String                       @db.Uuid
+  audited         User                         @relation("PastorModeAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
+  pastorUserId    String                       @db.Uuid
+  pastor          User                         @relation("PastorModePastor", fields: [pastorUserId], references: [id], onDelete: Cascade)
+  status          PastorModeRelationshipStatus @default(pending)
+  invitedAt       DateTime                     @default(now())
+  acceptedAt      DateTime?
+  endedAt         DateTime?
+  inviteNote      String?
+  // BLE-132 hook: when status flips to ended_by_audited, this records the
+  // moment the pastor's transcript admin must seal by (ended + 24h).
+  pastorSealDueAt DateTime?
+  createdAt       DateTime                     @default(now())
+  updatedAt       DateTime                     @updatedAt
+
+  @@index([auditedUserId, status])
+  @@index([pastorUserId, status])
+  @@index([status, endedAt])
 }

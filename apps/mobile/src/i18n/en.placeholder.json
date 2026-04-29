@@ -86,5 +86,16 @@
       "block": "This bio doesn't meet our community standards. Please review the Holy Code of Conduct and try again.",
       "review": "Thank you. Our team is reviewing your bio. You'll be notified shortly."
     }
+  },
+  "pastorMode": {
+    "_status": "BLE-131 doctrinal copy. ID Bahasa source-of-truth lives in @blesscupid/shared PASTOR_MODE_COPY. EN translations are placeholders pending Pastor sign-off.",
+    "inviteGate": {
+      "alreadyPaired": "You are walking with Pastor {{pastorName}}. End that journey before accepting a new invitation."
+    },
+    "history": {
+      "sectionTitle": "Past journeys",
+      "rowDuration": "{{days}} days · ended",
+      "noResume": "There is no way to reactivate a past journey. A new invitation must be started fresh by both parties."
+    }
   }
 }

@@ -13,6 +13,8 @@ import { AdminModule } from './admin/admin.module.js';
 import { AccountModule } from './account/account.module.js';
 import { VerseModule } from './verse/verse.module.js';
 import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
+import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module.js';
+import { PastorModeRelationshipModule } from './pastor-mode-relationship/pastor-mode-relationship.module.js';
 
 @Module({
   imports: [
@@ -30,6 +32,8 @@ import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
     AccountModule,
     VerseModule,
     QuietHoursModule,
+    PastorModeGateModule,
+    PastorModeRelationshipModule,
   ],
 })
 export class AppModule {}
