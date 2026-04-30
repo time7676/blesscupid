@@ -38,16 +38,18 @@ describe("TextClassifier rule-based engine", () => {
     expect(r.reasons).toContain("sexual");
   });
 
-  it("queues hate speech patterns", async () => {
+  it("blocks hate speech patterns", async () => {
     const cls = new TextClassifier({});
     const r = await cls.classify("god hates you bible thumper");
-    expect(r.decision).toBe("queue");
+    expect(r.decision).toBe("block");
+    expect(r.reasons).toContain("hate");
   });
 
-  it("queues self-harm signals", async () => {
+  it("blocks self-harm signals", async () => {
     const cls = new TextClassifier({});
     const r = await cls.classify("i want to cut myself tonight");
-    expect(r.decision).toBe("queue");
+    expect(r.decision).toBe("block");
+    expect(r.reasons).toContain("self_harm");
   });
 
   it("normalizes obfuscated banned phrases", async () => {

@@ -103,9 +103,14 @@ function fakeImageProvider(labels: ProviderLabel[]): ImageClassifierProvider {
 function buildPipeline(opts: {
   store: InMemoryModerationStore;
   imageLabels: ProviderLabel[];
+  loose?: boolean;
 }): ModerationPipeline {
+  const looseThresholds = {
+    BLOCK: { sexual: 0.9, sexual_minors: 0.05, harassment_severe: 0.9, hate: 0.9, self_harm: 0.9, violence_graphic: 0.9 },
+    QUEUE: { sexual: 0.4, sexual_minors: 0.01, harassment_severe: 0.3, hate: 0.5, self_harm: 0.4, violence_graphic: 0.5 },
+  };
   return new ModerationPipeline({
-    text: new TextClassifier({}),
+    text: new TextClassifier(opts.loose ? { thresholds: looseThresholds } : {}),
     image: new ImageClassifier({ provider: fakeImageProvider(opts.imageLabels) }),
     store: opts.store,
   });
@@ -158,13 +163,14 @@ describe('ChatService → ModerationPipeline', () => {
     const pipeline = buildPipeline({
       store,
       imageLabels: [],
+      loose: true,
     });
     const chat = makeChatService(prisma, pipeline);
 
     const out = await chat.sendMessage(BOB, {
       threadId: THREAD,
       recipientUserId: ALICE,
-      text: 'borderline text',
+      text: 'fuck',
     });
 
     expect(out.status).toBe('queued');
@@ -187,7 +193,7 @@ describe('ChatService → ModerationPipeline', () => {
     const out = await chat.sendMessage(BOB, {
       threadId: THREAD,
       recipientUserId: ALICE,
-      text: 'explicit content',
+      text: 'send nudes please',
     });
 
     expect(out.status).toBe('blocked');
@@ -244,15 +250,15 @@ describe('ChatService → ModerationPipeline', () => {
   it('approving a queued item delivers the held message via admin queue service', async () => {
     const pipeline = buildPipeline({
       store,
-      // @ts-expect-error textScores not in buildPipeline type
       imageLabels: [],
+      loose: true,
     });
     const chat = makeChatService(prisma, pipeline);
 
     const send = await chat.sendMessage(BOB, {
       threadId: THREAD,
       recipientUserId: ALICE,
-      text: 'borderline',
+      text: 'fuck',
     });
     expect(send.status).toBe('queued');
 

@@ -62,7 +62,7 @@ describe("mutual interest gate", () => {
     const recipients = notifier.sent.map((n) => n.forUserId);
     expect(recipients).toEqual(["b"]);
     expect(notifier.suppressed.map((s) => s.forUserId)).toEqual(["a"]);
-    expect(notifier.suppressed[0].reason).toBe("quiet_hours");
+    expect(notifier.suppressed[0]?.reason).toBe("quiet_hours");
   });
 
   it("suppression analytics hook fires per-recipient", async () => {

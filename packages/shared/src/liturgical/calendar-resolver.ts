@@ -262,8 +262,8 @@ export function createCalendarResolver(
     const resolved = resolveCalendar({
       year,
       fixedTable,
-      contestedRefs: options?.contestedRefs,
-      movableFeasts: options?.movableFeasts,
+      ...(options?.contestedRefs ? { contestedRefs: options.contestedRefs } : {}),
+      ...(options?.movableFeasts ? { movableFeasts: options.movableFeasts } : {}),
     });
     cache.set(year, resolved);
     return resolved;

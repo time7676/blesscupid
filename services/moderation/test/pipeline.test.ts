@@ -3,24 +3,7 @@ import { ModerationPipeline } from "../src/pipeline.js";
 import { TextClassifier } from "../src/textClassifier.js";
 import { ImageClassifier, type ImageClassifierProvider } from "../src/imageClassifier.js";
 import { InMemoryModerationStore, makeReport } from "../src/queue.js";
-import { OpenAIModerationClient, type OpenAIModerationApiResponse } from "../src/openaiModeration.js";
 import type { MessageInput, ImageUploadInput } from "../src/types.js";
-
-function fakeOpenAI(scores: Record<string, number>): OpenAIModerationClient {
-  const payload: OpenAIModerationApiResponse = {
-    id: "x",
-    model: "test",
-    results: [
-      {
-        flagged: false,
-        categories: {},
-        category_scores: scores as never,
-      },
-    ],
-  };
-  const fetchImpl = (async () => ({ ok: true, status: 200, json: async () => payload })) as unknown as typeof fetch;
-  return new OpenAIModerationClient({ apiKey: "k", fetchImpl });
-}
 
 function fakeImageProvider(): ImageClassifierProvider {
   return {
@@ -56,7 +39,7 @@ function build() {
     store,
     pipeline: new ModerationPipeline({
       store,
-      text: new TextClassifier({ openai: fakeOpenAI({ sexual: 0.02 }) }),
+      text: new TextClassifier({}),
       image: new ImageClassifier({ provider: fakeBenignImageProvider() }),
       uuid: detUuid,
     }),
@@ -84,12 +67,17 @@ describe("ModerationPipeline — text", () => {
     const store = new InMemoryModerationStore();
     const pipeline = new ModerationPipeline({
       store,
-      text: new TextClassifier({ openai: fakeOpenAI({ sexual: 0.5 }) }),
+      text: new TextClassifier({
+        thresholds: {
+          BLOCK: { sexual: 0.9, sexual_minors: 0.05, harassment_severe: 0.9, hate: 0.9, self_harm: 0.9, violence_graphic: 0.9 },
+          QUEUE: { sexual: 0.4, sexual_minors: 0.01, harassment_severe: 0.3, hate: 0.5, self_harm: 0.4, violence_graphic: 0.5 },
+        },
+      }),
       image: new ImageClassifier({ provider: fakeBenignImageProvider() }),
       uuid: detUuid,
     });
     counter = 0;
-    const out = await pipeline.moderateMessage(makeMessage("borderline"));
+    const out = await pipeline.moderateMessage(makeMessage("fuck"));
     expect(out.kind).toBe("queued");
     const pending = await store.listPending();
     expect(pending).toHaveLength(1);
@@ -110,7 +98,7 @@ describe("ModerationPipeline — image", () => {
     const store = new InMemoryModerationStore();
     const pipeline = new ModerationPipeline({
       store,
-      text: new TextClassifier({ openai: fakeOpenAI({ sexual: 0.02 }) }),
+      text: new TextClassifier({}),
       image: new ImageClassifier({ provider: fakeImageProvider() }),
       uuid: detUuid,
     });
@@ -161,12 +149,17 @@ describe("Reports + blocks", () => {
     const { ModerationPipeline: _MP } = await import("../src/pipeline.js");
     const pipeline = new ModerationPipeline({
       store,
-      text: new TextClassifier({ openai: fakeOpenAI({ sexual: 0.5 }) }),
+      text: new TextClassifier({
+        thresholds: {
+          BLOCK: { sexual: 0.9, sexual_minors: 0.05, harassment_severe: 0.9, hate: 0.9, self_harm: 0.9, violence_graphic: 0.9 },
+          QUEUE: { sexual: 0.4, sexual_minors: 0.01, harassment_severe: 0.3, hate: 0.5, self_harm: 0.4, violence_graphic: 0.5 },
+        },
+      }),
       image: new ImageClassifier({ provider: fakeBenignImageProvider() }),
       uuid: detUuid,
     });
     counter = 0;
-    const out = await pipeline.moderateMessage(makeMessage("borderline"));
+    const out = await pipeline.moderateMessage(makeMessage("fuck"));
     expect(out.kind).toBe("queued");
     if (out.kind !== "queued") throw new Error("type narrow");
     const a = await store.resolve(out.queuedItem.id, "approved", "pastor-1");

@@ -44,18 +44,18 @@ export interface NotificationDispatcher {
   }): Promise<void>;
 
   /** Optional quiet-hours predicate. When set, gates {@link notifyNewMatch}. */
-  readonly quietHours?: QuietHoursPredicate;
+  readonly quietHours?: QuietHoursPredicate | undefined;
 
   /**
    * Optional analytics hook fired when a push is suppressed by quiet hours.
    * The matching engine never inspects this; it is invoked by the dispatcher.
    */
-  readonly onSuppressed?: (event: {
+  readonly onSuppressed?: ((event: {
     forUserId: string;
     matchedUserId: string;
     occurredAt: ChatUnlockedAt;
     reason: SuppressReason;
-  }) => void;
+  }) => void) | undefined;
 }
 
 export interface ExpressInterestResult {
