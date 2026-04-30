@@ -1,6 +1,6 @@
 {
   "name": "@blesscupid/mobile",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "BlessCupid mobile app (Expo / React Native)",
   "private": true,
   "main": "index.ts",
