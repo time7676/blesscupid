@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="360" viewBox="0 0 720 360" fill="none">
+<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2A252D"/><stop offset="55%" stop-color="#7D6229"/><stop offset="100%" stop-color="#C8A24B"/></linearGradient></defs>
+<rect width="720" height="360" rx="40" fill="url(#g)"/><circle cx="620" cy="50" r="130" fill="#FFFFFF" opacity=".15"/><path d="M80 230 C190 160 310 160 420 230" stroke="#E8D29A" stroke-width="5" opacity=".55"/><text x="70" y="110" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="#FAF7F0" opacity=".75">VERSE OF THE DAY</text><text x="70" y="180" font-family="Cormorant Garamond, Georgia, serif" font-size="44" font-style="italic" fill="#FAF7F0">Be anxious for nothing...</text>
+</svg>

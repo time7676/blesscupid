@@ -1,0 +1,16 @@
+:root{
+  --color-parchment: #FAF7F0;
+  --color-parchment2: #F3EADD;
+  --color-ink: #1A1820;
+  --color-inksoft: #5F5A63;
+  --color-gold: #C8A24B;
+  --color-goldsoft: #E8D29A;
+  --color-amber: #B68A2E;
+  --color-sand: #D7B98E;
+  --color-charcoal: #201D25;
+  --color-white: #FFFFFF;
+  --color-line: #D9CDBD;
+  --color-muted: #EEE4D4;
+  --font-serif: "Cormorant Garamond", Georgia, serif;
+  --font-sans: Inter, Arial, sans-serif;
+}
