@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<title>BlessCupid · BLE-23 Onboarding Lookbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="onboarding.css" />
+<style>
+  body { background: #ECE5D7; padding: 32px 0 64px; margin: 0; font-family: "Inter", system-ui, sans-serif; }
+  .lookbook-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 390px);
+    gap: 36px 28px;
+    justify-content: center;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+  .specimen { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+  .specimen__label {
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 12px;
+    color: #44464D;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .bc-frame {
+    box-shadow: 0 18px 48px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .lookbook-title {
+    font-family: "Source Serif 4", serif;
+    font-weight: 500;
+    font-size: 32px;
+    color: #1F2024;
+    text-align: center;
+    margin: 0 0 8px;
+  }
+  .lookbook-sub {
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: #6E7079;
+    text-align: center;
+    margin: 0 0 36px;
+    max-width: 720px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 20px;
+  }
+  .lookbook-sub code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+  .legend {
+    max-width: 720px;
+    margin: 0 auto 28px;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 14px;
+    font-size: 12px;
+    color: #44464D;
+    line-height: 18px;
+  }
+  .legend strong { color: #1F2024; }
+</style>
+</head>
+<body>
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <!-- Mode icons: rings (NOT heart), figures-pair, lingkar circle -->
+  <symbol id="ic-rings" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7">
+    <circle cx="11" cy="14" r="6"/>
+    <circle cx="17" cy="14" r="6"/>
+  </symbol>
+  <symbol id="ic-friends" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7">
+    <circle cx="10" cy="10" r="3.2"/>
+    <circle cx="18" cy="10" r="3.2"/>
+    <path d="M4 22c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+    <path d="M14 22c0-3.3 2.7-6 6-6s4 2.5 4 6"/>
+  </symbol>
+  <symbol id="ic-circle" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.7">
+    <circle cx="14" cy="14" r="9"/>
+    <circle cx="14" cy="7" r="2"/>
+    <circle cx="20" cy="13" r="2"/>
+    <circle cx="17" cy="20" r="2"/>
+    <circle cx="9" cy="20" r="2"/>
+    <circle cx="7" cy="12" r="2"/>
+  </symbol>
+  <symbol id="ic-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M15 6l-6 6 6 6"/>
+  </symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 12l5 5 9-11"/>
+  </symbol>
+  <symbol id="ic-google" viewBox="0 0 24 24">
+    <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4.1-5.5 4.1-3.3 0-6-2.7-6-6.2s2.7-6.2 6-6.2c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.7 3.3 14.6 2.4 12 2.4 6.8 2.4 2.6 6.6 2.6 12s4.2 9.6 9.4 9.6c5.4 0 9-3.8 9-9.2 0-.6-.1-1.1-.2-1.6H12z"/>
+  </symbol>
+  <symbol id="ic-camera" viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="7" width="22" height="16" rx="3"/>
+    <circle cx="14" cy="15" r="4.5"/>
+    <path d="M9 7l2-3h6l2 3"/>
+  </symbol>
+  <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+  </symbol>
+  <symbol id="ic-chevron-down" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M6 9l6 6 6-6"/>
+  </symbol>
+  <symbol id="ic-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="5" y="11" width="14" height="9" rx="2"/>
+    <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+  </symbol>
+</svg>
+
+<h1 class="lookbook-title">BLE-23 Onboarding · Mid-fi Lookbook</h1>
+<p class="lookbook-sub">8 screens at 390×844dp. Pastor copy from <code>BLE-49</code> integrated. Tokens consumed from <code>BLE-22 v0.1</code>. Token-only — no inline color literals. No hearts, no flames; rings + figure-pair + lingkar circle for mode iconography.</p>
+
+<div class="legend">
+  <strong>Order:</strong> 01 Welcome → 02 Auth → 02b OTP → 03 Mode pick → 04 Pernyataan iman → 05a Photo → 05b Selfie → 06 Profil iman → 07a Marriage timeline (Pacaran only) → 08 Done.
+  <br><strong>Selected states</strong> shown on Mode pick (Pacaran + Persahabatan), Marriage timeline (1–3 tahun), and Pernyataan iman (checkbox checked).
+</div>
+
+<div class="lookbook-grid">
+
+<!-- 01 Welcome -->
+<div class="specimen">
+  <span class="specimen__label">01 — Welcome</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top">
+      <span>9:41</span>
+      <span>•••</span>
+    </div>
+    <div class="bc-spacer-9"></div>
+    <div class="bc-hero">
+      <div class="bc-hero__sun"></div>
+    </div>
+    <div class="bc-spacer-8"></div>
+    <div class="bc-pad-x bc-stack" style="align-items:center; gap:24px;">
+      <div class="bc-wordmark">BlessCupid<span class="bc-wordmark__dot">.</span></div>
+      <p class="bc-display-lg" style="text-align:center; margin:0; padding:0 8px; color:var(--text-primary)">
+        Bertemu dalam iman.<br>Untuk pacaran, persahabatan,<br>dan komunitas.
+      </p>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x bc-stack" style="gap:14px; padding-bottom:16px;">
+      <button class="bc-btn bc-btn--primary bc-btn--full">Mulai</button>
+      <div style="text-align:center;">
+        <span class="bc-body-md bc-text-secondary">Sudah punya akun? </span>
+        <a href="#" class="bc-link">Masuk</a>
+      </div>
+      <p class="bc-body-sm bc-text-tertiary" style="text-align:center; margin:0; padding:0 12px;">
+        Dengan melanjutkan, kamu setuju dengan <a href="#" class="bc-link">Syarat</a> dan <a href="#" class="bc-link">Privasi</a>.
+      </p>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 02 Auth entry -->
+<div class="specimen">
+  <span class="specimen__label">02 — Auth entry</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back" aria-label="Kembali"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Masuk dengan nomor HP atau email</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Kami akan kirim kode verifikasi.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:16px;">
+      <div class="bc-tabs">
+        <button class="bc-tab bc-tab--active">HP</button>
+        <button class="bc-tab">Email</button>
+      </div>
+      <div class="bc-phone">
+        <div class="bc-cc">+62</div>
+        <input class="bc-input" type="tel" value="812 3456 7890" inputmode="tel">
+      </div>
+      <button class="bc-btn bc-btn--primary bc-btn--full">Kirim kode</button>
+      <div class="bc-row" style="gap:12px;">
+        <div class="bc-grow" style="height:1px;background:var(--border-subtle);"></div>
+        <span class="bc-body-sm bc-text-tertiary">atau</span>
+        <div class="bc-grow" style="height:1px;background:var(--border-subtle);"></div>
+      </div>
+      <button class="bc-btn bc-btn--ghost bc-btn--full">
+        <svg width="18" height="18"><use href="#ic-google"/></svg>
+        Lanjut dengan Google
+      </button>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 02b OTP -->
+<div class="specimen">
+  <span class="specimen__label">02b — OTP</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Masukkan kode</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Kode 6-digit dikirim ke <strong>+62 812 3456 7890</strong>.</p>
+    </div>
+    <div class="bc-spacer-9"></div>
+    <div class="bc-pad-x">
+      <div class="bc-otp">
+        <div class="bc-otp-slot bc-otp-slot--filled">8</div>
+        <div class="bc-otp-slot bc-otp-slot--filled">2</div>
+        <div class="bc-otp-slot bc-otp-slot--filled">4</div>
+        <div class="bc-otp-slot bc-otp-slot--filled" style="border-color:var(--color-cobalt-600);">_</div>
+        <div class="bc-otp-slot"></div>
+        <div class="bc-otp-slot"></div>
+      </div>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x" style="text-align:center;">
+      <span class="bc-body-md bc-text-tertiary">Kirim ulang kode (00:48)</span>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 03 Mode pick (with selected states on Pacaran + Persahabatan) -->
+<div class="specimen">
+  <span class="specimen__label">03 — Mode pick (multi-select)</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Apa yang kamu cari di BlessCupid?</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Pilih satu atau lebih. Bisa diubah nanti.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:14px;">
+      <div class="bc-mode-card bc-mode-card--selected">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-rings"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Pacaran</div>
+          <div class="bc-mode-card__desc">Cari pasangan hidup dengan visi iman yang sama.</div>
+        </div>
+        <div class="bc-mode-card__check"><svg width="16" height="16"><use href="#ic-check"/></svg></div>
+      </div>
+      <div class="bc-mode-card bc-mode-card--selected">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-friends"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Persahabatan</div>
+          <div class="bc-mode-card__desc">Tumbuh bersama teman seiman, tanpa tekanan romantis.</div>
+        </div>
+        <div class="bc-mode-card__check"><svg width="16" height="16"><use href="#ic-check"/></svg></div>
+      </div>
+      <div class="bc-mode-card">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-circle"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Komunitas</div>
+          <div class="bc-mode-card__desc">Gabung lingkar pelayanan, doa, atau hobi seiman.</div>
+        </div>
+        <div class="bc-mode-card__check"></div>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--primary bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 04 Pernyataan iman (checked) -->
+<div class="specimen">
+  <span class="specimen__label">04 — Pernyataan iman (Pastor copy)</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x">
+      <h2 class="bc-heading-lg" style="margin:0 0 14px;">Pernyataan iman BlessCupid</h2>
+      <div style="font-family:'Source Serif 4',serif; font-size:15px; line-height:24px; color:var(--text-primary); display:flex; flex-direction:column; gap:12px;">
+        <p style="margin:0;">Hubungan sehat berakar di dalam Kristus. Bukan kebetulan, bukan transaksi — relasi yang menumbuhkan iman, harap, dan kasih.</p>
+        <p style="margin:0;">Kami menjunjung kehormatan setiap orang. Kesucian sebelum pernikahan adalah bentuk hormat kepada Tuhan dan calon pasangan.</p>
+        <p style="margin:0;">Satu di dalam Kristus, melampaui denominasi. Komit pada interaksi yang aman, jujur, dan saling menghormati. Lapor bila merasa terancam.</p>
+      </div>
+      <div class="bc-pullquote">
+        <p>"Dan di atas semuanya itu: kenakanlah kasih, sebagai pengikat yang mempersatukan dan menyempurnakan."</p>
+        <cite>— Kolose 3:14 (TB)</cite>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x bc-stack" style="gap:16px; padding-bottom:16px;">
+      <div class="bc-checkbox-row">
+        <div class="bc-checkbox bc-checkbox--checked"><svg width="14" height="14"><use href="#ic-check"/></svg></div>
+        <span class="bc-body-md">Saya membaca dan setuju mengikuti pernyataan iman ini.</span>
+      </div>
+      <button class="bc-btn bc-btn--primary bc-btn--full">Saya setuju</button>
+      <a href="#" class="bc-link bc-link--tertiary" style="text-align:center;">Belum siap? Kembali</a>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 05a Photo upload -->
+<div class="specimen">
+  <span class="specimen__label">05a — Tambah foto profil</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Tambah foto profil</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Foto wajah jelas. Modest. Bukan foto grup.</p>
+    </div>
+    <div class="bc-spacer-6"></div>
+    <div class="bc-dropzone">
+      <svg width="42" height="42"><use href="#ic-camera"/></svg>
+      <span class="bc-body-md" style="font-weight:600;">Ketuk untuk memilih</span>
+      <span class="bc-body-sm bc-text-tertiary">JPEG, PNG, atau HEIC · maks 10MB</span>
+    </div>
+    <div class="bc-spacer-6"></div>
+    <div class="bc-pad-x">
+      <p class="bc-body-sm bc-text-secondary" style="margin:0 0 12px;">Foto pertama yang baik membantu kamu dikenali apa adanya.</p>
+      <div class="bc-chip-row">
+        <span class="bc-hint-chip"><svg width="12" height="12"><use href="#ic-check"/></svg>Wajah terlihat jelas</span>
+        <span class="bc-hint-chip"><svg width="12" height="12"><use href="#ic-check"/></svg>Berpakaian sopan</span>
+        <span class="bc-hint-chip"><svg width="12" height="12"><use href="#ic-check"/></svg>Foto sendiri, bukan grup</span>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--disabled bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 05b Selfie liveness -->
+<div class="specimen">
+  <span class="specimen__label">05b — Selfie verifikasi</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Ambil selfie verifikasi</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Sekali saja. Untuk pastikan kamu kamu.</p>
+    </div>
+    <div class="bc-spacer-5"></div>
+    <div class="bc-camera">
+      <div class="bc-camera__oval"></div>
+      <div class="bc-camera__prompt">Hadap kanan</div>
+    </div>
+    <div class="bc-spacer-5"></div>
+    <div class="bc-pad-x bc-row" style="gap:8px;">
+      <svg width="14" height="14" style="color:var(--text-tertiary);"><use href="#ic-lock"/></svg>
+      <span class="bc-body-sm bc-text-tertiary">Selfie ini tidak dibagikan.</span>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--ghost bc-btn--full">Ambil ulang</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 06 Profil iman -->
+<div class="specimen">
+  <span class="specimen__label">06 — Profil iman</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x" style="overflow-y:auto;">
+      <h2 class="bc-display-lg" style="margin:0 0 14px;">Profil iman kamu</h2>
+      <div class="bc-section-label">Identitas iman</div>
+      <div class="bc-field">
+        <label class="bc-field__label">Denominasi <span class="bc-text-tertiary" style="font-weight:400;">(opsional)</span></label>
+        <div class="bc-input bc-row" style="justify-content:space-between;">
+          <span class="bc-text-tertiary">Pilih denominasi</span>
+          <svg width="16" height="16"><use href="#ic-chevron-down"/></svg>
+        </div>
+        <span class="bc-field__hint">Belum yakin? Tidak apa — kamu bisa lewati atau pilih "Belum yakin / Masih mencari" di bawah daftar.</span>
+      </div>
+      <div class="bc-spacer-4"></div>
+      <div class="bc-field">
+        <label class="bc-field__label">Gereja rumah</label>
+        <div class="bc-input bc-row" style="gap:8px;">
+          <svg width="16" height="16" style="color:var(--text-tertiary);"><use href="#ic-search"/></svg>
+          <span class="bc-text-tertiary">Cari gereja...</span>
+        </div>
+      </div>
+      <div class="bc-spacer-6"></div>
+      <div class="bc-section-label">Ekspresi iman</div>
+      <div class="bc-field">
+        <label class="bc-field__label">Ayat favorit <span class="bc-required">*</span></label>
+        <input class="bc-input" type="text" value="Yeremia 29:11">
+        <span class="bc-field__hint">Ayat dari kitab apa pun.</span>
+      </div>
+      <div class="bc-spacer-4"></div>
+      <div class="bc-field">
+        <label class="bc-field__label">Cerita iman singkat</label>
+        <textarea class="bc-input bc-textarea" rows="3" placeholder="Bagaimana kamu mengenal Kristus?"></textarea>
+        <span class="bc-field__counter">0/500</span>
+      </div>
+      <div class="bc-spacer-6"></div>
+      <div class="bc-section-label">Pelayanan (opsional)</div>
+      <span class="bc-field__hint" style="display:block; margin-bottom:8px;">Area pelayananmu di gereja. Bisa pilih lebih dari satu.</span>
+      <div class="bc-chip-row">
+        <span class="bc-chip bc-chip--selected">Pujian</span>
+        <span class="bc-chip">Pemuda</span>
+        <span class="bc-chip bc-chip--selected">Doa</span>
+        <span class="bc-chip">Pengajaran</span>
+        <span class="bc-chip">Misi</span>
+        <span class="bc-chip">Anak</span>
+        <span class="bc-chip">Diakonia</span>
+        <span class="bc-chip">Konseling</span>
+        <span class="bc-chip">Lainnya</span>
+      </div>
+      <div class="bc-spacer-10"></div>
+    </div>
+    <div class="bc-sticky-cta">
+      <button class="bc-btn bc-btn--primary bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 07a Marriage timeline -->
+<div class="specimen">
+  <span class="specimen__label">07a — Marriage timeline (Pacaran)</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Kapan kamu ingin menikah?</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Tidak ada jawaban benar atau salah. Kami pakai ini untuk mempertemukanmu dengan orang yang sefase.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:12px;">
+      <div class="bc-radio-card">
+        <div class="bc-radio-circle"></div>
+        <span>Dalam 1 tahun</span>
+      </div>
+      <div class="bc-radio-card bc-radio-card--selected">
+        <div class="bc-radio-circle"></div>
+        <span>1–3 tahun</span>
+      </div>
+      <div class="bc-radio-card">
+        <div class="bc-radio-circle"></div>
+        <span>Lebih dari 3 tahun</span>
+      </div>
+      <div class="bc-radio-card">
+        <div class="bc-radio-circle"></div>
+        <span>Masih berdoa</span>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--primary bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 08 Done -->
+<div class="specimen">
+  <span class="specimen__label">08 — Done · Verse of the day</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-spacer-9"></div>
+    <div class="bc-hero" style="height:200px;">
+      <div class="bc-hero__sun"></div>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:6px;">
+      <h2 class="bc-display-lg" style="margin:0;">Selamat datang, Maria.</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Doa kami menyertai langkahmu di sini.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x">
+      <div class="bc-verse">
+        <div class="bc-verse__label">Ayat hari ini</div>
+        <p class="bc-verse__text">Sebab Aku ini mengetahui rancangan-rancangan apa yang ada pada-Ku mengenai kamu, demikianlah firman TUHAN, yaitu rancangan damai sejahtera dan bukan rancangan kecelakaan, untuk memberikan kepadamu hari depan yang penuh harapan.</p>
+        <div class="bc-verse__ref">— Yeremia 29:11 (TB)</div>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x bc-stack" style="gap:12px; padding-bottom:16px;">
+      <button class="bc-btn bc-btn--primary bc-btn--full">Mulai jelajah</button>
+      <a href="#" class="bc-link bc-link--tertiary" style="text-align:center;">Atur profil dulu</a>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+</div>
+
+<h2 class="lookbook-title" style="margin-top:64px;">Edge States</h2>
+<p class="lookbook-sub">Errors, permission denials, low-light, required-field blocks. Critical state colored <code>state/critical</code> (amber-700, never red). Tone: calm, explanatory, never accusatory. Full coverage in <code>edge-states</code> document.</p>
+
+<div class="lookbook-grid">
+
+<!-- 02a Invalid phone error -->
+<div class="specimen">
+  <span class="specimen__label">02a — Invalid phone</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Masuk dengan nomor HP atau email</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Kami akan kirim kode verifikasi.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:16px;">
+      <div class="bc-tabs">
+        <button class="bc-tab bc-tab--active">HP</button>
+        <button class="bc-tab">Email</button>
+      </div>
+      <div class="bc-stack" style="gap:6px;">
+        <div class="bc-phone">
+          <div class="bc-cc">+62</div>
+          <input class="bc-input bc-input--error" type="tel" value="123" inputmode="tel">
+        </div>
+        <span class="bc-msg-error">Nomor HP belum valid.</span>
+      </div>
+      <button class="bc-btn bc-btn--disabled bc-btn--full">Kirim kode</button>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 02b Wrong OTP -->
+<div class="specimen">
+  <span class="specimen__label">02b — Wrong code</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Masukkan kode</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Kode 6-digit dikirim ke <strong>+62 812 3456 7890</strong>.</p>
+    </div>
+    <div class="bc-spacer-9"></div>
+    <div class="bc-pad-x">
+      <div class="bc-otp">
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+        <div class="bc-otp-slot bc-otp-slot--error"></div>
+      </div>
+      <div class="bc-spacer-3"></div>
+      <span class="bc-msg-error" style="justify-content:center; display:flex;">Kode salah. Coba lagi.</span>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x" style="text-align:center;">
+      <a href="#" class="bc-link">Kirim ulang kode</a>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 05a Photo too large -->
+<div class="specimen">
+  <span class="specimen__label">05a — Photo too large</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Tambah foto profil</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Foto wajah jelas. Modest. Bukan foto grup.</p>
+    </div>
+    <div class="bc-spacer-6"></div>
+    <div class="bc-dropzone" style="border-color:var(--color-amber-700, #8C5912); background:var(--color-amber-100, #FCEBD2);">
+      <svg width="42" height="42" style="color:var(--color-amber-700);"><use href="#ic-camera"/></svg>
+      <span class="bc-body-md" style="font-weight:600; color:var(--color-amber-700);">Ketuk untuk memilih</span>
+    </div>
+    <div class="bc-spacer-4"></div>
+    <div class="bc-pad-x">
+      <span class="bc-msg-error">Ukuran foto maks 10MB. Pilih foto lain.</span>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--disabled bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 05a Camera permission denied modal -->
+<div class="specimen">
+  <span class="specimen__label">05 — Camera permission denied</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px; opacity:0.4;">
+      <h2 class="bc-display-lg" style="margin:0;">Tambah foto profil</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Foto wajah jelas. Modest. Bukan foto grup.</p>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-modal-scrim">
+      <div class="bc-modal">
+        <div class="bc-modal__handle"></div>
+        <div class="bc-modal__icon"><svg width="26" height="26"><use href="#ic-camera"/></svg></div>
+        <h3 class="bc-heading-lg" style="margin:0;">Aktifkan kamera</h3>
+        <p class="bc-body-md bc-text-secondary" style="margin:0;">BlessCupid butuh akses kamera untuk verifikasi. Atur izin di Pengaturan.</p>
+        <div class="bc-spacer-3"></div>
+        <button class="bc-btn bc-btn--primary bc-btn--full">Buka Pengaturan</button>
+        <a href="#" class="bc-link bc-link--tertiary" style="text-align:center;">Pakai galeri saja</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 05b Low light selfie -->
+<div class="specimen">
+  <span class="specimen__label">05b — Low light</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px;">
+      <h2 class="bc-display-lg" style="margin:0;">Ambil selfie verifikasi</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Sekali saja. Untuk pastikan kamu kamu.</p>
+    </div>
+    <div class="bc-spacer-5"></div>
+    <div class="bc-camera bc-camera--lowlight" style="background:linear-gradient(180deg, #14171F, #0A0C12);">
+      <div class="bc-camera__oval"></div>
+      <div class="bc-camera__prompt" style="color:var(--color-amber-100);">Cahaya kurang. Pindah ke tempat lebih terang.</div>
+    </div>
+    <div class="bc-spacer-5"></div>
+    <div class="bc-pad-x bc-row" style="gap:8px;">
+      <svg width="14" height="14" style="color:var(--text-tertiary);"><use href="#ic-lock"/></svg>
+      <span class="bc-body-sm bc-text-tertiary">Selfie ini tidak dibagikan.</span>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--ghost bc-btn--full">Ambil ulang</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- 06 Required field empty after advance -->
+<div class="specimen">
+  <span class="specimen__label">06 — Required field empty</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x">
+      <h2 class="bc-display-lg" style="margin:0 0 14px;">Profil iman kamu</h2>
+      <div class="bc-section-label">Identitas iman</div>
+      <div class="bc-field">
+        <label class="bc-field__label" style="color:var(--color-amber-700);">Denominasi <span class="bc-required">*</span></label>
+        <div class="bc-input bc-input--error bc-row" style="justify-content:space-between;">
+          <span class="bc-text-tertiary">Pilih denominasi</span>
+          <svg width="16" height="16"><use href="#ic-chevron-down"/></svg>
+        </div>
+        <span class="bc-msg-error">Wajib diisi.</span>
+      </div>
+      <div class="bc-spacer-4"></div>
+      <div class="bc-field">
+        <label class="bc-field__label">Gereja rumah</label>
+        <div class="bc-input bc-row" style="gap:8px;">
+          <svg width="16" height="16" style="color:var(--text-tertiary);"><use href="#ic-search"/></svg>
+          <span class="bc-text-tertiary">Cari gereja...</span>
+        </div>
+      </div>
+      <div class="bc-spacer-6"></div>
+      <div class="bc-section-label">Ekspresi iman</div>
+      <div class="bc-field">
+        <label class="bc-field__label" style="color:var(--color-amber-700);">Ayat favorit <span class="bc-required">*</span></label>
+        <input class="bc-input bc-input--error" type="text" value="" placeholder="Misal: Yeremia 29:11">
+        <span class="bc-msg-error">Wajib diisi.</span>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-sticky-cta">
+      <button class="bc-btn bc-btn--disabled bc-btn--full">Lanjut</button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+<!-- Network failure toast on 03 Mode pick -->
+<div class="specimen">
+  <span class="specimen__label">03 — Network slow toast</span>
+  <div class="bc-frame">
+    <div class="bc-frame__safe-top"><span>9:41</span><span>•••</span></div>
+    <div class="bc-toast bc-toast--warning">
+      <svg width="18" height="18" style="flex-shrink:0;"><use href="#ic-lock"/></svg>
+      <span>Sambungan lambat. Tetap di sini sebentar.</span>
+      <button class="bc-toast__close" aria-label="Tutup">×</button>
+    </div>
+    <div class="bc-topbar">
+      <button class="bc-back"><svg width="22" height="22"><use href="#ic-back"/></svg></button>
+      <div class="bc-grow"></div>
+      <div class="bc-dots"><span class="bc-dot bc-dot--active"></span><span class="bc-dot bc-dot--active"></span><span class="bc-dot"></span></div>
+      <div class="bc-grow"></div>
+      <div style="width:44px"></div>
+    </div>
+    <div class="bc-pad-x bc-stack" style="gap:8px; opacity:0.65;">
+      <h2 class="bc-display-lg" style="margin:0;">Apa yang kamu cari di BlessCupid?</h2>
+      <p class="bc-body-md bc-text-secondary" style="margin:0;">Pilih satu atau lebih. Bisa diubah nanti.</p>
+    </div>
+    <div class="bc-spacer-7"></div>
+    <div class="bc-pad-x bc-stack" style="gap:14px; opacity:0.65;">
+      <div class="bc-mode-card bc-mode-card--selected">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-rings"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Pacaran</div>
+          <div class="bc-mode-card__desc">Cari pasangan hidup dengan visi iman yang sama.</div>
+        </div>
+        <div class="bc-mode-card__check"><svg width="16" height="16"><use href="#ic-check"/></svg></div>
+      </div>
+      <div class="bc-mode-card">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-friends"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Persahabatan</div>
+          <div class="bc-mode-card__desc">Tumbuh bersama teman seiman, tanpa tekanan romantis.</div>
+        </div>
+        <div class="bc-mode-card__check"></div>
+      </div>
+      <div class="bc-mode-card">
+        <div class="bc-mode-card__icon"><svg width="28" height="28"><use href="#ic-circle"/></svg></div>
+        <div>
+          <div class="bc-mode-card__title">Komunitas</div>
+          <div class="bc-mode-card__desc">Gabung lingkar pelayanan, doa, atau hobi seiman.</div>
+        </div>
+        <div class="bc-mode-card__check"></div>
+      </div>
+    </div>
+    <div class="bc-grow"></div>
+    <div class="bc-pad-x" style="padding-bottom:16px;">
+      <button class="bc-btn bc-btn--primary bc-btn--full" style="opacity:0.7;">
+        <svg width="14" height="14" style="margin-right:4px;" class="bc-spinner"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="2" fill="none" stroke-dasharray="22" stroke-dashoffset="6"/></svg>
+        Lanjut
+      </button>
+    </div>
+    <div class="bc-frame__safe-bottom"><div class="bc-home-indicator"></div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

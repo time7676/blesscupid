@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BlessCupid · 16×16 favicon fallback. Halo dropped at this size per acceptance test
+  ("gold dot may collapse at 16px — use BC monogram fallback"). BC type compressed
+  slightly to fill more of the canvas without halo.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" role="img" aria-label="BlessCupid">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-mono{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:14px;font-variation-settings:'opsz' 60;letter-spacing:-0.5px;fill:#FDFBF6;}
+    </style>
+  </defs>
+  <rect width="16" height="16" rx="3" fill="#2F4F99"/>
+  <text x="8" y="12.5" text-anchor="middle" class="bc-mono">BC</text>
+</svg>

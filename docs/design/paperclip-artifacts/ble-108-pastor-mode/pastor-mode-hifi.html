@@ -1,0 +1,1255 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlessCupid — Pastor-mode UI hi-fi (BLE-108)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+  --sage-500:#5C8A6A;
+
+  --bg-canvas:var(--cream-50); --bg-surface:#FFFFFF; --bg-raised:var(--cream-100);
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-inverse:var(--cream-50); --text-brand:var(--cobalt-700);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300); --border-focus:var(--cobalt-600);
+
+  --s-1:2px; --s-2:4px; --s-3:8px; --s-4:12px; --s-5:16px; --s-6:20px; --s-7:24px;
+  --s-8:32px; --s-9:40px; --s-10:48px; --s-11:64px; --s-12:80px;
+
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-pill:999px;
+
+  --elev-1:0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2:0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3:0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-phone:0 24px 60px rgba(20,24,40,.18), 0 8px 24px rgba(20,24,40,.10);
+
+  --d-fast:120ms; --d-base:200ms;
+  --e-standard:cubic-bezier(0.2,0,0.2,1);
+
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:0ms !important; transition-duration:0ms !important; }
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family:var(--f-sans);
+  background:var(--bg-canvas);
+  color:var(--text-primary);
+  font-size:15px; line-height:22px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Page ── */
+.page { max-width:1280px; margin:0 auto; padding:var(--s-10) var(--s-7) var(--s-12); }
+.page-header { margin-bottom:var(--s-10); border-bottom:1px solid var(--border-subtle); padding-bottom:var(--s-9); }
+.eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-brand); margin:0 0 var(--s-3); }
+.page-title { font-family:var(--f-serif); font-size:44px; line-height:50px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.01em; }
+.page-sub { color:var(--text-secondary); max-width:62ch; margin:0; font-size:17px; line-height:26px; }
+.page-meta { color:var(--text-tertiary); margin-top:var(--s-4); font-size:13px; font-family:ui-monospace,monospace; }
+
+.section { margin-top:var(--s-12); }
+.section-head { margin-bottom:var(--s-9); }
+.section-eyebrow { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--cobalt-600); margin:0 0 var(--s-2); }
+.section-title { font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.section-sub { color:var(--text-secondary); max-width:70ch; margin:0; font-size:15px; line-height:24px; }
+
+/* ── Phone frame (390x844) ── */
+.phones { display:flex; flex-wrap:wrap; gap:var(--s-10); justify-content:flex-start; }
+.phone-wrap { display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-4); width:390px; }
+.phone-cap { font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-brand); }
+.phone-cap-sub { font-size:13px; color:var(--text-secondary); margin-top:-6px; line-height:18px; }
+.phone {
+  width:390px; height:844px;
+  background:#fff;
+  border-radius:44px;
+  border:1px solid var(--stone-300);
+  box-shadow:var(--elev-phone);
+  position:relative;
+  overflow:hidden;
+}
+.phone::before {
+  content:""; position:absolute; left:50%; top:8px; transform:translateX(-50%);
+  width:120px; height:30px; background:#0b0b0d; border-radius:18px; z-index:30;
+}
+.phone-inner { position:absolute; inset:0; padding-top:54px; display:flex; flex-direction:column; height:100%; overflow:hidden; }
+
+/* status bar */
+.status-bar {
+  position:absolute; top:14px; left:0; right:0; padding:0 32px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; font-weight:600; color:var(--stone-900); z-index:25;
+}
+.status-bar .status-time { letter-spacing:.02em; }
+.status-bar .status-icons { display:flex; gap:6px; align-items:center; }
+
+/* nav (mobile app header) */
+.app-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--s-3) var(--s-5);
+  border-bottom:1px solid var(--border-subtle);
+  background:var(--bg-surface);
+  flex-shrink:0;
+}
+.app-header h1 { font-family:var(--f-serif); font-size:18px; font-weight:500; color:var(--cobalt-900); margin:0; }
+.app-header .icon-btn { width:40px; height:40px; border-radius:var(--r-pill); border:none; background:transparent; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+.app-header .icon-btn:hover { background:var(--cream-100); }
+.icon-btn svg { display:block; }
+.back-row { display:flex; align-items:center; gap:var(--s-2); }
+.back-row .label { font-size:15px; font-weight:500; color:var(--cobalt-700); }
+
+/* generic */
+.scroll { flex:1; overflow-y:auto; }
+.stack-7 > * + * { margin-top:var(--s-7); }
+.stack-5 > * + * { margin-top:var(--s-5); }
+.stack-3 > * + * { margin-top:var(--s-3); }
+.muted { color:var(--text-tertiary); }
+.serif { font-family:var(--f-serif); }
+.tnum { font-variant-numeric:tabular-nums; }
+
+/* ── Consent banner ── */
+.consent-banner {
+  background:var(--cobalt-50);
+  color:var(--cobalt-700);
+  display:flex; align-items:center; gap:var(--s-3);
+  padding:10px var(--s-5);
+  border-bottom:1px solid var(--cobalt-100);
+  font-size:13px; line-height:18px; font-weight:500;
+  flex-shrink:0;
+}
+.consent-banner .copy { flex:1; }
+.consent-banner .copy strong { font-weight:600; }
+.consent-banner .end-link {
+  background:transparent; border:none; padding:6px 10px; border-radius:var(--r-md);
+  color:var(--cobalt-700); font-size:12px; font-weight:600;
+  text-decoration:underline; cursor:pointer;
+  text-decoration-thickness:1px; text-underline-offset:3px;
+}
+.consent-banner .end-link:hover { background:var(--cobalt-100); }
+
+/* ── Buttons ── */
+.btn {
+  font-family:var(--f-sans); font-weight:600; font-size:15px; line-height:22px;
+  border:none; border-radius:var(--r-lg); padding:0 var(--s-7);
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s-3);
+  cursor:pointer; transition:background var(--d-fast) var(--e-standard);
+  min-height:48px; min-width:48px; text-decoration:none;
+}
+.btn--primary { background:var(--cobalt-700); color:var(--text-inverse); }
+.btn--primary:hover { background:var(--cobalt-900); }
+.btn--secondary { background:var(--bg-surface); color:var(--cobalt-700); border:1px solid var(--cobalt-700); }
+.btn--secondary:hover { background:var(--cobalt-50); }
+.btn--ghost { background:transparent; color:var(--cobalt-700); }
+.btn--ghost:hover { background:var(--cobalt-50); }
+.btn--full { width:100%; }
+.btn--quiet { background:transparent; color:var(--text-secondary); font-weight:500; }
+.btn--quiet:hover { color:var(--cobalt-700); background:var(--cream-100); }
+
+/* ── Cards / surfaces ── */
+.surface { padding:var(--s-7) var(--s-7) var(--s-9); }
+.surface h2 { font-family:var(--f-serif); font-size:26px; line-height:32px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.005em; }
+.surface h3 { font-family:var(--f-sans); font-size:15px; font-weight:600; color:var(--stone-900); margin:0 0 var(--s-3); }
+.surface p { font-size:15px; line-height:23px; color:var(--text-secondary); margin:0; }
+
+.scripture {
+  font-family:var(--f-serif); font-style:italic;
+  color:var(--cobalt-900); font-size:15px; line-height:24px;
+  border-left:2px solid var(--cobalt-600); padding-left:var(--s-5);
+  margin-top:var(--s-5);
+}
+.scripture cite { display:block; margin-top:var(--s-2); font-size:12px; font-style:normal; color:var(--text-tertiary); letter-spacing:.04em; text-transform:uppercase; }
+
+.spec {
+  background:var(--cobalt-50);
+  border:1px solid var(--cobalt-100);
+  border-radius:var(--r-lg);
+  padding:var(--s-5) var(--s-6);
+}
+.spec-list { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.spec-list li { display:flex; gap:var(--s-3); font-size:14px; line-height:20px; color:var(--cobalt-900); }
+.spec-list li .dot { flex-shrink:0; margin-top:6px; width:6px; height:6px; border-radius:99px; background:var(--cobalt-600); }
+.spec-list li.no .dot { background:transparent; border:1px solid var(--cobalt-600); }
+.spec-list li.no { color:var(--cobalt-700); }
+.spec-list li b { font-weight:600; }
+
+/* ── Avatars ── */
+.avatar { width:40px; height:40px; border-radius:var(--r-pill); background:var(--cream-200); display:inline-flex; align-items:center; justify-content:center; color:var(--cobalt-700); font-weight:600; font-size:14px; flex-shrink:0; overflow:hidden; }
+.avatar.lg { width:56px; height:56px; font-size:18px; }
+.avatar.sm { width:28px; height:28px; font-size:11px; }
+.avatar.cobalt { background:var(--cobalt-100); color:var(--cobalt-900); }
+
+/* ── Chat thread ── */
+.chat-thread { display:flex; flex-direction:column; gap:var(--s-4); padding:var(--s-5) var(--s-5) var(--s-7); flex:1; overflow-y:auto; background:var(--cream-50); }
+.msg-row { display:flex; gap:var(--s-3); align-items:flex-end; }
+.msg-row.me { justify-content:flex-end; }
+.msg-row.me .bubble { background:var(--cobalt-700); color:var(--text-inverse); border-bottom-right-radius:6px; }
+.msg-row.them .bubble { background:#fff; color:var(--text-primary); border:1px solid var(--border-subtle); border-bottom-left-radius:6px; }
+.bubble { max-width:74%; padding:10px 14px; border-radius:18px; font-size:15px; line-height:21px; }
+.msg-meta { font-size:11px; color:var(--text-tertiary); padding:0 6px; margin-top:2px; }
+.msg-row.them .avatar { margin-bottom:18px; }
+
+.chat-input-bar {
+  display:flex; align-items:center; gap:var(--s-3);
+  padding:var(--s-3) var(--s-5);
+  border-top:1px solid var(--border-subtle); background:#fff;
+  flex-shrink:0;
+}
+.chat-input {
+  flex:1; min-height:40px; border-radius:var(--r-pill);
+  border:1px solid var(--border-strong); background:var(--cream-100);
+  padding:8px 16px; font-size:15px; font-family:var(--f-sans); color:var(--text-primary);
+  outline:none;
+}
+.chat-input:focus { border-color:var(--border-focus); background:#fff; box-shadow:0 0 0 2px var(--cobalt-100); }
+.send-btn { width:40px; height:40px; border-radius:var(--r-pill); border:none; background:var(--cobalt-700); color:#fff; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+
+/* ── Audited-user "what pastor sees" mirror banner ── */
+.mirror-banner {
+  background:var(--cream-100);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-md);
+  padding:10px var(--s-4);
+  font-size:12px; line-height:18px;
+  color:var(--text-secondary);
+  display:flex; gap:var(--s-3); align-items:flex-start;
+  margin:var(--s-3) var(--s-5) 0;
+}
+.mirror-banner svg { flex-shrink:0; margin-top:2px; }
+.mirror-banner b { color:var(--cobalt-700); font-weight:600; }
+
+/* ── Pastor admin "Anda berjalan bersama" ── */
+.admin-hero {
+  background:var(--cobalt-50);
+  padding:var(--s-7) var(--s-7) var(--s-7);
+  border-bottom:1px solid var(--cobalt-100);
+}
+.admin-hero h2 { font-family:var(--f-serif); font-size:24px; line-height:30px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-2); }
+.admin-hero p { font-size:13px; line-height:19px; color:var(--cobalt-700); margin:0; }
+.admin-hero .row { display:flex; align-items:center; gap:var(--s-4); }
+.admin-hero .row .who { flex:1; }
+.admin-hero .since { font-size:12px; color:var(--cobalt-700); font-weight:500; margin-top:6px; }
+
+/* day separator */
+.day-sep { text-align:center; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-tertiary); margin:var(--s-5) 0 var(--s-3); }
+
+/* admin transcript msg (read-only) */
+.admin-msg { background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg); padding:var(--s-4) var(--s-5); }
+.admin-msg + .admin-msg { margin-top:var(--s-3); }
+.admin-msg .head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+.admin-msg .head .who { font-size:13px; font-weight:600; color:var(--stone-900); }
+.admin-msg .head .when { font-size:11px; color:var(--text-tertiary); font-variant-numeric:tabular-nums; }
+.admin-msg .body { font-size:14px; line-height:21px; color:var(--text-primary); }
+
+/* end-revoke flow */
+.revoke-list { background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg); overflow:hidden; }
+.revoke-row {
+  padding:var(--s-5) var(--s-6);
+  display:flex; gap:var(--s-4); align-items:center;
+  border-bottom:1px solid var(--border-subtle);
+}
+.revoke-row:last-child { border-bottom:none; }
+.revoke-row .label { flex:1; }
+.revoke-row .label-title { font-size:14px; font-weight:600; color:var(--stone-900); margin-bottom:2px; }
+.revoke-row .label-sub { font-size:12px; color:var(--text-tertiary); line-height:17px; }
+
+/* "you saw what they saw" symmetry list */
+.sym-row {
+  display:flex; gap:var(--s-3); padding:var(--s-4) var(--s-5);
+  border-bottom:1px solid var(--border-subtle); background:#fff;
+}
+.sym-row:last-child { border-bottom:none; }
+.sym-row .badge {
+  font-size:11px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+  color:var(--cobalt-700); background:var(--cobalt-50);
+  padding:3px 8px; border-radius:var(--r-pill);
+  flex-shrink:0; align-self:flex-start;
+}
+.sym-row .body { font-size:13px; line-height:19px; color:var(--text-secondary); }
+.sym-row .body .when { font-size:11px; color:var(--text-tertiary); margin-top:2px; }
+
+/* desktop wrapper */
+.desktop-wrap { background:var(--stone-100); border:1px solid var(--stone-300); border-radius:14px; padding:var(--s-3); box-shadow:var(--elev-3); max-width:1180px; }
+.desktop-bar { display:flex; align-items:center; gap:6px; padding:0 var(--s-2) var(--s-3); }
+.desktop-bar .dot { width:11px; height:11px; border-radius:99px; }
+.desktop-bar .dot.r { background:#FF5F57; } .desktop-bar .dot.y { background:#FEBC2E; } .desktop-bar .dot.g { background:#28C840; }
+.desktop-bar .url {
+  margin-left:var(--s-5); flex:1; max-width:520px;
+  background:#fff; border-radius:var(--r-pill); border:1px solid var(--stone-300);
+  font-size:12px; padding:6px 14px; color:var(--text-tertiary); font-family:ui-monospace,monospace;
+}
+.desktop-frame { background:#fff; border-radius:10px; overflow:hidden; min-height:720px; display:grid; grid-template-columns:280px 1fr; }
+.desktop-side {
+  background:var(--cream-100); border-right:1px solid var(--border-subtle);
+  padding:var(--s-7) var(--s-5);
+}
+.desktop-side .brand { font-family:var(--f-serif); font-size:20px; color:var(--cobalt-900); margin-bottom:var(--s-7); }
+.desktop-side .nav-item { padding:10px var(--s-4); border-radius:var(--r-md); font-size:14px; color:var(--text-secondary); display:flex; align-items:center; gap:var(--s-3); }
+.desktop-side .nav-item.active { background:var(--cobalt-50); color:var(--cobalt-700); font-weight:600; }
+.desktop-side .nav-item + .nav-item { margin-top:var(--s-1); }
+
+.desktop-main { padding:var(--s-9) var(--s-10); }
+
+/* mosaic = onboarding slide layout */
+.steps-mini { display:flex; gap:var(--s-2); margin-top:var(--s-2); }
+.steps-mini .step { width:24px; height:3px; border-radius:99px; background:var(--cream-200); }
+.steps-mini .step.on { background:var(--cobalt-700); }
+
+/* ── Negative-cases section ── */
+.bad-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:var(--s-5); }
+.bad-card {
+  background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-lg);
+  padding:var(--s-6); position:relative; overflow:hidden;
+}
+.bad-card .glyph {
+  height:96px; display:flex; align-items:center; justify-content:center;
+  background:var(--cream-100); border-radius:var(--r-md); margin-bottom:var(--s-5);
+  position:relative;
+}
+.bad-card .glyph::after {
+  content:""; position:absolute; top:50%; left:14%; right:14%; height:2px;
+  background:#B91C1C; transform:rotate(-12deg); border-radius:2px; opacity:0.85;
+}
+.bad-card .label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:#B91C1C; margin-bottom:var(--s-2); }
+.bad-card h4 { font-family:var(--f-sans); font-size:15px; font-weight:600; color:var(--stone-900); margin:0 0 var(--s-2); }
+.bad-card p { font-size:13px; line-height:19px; color:var(--text-secondary); margin:0; }
+.bad-card p + p { margin-top:var(--s-2); }
+.bad-card .verse { font-family:var(--f-serif); font-style:italic; color:var(--cobalt-900); font-size:13px; margin-top:var(--s-3); }
+
+.good-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:var(--s-5); margin-top:var(--s-7); }
+.good-card { background:var(--cobalt-50); border:1px solid var(--cobalt-100); border-radius:var(--r-lg); padding:var(--s-5); text-align:left; }
+.good-card .glyph { height:88px; display:flex; align-items:center; justify-content:center; }
+.good-card .label { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--cobalt-700); margin-top:var(--s-3); }
+.good-card h4 { font-family:var(--f-sans); font-size:14px; font-weight:600; color:var(--cobalt-900); margin:6px 0 4px; }
+.good-card p { font-size:12px; line-height:18px; color:var(--cobalt-700); margin:0; }
+
+/* ── Checklist ── */
+.check-list { display:flex; flex-direction:column; gap:var(--s-3); margin:var(--s-7) 0 0; padding:0; list-style:none; }
+.check-list li {
+  display:grid; grid-template-columns:28px 1fr; gap:var(--s-4);
+  padding:var(--s-5) var(--s-6);
+  background:var(--bg-surface); border:1px solid var(--border-subtle);
+  border-radius:var(--r-md);
+}
+.check-list li .ck {
+  width:24px; height:24px; border-radius:99px; background:var(--cobalt-700);
+  color:#fff; display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.check-list li .body { font-size:14px; line-height:21px; color:var(--text-primary); }
+.check-list li .body b { color:var(--cobalt-900); font-weight:600; }
+.check-list li .body em { color:var(--text-tertiary); font-style:normal; font-size:12px; display:block; margin-top:2px; }
+
+/* anchor TOC */
+.toc { display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-7); }
+.toc a { text-decoration:none; font-size:12px; font-weight:600; padding:6px 12px; border-radius:var(--r-pill); background:var(--cobalt-50); color:var(--cobalt-700); border:1px solid var(--cobalt-100); }
+.toc a:hover { background:var(--cobalt-100); }
+
+/* small detail icons */
+.dot-pulse { width:8px; height:8px; border-radius:99px; background:var(--cobalt-700); display:inline-block; }
+
+/* small list rows used in opt-in sees / does-not-see */
+.see-list { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-lg); overflow:hidden; }
+.see-row { display:flex; align-items:flex-start; gap:var(--s-4); padding:var(--s-4) var(--s-5); border-bottom:1px solid var(--border-subtle); }
+.see-row:last-child { border-bottom:none; }
+.see-row .what { font-size:14px; line-height:20px; color:var(--text-primary); flex:1; }
+.see-row .what .sub { font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+.see-row .yes-mark { color:var(--cobalt-700); flex-shrink:0; margin-top:1px; }
+.see-row .no-mark { color:var(--text-tertiary); flex-shrink:0; margin-top:1px; }
+.see-row.no .what { color:var(--text-secondary); }
+
+/* hairline */
+hr.hair { border:none; border-top:1px solid var(--border-subtle); margin:var(--s-7) 0; }
+
+/* pastor side strip in pastor admin */
+.pastor-actions { display:flex; gap:var(--s-3); padding:var(--s-4) var(--s-5); background:var(--bg-surface); border-top:1px solid var(--border-subtle); }
+.pastor-actions .btn { flex:1; }
+
+/* footer */
+.foot { margin-top:var(--s-12); padding-top:var(--s-7); border-top:1px solid var(--border-subtle); color:var(--text-tertiary); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <p class="eyebrow">BLE-108 · BlessCupid · Hi-fi · 2026-04-28</p>
+    <h1 class="page-title">Pastor mode — UI hi-fi with anti-surveillance constraints</h1>
+    <p class="page-sub">Pastor mode is shepherding, not surveillance. Every pixel must refuse the dossier shape. Doctrine: Yakobus 5:16 (mutual confession requires mutual visibility) + Wahyu 3:20 (door-knocking, never door-breaking). All copy in Indonesian (TB2).</p>
+    <p class="page-meta">Designer: FoundingDesigner · Constraints set by: Pastor (BLE-87e) · Mobile 390×844 · Desktop 1280w</p>
+    <nav class="toc">
+      <a href="#flow-1">1 · Pastor invites</a>
+      <a href="#flow-2">2 · User accepts (consent)</a>
+      <a href="#flow-3">3 · Active chat — user view</a>
+      <a href="#flow-4">4 · Active chat — Pastor view</a>
+      <a href="#flow-5">5 · End / revoke</a>
+      <a href="#flow-6">6 · Symmetry mirror</a>
+      <a href="#flow-7">7 · Pastor admin (desktop)</a>
+      <a href="#bad">Rejected iconography</a>
+      <a href="#check">Constraints checklist</a>
+    </nav>
+  </header>
+
+  <!-- =================================================================
+       FLOW 1 — Pastor invites the user (pastor side, mobile)
+       FLOW 2 — User reviews and accepts (user side, mobile)
+       ================================================================= -->
+  <section class="section" id="flow-1">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 8 · Two-party consent dance</p>
+      <h2 class="section-title">1 · Pastor invites · 2 · User reviews and accepts</h2>
+      <p class="section-sub">Onboarding is a paired action. Neither side can enable pastor mode unilaterally — pastor sends an invitation, the user reads exactly what the pastor will and will not see, then explicitly accepts. Either screen alone does nothing.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 1 — PASTOR INVITES ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Pastor side · invitation</p>
+        <p class="phone-cap-sub">Pastor Daniel sends an invitation to walk alongside Maya. He cannot enable anything; he can only ask.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Tutup">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Mengundang teman seperjalanan</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <div style="display:flex; gap:var(--s-4); align-items:center;">
+                  <span class="avatar lg cobalt">M</span>
+                  <div>
+                    <div style="font-family:var(--f-serif); font-size:22px; line-height:28px; color:var(--cobalt-900);">Maya P.</div>
+                    <div style="font-size:13px; color:var(--text-tertiary);">Anggota gereja sejak 2024 · Bandung</div>
+                  </div>
+                </div>
+
+                <div>
+                  <h2>Berjalan bersama Maya</h2>
+                  <p>Anda akan mengundang Maya untuk berjalan bersama dalam BlessCupid. Ia akan melihat undangan ini dan memutuskan sendiri apakah ia ingin melibatkan Anda dalam perjalanannya.</p>
+                  <div class="scripture">
+                    “Lihatlah, Aku berdiri di muka pintu dan mengetuk; jikalau ada orang yang mendengar suara-Ku dan membukakan pintu, Aku akan masuk mendapatkannya.”
+                    <cite>Wahyu 3:20 · TB2</cite>
+                  </div>
+                </div>
+
+                <div>
+                  <h3>Yang akan Maya tahu tentang Anda</h3>
+                  <div class="see-list">
+                    <div class="see-row">
+                      <span class="yes-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <div class="what">Nama, foto, dan jemaat Anda<div class="sub">Sama dengan profil Anda hari ini.</div></div>
+                    </div>
+                    <div class="see-row">
+                      <span class="yes-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <div class="what">Daftar persis percakapan yang akan Anda baca<div class="sub">Maya melihat semua yang Anda lihat, kapan pun Anda melihatnya.</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3>Pesan pribadi (opsional)</h3>
+                  <textarea class="chat-input" style="border-radius:14px; min-height:96px; padding:12px 16px;" placeholder="“Saya merasa terpanggil untuk menemani Maya di perjalanan ini…”"></textarea>
+                  <p style="font-size:12px; color:var(--text-tertiary); margin-top:6px;">Akan ditampilkan tepat di atas pilihan terima/tolak Maya.</p>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                    Kirim undangan
+                  </button>
+                  <button class="btn btn--ghost btn--full">Batal</button>
+                </div>
+
+                <p style="font-size:12px; color:var(--text-tertiary); text-align:center; margin-top:var(--s-3);">Maya bisa menolak. Itu pun jawaban yang baik.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 2 — USER ACCEPTS ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">User side · consent screen</p>
+        <p class="phone-cap-sub">Maya reads exactly what Pastor Daniel will see — and what he will <em>not</em>. Two-party dance: she accepts (or doesn't).</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:42</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Undangan dari Pastor Daniel</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <div style="display:flex; gap:var(--s-4); align-items:center;">
+                  <!-- Two-figures-side-by-side glyph (companion icon) -->
+                  <span class="avatar lg" style="background:var(--cobalt-50); color:var(--cobalt-700);">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="11" cy="9" r="3"/><path d="M5 24c0-3 2.7-5.5 6-5.5s6 2.5 6 5.5"/>
+                      <circle cx="22" cy="11" r="2.5"/><path d="M17 25c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/>
+                    </svg>
+                  </span>
+                  <div>
+                    <div style="font-family:var(--f-serif); font-size:22px; line-height:28px; color:var(--cobalt-900);">Pastor Daniel</div>
+                    <div style="font-size:13px; color:var(--text-tertiary);">GBI Pos PI Bandung · 9 jemaat berjalan bersamanya</div>
+                  </div>
+                </div>
+
+                <div style="background:var(--cream-100); border:1px solid var(--border-subtle); border-radius:14px; padding:var(--s-5);">
+                  <p style="font-family:var(--f-serif); font-style:italic; font-size:15px; line-height:23px; color:var(--cobalt-900); margin:0;">“Maya, saya membaca surat Yakobus minggu ini dan terpanggil untuk menemanimu di musim ini. Tidak ada tekanan — hanya doa.”</p>
+                  <p style="font-size:12px; color:var(--text-tertiary); margin:8px 0 0;">— Pastor Daniel</p>
+                </div>
+
+                <div>
+                  <h2>Mengundang Anda berjalan bersama</h2>
+                  <p>Pastor Daniel meminta untuk menemani Anda di BlessCupid. Anda yang memutuskan, dan Anda bisa mengakhirinya kapan saja dalam dua ketukan.</p>
+                </div>
+
+                <div>
+                  <h3>Yang Pastor Daniel akan baca</h3>
+                  <div class="see-list">
+                    <div class="see-row">
+                      <span class="yes-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <div class="what">Percakapan Anda dengan pasangan yang Anda undang masuk<div class="sub">Hanya percakapan yang Anda pilih. Anda tetap memilih siapa.</div></div>
+                    </div>
+                    <div class="see-row">
+                      <span class="yes-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                      <div class="what">Pesan yang Anda kirim dan terima di percakapan itu<div class="sub">Setiap kali ia membacanya, Anda akan melihat bahwa ia membacanya.</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h3>Yang Pastor Daniel <b>tidak akan</b> baca</h3>
+                  <div class="see-list">
+                    <div class="see-row no">
+                      <span class="no-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                      <div class="what">Percakapan dengan pasangan lain<div class="sub">Hanya percakapan yang ia ada di dalamnya bersama Anda.</div></div>
+                    </div>
+                    <div class="see-row no">
+                      <span class="no-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                      <div class="what">Daftar swipe atau profil yang Anda lewati<div class="sub">Pilihan Anda sebelum percakapan tetap milik Anda.</div></div>
+                    </div>
+                    <div class="see-row no">
+                      <span class="no-mark"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/></svg></span>
+                      <div class="what">Lokasi, waktu Anda online, atau kapan Anda buka aplikasi<div class="sub">Tidak ada notifikasi tentang aktivitas Anda kepadanya.</div></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">Terima — berjalan bersama</button>
+                  <button class="btn btn--secondary btn--full">Tolak dengan hormat</button>
+                  <button class="btn btn--ghost btn--full">Tanya Pastor Daniel dulu</button>
+                </div>
+
+                <div class="scripture">
+                  “Hendaklah kamu saling mengaku dosamu… supaya kamu sembuh.”
+                  <cite>Yakobus 5:16 · TB2</cite>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 3 — Active chat — audited user view (with consent banner)
+       FLOW 4 — Active chat — Pastor reading (mobile)
+       ================================================================= -->
+  <section class="section" id="flow-3">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraints 2, 4, 7 · Persistent banner · 2-tap exit · Symmetry of access</p>
+      <h2 class="section-title">3 · Active chat — user view · 4 · Active chat — Pastor view</h2>
+      <p class="section-sub">When pastor mode is active, the consent banner is permanently visible above the chat — never collapsed, never auto-hidden, never replaced. The "Akhiri" link is the always-visible 2-tap exit. Pastor's view is read-only and explicitly framed as walking alongside, not auditing.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 3 — AUDITED USER, CHAT WITH PARTNER ============ -->
+      <div class="phone-wrap" id="flow-3a">
+        <p class="phone-cap">User side · chat with partner</p>
+        <p class="phone-cap-sub">Maya chats with Tanto. The cobalt banner is the doctrinal anchor — quiet, persistent, present.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                <span class="avatar sm" style="background:#FCE7C2; color:var(--stone-900);">T</span>
+                <div>
+                  <div style="font-size:14px; font-weight:600; color:var(--stone-900); line-height:18px;">Tanto W.</div>
+                  <div style="font-size:11px; color:var(--text-tertiary);">Online · GKI Salatiga</div>
+                </div>
+              </div>
+              <button class="icon-btn" aria-label="Lainnya">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+              </button>
+            </header>
+
+            <!-- CONSENT BANNER -->
+            <div class="consent-banner" role="status" aria-live="polite">
+              <!-- shepherd-staff glyph -->
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/>
+              </svg>
+              <span class="copy"><strong>Pastor Daniel</strong> sedang berjalan bersamamu</span>
+              <button class="end-link" aria-label="Akhiri pastor mode">Akhiri</button>
+            </div>
+
+            <!-- Mirror banner (constraint 7 — symmetry) -->
+            <div class="mirror-banner">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <div>Pastor Daniel membaca percakapan ini terakhir <b>2 jam lalu</b>. Anda akan melihat setiap kali ia membaca lagi.</div>
+            </div>
+
+            <div class="chat-thread" style="padding-top:var(--s-4);">
+              <div class="day-sep">Hari ini · 09:32</div>
+
+              <div class="msg-row them">
+                <span class="avatar sm" style="background:#FCE7C2; color:var(--stone-900);">T</span>
+                <div>
+                  <div class="bubble">Selamat pagi, Maya. Aku baru selesai PA pagi — kamu sudah lihat Yakobus 5 yang minggu ini?</div>
+                  <div class="msg-meta">09:32</div>
+                </div>
+              </div>
+
+              <div class="msg-row me">
+                <div>
+                  <div class="bubble">Sudah, Tanto. Bagian “saling mengaku” itu menarik. Aku sebenarnya baru terima undangan dari pendetaku untuk berjalan bersama di sini.</div>
+                  <div class="msg-meta">09:34 · ✓✓</div>
+                </div>
+              </div>
+
+              <div class="msg-row me">
+                <div>
+                  <div class="bubble">Aku terima. Jadi percakapan kita bisa juga dia baca. Kuharap kamu nyaman.</div>
+                  <div class="msg-meta">09:34 · ✓✓</div>
+                </div>
+              </div>
+
+              <div class="msg-row them">
+                <span class="avatar sm" style="background:#FCE7C2; color:var(--stone-900);">T</span>
+                <div>
+                  <div class="bubble">Justru bersyukur. Aku juga punya teman yang menemani. Hidup yang dilihat lebih ringan.</div>
+                  <div class="msg-meta">09:38</div>
+                </div>
+              </div>
+
+              <div class="msg-row me">
+                <div>
+                  <div class="bubble">🙏 Hari ini ada doa pagi di gerejaku jam 6. Kamu doa apa hari ini?</div>
+                  <div class="msg-meta">09:39 · ✓✓</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="chat-input-bar">
+              <button class="icon-btn" aria-label="Lampiran">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <input class="chat-input" placeholder="Ketik pesan untuk Tanto…" />
+              <button class="send-btn" aria-label="Kirim">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 4 — PASTOR READING ON MOBILE ============ -->
+      <div class="phone-wrap" id="flow-4">
+        <p class="phone-cap">Pastor side · reading the chat (mobile)</p>
+        <p class="phone-cap-sub">No reply field. Read-only. Title is pastoral — “Anda berjalan bersama Maya” — never “Log Maya”.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">11:08</span><span class="status-icons">●●●● 􀙇 92%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Anda berjalan bersama Maya</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="admin-hero">
+              <div class="row">
+                <span class="avatar lg cobalt">M</span>
+                <div class="who">
+                  <h2>Maya P. dan Tanto W.</h2>
+                  <p>Mulai berjalan bersama 14 hari lalu · 23 pesan</p>
+                  <p class="since">Maya melihat saat Anda membaca · 09:34 hari ini</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="scroll" style="background:var(--cream-50); padding:var(--s-5);">
+              <div class="day-sep">Hari ini · 09:32</div>
+
+              <div class="admin-msg">
+                <div class="head"><span class="who">Tanto W.</span><span class="when">09:32</span></div>
+                <div class="body">Selamat pagi, Maya. Aku baru selesai PA pagi — kamu sudah lihat Yakobus 5 yang minggu ini?</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:34</span></div>
+                <div class="body">Sudah, Tanto. Bagian “saling mengaku” itu menarik. Aku sebenarnya baru terima undangan dari pendetaku untuk berjalan bersama di sini.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:34</span></div>
+                <div class="body">Aku terima. Jadi percakapan kita bisa juga dia baca. Kuharap kamu nyaman.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Tanto W.</span><span class="when">09:38</span></div>
+                <div class="body">Justru bersyukur. Aku juga punya teman yang menemani. Hidup yang dilihat lebih ringan.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:39</span></div>
+                <div class="body">🙏 Hari ini ada doa pagi di gerejaku jam 6. Kamu doa apa hari ini?</div>
+              </div>
+
+              <div style="font-size:12px; color:var(--text-tertiary); text-align:center; margin:var(--s-7) 0 0;">
+                Anda hanya membaca. Maya melihat setiap kali Anda membaca.
+              </div>
+            </div>
+
+            <!-- pastor-side action: only "comment to Maya privately" or "step away" -->
+            <div class="pastor-actions">
+              <button class="btn btn--secondary" style="flex:1;">Tulis catatan untuk Maya</button>
+              <button class="btn btn--ghost" style="flex:0 0 auto;" aria-label="Mundur">Mundur</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 5 — End / revoke (≤2 taps from chat)
+       ================================================================= -->
+  <section class="section" id="flow-5">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraints 4, 6, 10 · Two-tap exit · No pause · Positive end</p>
+      <h2 class="section-title">5 · Ending — selamat melanjutkan perjalananmu sendiri</h2>
+      <p class="section-sub">Tap 1: tap "Akhiri" in the consent banner. Tap 2: confirm. Two taps, always. No "snooze" because pause introduces consent ambiguity. The closing copy is benediction, not failure — ending is good.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 5a — TAP 1: confirmation sheet ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Tap 1 → confirmation sheet</p>
+        <p class="phone-cap-sub">Banner stays visible. Sheet rises with the question and the only two answers.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:43</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <div style="display:flex; align-items:center; gap:10px; flex:1;">
+                <span class="avatar sm" style="background:#FCE7C2; color:var(--stone-900);">T</span>
+                <div>
+                  <div style="font-size:14px; font-weight:600; color:var(--stone-900); line-height:18px;">Tanto W.</div>
+                  <div style="font-size:11px; color:var(--text-tertiary);">Online · GKI Salatiga</div>
+                </div>
+              </div>
+              <button class="icon-btn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+            </header>
+
+            <div class="consent-banner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/></svg>
+              <span class="copy"><strong>Pastor Daniel</strong> sedang berjalan bersamamu</span>
+              <button class="end-link" aria-label="Akhiri pastor mode" style="background:var(--cobalt-100);">Akhiri</button>
+            </div>
+
+            <!-- chat dimmed -->
+            <div class="chat-thread" style="filter:saturate(0.5) opacity(0.55); pointer-events:none; padding-top:var(--s-4);">
+              <div class="msg-row them"><span class="avatar sm" style="background:#FCE7C2; color:var(--stone-900);">T</span><div><div class="bubble">Selamat pagi, Maya…</div><div class="msg-meta">09:32</div></div></div>
+              <div class="msg-row me"><div><div class="bubble">Sudah, Tanto…</div><div class="msg-meta">09:34</div></div></div>
+            </div>
+
+            <!-- bottom sheet -->
+            <div style="position:absolute; left:0; right:0; bottom:0; background:#fff; border-top-left-radius:24px; border-top-right-radius:24px; padding:var(--s-3) var(--s-7) var(--s-9); box-shadow:0 -16px 40px rgba(20,24,40,.18);">
+              <div style="width:36px; height:4px; background:var(--cream-300); border-radius:99px; margin:6px auto var(--s-5);"></div>
+              <h2 style="font-family:var(--f-serif); font-size:24px; line-height:30px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3);">Mengakhiri perjalanan bersama Pastor Daniel?</h2>
+              <p style="font-size:14px; line-height:21px; color:var(--text-secondary); margin:0 0 var(--s-3);">Mulai sekarang, ia tidak akan membaca percakapan-percakapan Anda lagi. Anda bisa mengundangnya lagi kapan saja.</p>
+              <p style="font-size:13px; color:var(--text-tertiary); margin:0 0 var(--s-7);">Kami akan memberi tahu Pastor Daniel dengan lembut.</p>
+
+              <div class="stack-3">
+                <button class="btn btn--primary btn--full">Ya, akhiri</button>
+                <button class="btn btn--ghost btn--full">Batal — lanjut bersama</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 5b — TAP 2: blessing screen ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">After tap 2 · benediction screen</p>
+        <p class="phone-cap-sub">Constraint 10 — ending is a positive event. No "dihentikan", no "kehilangan dukungan". A blessing.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:43</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner" style="background:linear-gradient(180deg, var(--cream-50) 0%, var(--cobalt-50) 100%);">
+
+            <header class="app-header" style="background:transparent; border-bottom:none;">
+              <span style="width:40px"></span>
+              <h1 style="opacity:0;">·</h1>
+              <button class="icon-btn" aria-label="Tutup">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </header>
+
+            <div class="surface" style="display:flex; flex-direction:column; justify-content:center; align-items:center; flex:1; text-align:center; padding:var(--s-9) var(--s-8);">
+              <!-- Walking-companion glyph: two figures walking same direction, one slightly behind -->
+              <svg width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="34" cy="28" r="6"/><path d="M22 78l4-22a8 8 0 0 1 8-7h0a8 8 0 0 1 8 7l4 22"/>
+                <line x1="30" y1="78" x2="34" y2="58"/><line x1="38" y1="78" x2="34" y2="58"/>
+                <circle cx="62" cy="32" r="5"/><path d="M52 76l3-18a7 7 0 0 1 7-6h0a7 7 0 0 1 7 6l3 18" opacity="0.5"/>
+                <line x1="58" y1="76" x2="62" y2="60" opacity="0.5"/><line x1="66" y1="76" x2="62" y2="60" opacity="0.5"/>
+              </svg>
+
+              <h2 style="font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:var(--s-7) 0 var(--s-4); max-width:18ch;">Selamat melanjutkan perjalananmu sendiri.</h2>
+              <p style="font-size:15px; line-height:23px; color:var(--cobalt-700); margin:0 0 var(--s-7); max-width:32ch;">Pastor Daniel sudah dikabari dengan lembut. Pintu tetap terbuka jika kamu ingin mengundangnya lagi.</p>
+
+              <div class="scripture" style="text-align:left; max-width:30ch; border-left-color:var(--cobalt-300); margin:0 0 var(--s-9);">
+                “Tuhan akan menjaga keluarmu dan masukmu, dari sekarang sampai selama-lamanya.”
+                <cite>Mazmur 121:8 · TB2</cite>
+              </div>
+
+              <button class="btn btn--primary btn--full" style="max-width:280px;">Kembali ke perjalananku</button>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 6 — Symmetry mirror (audited user can read what Pastor reads)
+       ================================================================= -->
+  <section class="section" id="flow-6">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 7 · Symmetry of access</p>
+      <h2 class="section-title">6 · Yang Pastor Daniel sudah baca</h2>
+      <p class="section-sub">Maya can open this list any time and see exactly what Pastor Daniel has read, when, and which thread. If Pastor sees it, audited user sees that they saw it. Anti-confessional-leak by construction.</p>
+    </div>
+
+    <div class="phones">
+
+      <div class="phone-wrap">
+        <p class="phone-cap">User side · symmetry view</p>
+        <p class="phone-cap-sub">Reachable from the consent banner via long-press, or from settings. Read-only mirror of pastor's read activity.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:45</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Yang Pastor Daniel sudah baca</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="consent-banner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/></svg>
+              <span class="copy"><strong>Pastor Daniel</strong> sedang berjalan bersamamu</span>
+              <button class="end-link">Akhiri</button>
+            </div>
+
+            <div class="scroll" style="padding:var(--s-7) var(--s-5);">
+
+              <p style="font-size:13px; line-height:19px; color:var(--text-secondary); margin:0 0 var(--s-5);">Setiap pesan yang Pastor Daniel baca, Anda lihat di sini. Tidak ada yang tersembunyi.</p>
+
+              <div class="day-sep">Hari ini</div>
+              <div class="see-list" style="border-radius:14px; margin-bottom:var(--s-7);">
+                <div class="sym-row">
+                  <span class="badge">Membaca</span>
+                  <div class="body">5 pesan terbaru di percakapan dengan <b>Tanto W.</b><div class="when">11:08 · 21 menit lalu</div></div>
+                </div>
+                <div class="sym-row">
+                  <span class="badge">Membuka</span>
+                  <div class="body">Halaman profil Anda<div class="when">11:07</div></div>
+                </div>
+              </div>
+
+              <div class="day-sep">Kemarin</div>
+              <div class="see-list" style="border-radius:14px;">
+                <div class="sym-row">
+                  <span class="badge">Membaca</span>
+                  <div class="body">3 pesan baru di percakapan dengan <b>Tanto W.</b><div class="when">21:14</div></div>
+                </div>
+                <div class="sym-row">
+                  <span class="badge">Catatan</span>
+                  <div class="body">Pastor menulis catatan untuk Anda — “Bersyukur kalian saling jujur.”<div class="when">21:16 · sudah kamu baca</div></div>
+                </div>
+              </div>
+
+              <p style="font-size:12px; color:var(--text-tertiary); margin:var(--s-9) 0 0; text-align:center;">Pembacaan tersimpan selama pastor mode aktif.</p>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- spec sidebar -->
+      <div style="flex:1; min-width:340px; max-width:520px; align-self:flex-start;">
+        <div class="spec">
+          <h3 style="font-family:var(--f-serif); font-weight:400; font-size:18px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Why this exists</h3>
+          <p style="font-size:13px; line-height:19px; color:var(--cobalt-700); margin:0 0 var(--s-5);">Asymmetric information is a dossier, not discipleship. The visual frame must refuse the dossier shape — Maya sees what Pastor sees, when he saw it.</p>
+          <ul class="spec-list">
+            <li><span class="dot"></span><span><b>Real-time mirror.</b> Every read by Pastor surfaces here within seconds.</span></li>
+            <li><span class="dot"></span><span><b>No "delete from history".</b> Mirror is append-only while mode is active.</span></li>
+            <li><span class="dot"></span><span><b>Includes pastor's notes.</b> Anything pastor wrote to user is mirrored back so user can re-read.</span></li>
+            <li class="no"><span class="dot"></span><span><b>Does NOT show pastor's other audited users.</b> Maya only sees activity that touches her own threads.</span></li>
+          </ul>
+          <div class="scripture" style="margin-top:var(--s-7);">
+            “Hendaklah kamu saling mengaku dosamu seorang kepada yang lain.”
+            <cite>Yakobus 5:16 · TB2 — symmetry is mutual, not one-way.</cite>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 7 — Pastor admin transcript view (desktop)
+       ================================================================= -->
+  <section class="section" id="flow-7">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 5 · "Anda berjalan bersama [Nama]" · NEVER "Log" / "Riwayat"</p>
+      <h2 class="section-title">7 · Pastor's admin view (desktop)</h2>
+      <p class="section-sub">Where pastors actually do the reading. Title and navigation are pastoral — list of names, framed as "berjalan bersama". No metrics dashboards, no engagement scores, no "last seen" badges. Read-only chat panes. Comment-back is the only outbound action.</p>
+    </div>
+
+    <div class="desktop-wrap">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/walking-with</div>
+      </div>
+      <div class="desktop-frame">
+        <aside class="desktop-side">
+          <div class="brand">BlessCupid</div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+            Beranda
+          </div>
+          <div class="nav-item active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.5"/><path d="M14 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+            Berjalan bersama
+            <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">9</span>
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Catatan saya
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.7l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.7-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.7.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.7 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.7.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.7-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.7V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+            Pengaturan
+          </div>
+
+          <hr class="hair">
+          <div style="font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); padding:0 var(--s-4) var(--s-3);">Berjalan bersama</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div style="display:flex; gap:10px; align-items:center; padding:8px 12px; border-radius:10px; background:var(--cobalt-50);">
+              <span class="avatar sm cobalt">M</span>
+              <div style="flex:1;">
+                <div style="font-size:13px; font-weight:600; color:var(--cobalt-900);">Maya P.</div>
+                <div style="font-size:11px; color:var(--cobalt-700);">14 hari</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; padding:8px 12px; border-radius:10px;">
+              <span class="avatar sm" style="background:#F2EFE6; color:var(--stone-700);">A</span>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:500; color:var(--text-primary);">Andre S.</div><div style="font-size:11px; color:var(--text-tertiary);">3 hari</div></div>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; padding:8px 12px; border-radius:10px;">
+              <span class="avatar sm" style="background:#F2EFE6; color:var(--stone-700);">L</span>
+              <div style="flex:1;"><div style="font-size:13px; font-weight:500; color:var(--text-primary);">Lina K.</div><div style="font-size:11px; color:var(--text-tertiary);">2 bulan</div></div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="desktop-main">
+
+          <!-- pastoral title (Constraint 5) -->
+          <p class="section-eyebrow" style="margin:0 0 var(--s-2);">Berjalan bersama</p>
+          <h2 style="font-family:var(--f-serif); font-size:36px; line-height:42px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); letter-spacing:-0.005em;">Anda berjalan bersama Maya P.</h2>
+          <p style="font-size:15px; line-height:23px; color:var(--text-secondary); max-width:62ch; margin:0 0 var(--s-9);">Mulai 14 April. Setiap kali Anda membaca di sini, Maya melihatnya di telepon-nya. Itu memang bagian dari perjalanan ini.</p>
+
+          <div style="display:grid; grid-template-columns:1fr 320px; gap:var(--s-9);">
+
+            <div>
+              <div style="display:flex; gap:var(--s-3); align-items:center; margin-bottom:var(--s-5);">
+                <span class="avatar cobalt"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg></span>
+                <div>
+                  <div style="font-size:14px; font-weight:600; color:var(--stone-900);">Maya P. dan Tanto W.</div>
+                  <div style="font-size:12px; color:var(--text-tertiary);">23 pesan · Maya dan Tanto memilih saling membuka kepada Anda</div>
+                </div>
+              </div>
+
+              <div class="day-sep" style="text-align:left; padding-left:0;">28 April · pagi</div>
+
+              <div class="admin-msg">
+                <div class="head"><span class="who">Tanto W.</span><span class="when">09:32</span></div>
+                <div class="body">Selamat pagi, Maya. Aku baru selesai PA pagi — kamu sudah lihat Yakobus 5 yang minggu ini?</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:34</span></div>
+                <div class="body">Sudah, Tanto. Bagian “saling mengaku” itu menarik. Aku sebenarnya baru terima undangan dari pendetaku untuk berjalan bersama di sini.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:34</span></div>
+                <div class="body">Aku terima. Jadi percakapan kita bisa juga dia baca. Kuharap kamu nyaman.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Tanto W.</span><span class="when">09:38</span></div>
+                <div class="body">Justru bersyukur. Aku juga punya teman yang menemani. Hidup yang dilihat lebih ringan.</div>
+              </div>
+              <div class="admin-msg">
+                <div class="head"><span class="who">Maya P.</span><span class="when">09:39</span></div>
+                <div class="body">🙏 Hari ini ada doa pagi di gerejaku jam 6. Kamu doa apa hari ini?</div>
+              </div>
+
+              <div style="margin-top:var(--s-9); padding:var(--s-5) var(--s-6); background:var(--cobalt-50); border-radius:14px;">
+                <div style="font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--cobalt-700); margin-bottom:6px;">Catatan untuk Maya</div>
+                <textarea class="chat-input" style="border-radius:12px; min-height:88px; padding:12px 14px; background:#fff;" placeholder="Tulis dengan lembut. Maya akan membaca dan tahu kapan Anda menulisnya."></textarea>
+                <div style="display:flex; justify-content:flex-end; margin-top:var(--s-3);">
+                  <button class="btn btn--primary btn--sm" style="min-height:40px; font-size:14px;">Kirim catatan</button>
+                </div>
+              </div>
+            </div>
+
+            <aside style="position:sticky; top:var(--s-7); align-self:flex-start;">
+              <div class="spec" style="border-radius:14px;">
+                <h3 style="font-family:var(--f-serif); font-weight:400; font-size:18px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Yang Anda lihat</h3>
+                <ul class="spec-list">
+                  <li><span class="dot"></span><span>Pesan-pesan di percakapan ini saja</span></li>
+                  <li><span class="dot"></span><span>Catatan Anda untuk Maya (Maya juga melihat)</span></li>
+                  <li class="no"><span class="dot"></span><span>Bukan: percakapan Maya yang lain</span></li>
+                  <li class="no"><span class="dot"></span><span>Bukan: kapan Maya online atau aktif</span></li>
+                  <li class="no"><span class="dot"></span><span>Bukan: profil yang dia swipe atau lewatkan</span></li>
+                </ul>
+              </div>
+
+              <div style="margin-top:var(--s-5); padding:var(--s-5) var(--s-6); border:1px solid var(--border-subtle); border-radius:14px; background:#fff;">
+                <h3 style="font-family:var(--f-sans); font-size:14px; font-weight:600; color:var(--stone-900); margin:0 0 var(--s-3);">Sudah waktunya mundur?</h3>
+                <p style="font-size:13px; line-height:19px; color:var(--text-secondary); margin:0 0 var(--s-4);">Mengakhiri perjalanan ini adalah hal yang baik ketika Maya sudah siap berjalan sendiri.</p>
+                <button class="btn btn--secondary" style="width:100%;">Mundur dari perjalanan Maya</button>
+              </div>
+            </aside>
+
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       NEGATIVE CASES — rejected iconography
+       ================================================================= -->
+  <section class="section" id="bad">
+    <div class="section-head">
+      <p class="section-eyebrow">Negative-case documentation · do not reintroduce</p>
+      <h2 class="section-title">Rejected iconography — and why</h2>
+      <p class="section-sub">Reviewed and rejected for pastor-mode contexts. Each rejection has a doctrinal reason; future Designer work cannot reintroduce these without re-litigating the Holy Code of Conduct.</p>
+    </div>
+
+    <div class="bad-grid">
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="label">Ditolak · panopticon</div>
+        <h4>Mata (eye)</h4>
+        <p>The eye in a mentor-audit context reads as panopticon — the watcher whose presence shapes the behavior of the watched. That is the opposite of shepherding: a shepherd walks alongside, not above.</p>
+        <p class="verse">“Lihatlah, Aku berdiri di muka pintu dan mengetuk.” — Wahyu 3:20. Christ knocks; He does not stare in.</p>
+      </div>
+
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+        </div>
+        <div class="label">Ditolak · investigation</div>
+        <h4>Kaca pembesar (magnifying glass)</h4>
+        <p>Investigation glyph. Implies the audited user is a case to be solved or evidence to be examined. Pastoral relationships are not investigations and the mentee is not a suspect.</p>
+        <p class="verse">Yakobus 5:16 frames mutual confession as healing, not forensics.</p>
+      </div>
+
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="label">Ditolak · carceral</div>
+        <h4>Gembok (lock / security)</h4>
+        <p>Lock and security glyphs frame the relationship as containment — keeping the user "safe" from themselves. Pastor mode is a covenant of trust, not a containment system. Lock semantics also blur with auth/account-security UI elsewhere in the app.</p>
+        <p class="verse">Containment is a prison metaphor. Discipleship is a road metaphor (Lukas 24).</p>
+      </div>
+
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-12V5l-8-3-8 3v5c0 8 8 12 8 12z"/></svg>
+        </div>
+        <div class="label">Ditolak · authority armor</div>
+        <h4>Perisai (shield)</h4>
+        <p>Shield reads as authority defending downward. It positions Pastor over the user instead of beside. It is also visually adjacent to security/admin-panel chrome — wrong frame for a covenant.</p>
+        <p class="verse">Authority that protects from above is not the shepherd model of Mazmur 23.</p>
+      </div>
+
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        </div>
+        <div class="label">Ditolak · scoring</div>
+        <h4>Bintang / nilai</h4>
+        <p>Star, badge, and score iconography (gamification rewards) collapse a covenant relationship into a metric. Avoiding "engagement scores" means avoiding the visual language of scoring entirely.</p>
+        <p class="verse">Spiritual maturity is not a leaderboard. Refuse the ranking shape.</p>
+      </div>
+
+      <div class="bad-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#B91C1C" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2"/><path d="M16 11l3 3 5-5"/></svg>
+        </div>
+        <div class="label">Ditolak · approval gating</div>
+        <h4>Tanda centang “disetujui pendeta”</h4>
+        <p>"Pastor-approved" verification badges frame the user as something to be certified. Two-party consent is not approval-of-person; it is approval-of-relationship. Removing the certification glyph removes the certification framing.</p>
+        <p class="verse">Approval-of-person creates spiritual-class hierarchy — Galatia 3:28 forbids it.</p>
+      </div>
+    </div>
+
+    <h3 style="font-family:var(--f-serif); font-weight:400; font-size:22px; line-height:28px; color:var(--cobalt-900); margin:var(--s-12) 0 var(--s-3);">Approved iconography</h3>
+    <p style="color:var(--text-secondary); font-size:14px; line-height:21px; margin:0; max-width:62ch;">Used throughout the surfaces above. Three glyphs cover the vocabulary; we extend within them, never outside.</p>
+
+    <div class="good-grid">
+      <div class="good-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/></svg>
+        </div>
+        <div class="label">Diterima</div>
+        <h4>Tongkat gembala</h4>
+        <p>Pastoral metaphor by direct etymology. Mazmur 23: "tongkat-Mu menghibur aku."</p>
+      </div>
+      <div class="good-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 32 32" fill="none" stroke="#243F7A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="9" r="3"/><path d="M5 24c0-3 2.7-5.5 6-5.5s6 2.5 6 5.5"/><circle cx="22" cy="11" r="2.5"/><path d="M17 25c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/></svg>
+        </div>
+        <div class="label">Diterima</div>
+        <h4>Dua sosok bersisian</h4>
+        <p>Two figures side by side. Walking-companion frame, not authority-over.</p>
+      </div>
+      <div class="good-card">
+        <div class="glyph">
+          <svg width="56" height="56" viewBox="0 0 96 96" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="34" cy="28" r="6"/><path d="M22 78l4-22a8 8 0 0 1 8-7h0a8 8 0 0 1 8 7l4 22"/><line x1="30" y1="78" x2="34" y2="58"/><line x1="38" y1="78" x2="34" y2="58"/><circle cx="62" cy="32" r="5"/><path d="M52 76l3-18a7 7 0 0 1 7-6h0a7 7 0 0 1 7 6l3 18" opacity="0.5"/></svg>
+        </div>
+        <div class="label">Diterima</div>
+        <h4>Pejalan beriring</h4>
+        <p>Walking same direction; one slightly behind, never above. Used on the benediction screen.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       CONSTRAINTS CHECKLIST
+       ================================================================= -->
+  <section class="section" id="check">
+    <div class="section-head">
+      <p class="section-eyebrow">Pastor sign-off · re-review on closure</p>
+      <h2 class="section-title">Constraints checklist</h2>
+      <p class="section-sub">Each binding constraint from BLE-87e is mapped to a surface and checked. Pastor re-reviews this list on closure; any unchecked item blocks merge.</p>
+    </div>
+
+    <ul class="check-list">
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>1 · Iconography is never eye / magnifier / lock / security.</b> Used: shepherd-staff, two-figures-side-by-side, walking-companion. Rejected glyphs documented with doctrinal reasons (see Rejected iconography section).<em>Surfaces: all 7</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>2 · Persistent consent banner on every chat surface where pastor mode is active.</b> Cobalt-50 ground, cobalt-700 text, shepherd-staff glyph. Copy is exactly “[Nama] sedang berjalan bersamamu”.<em>Surfaces: 3, 5a, 6</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>3 · Color is cobalt-50 / cobalt-700 only.</b> No amber (warning frame), no gold (authority frame). Verified across banner, hero, scripture rules, badges.<em>Surfaces: all 7</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>4 · End/revoke ≤2 taps from any chat surface.</b> Tap 1: "Akhiri" link is permanently visible inside the consent banner. Tap 2: confirm in bottom sheet. No deeper than 2.<em>Surfaces: 3 → 5a → 5b</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>5 · Pastor's admin view framed “Anda berjalan bersama [Nama]”.</b> Never "Log [Nama]", never "Riwayat percakapan [Nama]". Verified in desktop title (h2), mobile pastor-view header, sidebar nav label ("Berjalan bersama"), and notes panel ("Catatan untuk Maya").<em>Surfaces: 4, 7</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>6 · No "pause" or "snooze".</b> Banner only contains "Akhiri" — there is intentionally no "Jeda" / "Tunda". Pastor-side equivalent is "Mundur" (step away) which is also a full end, not a pause.<em>Surfaces: 3, 5a, 7</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>7 · Audited user can read every transcript Pastor reads.</b> Symmetry mirror surface lists each Pastor read with timestamp and thread. Mirror banner inside chat shows last-read time. Append-only while mode active.<em>Surfaces: 3 (mirror banner), 6 (full mirror)</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>8 · Two-party consent dance.</b> Pastor-side screen sends invitation only; user-side screen lists exactly what Pastor will see and explicitly NOT see. Neither side enables alone.<em>Surfaces: 1, 2</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>9 · No notification badge to Pastor when user opens app.</b> Pastor desktop and pastor-mobile views show no "online" indicators, no "active now" pills, no last-seen timestamps for Maya. Only message stream + comment-back action.<em>Surfaces: 4, 7</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>10 · End is a positive event.</b> Closing copy is "Selamat melanjutkan perjalananmu sendiri" + Mazmur 121:8 benediction. No "dihentikan", no "kehilangan dukungan", no failure framing.<em>Surface: 5b</em></div>
+      </li>
+    </ul>
+
+    <hr class="hair">
+
+    <h3 style="font-family:var(--f-serif); font-weight:400; font-size:22px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Open hand-off</h3>
+    <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:23px;">
+      <li><b>Pastor (BLE-87 once unblocked):</b> review every Indonesian copy string above + sign off the constraints checklist. Final say on tone.</li>
+      <li><b>CEO consult:</b> precedent-setting feature; CEO consult before any user-facing rollout — include doctrinal positioning + UX summary.</li>
+      <li><b>FoundingEngineer:</b> implementation handoff blocks on Pastor copy review. Tokens used are already in <code>blesscupid-ds-v0.html</code> (cobalt-50 / cobalt-700 / cream-50 / stone series). Component additions: <code>ConsentBanner</code>, <code>SymmetryMirror</code>, <code>WalkingTogetherSurface</code>, <code>BenedictionScreen</code>.</li>
+      <li><b>QA (when hired):</b> verify 2-tap exit works from all chat entry points; verify mirror updates on Pastor read; verify there is no "Pause" copy anywhere in the build.</li>
+    </ul>
+  </section>
+
+  <p class="foot">BLE-108 · Designed by FoundingDesigner, BlessCupid · 2026-04-28 · All copy in Indonesian, scriptures from TB2.</p>
+
+</div>
+</body>
+</html>

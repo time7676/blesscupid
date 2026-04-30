@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BlessCupid · iOS App Icon (1024×1024 master) · cobalt ground · PRIMARY
+  Apple HIG: full-bleed, NO rounded corners (Apple applies the squircle automatically).
+  Safe area: critical content within central 824×824 region (≈80%).
+  - Cobalt-600 (#2F4F99) ground.
+  - Cream-50 (#FDFBF6) BC monogram, set in Source Serif 4 Medium, opsz 60.
+  - Gold-300 (#E9C780) halo dot — softer gold reads better against cobalt at small sizes.
+  Halo radius is ~6.5% of canvas so it survives down to 60×60 (Spotlight).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="BlessCupid app icon">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-mono{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:720px;font-variation-settings:'opsz' 60;letter-spacing:-32px;fill:#FDFBF6;}
+    </style>
+  </defs>
+  <rect width="1024" height="1024" fill="#2F4F99"/>
+  <text x="512" y="752" text-anchor="middle" class="bc-mono">BC</text>
+  <circle cx="512" cy="200" r="64" fill="#E9C780"/>
+</svg>

@@ -1,0 +1,292 @@
+/* BLE-54 admin console — moderator surface.
+   Visual register: warm but serious. Plain, adult, kind. No red anywhere. */
+
+.shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  box-shadow: var(--elev-1);
+}
+.topbar h1 {
+  font-family: var(--font-display);
+  font-size: 18px;
+  margin: 0;
+  color: var(--text-brand);
+  letter-spacing: -0.01em;
+}
+.topbar .role-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.topbar select {
+  font-family: inherit;
+  font-size: 13px;
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+.queue {
+  background: var(--bg-raised);
+  border-right: 1px solid var(--border-subtle);
+  overflow-y: auto;
+}
+.queue-header {
+  padding: var(--space-4) var(--space-5) var(--space-2);
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.queue-tab {
+  padding: var(--space-2) var(--space-5);
+  font-size: 13px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+}
+.queue-tab.active {
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  font-weight: 600;
+}
+
+.queue-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.queue-item {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-subtle);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+.queue-item:hover { background: var(--bg-surface); }
+.queue-item.active { background: var(--bg-surface); border-left: 3px solid var(--bc-cobalt-500); padding-left: calc(var(--space-5) - 3px); }
+.queue-item .qrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+.queue-item .target { font-weight: 600; font-size: 14px; color: var(--text-primary); }
+.queue-item .when { font-size: 12px; color: var(--text-tertiary); }
+.queue-item .summary { font-size: 13px; color: var(--text-secondary); margin-top: var(--space-1); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.queue-item .tags { display: flex; gap: var(--space-1); margin-top: var(--space-2); flex-wrap: wrap; }
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.02em;
+  border: 1px solid transparent;
+}
+.tag.tier-auto         { background: var(--bc-stone-100); color: var(--bc-stone-700); }
+.tag.tier-human-review { background: var(--bc-cobalt-50); color: var(--bc-cobalt-700); border-color: var(--bc-cobalt-100); }
+.tag.tier-escalate-CEO { background: var(--bc-amber-100); color: var(--bc-amber-700); border-color: var(--bc-amber-500); }
+.tag.brigade           { background: var(--bc-amber-100); color: var(--bc-amber-700); }
+.tag.cohort            { background: var(--bc-gold-100); color: var(--bc-gold-700); }
+.tag.cohort-masked     { background: var(--bc-stone-100); color: var(--bc-stone-500); font-style: italic; }
+.tag.category          { background: var(--bc-cream-200); color: var(--bc-stone-700); }
+
+.detail {
+  overflow-y: auto;
+  padding: var(--space-8) var(--space-10);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+.detail h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  margin: 0 0 var(--space-2);
+  color: var(--text-primary);
+}
+.detail .meta {
+  font-size: 13px;
+  color: var(--text-tertiary);
+  display: flex;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  box-shadow: var(--elev-1);
+}
+.card h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-tertiary);
+  margin: 0 0 var(--space-3);
+}
+
+.evidence-msg {
+  background: var(--bg-raised);
+  border-left: 3px solid var(--border-strong);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 14px;
+  color: var(--text-primary);
+  margin: var(--space-2) 0;
+}
+.evidence-msg .who { font-size: 12px; color: var(--text-tertiary); margin-bottom: var(--space-1); }
+
+.field { display: flex; flex-direction: column; gap: var(--space-1); margin-bottom: var(--space-3); }
+.field label { font-size: 12px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.06em; }
+.field select, .field textarea, .field input {
+  font-family: inherit;
+  font-size: 14px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+.field textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
+.field-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4); }
+
+.preview {
+  background: var(--bc-cream-100);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  white-space: pre-wrap;
+}
+.preview .scripture {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px solid var(--border-subtle);
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-scripture);
+}
+.preview .appeal {
+  margin-top: var(--space-3);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.lang-toggle { display: inline-flex; gap: 0; border: 1px solid var(--border-strong); border-radius: var(--radius-pill); overflow: hidden; }
+.lang-toggle button {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  padding: var(--space-1) var(--space-3);
+  border: 0;
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.lang-toggle button.active { background: var(--bc-cobalt-500); color: var(--text-inverse); }
+
+.actions { display: flex; gap: var(--space-3); flex-wrap: wrap; }
+.btn {
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: var(--space-3) var(--space-5);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--dur-fast) var(--ease-standard);
+}
+.btn-primary  { background: var(--bc-cobalt-500); color: var(--text-inverse); }
+.btn-primary:hover  { background: var(--bc-cobalt-600); }
+.btn-secondary { background: var(--bg-surface); color: var(--text-primary); border-color: var(--border-strong); }
+.btn-secondary:hover { background: var(--bg-raised); }
+.btn-warning { background: var(--bc-amber-100); color: var(--bc-amber-700); border-color: var(--bc-amber-500); }
+.btn-warning:hover { background: var(--bc-amber-500); color: var(--text-inverse); }
+
+.banner {
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+  font-size: 13px;
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+.banner-info    { background: var(--bc-cobalt-50); color: var(--bc-cobalt-700); border: 1px solid var(--bc-cobalt-100); }
+.banner-warn    { background: var(--bc-amber-100); color: var(--bc-amber-700); border: 1px solid var(--bc-amber-500); }
+.banner-success { background: var(--bc-sage-100); color: var(--bc-sage-700); border: 1px solid var(--bc-sage-500); }
+
+.internal-note {
+  background: var(--bg-sunken);
+  border-left: 3px solid var(--accent-gold);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: var(--space-3) var(--space-4);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.internal-note strong { color: var(--text-primary); }
+.internal-note small { display: block; color: var(--text-tertiary); margin-top: var(--space-1); }
+
+.toast {
+  position: fixed;
+  bottom: var(--space-6);
+  right: var(--space-6);
+  background: var(--bc-cobalt-700);
+  color: var(--text-inverse);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--radius-md);
+  box-shadow: var(--elev-3);
+  font-size: 14px;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity var(--dur-base) var(--ease-standard), transform var(--dur-base) var(--ease-standard);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* ============================================================
+   BLE-148 — $ban_canonical_heading rendering inside preview pane.
+   Matches production spec at ble-148-ban-heading-spec/SPEC.md.
+   The preview is admin-side, so the heading sits inside the
+   `.preview` block; production app uses `.ban-canonical-heading`
+   on the full ban-screen surface. Same tokens, same register. */
+.ban-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 18px;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: var(--bc-gold-700);
+  margin: 0 0 var(--space-3);
+  max-width: 28ch;
+  text-wrap: balance;
+}
+.ban-heading strong { font-weight: 500; } /* override <strong> bold; canonical voice is italic, not bold */

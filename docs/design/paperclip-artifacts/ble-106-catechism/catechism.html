@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="id" data-lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BLE-106 — Catechism Hi-Fi (8 Beats)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <style>
+    /* ─── Page chrome (review-sheet only, NOT shipped) ─────────────────── */
+    body { background: #ECE7DC; padding: 32px 0 96px; }
+    .sheet { max-width: 1320px; margin: 0 auto; padding: 0 24px; }
+    .sheet__hero {
+      background: var(--bg-surface);
+      border-radius: var(--radius-2xl);
+      padding: 28px 32px;
+      box-shadow: var(--elev-2);
+      margin-bottom: 28px;
+    }
+    .sheet__title {
+      font-family: var(--font-display);
+      font-size: 32px; line-height: 38px; font-weight: 400;
+      color: var(--color-cobalt-900);
+      margin: 0 0 8px;
+    }
+    .sheet__sub { color: var(--text-secondary); margin: 0 0 16px; max-width: 720px; }
+    .sheet__meta {
+      display: flex; gap: 18px; flex-wrap: wrap;
+      font-size: var(--text-body-sm); color: var(--text-tertiary);
+    }
+    .sheet__meta b { color: var(--text-secondary); font-weight: 600; }
+
+    .lang-toggle {
+      display: inline-flex; gap: 0; border: 1px solid var(--border-strong);
+      border-radius: var(--radius-pill); overflow: hidden;
+      background: var(--bg-canvas);
+    }
+    .lang-toggle button {
+      border: 0; background: transparent; padding: 8px 16px;
+      font-family: var(--font-body); font-size: 13px; font-weight: 600;
+      letter-spacing: 0.04em; cursor: pointer;
+      color: var(--text-secondary);
+    }
+    .lang-toggle button[aria-pressed="true"] {
+      background: var(--color-cobalt-600); color: var(--text-inverse);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 390px);
+      gap: 56px 48px;
+      justify-content: center;
+      margin-bottom: 56px;
+    }
+    @media (min-width: 1300px) {
+      .grid { grid-template-columns: repeat(4, 390px); }
+    }
+    .frame-wrap { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .frame-label {
+      font-family: var(--font-body); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--text-tertiary);
+    }
+    .frame-label b {
+      display: block; font-size: 15px; font-weight: 600;
+      letter-spacing: 0; text-transform: none;
+      color: var(--color-cobalt-900); margin-bottom: 2px;
+      font-family: var(--font-display);
+    }
+
+    /* iPhone-shaped device frame */
+    .device {
+      width: 390px;
+      border-radius: 56px;
+      padding: 12px;
+      background: linear-gradient(160deg, #1c1f26 0%, #2a2e37 100%);
+      box-shadow: var(--elev-3);
+    }
+    .device .bc-frame {
+      border-radius: 44px;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+    }
+
+    /* ─── BlessCupid frame (overrides + screen specifics) ──────────────── */
+    .bc-frame { font-family: var(--font-body); }
+    .bc-status-bar {
+      padding-top: 14px; height: 56px;
+      align-items: center;
+    }
+    .bc-status-bar .bc-progress {
+      display: flex; gap: 6px; flex: 1; justify-content: center; padding: 0 56px;
+    }
+    .bc-progress__dot {
+      width: 32px; height: 4px; border-radius: 2px;
+      background: var(--color-cream-300);
+    }
+    .bc-progress__dot--filled { background: var(--color-cobalt-600); }
+    .bc-back {
+      width: 44px; height: 44px; display: grid; place-items: center;
+      color: var(--color-cobalt-900); border-radius: var(--radius-pill);
+    }
+    .bc-back svg { width: 18px; height: 18px; }
+    .bc-spacer { width: 44px; }
+
+    .bc-screen { padding: 8px 24px 96px; height: calc(100% - 56px); overflow-y: auto; }
+
+    /* Headings */
+    .bc-eyebrow {
+      font-family: var(--font-body); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--color-cobalt-600);
+      margin: 4px 0 12px;
+    }
+    .bc-title {
+      font-family: var(--font-display); font-weight: 400;
+      color: var(--color-cobalt-900);
+      margin: 0 0 12px;
+    }
+    .bc-title--xl  { font-size: 28px; line-height: 34px; }
+    .bc-title--2xl { font-size: 36px; line-height: 42px; letter-spacing: -0.01em; }
+    .bc-title--3xl { font-size: 40px; line-height: 46px; letter-spacing: -0.015em; font-weight: 500; }
+    .bc-sub {
+      font-size: 15px; line-height: 22px; color: var(--text-secondary);
+      margin: 0 0 24px;
+    }
+
+    /* Primary CTA */
+    .bc-btn {
+      width: 100%; min-height: 56px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font-body); font-size: 16px; font-weight: 600;
+      letter-spacing: 0.01em;
+      display: inline-flex; align-items: center; justify-content: center;
+      gap: 8px; cursor: pointer; border: 0;
+      transition: background var(--duration-base) var(--ease-reverent);
+    }
+    .bc-btn--primary {
+      background: var(--color-cobalt-600); color: var(--text-inverse);
+    }
+    .bc-btn--primary:disabled,
+    .bc-btn--primary[aria-disabled="true"] {
+      background: var(--color-cobalt-100); color: var(--color-cobalt-300);
+      cursor: not-allowed;
+    }
+    .bc-btn--ghost {
+      background: transparent; color: var(--color-cobalt-700);
+      border: 1.5px solid var(--color-cream-300);
+    }
+    .bc-btn--text {
+      background: transparent; color: var(--color-cobalt-700);
+      min-height: 44px; font-weight: 500;
+      text-decoration: underline; text-underline-offset: 4px;
+    }
+
+    .bc-stack { display: flex; flex-direction: column; gap: 12px; }
+    .bc-stack--lg { gap: 20px; }
+    .bc-row { display: flex; align-items: center; gap: 12px; }
+
+    /* ─── Screen 01 — Tagline / Welcome (BLE-29 §3, 3 lines, equal weight) */
+    .scr01 .bc-screen { padding: 0; }
+    .scr01__hero {
+      height: 388px;
+      background:
+        radial-gradient(120% 80% at 50% 0%, rgba(255,255,255,0.55) 0%, rgba(253,251,246,0) 60%),
+        radial-gradient(80% 60% at 25% 30%, rgba(233,199,128,0.18) 0%, rgba(253,251,246,0) 65%),
+        linear-gradient(180deg, #FBF1D7 0%, #FDFBF6 100%);
+      position: relative;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+      padding: 0 24px 36px;
+    }
+    .scr01__sun {
+      position: absolute; top: 76px; left: 50%; transform: translateX(-50%);
+      width: 120px; height: 120px;
+      background: radial-gradient(circle, rgba(201,154,58,0.55) 0%, rgba(201,154,58,0.05) 70%);
+      border-radius: 50%;
+    }
+    .scr01__horizon {
+      position: absolute; left: 0; right: 0; bottom: 36px; height: 1px;
+      background: linear-gradient(90deg, transparent 0%, var(--color-gold-300) 35%, var(--color-gold-300) 65%, transparent 100%);
+    }
+    .scr01__wordmark {
+      font-family: var(--font-display);
+      font-size: 36px; font-weight: 500;
+      letter-spacing: -0.005em;
+      color: var(--color-cobalt-900);
+      position: relative; z-index: 1;
+    }
+    .scr01__wordmark .dot {
+      display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--color-gold-500); transform: translateY(-22px) translateX(-2px);
+    }
+    .scr01__body { padding: 28px 24px 0; }
+    .scr01__lines {
+      display: flex; flex-direction: column; gap: 18px;
+      margin: 0 0 28px;
+    }
+    .scr01__line {
+      font-family: var(--font-display);
+      font-size: 22px; line-height: 30px; font-weight: 500;
+      color: var(--color-cobalt-900);
+      margin: 0;
+    }
+    .scr01__line em {
+      font-style: normal;
+      background: linear-gradient(180deg, transparent 60%, var(--color-gold-100) 60%);
+      padding: 0 2px;
+    }
+    .scr01__legal {
+      font-size: 12px; line-height: 18px; color: var(--text-tertiary);
+      margin: 16px 0 0; text-align: center;
+    }
+    .scr01__legal a { color: var(--color-cobalt-700); }
+
+    /* ─── Screen 02 — Mode-pick (3 cards, equal weight) ─────────────────── */
+    .scr02 .bc-screen { padding-top: 12px; }
+    .mode-card {
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 18px 18px 18px 16px;
+      display: flex; gap: 14px;
+      min-height: 96px;
+      cursor: pointer;
+      transition: border-color var(--duration-base) var(--ease-reverent),
+                  background var(--duration-base) var(--ease-reverent);
+    }
+    .mode-card[aria-pressed="true"] {
+      border-color: var(--color-cobalt-600);
+      background: var(--color-cobalt-50);
+    }
+    .mode-card[aria-pressed="true"] .mode-card__check {
+      background: var(--color-cobalt-600); border-color: var(--color-cobalt-600);
+      color: var(--text-inverse);
+    }
+    .mode-card__icon {
+      width: 44px; height: 44px; flex-shrink: 0;
+      border-radius: var(--radius-md);
+      background: var(--color-gold-100);
+      display: grid; place-items: center;
+      color: var(--color-gold-700);
+    }
+    .mode-card__icon svg { width: 22px; height: 22px; stroke-width: 1.6; }
+    .mode-card__body { flex: 1; }
+    .mode-card__title {
+      font-family: var(--font-body); font-size: 16px; font-weight: 600;
+      color: var(--color-cobalt-900); margin: 0 0 4px;
+    }
+    .mode-card__desc {
+      font-size: 13px; line-height: 18px; color: var(--text-secondary); margin: 0;
+    }
+    .mode-card__check {
+      width: 28px; height: 28px; flex-shrink: 0;
+      border: 1.5px solid var(--border-strong);
+      border-radius: 50%;
+      background: var(--bg-surface);
+      display: grid; place-items: center;
+      color: transparent;
+      align-self: center;
+    }
+    .mode-card__check svg { width: 14px; height: 14px; stroke-width: 2.5; }
+    .scr02__footer {
+      font-size: 13px; color: var(--text-tertiary); text-align: center;
+      margin: 18px 0 24px;
+    }
+
+    /* ─── Screen 03 — Faith statement preview (3 doctrinal lines visible) */
+    .scr03 .bc-screen { padding-top: 12px; }
+    .doctrine {
+      background: var(--bg-surface);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--elev-1);
+      padding: 22px 20px 16px;
+    }
+    .doctrine__intro {
+      font-family: var(--font-display);
+      font-size: 17px; line-height: 26px; font-weight: 500;
+      color: var(--color-cobalt-900); margin: 0 0 16px;
+    }
+    .doctrine__list { list-style: none; padding: 0; margin: 0 0 6px; }
+    .doctrine__item {
+      display: flex; gap: 14px; padding: 12px 0;
+      border-top: 1px solid var(--color-cream-200);
+    }
+    .doctrine__item:first-child { border-top: 0; padding-top: 4px; }
+    .doctrine__num {
+      flex-shrink: 0;
+      font-family: var(--font-display);
+      font-size: 18px; font-weight: 500;
+      color: var(--color-gold-700);
+      width: 28px; line-height: 22px;
+    }
+    .doctrine__line {
+      font-size: 14px; line-height: 21px; color: var(--text-primary);
+      margin: 0;
+    }
+    .doctrine__line b {
+      display: block; font-weight: 600; color: var(--color-cobalt-900);
+      font-size: 15px; margin-bottom: 2px;
+    }
+    .doctrine__expand {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%; min-height: 44px; padding: 12px 0;
+      border: 0; background: transparent;
+      font-family: var(--font-body); font-size: 14px; font-weight: 600;
+      color: var(--color-cobalt-700);
+      border-top: 1px solid var(--color-cream-200);
+      cursor: pointer; margin-top: 4px;
+    }
+    .doctrine__expand svg { width: 14px; height: 14px; }
+
+    .ack {
+      margin: 18px 0 16px;
+      display: flex; gap: 12px; align-items: flex-start;
+      padding: 12px 4px;
+      min-height: 48px;
+    }
+    .ack__box {
+      width: 28px; height: 28px; flex-shrink: 0; margin-top: 2px;
+      border: 1.5px solid var(--color-cobalt-600);
+      border-radius: 8px;
+      background: var(--bg-surface);
+      display: grid; place-items: center;
+      color: transparent;
+    }
+    .ack[data-checked="true"] .ack__box {
+      background: var(--color-cobalt-600);
+      color: var(--text-inverse);
+    }
+    .ack__box svg { width: 14px; height: 14px; stroke-width: 2.5; }
+    .ack__label {
+      font-size: 14px; line-height: 21px; color: var(--text-primary);
+      margin: 0;
+    }
+    .ack__helper {
+      font-size: 12px; line-height: 18px; color: var(--text-tertiary);
+      margin: 6px 0 0;
+    }
+    .ack__helper b { color: var(--text-secondary); font-weight: 600; }
+
+    /* ─── Screen 04 — Faith statement full + VerseCard ─────────────────── */
+    .scr04 .bc-screen { padding-top: 12px; }
+    .statement {
+      background: var(--bg-surface);
+      border-radius: var(--radius-xl);
+      padding: 24px 22px;
+      box-shadow: var(--elev-1);
+    }
+    .statement__lede {
+      font-family: var(--font-display);
+      font-size: 18px; line-height: 28px; font-weight: 500;
+      color: var(--color-cobalt-900);
+      margin: 0 0 14px;
+    }
+    .statement p {
+      font-size: 14px; line-height: 22px; color: var(--text-primary);
+      margin: 0 0 14px;
+    }
+    .statement cite {
+      font-style: italic;
+      font-size: 12px; color: var(--text-tertiary);
+      font-family: var(--font-display);
+    }
+    .statement__close {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 16px; line-height: 24px;
+      color: var(--color-cobalt-900);
+      margin: 0;
+    }
+    .verse-card {
+      margin: 18px 0 4px;
+      background: var(--color-gold-100);
+      border-radius: var(--radius-lg);
+      padding: 18px 18px 18px 22px;
+      position: relative;
+      overflow: hidden;
+    }
+    .verse-card::before {
+      content: ""; position: absolute; left: 0; top: 12px; bottom: 12px;
+      width: 3px; background: var(--color-gold-300); border-radius: 2px;
+    }
+    .verse-card__verse {
+      font-family: var(--font-display);
+      font-size: 17px; line-height: 28px; font-weight: 500;
+      color: var(--color-cobalt-900);
+      margin: 0 0 8px;
+    }
+    .verse-card__ref {
+      font-family: var(--font-display);
+      font-size: 13px; color: var(--color-gold-700);
+      font-style: italic;
+    }
+
+    /* ─── Screen 05 — Modesty hint (photo upload) ─────────────────────── */
+    .scr05 .bc-screen { padding-top: 12px; }
+    .photo-zone {
+      width: 100%; aspect-ratio: 1; max-height: 320px;
+      border: 1.5px dashed var(--border-strong);
+      border-radius: var(--radius-xl);
+      background: var(--color-cream-100);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 10px; color: var(--text-secondary);
+      margin: 4px 0 16px;
+    }
+    .photo-zone__circle {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--bg-surface);
+      box-shadow: var(--elev-1);
+      display: grid; place-items: center;
+      color: var(--color-cobalt-600);
+    }
+    .photo-zone__circle svg { width: 24px; height: 24px; stroke-width: 1.7; }
+    .photo-zone__label { font-size: 14px; font-weight: 500; }
+    .photo-zone__sub { font-size: 12px; color: var(--text-tertiary); }
+
+    .hints { display: flex; flex-direction: column; gap: 8px; margin-bottom: 24px; }
+    .hint {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+    }
+    .hint__dot {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: grid; place-items: center;
+      flex-shrink: 0; color: var(--text-inverse);
+    }
+    .hint__dot--ok    { background: var(--color-sage-500); }
+    .hint__dot--avoid { background: var(--color-stone-300); color: var(--color-stone-700); }
+    .hint__dot svg { width: 11px; height: 11px; stroke-width: 3; }
+    .hint__text { font-size: 14px; color: var(--text-primary); }
+    .hint__sub { font-size: 12px; color: var(--text-tertiary); margin-left: 4px; }
+    .hint__ribbon {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 13px; line-height: 18px;
+      color: var(--text-secondary);
+      padding: 12px 14px;
+      border-left: 2px solid var(--color-gold-300);
+      background: var(--color-gold-100);
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin: 4px 0 0;
+    }
+
+    /* ─── Screen 06 — Denomination + Pelayanan ────────────────────────── */
+    .scr06 .bc-screen { padding-top: 12px; }
+    .group-h {
+      font-family: var(--font-body); font-size: 12px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--color-cobalt-600);
+      margin: 6px 0 10px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .group-h::after {
+      content: ""; flex: 1; height: 1px; background: var(--color-cream-300);
+    }
+    .field { margin-bottom: 14px; }
+    .field__label {
+      font-size: 13px; font-weight: 600; color: var(--text-primary);
+      margin: 0 0 6px; display: block;
+    }
+    .field__label .req { color: var(--color-gold-700); }
+    .field__select, .field__input {
+      width: 100%; height: 52px; padding: 0 16px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-strong);
+      border-radius: var(--radius-md);
+      font-family: var(--font-body); font-size: 15px;
+      color: var(--text-primary);
+      display: flex; align-items: center;
+      gap: 8px; justify-content: space-between;
+    }
+    .field__select span:first-child { color: var(--text-secondary); }
+    .field__select--filled span:first-child { color: var(--text-primary); font-weight: 500; }
+    .field__select svg { width: 18px; height: 18px; color: var(--text-tertiary); }
+    .field__hint { font-size: 12px; color: var(--text-tertiary); margin: 4px 0 0; }
+
+    .chip-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .chip {
+      min-height: 40px; padding: 0 16px;
+      border-radius: var(--radius-pill);
+      border: 1.5px solid var(--border-strong);
+      background: var(--bg-surface);
+      font-size: 13px; font-weight: 500; color: var(--text-secondary);
+      display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer;
+    }
+    .chip[aria-pressed="true"] {
+      background: var(--color-cobalt-50);
+      border-color: var(--color-cobalt-600);
+      color: var(--color-cobalt-700);
+      font-weight: 600;
+    }
+    .chip[aria-pressed="true"] .chip__dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--color-cobalt-600);
+      display: grid; place-items: center; color: var(--text-inverse);
+    }
+    .chip__dot { display: none; }
+    .chip[aria-pressed="true"] .chip__dot { display: grid; }
+    .chip__dot svg { width: 10px; height: 10px; stroke-width: 3; }
+
+    /* ─── Screen 07 — Marriage timeline ───────────────────────────────── */
+    .scr07 .bc-screen { padding-top: 12px; }
+    .radio-card {
+      width: 100%;
+      padding: 16px 18px;
+      background: var(--bg-surface);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      display: flex; align-items: center; gap: 14px;
+      cursor: pointer; min-height: 60px;
+    }
+    .radio-card[aria-checked="true"] {
+      border-color: var(--color-cobalt-600);
+      background: var(--color-cobalt-50);
+    }
+    .radio-card[aria-checked="true"] .radio-card__dot {
+      border-color: var(--color-cobalt-600);
+    }
+    .radio-card[aria-checked="true"] .radio-card__dot::after {
+      content: ""; width: 12px; height: 12px; border-radius: 50%;
+      background: var(--color-cobalt-600);
+    }
+    .radio-card__dot {
+      width: 24px; height: 24px; border-radius: 50%;
+      border: 1.5px solid var(--border-strong);
+      flex-shrink: 0;
+      display: grid; place-items: center;
+      background: var(--bg-surface);
+    }
+    .radio-card__label {
+      font-size: 15px; font-weight: 500; color: var(--text-primary);
+    }
+    .radio-card__sub {
+      font-size: 12px; color: var(--text-tertiary); display: block; margin-top: 2px;
+    }
+    .scr07__quietnote {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 13px; line-height: 19px;
+      color: var(--text-tertiary); text-align: center;
+      margin: 18px 12px 0;
+    }
+
+    /* ─── Screen 08 — Welcome + VOTD ──────────────────────────────────── */
+    .scr08 .bc-screen { padding: 0; }
+    .scr08__hero {
+      height: 224px; padding: 36px 24px 0;
+      background:
+        radial-gradient(120% 70% at 50% 0%, rgba(255,255,255,0.7) 0%, rgba(253,251,246,0) 60%),
+        radial-gradient(60% 40% at 80% 20%, rgba(233,199,128,0.32) 0%, rgba(253,251,246,0) 70%),
+        linear-gradient(180deg, #FBF1D7 0%, #FDFBF6 100%);
+      position: relative;
+    }
+    .scr08__hero::after {
+      content: ""; position: absolute; left: 24px; right: 24px; bottom: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--color-gold-300), transparent);
+    }
+    .scr08__greet-eyebrow {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--color-gold-700);
+      margin: 0 0 8px;
+    }
+    .scr08__greet {
+      font-family: var(--font-display);
+      font-size: 28px; line-height: 34px; font-weight: 500;
+      color: var(--color-cobalt-900);
+      margin: 0 0 8px;
+    }
+    .scr08__greet-sub {
+      font-size: 14px; color: var(--text-secondary);
+      margin: 0;
+    }
+    .scr08__body { padding: 20px 24px 24px; }
+    .votd {
+      background: var(--bg-surface);
+      border-radius: var(--radius-xl);
+      padding: 22px 22px 22px 26px;
+      position: relative;
+      box-shadow: var(--elev-1);
+      margin-bottom: 22px;
+    }
+    .votd::before {
+      content: ""; position: absolute; left: 0; top: 22px; bottom: 22px;
+      width: 3px; background: var(--color-gold-300); border-radius: 2px;
+    }
+    .votd__eyebrow {
+      font-size: 11px; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--color-gold-700);
+      margin: 0 0 10px;
+    }
+    .votd__verse {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 19px; line-height: 30px; color: var(--color-cobalt-900);
+      margin: 0 0 12px;
+    }
+    .votd__ref {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 13px; color: var(--color-gold-700);
+    }
+
+    /* ─── Helpers ─────────────────────────────────────────────────────── */
+    [data-lang="en"] [lang="id"], [data-lang="id"] [lang="en"] { display: none; }
+    .scrim {
+      position: absolute; inset: auto 0 0; height: 80px;
+      background: linear-gradient(180deg, rgba(253,251,246,0) 0%, rgba(253,251,246,1) 60%);
+      pointer-events: none;
+    }
+    .sticky-cta {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      padding: 16px 24px 28px;
+      background: linear-gradient(180deg, rgba(253,251,246,0) 0%, var(--bg-canvas) 30%);
+    }
+    .sticky-cta .bc-stack { gap: 10px; }
+
+    /* ─── Constraint checklist ────────────────────────────────────────── */
+    .checklist {
+      background: var(--bg-surface);
+      border-radius: var(--radius-2xl);
+      padding: 24px 28px;
+      box-shadow: var(--elev-1);
+      margin: 56px auto 0;
+      max-width: 880px;
+    }
+    .checklist h2 {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 24px; color: var(--color-cobalt-900);
+      margin: 0 0 6px;
+    }
+    .checklist h2 + p {
+      color: var(--text-secondary); font-size: 14px; margin: 0 0 18px;
+    }
+    .checklist ol { padding-left: 0; list-style: none; counter-reset: c; }
+    .checklist li {
+      counter-increment: c;
+      padding: 14px 0 14px 44px;
+      border-top: 1px solid var(--color-cream-200);
+      position: relative;
+    }
+    .checklist li:first-child { border-top: 0; }
+    .checklist li::before {
+      content: counter(c);
+      position: absolute; left: 0; top: 14px;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--color-sage-100); color: var(--color-sage-700);
+      display: grid; place-items: center;
+      font-weight: 600; font-size: 13px;
+    }
+    .checklist li b {
+      display: block; color: var(--color-cobalt-900); font-weight: 600;
+      font-size: 15px; margin-bottom: 4px;
+    }
+    .checklist li p {
+      margin: 0; font-size: 13px; line-height: 20px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── Desktop preview ─────────────────────────────────────────────── */
+    .desktop-preview {
+      max-width: 1240px; margin: 56px auto 0;
+      background: var(--bg-surface);
+      border-radius: var(--radius-2xl);
+      box-shadow: var(--elev-2);
+      overflow: hidden;
+    }
+    .desktop-preview__bar {
+      height: 36px;
+      background: linear-gradient(180deg, #f3eee3 0%, #ECE7DC 100%);
+      display: flex; align-items: center; gap: 8px; padding: 0 16px;
+      border-bottom: 1px solid var(--color-cream-300);
+    }
+    .desktop-preview__bar i {
+      width: 12px; height: 12px; border-radius: 50%;
+      background: var(--color-cream-300);
+    }
+    .desktop-preview__bar i:nth-child(1) { background: #E5A8B0; }
+    .desktop-preview__bar i:nth-child(2) { background: var(--color-amber-500); }
+    .desktop-preview__bar i:nth-child(3) { background: var(--color-sage-500); }
+    .desktop-preview__bar span {
+      margin-left: 16px; font-family: var(--font-body); font-size: 12px;
+      color: var(--text-tertiary);
+    }
+    .desktop-stage {
+      display: grid; grid-template-columns: 1fr 1fr;
+      min-height: 720px;
+    }
+    .desktop-left {
+      background:
+        radial-gradient(80% 60% at 30% 30%, rgba(233,199,128,0.18) 0%, rgba(253,251,246,0) 65%),
+        linear-gradient(180deg, #FBF1D7 0%, #FDFBF6 100%);
+      padding: 80px 72px;
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 28px;
+    }
+    .desktop-left__wordmark {
+      font-family: var(--font-display);
+      font-size: 22px; font-weight: 500; color: var(--color-cobalt-900);
+      letter-spacing: -0.005em;
+    }
+    .desktop-left__wordmark .dot {
+      display: inline-block; width: 5px; height: 5px; border-radius: 50%;
+      background: var(--color-gold-500); transform: translateY(-14px) translateX(-1px);
+    }
+    .desktop-left h1 {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 44px; line-height: 54px; color: var(--color-cobalt-900);
+      margin: 0; letter-spacing: -0.01em; max-width: 520px;
+    }
+    .desktop-left h1 em {
+      font-style: normal;
+      background: linear-gradient(180deg, transparent 60%, var(--color-gold-100) 60%);
+    }
+    .desktop-left__sub {
+      font-family: var(--font-display); font-weight: 400; font-style: italic;
+      font-size: 18px; line-height: 26px; color: var(--text-secondary);
+      margin: 0; max-width: 480px;
+    }
+    .desktop-right {
+      padding: 56px 64px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--bg-canvas);
+    }
+    .desktop-right .device { transform: scale(0.94); transform-origin: center; }
+
+    /* Pastor-handoff strip */
+    .handoff {
+      max-width: 880px; margin: 56px auto 0;
+      background: var(--color-cobalt-900); color: var(--text-inverse);
+      border-radius: var(--radius-2xl);
+      padding: 28px 32px;
+    }
+    .handoff h2 {
+      font-family: var(--font-display); font-weight: 500;
+      font-size: 22px; margin: 0 0 8px;
+    }
+    .handoff p { margin: 0 0 4px; opacity: 0.85; font-size: 14px; line-height: 22px; }
+    .handoff a { color: var(--color-gold-300); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .scr01__sun { display: none; }
+      .mode-card, .radio-card, .chip { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="sheet">
+    <header class="sheet__hero">
+      <h1 class="sheet__title">BLE-106 — Catechism hi-fi screens</h1>
+      <p class="sheet__sub">8 onboarding catechism beats per <a href="/BLE/issues/BLE-49">BLE-49</a>, copy locked in <a href="/BLE/issues/BLE-29#document-copy">BLE-29</a>, tokens from <a href="/BLE/issues/BLE-22#document-tokens">BLE-22 v0.1</a>. Bahasa primary; English available via <b>Settings → Language</b> (per <a href="/BLE/issues/BLE-144">BLE-144</a> — single-locale at runtime, no in-app dual rendering). 390×844 mobile + desktop preview at the bottom. Constraint sign-off below the grid.</p>
+      <div class="sheet__meta">
+        <span><b>Lang preview:</b>
+          <span class="lang-toggle" role="group" aria-label="Review-only locale preview">
+            <button type="button" aria-pressed="true" data-lang-set="id">ID</button>
+            <button type="button" aria-pressed="false" data-lang-set="en">EN</button>
+          </span>
+          <em style="font-weight:400; color:var(--text-tertiary);">review-sheet only · runtime locale comes from app Settings</em>
+        </span>
+        <span><b>Viewport:</b> 390×844 (iPhone 14)</span>
+        <span><b>Contrast:</b> AA / AAA verified per token doc</span>
+        <span><b>Touch floor:</b> 48pt</span>
+      </div>
+    </header>
+
+    <section class="grid" aria-label="8 catechism beats — mobile">
+
+      <!-- ───── BEAT 1 — Tagline / Welcome (BLE-29 §3) ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>1 · Tagline</b>BLE-29 §3 · welcome screen 01</p>
+        <div class="device"><div class="bc-frame scr01">
+          <div class="bc-status-bar">
+            <span>9:41</span>
+            <span></span>
+            <span>●●●● 􀋂</span>
+          </div>
+          <div class="scr01__hero">
+            <div class="scr01__sun" aria-hidden="true"></div>
+            <div class="scr01__horizon" aria-hidden="true"></div>
+            <div class="scr01__wordmark">BlessCup<span class="dot"></span>id</div>
+          </div>
+          <div class="scr01__body">
+            <div class="scr01__lines">
+              <p class="scr01__line" lang="id"><em>Diciptakan menurut gambar Allah.</em> Disambut dengan anugerah.</p>
+              <p class="scr01__line" lang="id">Bagi pengikut Kristus yang mencari sahabat, komunitas, atau pasangan di dalam Dia.</p>
+              <p class="scr01__line" lang="id">Hati yang jujur disambut — termasuk yang masih bertanya.</p>
+
+              <p class="scr01__line" lang="en"><em>Made in God's image.</em> Met with grace.</p>
+              <p class="scr01__line" lang="en">For Christ-followers seeking friendship, community, or marriage in Him.</p>
+              <p class="scr01__line" lang="en">Honest hearts welcome — even the ones still searching.</p>
+            </div>
+            <div class="bc-stack">
+              <button class="bc-btn bc-btn--primary" lang="id">Mulai</button>
+              <button class="bc-btn bc-btn--primary" lang="en">Begin</button>
+              <button class="bc-btn bc-btn--text" lang="id">Sudah punya akun? Masuk</button>
+              <button class="bc-btn bc-btn--text" lang="en">Already have an account? Sign in</button>
+            </div>
+            <p class="scr01__legal" lang="id">Dengan melanjutkan, Anda menyetujui <a href="#">Syarat</a> dan <a href="#">Privasi</a>.</p>
+            <p class="scr01__legal" lang="en">By continuing, you agree to our <a href="#">Terms</a> and <a href="#">Privacy</a>.</p>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 2 — Mode-pick ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>2 · Mode-pick</b>BLE-29 §4 · screen 03 · multi-select</p>
+        <div class="device"><div class="bc-frame scr02">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 2 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Discernment · 2 dari 8</p>
+            <p class="bc-eyebrow" lang="en">Discernment · 2 of 8</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Apa yang sedang Tuhan tuntun dalam musim ini?</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">What is God leading you toward in this season?</h2>
+            <p class="bc-sub" lang="id">Pilih satu atau lebih. Anda dapat mengubahnya kapan saja — tidak ada pintu yang salah di sini.</p>
+            <p class="bc-sub" lang="en">Pick one or more. You can change this anytime — there is no wrong door here.</p>
+
+            <div class="bc-stack">
+              <button class="mode-card" aria-pressed="false">
+                <div class="mode-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="9" cy="12" r="4.5" stroke-width="1.6"/><circle cx="15" cy="12" r="4.5" stroke-width="1.6"/></svg>
+                </div>
+                <div class="mode-card__body">
+                  <p class="mode-card__title" lang="id">Persahabatan</p>
+                  <p class="mode-card__title" lang="en">Friendship</p>
+                  <p class="mode-card__desc" lang="id">Besi menajamkan besi. Saudara-saudari seiman untuk berjalan bersama.</p>
+                  <p class="mode-card__desc" lang="en">Iron sharpens iron. Brothers and sisters to walk alongside.</p>
+                </div>
+                <div class="mode-card__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </button>
+
+              <button class="mode-card" aria-pressed="true">
+                <div class="mode-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3" stroke-width="1.6"/><circle cx="5" cy="9" r="2.5" stroke-width="1.6"/><circle cx="19" cy="9" r="2.5" stroke-width="1.6"/><circle cx="8" cy="18" r="2.5" stroke-width="1.6"/><circle cx="16" cy="18" r="2.5" stroke-width="1.6"/></svg>
+                </div>
+                <div class="mode-card__body">
+                  <p class="mode-card__title" lang="id">Komunitas</p>
+                  <p class="mode-card__title" lang="en">Community</p>
+                  <p class="mode-card__desc" lang="id">Berhimpun untuk berdoa, belajar, dan melayani bersama.</p>
+                  <p class="mode-card__desc" lang="en">Gather for prayer, study, and shared service nearby.</p>
+                </div>
+                <div class="mode-card__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </button>
+
+              <button class="mode-card" aria-pressed="true">
+                <div class="mode-card__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M12 4v16M4 12h16" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke-width="1.6"/></svg>
+                </div>
+                <div class="mode-card__body">
+                  <p class="mode-card__title" lang="id">Niat pernikahan</p>
+                  <p class="mode-card__title" lang="en">Marriage intent</p>
+                  <p class="mode-card__desc" lang="id">Berkenalan dengan tujuan, menuju perjanjian. Kami akan berjalan perlahan bersama Anda.</p>
+                  <p class="mode-card__desc" lang="en">Date with intention, toward covenant. We'll walk slowly with you.</p>
+                </div>
+                <div class="mode-card__check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+              </button>
+            </div>
+            <p class="scr02__footer" lang="id">Anda dapat mengubahnya kapan saja. Tidak ada pintu yang salah di sini.</p>
+            <p class="scr02__footer" lang="en">You can change this anytime. There is no wrong door here.</p>
+          </div>
+          <div class="sticky-cta">
+            <button class="bc-btn bc-btn--primary" lang="id">Lanjut</button>
+            <button class="bc-btn bc-btn--primary" lang="en">Continue</button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 3 — Faith statement (preview, 3 doctrinal lines visible) ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>3 · Faith statement · preview</b>BLE-29 §1 · screen 04 (collapsed default)</p>
+        <div class="device"><div class="bc-frame scr03">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 3 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Pernyataan iman · 3 dari 8</p>
+            <p class="bc-eyebrow" lang="en">Faith statement · 3 of 8</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Yang kami jaga di sini.</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">What we hold to here.</h2>
+
+            <div class="doctrine">
+              <p class="doctrine__intro" lang="id">BlessCupid dibangun bagi para pengikut Yesus yang merindukan relasi yang berpusat pada Kristus.</p>
+              <p class="doctrine__intro" lang="en">BlessCupid is built for followers of Jesus seeking a Christ-centered relationship.</p>
+
+              <ul class="doctrine__list">
+                <li class="doctrine__item">
+                  <span class="doctrine__num">i.</span>
+                  <p class="doctrine__line" lang="id"><b>Setiap orang adalah gambar Allah.</b>Diciptakan dengan martabat — disambut dengan anugerah.</p>
+                  <p class="doctrine__line" lang="en"><b>Every person bears God's image.</b>Made with dignity — met with grace.</p>
+                </li>
+                <li class="doctrine__item">
+                  <span class="doctrine__num">ii.</span>
+                  <p class="doctrine__line" lang="id"><b>Pernikahan adalah perjanjian seumur hidup.</b>Antara seorang laki-laki dan seorang perempuan, dalam Kristus.</p>
+                  <p class="doctrine__line" lang="en"><b>Marriage is a lifelong covenant.</b>Between one man and one woman, in Christ.</p>
+                </li>
+                <li class="doctrine__item">
+                  <span class="doctrine__num">iii.</span>
+                  <p class="doctrine__line" lang="id"><b>Kemurnian, kejujuran, kelembutan.</b>Dalam setiap percakapan dan perjumpaan di sini.</p>
+                  <p class="doctrine__line" lang="en"><b>Purity, honesty, gentleness.</b>In every conversation and connection here.</p>
+                </li>
+              </ul>
+              <button class="doctrine__expand" lang="id">Baca pernyataan lengkap <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <button class="doctrine__expand" lang="en">Read full statement <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+
+            <div class="ack" data-checked="false" role="checkbox" aria-checked="false">
+              <span class="ack__box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              <div>
+                <p class="ack__label" lang="id">Saya telah membaca dan akan berjalan bersama yang lain dalam kasih dan hormat.</p>
+                <p class="ack__label" lang="en">I've read this and will walk with others here in love and honor.</p>
+                <p class="ack__helper" lang="id">Wajib untuk melanjutkan. Anda dapat membaca ulang kapan saja di <b>Pengaturan → Iman & Nilai</b>.</p>
+                <p class="ack__helper" lang="en">Required to continue. You can revisit this anytime in <b>Settings → Faith & Values</b>.</p>
+              </div>
+            </div>
+          </div>
+          <div class="sticky-cta">
+            <div class="bc-stack">
+              <button class="bc-btn bc-btn--primary" aria-disabled="true" lang="id">Saya setuju</button>
+              <button class="bc-btn bc-btn--primary" aria-disabled="true" lang="en">I agree</button>
+              <button class="bc-btn bc-btn--ghost" lang="id">Baca lagi pernyataan lengkap</button>
+              <button class="bc-btn bc-btn--ghost" lang="en">Read the full statement again</button>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 4 — Faith statement (full, expanded with VerseCard) ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>4 · Faith statement · full</b>BLE-29 §1 expanded · VerseCard pull-quote</p>
+        <div class="device"><div class="bc-frame scr04">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 3 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Pernyataan iman · lengkap</p>
+            <p class="bc-eyebrow" lang="en">Faith statement · full</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Pernyataan iman BlessCupid</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">The BlessCupid faith statement</h2>
+
+            <div class="statement">
+              <p class="statement__lede" lang="id">BlessCupid dibangun bagi para pengikut Yesus yang merindukan relasi yang berpusat pada Kristus — persahabatan, komunitas, atau pernikahan.</p>
+              <p class="statement__lede" lang="en">BlessCupid is built for followers of Jesus seeking a Christ-centered relationship — friendship, community, or marriage.</p>
+
+              <p lang="id">Kami percaya bahwa setiap orang di sini diciptakan menurut gambar Allah dan layak dihormati <cite>(Kejadian 1:27, TB2)</cite>. Kami menjunjung pernikahan sebagai perjanjian seumur hidup antara seorang laki-laki dan seorang perempuan <cite>(Markus 10:6–9, TB2)</cite>. Kami mengejar kemurnian, kejujuran, dan kelembutan dalam setiap percakapan dan perjumpaan <cite>(1 Tesalonika 4:3–7; Efesus 4:29, TB2)</cite>.</p>
+              <p lang="en">We affirm that every person here is made in God's image and worthy of dignity <cite>(Genesis 1:27, NIV)</cite>. We honor marriage as a lifelong covenant between one man and one woman <cite>(Mark 10:6–9, NIV)</cite>. We pursue purity, honesty, and gentleness in how we speak and connect <cite>(1 Thessalonians 4:3–7; Ephesians 4:29, NIV)</cite>.</p>
+
+              <div class="verse-card" role="figure">
+                <p class="verse-card__verse" lang="id">"Taruhlah jarimu di sini dan lihatlah tangan-Ku… janganlah engkau tidak percaya lagi, melainkan percayalah."</p>
+                <p class="verse-card__verse" lang="en">"Put your finger here; see my hands… Stop doubting and believe."</p>
+                <span class="verse-card__ref" lang="id">— Yohanes 20:27, TB2</span>
+                <span class="verse-card__ref" lang="en">— John 20:27, NIV</span>
+              </div>
+
+              <p class="statement__close" lang="id">Anda tidak perlu memiliki semua jawaban — pertanyaan yang jujur disambut di sini. Dengan bergabung, Anda berkomitmen untuk menghormati sesama sebagaimana Kristus telah menghormati Anda.</p>
+              <p class="statement__close" lang="en">You don't need to have everything figured out — honest questions are welcome here. By joining, you agree to honor others as Christ has honored you.</p>
+            </div>
+          </div>
+          <div class="sticky-cta">
+            <div class="bc-stack">
+              <button class="bc-btn bc-btn--primary" lang="id">Saya setuju</button>
+              <button class="bc-btn bc-btn--primary" lang="en">I agree</button>
+              <button class="bc-btn bc-btn--text" lang="id">Belum siap? Kembali</button>
+              <button class="bc-btn bc-btn--text" lang="en">Not ready? Go back</button>
+            </div>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 5 — Modesty hint (photo upload, encouragement not gate) ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>5 · Modesty hint</b>screen 05a · encouragement, not gate</p>
+        <div class="device"><div class="bc-frame scr05">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 5 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Foto profil · 5 dari 8</p>
+            <p class="bc-eyebrow" lang="en">Profile photo · 5 of 8</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Bagikan wajah Anda dengan tenang.</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">Share your face, gently.</h2>
+            <p class="bc-sub" lang="id">Foto wajah jelas, sopan, dan bukan foto grup — supaya seseorang dapat mengenali Anda dengan jujur sejak awal.</p>
+            <p class="bc-sub" lang="en">A clear, modest photo — not a group shot — so someone can recognize you honestly from the start.</p>
+
+            <div class="photo-zone">
+              <div class="photo-zone__circle"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M3 8a2 2 0 012-2h2.5l1.5-2h6l1.5 2H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8z" stroke-width="1.6"/><circle cx="12" cy="12.5" r="4" stroke-width="1.6"/></svg></div>
+              <span class="photo-zone__label" lang="id">Ketuk untuk memilih foto</span>
+              <span class="photo-zone__label" lang="en">Tap to choose a photo</span>
+              <span class="photo-zone__sub" lang="id">JPEG / PNG / HEIC · maks. 10 MB</span>
+              <span class="photo-zone__sub" lang="en">JPEG / PNG / HEIC · max 10 MB</span>
+            </div>
+
+            <div class="hints">
+              <div class="hint">
+                <span class="hint__dot hint__dot--ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="hint__text" lang="id">Wajah Anda terlihat jelas</span>
+                <span class="hint__text" lang="en">Your face is clearly visible</span>
+              </div>
+              <div class="hint">
+                <span class="hint__dot hint__dot--ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <span class="hint__text" lang="id">Sopan dan apa adanya</span>
+                <span class="hint__text" lang="en">Modest and as you are</span>
+              </div>
+              <div class="hint">
+                <span class="hint__dot hint__dot--avoid"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg></span>
+                <span class="hint__text" lang="id">Bukan foto grup atau wajah disamarkan</span>
+                <span class="hint__text" lang="en">Not a group shot or hidden face</span>
+              </div>
+              <p class="hint__ribbon" lang="id">Gambaran ini bukan ujian. Ini cara hormat berkenalan.</p>
+              <p class="hint__ribbon" lang="en">This isn't a test. It's a respectful way to meet.</p>
+            </div>
+          </div>
+          <div class="sticky-cta">
+            <button class="bc-btn bc-btn--primary" aria-disabled="true" lang="id">Lanjut</button>
+            <button class="bc-btn bc-btn--primary" aria-disabled="true" lang="en">Continue</button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 6 — Denomination + Pelayanan ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>6 · Denominasi & pelayanan</b>screen 06 · faith profile · cross-tradition humility</p>
+        <div class="device"><div class="bc-frame scr06">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 6 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Profil iman · 6 dari 8</p>
+            <p class="bc-eyebrow" lang="en">Faith profile · 6 of 8</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Di mana Anda berakar?</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">Where are you rooted?</h2>
+            <p class="bc-sub" lang="id">Tradisi yang berbeda diterima dengan rendah hati. Pilih yang paling Anda kenal — Anda dapat mengubahnya nanti.</p>
+            <p class="bc-sub" lang="en">Different traditions held with humility. Pick what fits best — you can change it later.</p>
+
+            <p class="group-h" lang="id">Tradisi</p>
+            <p class="group-h" lang="en">Tradition</p>
+
+            <div class="field">
+              <label class="field__label" lang="id">Denominasi <span class="req">*</span></label>
+              <label class="field__label" lang="en">Denomination <span class="req">*</span></label>
+              <div class="field__select field__select--filled">
+                <span lang="id">Katolik Roma</span>
+                <span lang="en">Roman Catholic</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M6 9l6 6 6-6" stroke-width="2" stroke-linecap="round"/></svg>
+              </div>
+              <p class="field__hint" lang="id">Katolik · Protestan · Pentakosta · Ortodoks · Lainnya</p>
+              <p class="field__hint" lang="en">Catholic · Protestant · Pentecostal · Orthodox · Other</p>
+            </div>
+
+            <div class="field">
+              <label class="field__label" lang="id">Gereja rumah</label>
+              <label class="field__label" lang="en">Home church</label>
+              <div class="field__select field__select--filled">
+                <span lang="id">Katedral Jakarta</span>
+                <span lang="en">Jakarta Cathedral</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="11" cy="11" r="6" stroke-width="1.6"/><path d="M16 16l5 5" stroke-width="1.6" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+
+            <p class="group-h" lang="id">Pelayanan (opsional)</p>
+            <p class="group-h" lang="en">Ministry (optional)</p>
+            <p class="bc-sub" style="margin-top:-4px" lang="id">Jika Anda melayani, kami akan dengan tenang menghubungkan Anda dengan teman seiman yang sehati.</p>
+            <p class="bc-sub" style="margin-top:-4px" lang="en">If you serve, we'll quietly connect you to like-hearted folks who serve too.</p>
+
+            <div class="chip-row">
+              <button class="chip" aria-pressed="true"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Worship</span><span lang="en">Worship</span></button>
+              <button class="chip" aria-pressed="false"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Pelayanan Anak</span><span lang="en">Children</span></button>
+              <button class="chip" aria-pressed="true"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Doa</span><span lang="en">Prayer</span></button>
+              <button class="chip" aria-pressed="false"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Misi</span><span lang="en">Mission</span></button>
+              <button class="chip" aria-pressed="false"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Pemuda</span><span lang="en">Youth</span></button>
+              <button class="chip" aria-pressed="false"><span class="chip__dot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 12l5 5 9-11" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span lang="id">Lainnya</span><span lang="en">Other</span></button>
+            </div>
+          </div>
+          <div class="sticky-cta">
+            <button class="bc-btn bc-btn--primary" lang="id">Lanjut</button>
+            <button class="bc-btn bc-btn--primary" lang="en">Continue</button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 7 — Marriage timeline ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>7 · Marriage timeline</b>screen 07a · dating mode only · "Belum yakin" equal</p>
+        <div class="device"><div class="bc-frame scr07">
+          <div class="bc-status-bar">
+            <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <div class="bc-progress" aria-label="Step 7 of 8">
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot bc-progress__dot--filled"></span>
+              <span class="bc-progress__dot"></span>
+            </div>
+            <div class="bc-spacer"></div>
+          </div>
+          <div class="bc-screen">
+            <p class="bc-eyebrow" lang="id">Niat pernikahan · 7 dari 8</p>
+            <p class="bc-eyebrow" lang="en">Marriage intent · 7 of 8</p>
+            <h2 class="bc-title bc-title--xl" lang="id">Berkenalan dengan tujuan, perlahan.</h2>
+            <h2 class="bc-title bc-title--xl" lang="en">With intention, slowly.</h2>
+            <p class="bc-sub" lang="id">Tidak ada jawaban yang salah. Ini hanya bantu cocokkan harapan dengan jujur.</p>
+            <p class="bc-sub" lang="en">No wrong answer. This just helps match expectations honestly.</p>
+
+            <div class="bc-stack">
+              <button class="radio-card" role="radio" aria-checked="false">
+                <span class="radio-card__dot" aria-hidden="true"></span>
+                <div>
+                  <span class="radio-card__label" lang="id">Dalam 1 tahun</span>
+                  <span class="radio-card__label" lang="en">Within 1 year</span>
+                  <span class="radio-card__sub" lang="id">Saya merasa Tuhan sedang menuntun saya ke arah perjanjian.</span>
+                  <span class="radio-card__sub" lang="en">I sense God is leading me toward covenant.</span>
+                </div>
+              </button>
+              <button class="radio-card" role="radio" aria-checked="true">
+                <span class="radio-card__dot" aria-hidden="true"></span>
+                <div>
+                  <span class="radio-card__label" lang="id">1–3 tahun</span>
+                  <span class="radio-card__label" lang="en">1–3 years</span>
+                  <span class="radio-card__sub" lang="id">Terbuka, masih bertumbuh dan menimbang.</span>
+                  <span class="radio-card__sub" lang="en">Open, still growing and discerning.</span>
+                </div>
+              </button>
+              <button class="radio-card" role="radio" aria-checked="false">
+                <span class="radio-card__dot" aria-hidden="true"></span>
+                <div>
+                  <span class="radio-card__label" lang="id">3 tahun atau lebih</span>
+                  <span class="radio-card__label" lang="en">3+ years</span>
+                  <span class="radio-card__sub" lang="id">Tidak terburu-buru. Persiapan diri lebih dulu.</span>
+                  <span class="radio-card__sub" lang="en">Not in a hurry. Preparing myself first.</span>
+                </div>
+              </button>
+              <button class="radio-card" role="radio" aria-checked="false">
+                <span class="radio-card__dot" aria-hidden="true"></span>
+                <div>
+                  <span class="radio-card__label" lang="id">Belum yakin</span>
+                  <span class="radio-card__label" lang="en">Not sure yet</span>
+                  <span class="radio-card__sub" lang="id">Itu juga jawaban yang jujur, dan diterima di sini.</span>
+                  <span class="radio-card__sub" lang="en">That's an honest answer too, and welcome here.</span>
+                </div>
+              </button>
+            </div>
+            <p class="scr07__quietnote" lang="id">"Berjalanlah dengan rendah hati bersama Allahmu." — Mikha 6:8</p>
+            <p class="scr07__quietnote" lang="en">"Walk humbly with your God." — Micah 6:8</p>
+          </div>
+          <div class="sticky-cta">
+            <button class="bc-btn bc-btn--primary" lang="id">Lanjut</button>
+            <button class="bc-btn bc-btn--primary" lang="en">Continue</button>
+          </div>
+        </div></div>
+      </div>
+
+      <!-- ───── BEAT 8 — Welcome + VOTD ───── -->
+      <div class="frame-wrap">
+        <p class="frame-label"><b>8 · Welcome + verse of the day</b>screen 08 · no streaks, no push prompt</p>
+        <div class="device"><div class="bc-frame scr08">
+          <div class="bc-status-bar">
+            <span>9:41</span>
+            <span></span>
+            <span>●●●● 􀋂</span>
+          </div>
+          <div class="scr08__hero">
+            <p class="scr08__greet-eyebrow" lang="id">Selamat datang</p>
+            <p class="scr08__greet-eyebrow" lang="en">Welcome</p>
+            <h2 class="scr08__greet" lang="id">Salam, Maria.</h2>
+            <h2 class="scr08__greet" lang="en">Peace, Maria.</h2>
+            <p class="scr08__greet-sub" lang="id">Kami senang Anda di sini. Mulai dengan ayat hari ini.</p>
+            <p class="scr08__greet-sub" lang="en">Glad you're here. Start with today's verse.</p>
+          </div>
+          <div class="scr08__body">
+            <div class="votd" role="figure">
+              <p class="votd__eyebrow" lang="id">Ayat hari ini</p>
+              <p class="votd__eyebrow" lang="en">Verse of the day</p>
+              <p class="votd__verse" lang="id">"Serahkanlah hidupmu kepada TUHAN dan percayalah kepada-Nya, dan Ia akan bertindak."</p>
+              <p class="votd__verse" lang="en">"Commit your way to the Lord; trust in him and he will do this."</p>
+              <span class="votd__ref" lang="id">— Mazmur 37:5, TB2</span>
+              <span class="votd__ref" lang="en">— Psalm 37:5, NIV</span>
+            </div>
+            <div class="bc-stack">
+              <button class="bc-btn bc-btn--primary" lang="id">Mulai jelajah</button>
+              <button class="bc-btn bc-btn--primary" lang="en">Start exploring</button>
+              <button class="bc-btn bc-btn--text" lang="id">Atur profil dulu</button>
+              <button class="bc-btn bc-btn--text" lang="en">Set up profile first</button>
+            </div>
+          </div>
+        </div></div>
+      </div>
+    </section>
+
+    <!-- ─── Constraint sign-off ─── -->
+    <section class="checklist" aria-label="Constraint sign-off">
+      <h2>Constraint checklist — Designer sign-off</h2>
+      <p>Each binding constraint from <a href="/BLE/issues/BLE-106">BLE-106</a> is met or alternative justified. Pastor passes against this list.</p>
+      <ol>
+        <li><b>No Hallmark backdrops.</b><p>Ground is <code>cream-50</code>; faith-statement body uses <code>cobalt-900</code>. Hero on screens 01 + 08 is morning-light gradient (cream → gold-100, single radial sun glow), no illustrated angels, doves, or clouds. Met.</p></li>
+        <li><b>No locked-door / gate / seal imagery.</b><p>No padlocks, gates, scrolls-with-seals, or "you-must-agree-to-enter" iconography. Faith-statement card is open-typographic with John 20:27 ("Taruhlah jarimu di sini…") as the hospitality anchor. Met.</p></li>
+        <li><b>VerseCard styling for catechism pull-quote.</b><p>Beat 4 + Beat 8 use identical pattern: gold-100 fill, gold-300 left rule (3px), Source Serif 4, italic reference. Reused on later VOTD card so users learn to recognize scripture by shape. Met.</p></li>
+        <li><b>Acknowledgement checkbox in cobalt-600.</b><p>Beat 3 ack__box is <code>cobalt-600</code> outline → <code>cobalt-600</code> fill on check. Amber not used. Met.</p></li>
+        <li><b>"Read full statement" must not bury covenant.</b><p>Beat 3 collapsed preview shows ALL three doctrinal lines (Imago Dei, covenant marriage, chastity-honesty-gentleness) above the ack-checkbox before any expand. Expand is a secondary control, not a gate. Beat 4 is the full read-through (separate beat) that lands when the user opts in. Met.</p></li>
+        <li><b>Touch target ≥ 48pt on checkbox.</b><p>Ack__box is 28×28 visual but the entire ack row (right-side label + helper) is the click target, padded to 48pt min-height. Verified inline. Met.</p></li>
+        <li><b>Reduced-motion fallback.</b><p>Tokens already collapse all <code>--duration-*</code> to 0 on <code>prefers-reduced-motion: reduce</code>. Page also hides decorative sun and disables card transitions. Met.</p></li>
+        <li><b>No coercion language treatments.</b><p>No countdown, no urgency-red, no "agree to continue" CTAs. Primary CTA is <code>cobalt-600</code> "Saya setuju" / "I agree" — calm. Secondary is <code>ghost</code> "Baca lagi pernyataan lengkap" / "Read full statement again." Tertiary "Belum siap? Kembali" exit always offered without shame. Met.</p></li>
+        <li><b>Welcome value-prop equal weight, hospitality clause not de-ranked.</b><p>Beat 1 stacks all three lines at the same <code>display-lg</code>-equivalent serif weight (22/30, weight 500). Line 3 ("Hati yang jujur disambut — termasuk yang masih bertanya") gets the same visual treatment as lines 1–2 — no smaller, no lighter, no italic-as-aside. Verified at 390×844. Met.</p></li>
+      </ol>
+    </section>
+
+    <!-- ─── Pastor handoff ─── -->
+    <aside class="handoff" aria-label="Hand-off">
+      <h2>Hand-off</h2>
+      <p><b>Reviewer:</b> <a href="/BLE/agents/pastor">Pastor</a> against the 9 binding constraints above and BLE-29 copy fidelity.</p>
+      <p><b>After Pastor sign-off:</b> <a href="/BLE/agents/foundingengineer">FoundingEngineer</a> picks up implementation referencing tokens at <a href="/BLE/issues/BLE-22#document-tokens">BLE-22 tokens</a> and wireframe component names at <a href="/BLE/issues/BLE-23#document-wireframes">BLE-23 wireframes</a>.</p>
+      <p><b>Component spec:</b> <code>&lt;Hero&gt;</code>, <code>&lt;Wordmark&gt;</code>, <code>&lt;Doctrine&gt;</code> (preview), <code>&lt;Statement&gt;</code> (full), <code>&lt;VerseCard&gt;</code>, <code>&lt;ModeCard&gt;</code>, <code>&lt;PhotoZone&gt;</code>, <code>&lt;ModestyHint&gt;</code>, <code>&lt;Chip&gt;</code>, <code>&lt;FieldSelect&gt;</code>, <code>&lt;RadioCard&gt;</code>, <code>&lt;VOTD&gt;</code> hero, <code>&lt;Button variant="primary|ghost|text" size="lg"&gt;</code>, <code>&lt;Ack&gt;</code>.</p>
+    </aside>
+
+    <!-- ─── Desktop preview (faith-statement at desktop breakpoint) ─── -->
+    <section class="desktop-preview" aria-label="Desktop preview — faith statement">
+      <div class="desktop-preview__bar"><i></i><i></i><i></i><span>blesscupid.app/onboarding/faith-statement</span></div>
+      <div class="desktop-stage">
+        <div class="desktop-left">
+          <div class="desktop-left__wordmark">BlessCup<span class="dot"></span>id</div>
+          <h1 lang="id"><em>Diciptakan menurut gambar Allah.</em><br/>Disambut dengan anugerah.</h1>
+          <h1 lang="en"><em>Made in God's image.</em><br/>Met with grace.</h1>
+          <p class="desktop-left__sub" lang="id">"Taruhlah jarimu di sini, dan lihatlah tangan-Ku… janganlah engkau tidak percaya lagi, melainkan percayalah." — Yohanes 20:27</p>
+          <p class="desktop-left__sub" lang="en">"Put your finger here; see my hands… Stop doubting and believe." — John 20:27</p>
+        </div>
+        <div class="desktop-right">
+          <div class="device"><div class="bc-frame scr04">
+            <div class="bc-status-bar">
+              <button class="bc-back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M15 6l-6 6 6 6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              <div class="bc-progress" aria-label="Step 3 of 8">
+                <span class="bc-progress__dot bc-progress__dot--filled"></span>
+                <span class="bc-progress__dot bc-progress__dot--filled"></span>
+                <span class="bc-progress__dot bc-progress__dot--filled"></span>
+                <span class="bc-progress__dot"></span>
+                <span class="bc-progress__dot"></span>
+                <span class="bc-progress__dot"></span>
+                <span class="bc-progress__dot"></span>
+                <span class="bc-progress__dot"></span>
+              </div>
+              <div class="bc-spacer"></div>
+            </div>
+            <div class="bc-screen">
+              <p class="bc-eyebrow" lang="id">Pernyataan iman · lengkap</p>
+              <p class="bc-eyebrow" lang="en">Faith statement · full</p>
+              <h2 class="bc-title bc-title--xl" lang="id">Pernyataan iman BlessCupid</h2>
+              <h2 class="bc-title bc-title--xl" lang="en">The BlessCupid faith statement</h2>
+              <div class="statement">
+                <p class="statement__lede" lang="id">BlessCupid dibangun bagi para pengikut Yesus yang merindukan relasi yang berpusat pada Kristus.</p>
+                <p class="statement__lede" lang="en">BlessCupid is built for followers of Jesus seeking a Christ-centered relationship.</p>
+                <p lang="id">Kami percaya setiap orang diciptakan menurut gambar Allah dan layak dihormati <cite>(Kejadian 1:27)</cite>. Kami menjunjung pernikahan sebagai perjanjian seumur hidup antara seorang laki-laki dan seorang perempuan <cite>(Markus 10:6–9)</cite>.</p>
+                <p lang="en">We affirm every person is made in God's image and worthy of dignity <cite>(Genesis 1:27)</cite>. We honor marriage as a lifelong covenant between one man and one woman <cite>(Mark 10:6–9)</cite>.</p>
+                <div class="verse-card">
+                  <p class="verse-card__verse" lang="id">"Taruhlah jarimu di sini… janganlah engkau tidak percaya lagi, melainkan percayalah."</p>
+                  <p class="verse-card__verse" lang="en">"Put your finger here… Stop doubting and believe."</p>
+                  <span class="verse-card__ref" lang="id">— Yohanes 20:27</span>
+                  <span class="verse-card__ref" lang="en">— John 20:27</span>
+                </div>
+              </div>
+            </div>
+            <div class="sticky-cta">
+              <div class="bc-stack">
+                <button class="bc-btn bc-btn--primary" lang="id">Saya setuju</button>
+                <button class="bc-btn bc-btn--primary" lang="en">I agree</button>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Lang toggle (review-sheet only — production handles via i18n loader)
+    document.querySelectorAll('[data-lang-set]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const lang = btn.getAttribute('data-lang-set');
+        document.documentElement.setAttribute('data-lang', lang);
+        document.documentElement.lang = lang;
+        document.querySelectorAll('[data-lang-set]').forEach(b => {
+          b.setAttribute('aria-pressed', b === btn ? 'true' : 'false');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

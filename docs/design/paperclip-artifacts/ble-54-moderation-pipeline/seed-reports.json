@@ -1,0 +1,151 @@
+[
+  {
+    "id": "rep-2041",
+    "category_id": "harassment",
+    "pattern": "single_hostile_ambiguous",
+    "target_id": "u-8821",
+    "target_name": "Andi (Bandung)",
+    "reporter_id": "u-3145",
+    "reporter_name": "Maria",
+    "timestamp": "2026-04-28T09:14:00.000Z",
+    "summary": "One hostile message after a heated DM. Tone questionable; pattern unclear.",
+    "evidence": [
+      { "from": "Andi", "text": "you're being ridiculous, this is exactly why nobody wants you" }
+    ],
+    "cohort_tags": [],
+    "signals": []
+  },
+  {
+    "id": "rep-2042",
+    "category_id": "financial",
+    "pattern": "direct_money_or_crypto_or_giftcard_ask",
+    "target_id": "u-9001",
+    "target_name": "\"David\" (deployed-military persona)",
+    "reporter_id": "u-7711",
+    "reporter_name": "Lia",
+    "timestamp": "2026-04-28T08:30:00.000Z",
+    "summary": "Asked match for IDR 8M emergency wire after 4 days of chat. Uses deployed-military framing. Photo reverse-image hits known scam pool.",
+    "evidence": [
+      { "from": "David", "text": "habibti, deployment ended my pay early. Can you wire 8jt to this account? I'll repay double next week." }
+    ],
+    "cohort_tags": ["divorced"],
+    "signals": []
+  },
+  {
+    "id": "rep-2043",
+    "category_id": "doctrinal",
+    "pattern": "tertiary_disagreement",
+    "target_id": "u-4422",
+    "target_name": "Ratna",
+    "reporter_id": "u-9988",
+    "reporter_name": "Yosef",
+    "timestamp": "2026-04-28T07:55:00.000Z",
+    "summary": "Reporter felt judged after Ratna said paedo-baptism is biblical. Tertiary disagreement, not actionable.",
+    "evidence": [
+      { "from": "Ratna", "text": "I think infant baptism is the biblical model — Acts 16 baptized whole households." }
+    ],
+    "cohort_tags": [],
+    "signals": []
+  },
+  {
+    "id": "rep-2044",
+    "category_id": "sexual",
+    "pattern": "unsolicited_explicit_imagery",
+    "target_id": "u-2233",
+    "target_name": "anonymous",
+    "reporter_id": "u-5566",
+    "reporter_name": "Dian",
+    "timestamp": "2026-04-28T06:42:00.000Z",
+    "summary": "Sent explicit imagery in second message. Recipient stated discomfort.",
+    "evidence": [
+      { "from": "u-2233", "text": "[explicit image attachment — auto-removed]" }
+    ],
+    "cohort_tags": ["bereaved"],
+    "signals": []
+  },
+  {
+    "id": "rep-2045",
+    "category_id": "harassment",
+    "pattern": "explicit_threat",
+    "target_id": "u-1010",
+    "target_name": "anonymous",
+    "reporter_id": "u-1011",
+    "reporter_name": "Hana",
+    "timestamp": "2026-04-28T05:00:00.000Z",
+    "summary": "Threat with weapon mention. Universal violence trigger fires regardless of category.",
+    "evidence": [
+      { "from": "u-1010", "text": "if you block me I know where you live, I have a knife waiting" }
+    ],
+    "cohort_tags": [],
+    "signals": ["weapon_mention", "kill_threat"]
+  },
+  {
+    "id": "rep-2046",
+    "category_id": "harassment",
+    "pattern": "single_hostile_ambiguous",
+    "target_id": "u-7777",
+    "target_name": "Bayu",
+    "reporter_id": "u-7001",
+    "reporter_name": "ex-match cluster A",
+    "timestamp": "2026-04-28T08:00:00.000Z",
+    "summary": "Brigade pattern: 4 distinct ex-matches reported same target within 35min. Auto-action suppressed; routed to human-review.",
+    "evidence": [
+      { "from": "Bayu", "text": "you all blocked me, fine, your loss." }
+    ],
+    "cohort_tags": ["divorced"],
+    "signals": [],
+    "_brigade_companions": [
+      { "target_id": "u-7777", "reporter_id": "u-7002", "timestamp": "2026-04-28T07:45:00.000Z" },
+      { "target_id": "u-7777", "reporter_id": "u-7003", "timestamp": "2026-04-28T07:50:00.000Z" },
+      { "target_id": "u-7777", "reporter_id": "u-7004", "timestamp": "2026-04-28T07:55:00.000Z" }
+    ]
+  },
+  {
+    "id": "rep-2047",
+    "category_id": "fake",
+    "pattern": "photo_mismatch_member_flag",
+    "target_id": "u-3030",
+    "target_name": "Putri",
+    "reporter_id": "u-3031",
+    "reporter_name": "Rinaldi",
+    "timestamp": "2026-04-28T04:10:00.000Z",
+    "summary": "Match flagged that photos look outdated. Convert-from-Islam cohort tag — masked from default queue view.",
+    "evidence": [
+      { "from": "Rinaldi", "text": "the photos look like 10 years ago, video call?" }
+    ],
+    "cohort_tags": ["convert-privacy"],
+    "signals": []
+  },
+  {
+    "id": "rep-2049",
+    "category_id": "doctrinal",
+    "pattern": "deny_creedal_floor",
+    "target_id": "u-6060",
+    "target_name": "Yohanes",
+    "reporter_id": "u-6061",
+    "reporter_name": "Stephanus",
+    "timestamp": "2026-04-28T02:30:00.000Z",
+    "summary": "Reporter says target denies bodily resurrection. Could be a seeker working through doubt, or a teacher actively pushing the denial. Pastor must classify before action.",
+    "evidence": [
+      { "from": "Yohanes", "text": "I just don't see how a literal bodily resurrection holds up — I read it as metaphor for the early church's renewal." }
+    ],
+    "cohort_tags": ["deconstruction"],
+    "signals": []
+  },
+  {
+    "id": "rep-2048",
+    "category_id": "doctrinal",
+    "pattern": "predatory_cult_recruitment",
+    "target_id": "u-5050",
+    "target_name": "anonymous",
+    "reporter_id": "u-5051",
+    "reporter_name": "Sri",
+    "timestamp": "2026-04-28T03:00:00.000Z",
+    "summary": "Aggressive recruitment to known high-control group. Members across DMs report similar pattern.",
+    "evidence": [
+      { "from": "u-5050", "text": "your church is teaching you wrong, the only true gathering is at our compound, come visit Saturday" }
+    ],
+    "cohort_tags": ["deconstruction"],
+    "signals": []
+  }
+]

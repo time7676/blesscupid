@@ -1,0 +1,604 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BLE-27 — Report flow + safety center</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="safety.css" />
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-flag" viewBox="0 0 24 24"><path d="M5 3v18M5 4h12l-2 4 2 4H5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18M10.6 5.1A9.9 9.9 0 0112 5c5 0 9 4 10 7-.4 1-1.1 2.2-2.1 3.3M6.6 6.6C4.5 8 3.4 9.7 3 12c1 3 5 7 9 7 1.6 0 3-.4 4.3-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-block" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5.5 5.5l13 13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-ghost" viewBox="0 0 24 24"><path d="M5 11a7 7 0 0114 0v9l-2.5-1.5L14 20l-2-1.5L10 20l-2.5-1.5L5 20z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="9.5" cy="11" r="1" fill="currentColor"/><circle cx="14.5" cy="11" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M3 8h4l2-3h6l2 3h4v11H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-paperclip" viewBox="0 0 24 24"><path d="M21 11l-9 9a5 5 0 01-7-7l9-9a3 3 0 014 4l-8 8a1 1 0 01-2-1l7-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pastor" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 4v3M10.5 5.5h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></symbol>
+    <symbol id="i-panic" viewBox="0 0 24 24"><path d="M12 3v8M5.6 5.6a9 9 0 1012.8 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12l4 4 10-10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-warning" viewBox="0 0 24 24"><path d="M12 4l9 16H3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-heart-broken" viewBox="0 0 24 24"><path d="M12 21s-7-4.4-7-10a4 4 0 017-2.5A4 4 0 0119 11c0 5.6-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 7l-2 4 3 1-2 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-money" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="12" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/></symbol>
+    <symbol id="i-bookx" viewBox="0 0 24 24"><path d="M5 4h11a3 3 0 013 3v13H8a3 3 0 01-3-3V4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M10 9l4 4M14 9l-4 4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-link-out" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M9 5H5v14h14v-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tab-home" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tab-discover" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15 9l-2 5-5 2 2-5z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tab-chat" viewBox="0 0 24 24"><path d="M5 5h14v10H9l-4 4z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-tab-profile" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M5 20c0-4 3-7 7-7s7 3 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="review-board">
+  <h1 class="review-board__header">BLE-27 — Report flow + safety center</h1>
+  <p class="review-board__sub">Eight surfaces at iPhone 14 viewport (390×844), aligned to <a href="#">BLE-22 v0.1</a> tokens. Pastoral copy is placeholder pending Pastor hire (BLE-4) + triage doctrine (BLE-31). Each frame annotated for engineer handoff.</p>
+
+  <div class="review-board__legend">
+    <div><strong>Color rule</strong>Critical = amber-700, never red. Match-rose only for matched contexts.</div>
+    <div><strong>Touch floor</strong>44pt minimum. Buttons default 48.</div>
+    <div><strong>Motion</strong>200ms standard easing. No springs. Respects prefers-reduced-motion.</div>
+    <div><strong>Tone</strong>Pastoral, calming, never punitive. All faith-touching copy <span class="copy-flag">pastor-review</span> flagged.</div>
+  </div>
+
+  <!-- ============== F1 — Profile entry point ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F1 · Entry point</span>
+    <h2 class="frame-cap__title">Profile screen — report icon visible</h2>
+    <p class="frame-cap__notes">Pill-style report affordance pinned top-right of every profile + chat. Always reachable in the thumb zone. Calm amber, not red.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner">
+        <div class="frame__scroll">
+          <div class="profile-hero">
+            <div class="profile-hero__chrome">
+              <div class="profile-hero__top">
+                <button class="profile-hero__back" aria-label="Back"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+                <button class="profile-hero__report" aria-label="Report this profile">
+                  <svg width="16" height="16"><use href="#i-flag"/></svg>
+                  Report
+                </button>
+              </div>
+              <div class="profile-hero__bottom">
+                <h3 class="profile-hero__name">Sarah, 27</h3>
+                <p class="profile-hero__meta">GBI Ciputra · Marriage in 1–3y · Verified <svg width="12" height="12" style="color:var(--bc-gold-300)"><use href="#i-shield-check"/></svg></p>
+              </div>
+            </div>
+          </div>
+          <div class="profile-body">
+            <div class="profile-card">
+              <p class="profile-card__label">Ayat favorit</p>
+              <blockquote class="profile-card__verse">"Serahkanlah segala kekuatiranmu kepada-Nya, sebab Ia yang memelihara kamu."</blockquote>
+              <p class="profile-card__source">1 Petrus 5:7 · TB</p>
+            </div>
+            <div class="profile-card">
+              <p class="profile-card__label">Faith journey</p>
+              <p style="margin:0;color:var(--text-secondary);font-size:14px;">Bertobat 2019, sekarang aktif di pelayanan worship. Mencari pasangan yang ingin bertumbuh bersama dalam Kristus.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Report pill: <code>.profile-hero__report</code> — fixed position over hero gradient. Background <code>rgba(255,255,255,.92)</code> for AA contrast over any photo.</li>
+        <li>Same affordance on chat header (<code>.appbar__icon--report</code>) — see F6.</li>
+        <li>Long-press on photo or message also opens the same sheet (F2). Keep one entry router.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F2 — Step 1: category sheet ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F2 · Report wizard step 1 of 3</span>
+    <h2 class="frame-cap__title">One-tap → category</h2>
+    <p class="frame-cap__notes">Bottom sheet 86% height. Six categories per BLE-2 brief. Selected row gets cobalt-50 fill + 1px brand border.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner" style="background:rgba(20,24,40,.5);">
+        <div class="scrim" style="position:absolute;inset:0;">
+          <div class="sheet">
+            <div class="sheet__grabber"></div>
+            <div class="sheet__head">
+              <div style="flex:1;">
+                <h3 class="sheet__title">Report Sarah</h3>
+                <p class="sheet__sub">What's wrong? You can pick one category.</p>
+              </div>
+              <span class="sheet__step">Step 1 / 3</span>
+            </div>
+            <div class="sheet__body">
+              <div class="cat-list">
+                <button class="cat-row" aria-selected="false">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-warning"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Harassment or threats</p>
+                    <p class="cat-row__sub">Hate speech, threats, repeated unwanted contact.</p>
+                  </span>
+                  <svg width="20" height="20" class="cat-row__chev"><use href="#i-chev"/></svg>
+                </button>
+                <button class="cat-row" aria-selected="true">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-eye-off"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Sexual content</p>
+                    <p class="cat-row__sub">Nudity, suggestive photos, sexual messages.</p>
+                  </span>
+                  <svg width="20" height="20" style="color:var(--text-brand)"><use href="#i-check"/></svg>
+                </button>
+                <button class="cat-row" aria-selected="false">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-ghost"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Fake profile</p>
+                    <p class="cat-row__sub">Impersonation, stolen photos, false identity.</p>
+                  </span>
+                  <svg width="20" height="20" class="cat-row__chev"><use href="#i-chev"/></svg>
+                </button>
+                <button class="cat-row" aria-selected="false">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-link-out"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Off-platform pressure</p>
+                    <p class="cat-row__sub">Pushing to WhatsApp/IG too fast, asking to meet alone.</p>
+                  </span>
+                  <svg width="20" height="20" class="cat-row__chev"><use href="#i-chev"/></svg>
+                </button>
+                <button class="cat-row" aria-selected="false">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-money"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Financial scam</p>
+                    <p class="cat-row__sub">Asking for money, gifts, investment, "emergency" requests.</p>
+                  </span>
+                  <svg width="20" height="20" class="cat-row__chev"><use href="#i-chev"/></svg>
+                </button>
+                <button class="cat-row" aria-selected="false">
+                  <span class="cat-row__icon"><svg width="20" height="20"><use href="#i-bookx"/></svg></span>
+                  <span class="cat-row__copy">
+                    <p class="cat-row__title">Doctrinal misuse</p>
+                    <p class="cat-row__sub">Misuses scripture to manipulate or coerce. <span class="copy-flag">pastor-review</span></p>
+                  </span>
+                  <svg width="20" height="20" class="cat-row__chev"><use href="#i-chev"/></svg>
+                </button>
+              </div>
+            </div>
+            <div class="sheet__foot">
+              <button class="btn btn--secondary">Cancel</button>
+              <button class="btn btn--primary">Next</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Categories are an enum: <code>harassment | sexual | fake | off_platform | financial | doctrinal</code>.</li>
+        <li><strong>Critical-tier</strong> (24h SLA): harassment, financial, sexual involving minors. <strong>Standard-tier</strong>: fake, off-platform, doctrinal. Tier set server-side from category — Pastor's BLE-31 doctrine refines doctrinal severity.</li>
+        <li>Doctrinal copy locked behind <code>pastor-review</code> until BLE-31 ships.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F3 — Step 2: context ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F3 · Report wizard step 2 of 3</span>
+    <h2 class="frame-cap__title">Context + evidence</h2>
+    <p class="frame-cap__notes">Optional textarea (500 chars), evidence chips (screenshot / chat link), include-recent-messages toggle. Nothing required — keep friction low.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner" style="background:rgba(20,24,40,.5);">
+        <div class="scrim" style="position:absolute;inset:0;">
+          <div class="sheet">
+            <div class="sheet__grabber"></div>
+            <div class="sheet__head">
+              <button class="sheet__back" aria-label="Back"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+              <div style="flex:1;">
+                <h3 class="sheet__title">Tell us more</h3>
+                <p class="sheet__sub">Sexual content · Sarah</p>
+              </div>
+              <span class="sheet__step">Step 2 / 3</span>
+            </div>
+            <div class="sheet__body">
+              <p class="sheet__intro">A few details help our team review faster. Everything you share stays private to the safety team.</p>
+              <div class="field">
+                <label class="field__label" for="ctx">What happened? <span class="muted" style="font-weight:400;">(optional)</span></label>
+                <textarea id="ctx" class="field__textarea" placeholder="Describe in your own words…">She sent me an explicit photo last night and asked me to send one back.</textarea>
+                <span class="field__counter">68 / 500</span>
+              </div>
+              <div class="field">
+                <span class="field__label">Add evidence <span class="muted" style="font-weight:400;">(optional)</span></span>
+                <span class="field__hint">Photos and chat threads are stored encrypted and only reviewed by the safety team.</span>
+                <div class="evidence-row">
+                  <button class="evidence-chip"><svg width="18" height="18"><use href="#i-camera"/></svg> Screenshot</button>
+                  <button class="evidence-chip"><svg width="18" height="18"><use href="#i-paperclip"/></svg> Chat thread</button>
+                </div>
+              </div>
+              <div class="toggle-row">
+                <span class="toggle-row__copy">
+                  <p class="toggle-row__title">Include last 7 days of our messages</p>
+                  <p class="toggle-row__sub">Helps the safety team see the full context. You can preview before sending.</p>
+                </span>
+                <button class="toggle" aria-checked="true" role="switch" aria-label="Include messages"></button>
+              </div>
+              <div class="toggle-row">
+                <span class="toggle-row__copy">
+                  <p class="toggle-row__title">Mute Sarah while we review</p>
+                  <p class="toggle-row__sub">She won't be able to message you. She won't be told you reported her.</p>
+                </span>
+                <button class="toggle" aria-checked="true" role="switch" aria-label="Auto-mute"></button>
+              </div>
+            </div>
+            <div class="sheet__foot">
+              <button class="btn btn--secondary">Back</button>
+              <button class="btn btn--primary">Submit report</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Evidence upload reuses photo-moderation pipeline (BLE-45) at the storage tier; safety review uses a different bucket/policy.</li>
+        <li>"Include last 7 days" defaults <strong>on</strong> — most reports lack context otherwise. Privacy copy explicit so consent is informed.</li>
+        <li>"Mute while reviewing" defaults <strong>on</strong> — protects reporter immediately. Reporter never told if/when target is unmuted; mute auto-lifts only if review clears the report.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F4 — Step 3: confirmation ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F4 · Report wizard step 3 of 3</span>
+    <h2 class="frame-cap__title">Confirmation — 24h SLA promise</h2>
+    <p class="frame-cap__notes">Pastoral seal (sage). Critical-tier reports show "within 24 hours" promise on the SLA card; standard-tier show "within 3 days". Panic-exit affordance offered inline for users still in distress.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner" style="background:rgba(20,24,40,.5);">
+        <div class="scrim" style="position:absolute;inset:0;">
+          <div class="sheet">
+            <div class="sheet__grabber"></div>
+            <div class="sheet__head">
+              <div style="flex:1;">
+                <h3 class="sheet__title">Report received</h3>
+                <p class="sheet__sub">Thank you for protecting this community.</p>
+              </div>
+              <span class="sheet__step copy-flag" style="margin-left:auto;">pastor-review</span>
+            </div>
+            <div class="sheet__body">
+              <div class="confirm">
+                <div class="confirm__seal"><svg width="32" height="32"><use href="#i-shield-check"/></svg></div>
+                <h4 class="confirm__title">We hear you, and we'll act.</h4>
+                <p class="confirm__lede">Reports like yours keep BlessCupid a place where people can show up honestly. You did the right thing.</p>
+                <div class="confirm__sla">
+                  <span class="confirm__sla-icon"><svg width="16" height="16"><use href="#i-clock"/></svg></span>
+                  <p class="confirm__sla-text"><strong>Reviewed within 24 hours.</strong><br />Sexual-content reports are critical priority. Our safety team will look at this together with anything Sarah's done before.</p>
+                </div>
+                <ol class="confirm__steps">
+                  <li><span class="confirm__step-num">1</span><span><strong style="color:var(--text-primary);">She's muted from messaging you.</strong> While we review.</span></li>
+                  <li><span class="confirm__step-num">2</span><span><strong style="color:var(--text-primary);">A safety reviewer will read your context</strong> and the messages you shared.</span></li>
+                  <li><span class="confirm__step-num">3</span><span><strong style="color:var(--text-primary);">You'll get one update in your safety center</strong> — no notification spam.</span></li>
+                </ol>
+                <div class="confirm__panic">
+                  <span class="confirm__panic-icon"><svg width="18" height="18"><use href="#i-panic"/></svg></span>
+                  <p class="confirm__panic-copy"><strong>Need a moment to step away?</strong>Panic exit clears recent views and signs you out for 24h.</p>
+                  <button class="btn btn--sm btn--secondary">Use it</button>
+                </div>
+              </div>
+            </div>
+            <div class="sheet__foot">
+              <button class="btn btn--primary btn--block">Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>SLA copy varies by tier — server returns <code>{ tier: 'critical' | 'standard', sla_hours: 24 | 72 }</code>; UI selects the strong copy.</li>
+        <li>Pastoral copy locked behind <code>pastor-review</code>. Engineer ships with placeholder + i18n key; Pastor swaps via BLE-31 deliverable.</li>
+        <li>"One update in your safety center" — single push notification on resolution. Reporter never sees the action taken on the target unless it directly affected them (e.g. their own reports list updates).</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F5 — Safety Center ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F5 · Safety center</span>
+    <h2 class="frame-cap__title">My reports · blocked · hidden · panic · pastor mode</h2>
+    <p class="frame-cap__notes">Single screen, scrollable. Reachable from Profile tab → Safety, OR triple-tap status bar (panic-equivalent shortcut to safety surface).</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner">
+        <div class="appbar">
+          <button class="appbar__back" aria-label="Back"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+          <div class="appbar__title-block">
+            <h2 class="appbar__title">Safety</h2>
+            <p class="appbar__sub">Tools to keep your space holy.</p>
+          </div>
+        </div>
+        <div class="frame__scroll">
+          <div class="section-head">
+            <p class="section-head__eyebrow">My reports</p>
+            <h3 class="section-head__title">3 reports</h3>
+          </div>
+          <div class="list-group">
+            <button class="list-row">
+              <span class="list-row__icon" style="color:var(--state-critical);"><svg width="18" height="18"><use href="#i-eye-off"/></svg></span>
+              <span class="list-row__copy">
+                <p class="list-row__title">Sarah, 27 · Sexual content</p>
+                <p class="list-row__sub">Reported 2 hours ago</p>
+              </span>
+              <span class="chip chip--review">Reviewing</span>
+            </button>
+            <button class="list-row">
+              <span class="list-row__icon" style="color:var(--state-critical);"><svg width="18" height="18"><use href="#i-money"/></svg></span>
+              <span class="list-row__copy">
+                <p class="list-row__title">Daniel, 32 · Financial scam</p>
+                <p class="list-row__sub">Reported 4 days ago</p>
+              </span>
+              <span class="chip chip--action">Banned</span>
+            </button>
+            <button class="list-row">
+              <span class="list-row__icon"><svg width="18" height="18"><use href="#i-link-out"/></svg></span>
+              <span class="list-row__copy">
+                <p class="list-row__title">Mike, 29 · Off-platform pressure</p>
+                <p class="list-row__sub">Reported 2 weeks ago</p>
+              </span>
+              <span class="chip chip--closed">Warning sent</span>
+            </button>
+          </div>
+
+          <div class="section-head">
+            <p class="section-head__eyebrow">Who can reach you</p>
+            <h3 class="section-head__title">Blocked &amp; hidden</h3>
+            <p class="section-head__lede">Hidden = they don't show up in your feed but you're still visible to them. Blocked = no contact either way.</p>
+          </div>
+          <div class="list-group">
+            <button class="list-row">
+              <span class="list-row__icon" style="color:var(--state-critical);"><svg width="18" height="18"><use href="#i-block"/></svg></span>
+              <span class="list-row__copy">
+                <p class="list-row__title">Blocked</p>
+                <p class="list-row__sub">No contact, no visibility.</p>
+              </span>
+              <span class="list-row__meta">7</span>
+              <svg width="20" height="20" class="list-row__chev"><use href="#i-chev"/></svg>
+            </button>
+            <button class="list-row">
+              <span class="list-row__icon"><svg width="18" height="18"><use href="#i-eye-off"/></svg></span>
+              <span class="list-row__copy">
+                <p class="list-row__title">Hidden</p>
+                <p class="list-row__sub">They won't show up for you.</p>
+              </span>
+              <span class="list-row__meta">12</span>
+              <svg width="20" height="20" class="list-row__chev"><use href="#i-chev"/></svg>
+            </button>
+          </div>
+
+          <div class="section-head">
+            <p class="section-head__eyebrow">Tools</p>
+          </div>
+          <div class="tile">
+            <span class="tile__icon"><svg width="20" height="20"><use href="#i-panic"/></svg></span>
+            <span class="tile__copy">
+              <p class="tile__title">Panic exit</p>
+              <p class="tile__sub">Triple-tap the status bar anywhere in the app to clear recent views and sign out for 24h.</p>
+            </span>
+            <button class="toggle" aria-checked="true" role="switch" aria-label="Panic exit"></button>
+          </div>
+          <div class="tile tile--gold">
+            <span class="tile__icon"><svg width="20" height="20"><use href="#i-pastor"/></svg></span>
+            <span class="tile__copy">
+              <p class="tile__title">Pastor mode <span class="copy-flag">pastor-review</span></p>
+              <p class="tile__sub">A trusted mentor can audit your chats with your consent. Off by default. Tap to set up.</p>
+            </span>
+            <svg width="20" height="20" class="list-row__chev"><use href="#i-chev"/></svg>
+          </div>
+          <div style="padding:0 var(--space-4) var(--space-8);">
+            <a href="#" style="font-size:13px;color:var(--text-tertiary);text-decoration:underline;">Read our community standards</a>
+          </div>
+        </div>
+        <div class="tabbar">
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-home"/></svg>Home</span>
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-discover"/></svg>Discover</span>
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-chat"/></svg>Chats</span>
+          <span class="tabbar__item" aria-current="true"><svg width="22" height="22"><use href="#i-tab-profile"/></svg>You</span>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>My Reports list pulls from <code>GET /me/reports</code> ordered by <code>updated_at desc</code>. Status chip maps from <code>{ reviewing | action_taken | closed | escalated }</code>.</li>
+        <li>Block vs Hide is two separate list endpoints. Hide is reversible silently (no notification); block is reversible with a 24h cooldown.</li>
+        <li>Panic exit toggle = consent to the gesture. Once on, gesture invokes <code>POST /me/panic</code> which clears <code>recent_views</code>, <code>recent_searches</code>, ends the session, and sets a 24h hold on push notifications.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F6 — Auto-mute pastoral banner in chat ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F6 · Auto-mute</span>
+    <h2 class="frame-cap__title">Auto-mute UI for 2+ reports</h2>
+    <p class="frame-cap__notes">Banner appears in the offending user's chat row + at the top of their thread when 2+ unrelated users have reported them. Pastoral, not punitive — frames it as care, not punishment.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner">
+        <div class="appbar">
+          <div class="appbar__title-block">
+            <h2 class="appbar__title">Chats</h2>
+          </div>
+        </div>
+        <div class="frame__scroll">
+          <div class="pastoral-banner">
+            <span class="pastoral-banner__icon"><svg width="18" height="18"><use href="#i-shield"/></svg></span>
+            <div class="pastoral-banner__copy">
+              <h4 class="pastoral-banner__title">We've paused Daniel for now <span class="copy-flag">pastor-review</span></h4>
+              <p class="pastoral-banner__body">A few people have flagged behavior we want to look into. While we review, he can't message you or anyone new. We'll update you within 24 hours. You're safe to keep using BlessCupid.</p>
+              <div class="pastoral-banner__cta">
+                <button class="btn btn--sm btn--secondary">Why this happened</button>
+                <button class="btn btn--sm btn--ghost">Block Daniel</button>
+              </div>
+            </div>
+          </div>
+          <div class="chat-list">
+            <div class="chat-row">
+              <div class="chat-row__avatar"></div>
+              <div style="flex:1;min-width:0;">
+                <p class="chat-row__name">Sarah</p>
+                <p class="chat-row__preview">Terima kasih buat doanya 🙏</p>
+              </div>
+              <span class="chat-row__time">9:12</span>
+            </div>
+            <div class="chat-row">
+              <div class="chat-row__avatar" style="background:linear-gradient(135deg,var(--bc-rose-300),var(--bc-gold-300));"></div>
+              <div style="flex:1;min-width:0;">
+                <p class="chat-row__name">Daniel <span class="chip chip--escalated" style="margin-left:6px;">Paused</span></p>
+                <p class="chat-row__preview" style="color:var(--text-tertiary);font-style:italic;">Messaging paused while we review.</p>
+              </div>
+              <span class="chat-row__time">Wed</span>
+            </div>
+            <div class="chat-row">
+              <div class="chat-row__avatar" style="background:linear-gradient(135deg,var(--bc-cobalt-300),var(--bc-sage-500));"></div>
+              <div style="flex:1;min-width:0;">
+                <p class="chat-row__name">Prayer Circle · Senin</p>
+                <p class="chat-row__preview">Mira: Doa untuk keluarga…</p>
+              </div>
+              <span class="chat-row__time">Tue</span>
+            </div>
+          </div>
+        </div>
+        <div class="tabbar">
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-home"/></svg>Home</span>
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-discover"/></svg>Discover</span>
+          <span class="tabbar__item" aria-current="true"><svg width="22" height="22"><use href="#i-tab-chat"/></svg>Chats</span>
+          <span class="tabbar__item"><svg width="22" height="22"><use href="#i-tab-profile"/></svg>You</span>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Trigger: 2+ <strong>unrelated</strong> reporters within 30 days OR 1 critical-tier report. "Unrelated" = different IP fingerprint + different friend graph cluster (anti-brigading).</li>
+        <li>Banner shown only to users who currently have an open thread with the muted user. New users see no banner — the muted user simply doesn't surface.</li>
+        <li>Copy is pastoral-tone placeholder; final copy and the "Why this happened" deep-link content are <code>pastor-review</code> blocked on BLE-31.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F7 — Pastor-mode consent modal ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F7 · Pastor mode</span>
+    <h2 class="frame-cap__title">Consent UI — informed, revocable</h2>
+    <p class="frame-cap__notes">Centered modal, gold tile in safety center launches it. Three explicit consent points. User must scroll past all three before "Turn on" is enabled.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner" style="background:rgba(20,24,40,.5);">
+        <div class="scrim scrim--center" style="position:absolute;inset:0;">
+          <div class="modal-card">
+            <div class="modal-card__hero">
+              <span class="modal-card__seal"><svg width="28" height="28"><use href="#i-pastor"/></svg></span>
+            </div>
+            <div class="modal-card__body">
+              <span class="copy-flag">pastor-review</span>
+              <h3 class="modal-card__title">Invite your pastor to walk with you</h3>
+              <p class="modal-card__lede">Pastor mode lets a trusted mentor audit your chats so you can be accountable in your dating journey. You decide what they see and can turn it off any time.</p>
+              <ul class="consent-list">
+                <li>
+                  <svg width="18" height="18"><use href="#i-check"/></svg>
+                  <span><strong>You pick who.</strong>Only one pastor or mentor at a time. They're invited by email and must accept.</span>
+                </li>
+                <li>
+                  <svg width="18" height="18"><use href="#i-check"/></svg>
+                  <span><strong>They see chats only.</strong>Not your matches, not your photos, not your faith profile.</span>
+                </li>
+                <li>
+                  <svg width="18" height="18"><use href="#i-check"/></svg>
+                  <span><strong>You can revoke instantly.</strong>One tap turns it off. They're notified the audit ended.</span>
+                </li>
+              </ul>
+            </div>
+            <div class="modal-card__foot">
+              <button class="btn btn--secondary">Not now</button>
+              <button class="btn btn--primary">Invite pastor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Pastor invite = one active mentor per user. Schema: <code>pastor_link { user_id, mentor_email, status, accepted_at, revoked_at, scope: ['chats'] }</code>. Scope is a list to allow future widening with explicit consent.</li>
+        <li>Matched user is shown a one-time disclosure on first message: "[User] has chosen to be accountable to a pastor. Some of your chats with them may be reviewed for spiritual guidance." Disclosure copy <code>pastor-review</code> blocked.</li>
+        <li>Revocation is instantaneous + notifies the pastor. Audit log is retained for 30 days then purged.</li>
+      </ul>
+    </p>
+  </section>
+
+  <!-- ============== F8 — Panic exit explainer ============== -->
+  <section class="frame-cap">
+    <span class="frame-cap__label">F8 · Panic exit</span>
+    <h2 class="frame-cap__title">Gesture explainer + 24h cool-off</h2>
+    <p class="frame-cap__notes">First-time setup screen. Triple-tap status bar = exit gesture. Triggers: clears recent views, signs out, holds notifications 24h. Inspired by domestic-abuse safety patterns but adapted for our calmer voice.</p>
+    <div class="frame">
+      <div class="frame__statusbar"><span>9:41</span><span>•••</span></div>
+      <div class="frame__inner">
+        <div class="appbar">
+          <button class="appbar__back" aria-label="Back"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+          <div class="appbar__title-block">
+            <h2 class="appbar__title">Panic exit</h2>
+          </div>
+        </div>
+        <div class="frame__scroll" style="padding: var(--space-4) var(--space-5);">
+          <div style="background:var(--bc-cream-100);border-radius:var(--radius-2xl);padding:var(--space-6);text-align:center;">
+            <div style="width:72px;height:72px;border-radius:var(--radius-pill);background:var(--bg-surface);color:var(--state-critical);display:grid;place-items:center;margin:0 auto var(--space-3);">
+              <svg width="32" height="32"><use href="#i-panic"/></svg>
+            </div>
+            <h3 class="serif" style="font-size:24px;line-height:1.2;margin:0 0 var(--space-2);">When you need a moment.</h3>
+            <p style="margin:0;color:var(--text-secondary);font-size:14px;">A way to step away from BlessCupid quickly — without explaining yourself.</p>
+          </div>
+          <div style="margin-top:var(--space-5);display:flex;flex-direction:column;gap:var(--space-3);">
+            <div class="tile" style="margin:0;">
+              <span class="tile__icon"><span style="font-weight:700;">1</span></span>
+              <span class="tile__copy">
+                <p class="tile__title">Triple-tap the status bar.</p>
+                <p class="tile__sub">Anywhere in the app — even mid-chat.</p>
+              </span>
+            </div>
+            <div class="tile" style="margin:0;">
+              <span class="tile__icon"><span style="font-weight:700;">2</span></span>
+              <span class="tile__copy">
+                <p class="tile__title">App returns to home + signs you out.</p>
+                <p class="tile__sub">Recent profiles and searches clear from the app.</p>
+              </span>
+            </div>
+            <div class="tile" style="margin:0;">
+              <span class="tile__icon"><span style="font-weight:700;">3</span></span>
+              <span class="tile__copy">
+                <p class="tile__title">No notifications for 24 hours.</p>
+                <p class="tile__sub">Your matches don't see you online. You can sign back in any time before then.</p>
+              </span>
+            </div>
+          </div>
+          <div style="margin-top:var(--space-6);">
+            <button class="btn btn--primary btn--block">Turn on panic exit</button>
+            <button class="btn btn--ghost btn--block" style="margin-top:var(--space-2);">Try the gesture first</button>
+          </div>
+          <p style="margin:var(--space-5) 0 0;font-size:12px;color:var(--text-tertiary);text-align:center;">Inspired by domestic-safety patterns. If you're in immediate danger, please call 110 (Indonesia) or your local emergency line.</p>
+        </div>
+      </div>
+    </div>
+    <p class="annotation"><strong>Engineer notes</strong>
+      <ul>
+        <li>Gesture detection runs at app shell level (React Native <code>StatusBar</code> tap handler). Three taps within 600ms triggers <code>POST /me/panic</code>.</li>
+        <li>Server-side: clear <code>recent_views</code>/<code>recent_searches</code>; set <code>notifications_blocked_until = now + 24h</code>; revoke session token. Discovery hides user from feed for 24h.</li>
+        <li>Emergency-services line is region-aware (i18n). Indonesia: 110. Pull from locale once BLE-46 ships.</li>
+      </ul>
+    </p>
+  </section>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BlessCupid · Favicon (vector, modern browsers).
+  Scales 16..512 from a single file. At 16×16, halo dot collapses to ~1px and may
+  read as noise — engineer should also serve favicon-16-fallback.svg (BC only) via
+  <link rel="icon" sizes="16x16" href="favicon-16.png"> for crispness.
+  Background uses cobalt-600 ground because favicon tabs are typically light/dark
+  but rarely cream — cobalt holds identity in either tab theme.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="BlessCupid">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-mono{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:22px;font-variation-settings:'opsz' 60;letter-spacing:-0.9px;fill:#FDFBF6;}
+    </style>
+  </defs>
+  <rect width="32" height="32" rx="6" fill="#2F4F99"/>
+  <text x="16" y="24" text-anchor="middle" class="bc-mono">BC</text>
+  <circle cx="16" cy="6.5" r="1.8" fill="#E9C780"/>
+</svg>

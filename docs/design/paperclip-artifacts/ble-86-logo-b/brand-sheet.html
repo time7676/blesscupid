@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlessCupid · Brand Sheet — Logo B</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+    --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD; --cobalt-500:#3D67B8;
+    --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+    --gold-100:#FBF1D7; --gold-300:#E9C780; --gold-500:#C99A3A; --gold-700:#8C6822;
+    --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+    --rose-500:#C76A78;
+    --serif:'Source Serif 4', ui-serif, Georgia, serif;
+    --sans:'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--cream-50);color:var(--stone-900);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  body{padding:0 0 96px}
+  .wrap{max-width:1120px;margin:0 auto;padding:0 32px}
+  header.cover{padding:96px 32px 64px;text-align:center;background:linear-gradient(180deg,var(--cream-50) 0%,var(--cream-100) 100%);border-bottom:1px solid var(--cream-300)}
+  header .eyebrow{font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-500);font-weight:500}
+  header h1{font-family:var(--serif);font-weight:500;font-size:64px;line-height:1.05;color:var(--cobalt-900);margin:24px 0 12px;letter-spacing:0.5px}
+  header p.lead{font-family:var(--serif);font-weight:400;font-size:22px;color:var(--stone-700);max-width:640px;margin:0 auto;line-height:1.45}
+  header .meta{margin-top:32px;font-size:13px;color:var(--stone-500);letter-spacing:1px;text-transform:uppercase}
+  section{padding:72px 0;border-bottom:1px solid var(--cream-200)}
+  section:last-of-type{border-bottom:none}
+  h2{font-family:var(--serif);font-weight:500;font-size:36px;line-height:1.2;color:var(--cobalt-900);margin:0 0 8px}
+  h2 .num{font-family:var(--sans);font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-700);font-weight:500;display:block;margin-bottom:12px}
+  .section-sub{font-family:var(--serif);font-size:18px;color:var(--stone-700);max-width:720px;line-height:1.55;margin:0 0 40px}
+  .grid{display:grid;gap:24px}
+  .grid-2{grid-template-columns:repeat(2,1fr)}
+  .grid-3{grid-template-columns:repeat(3,1fr)}
+  .grid-4{grid-template-columns:repeat(4,1fr)}
+  @media (max-width:780px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+  .tile{background:#fff;border:1px solid var(--cream-300);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+  .tile .stage{padding:48px 32px;display:flex;align-items:center;justify-content:center;min-height:180px}
+  .tile .stage--cream{background:var(--cream-50)}
+  .tile .stage--cobalt{background:var(--cobalt-600)}
+  .tile .stage--white{background:#fff}
+  .tile .stage--black{background:#000}
+  .tile .label{padding:18px 22px;border-top:1px solid var(--cream-200);background:#fff}
+  .tile .label .name{font-weight:600;font-size:14px;color:var(--cobalt-900);margin:0 0 4px}
+  .tile .label .desc{font-size:13px;color:var(--stone-500);line-height:1.45;margin:0}
+  .tile .label code{font-family:'JetBrains Mono','SF Mono',ui-monospace,monospace;font-size:11.5px;background:var(--cream-100);padding:1px 6px;border-radius:4px;color:var(--cobalt-900)}
+
+  /* ─── primary wordmark cover ─── */
+  .hero-mark{display:inline-flex;flex-direction:column;align-items:center;gap:8px;padding:48px 0 0}
+  .hero-word{position:relative;display:inline-block}
+  .hero-word .text{font-family:var(--serif);font-weight:500;font-size:120px;font-variation-settings:'opsz' 60;color:var(--cobalt-900);letter-spacing:1px;line-height:1}
+  .hero-word .halo{position:absolute;left:50%;top:0;width:14px;height:14px;border-radius:50%;background:var(--gold-500);transform:translate(-50%,-180%)}
+  /* dot is positioned over the i — we use dotless-i in the text. The transform anchors above the i. */
+  .hero-word .text-i-anchor{display:inline-block;position:relative}
+  .hero-word .text-i-anchor::before{content:'';position:absolute;left:50%;top:-0.62em;width:0.16em;height:0.16em;border-radius:50%;background:var(--gold-500);transform:translateX(-50%)}
+  .hero-rule{width:48%;height:2px;background:var(--gold-300);margin-top:32px}
+
+  /* ─── reusable wordmark element ─── */
+  .wm{display:inline-flex;flex-direction:column;align-items:center;gap:18px}
+  .wm .word{position:relative;font-family:var(--serif);font-weight:500;font-variation-settings:'opsz' 60;letter-spacing:1px;line-height:1}
+  .wm .word .i{position:relative;display:inline-block}
+  .wm .word .i::before{content:'';position:absolute;left:50%;top:-0.62em;width:0.16em;height:0.16em;border-radius:50%;background:var(--gold-500);transform:translateX(-50%)}
+  .wm .rule{height:2px;background:var(--gold-300);width:80%}
+  .wm--lg .word{font-size:80px}
+  .wm--md .word{font-size:48px}
+  .wm--sm .word{font-size:30px}
+  .wm--cobalt .word{color:var(--cobalt-900)}
+  .wm--cream .word{color:var(--cream-50)}
+  .wm--cream .i::before{background:var(--gold-300) !important}
+  .wm--cream .rule{background:var(--gold-300)}
+  .wm--mono-black .word{color:#000}
+  .wm--mono-black .i::before{background:#000 !important}
+  .wm--mono-black .rule{background:#000}
+  .wm--mono-white .word{color:#fff}
+  .wm--mono-white .i::before{background:#fff !important}
+  .wm--mono-white .rule{background:#fff}
+  .wm--mono-cobalt .word{color:var(--cobalt-900)}
+  .wm--mono-cobalt .i::before{background:var(--cobalt-900) !important}
+  .wm--mono-cobalt .rule{background:var(--cobalt-900)}
+
+  /* ─── monogram element ─── */
+  .mono{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:24px;font-family:var(--serif);font-weight:500;font-variation-settings:'opsz' 60;letter-spacing:-0.04em;line-height:1}
+  .mono::before{content:'';position:absolute;left:50%;border-radius:50%;transform:translateX(-50%)}
+  .mono--md{width:160px;height:160px;font-size:120px}
+  .mono--md::before{top:14px;width:14px;height:14px}
+  .mono--lg{width:240px;height:240px;font-size:180px;border-radius:36px}
+  .mono--lg::before{top:24px;width:22px;height:22px}
+  .mono--cream-cobalt{background:var(--cream-50);color:var(--cobalt-900)}
+  .mono--cream-cobalt::before{background:var(--gold-500)}
+  .mono--cobalt-cream{background:var(--cobalt-600);color:var(--cream-50)}
+  .mono--cobalt-cream::before{background:var(--gold-300)}
+  .mono--mono-black{background:transparent;color:#000}
+  .mono--mono-black::before{background:#000}
+  .mono--mono-white{background:transparent;color:#fff}
+  .mono--mono-white::before{background:#fff}
+
+  /* ─── app icon previews ─── */
+  .icons{display:flex;align-items:flex-end;gap:24px;flex-wrap:wrap}
+  .icon-stack{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .icon-label{font-size:11px;color:var(--stone-500);letter-spacing:0.5px;text-transform:uppercase}
+  .home-screen{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:24px;background:linear-gradient(135deg,#cdd5ec 0%,#e8eef8 100%);border-radius:32px;border:1px solid var(--cream-300);max-width:340px}
+  .home-screen .slot{aspect-ratio:1;border-radius:18px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:11px;color:var(--stone-500);font-weight:500}
+
+  /* ─── favicon previews ─── */
+  .fav-row{display:flex;align-items:flex-end;gap:32px;flex-wrap:wrap}
+  .fav{display:flex;flex-direction:column;align-items:center;gap:6px}
+  .fav .px{font-size:11px;color:var(--stone-500);letter-spacing:0.5px}
+  .fav-tab{display:inline-flex;align-items:center;gap:8px;padding:8px 14px;background:#fff;border:1px solid var(--cream-300);border-radius:8px;font-size:13px;color:var(--stone-700)}
+
+  /* ─── clear space diagram ─── */
+  .clear-stage{padding:64px 32px;background:var(--cream-50);border:1px solid var(--cream-300);border-radius:16px;position:relative;display:flex;justify-content:center}
+  .clear-overlay{position:absolute;inset:0;pointer-events:none}
+  .clear-grid{position:absolute;inset:32px;border:1px dashed var(--cobalt-300);border-radius:8px}
+  .clear-x{position:absolute;font-family:var(--sans);font-size:11px;color:var(--cobalt-500);background:var(--cream-50);padding:0 6px}
+  .clear-x.t{top:-7px;left:50%;transform:translateX(-50%)}
+  .clear-x.b{bottom:-7px;left:50%;transform:translateX(-50%)}
+  .clear-x.l{left:-7px;top:50%;transform:translateY(-50%) rotate(-90deg)}
+  .clear-x.r{right:-7px;top:50%;transform:translateY(-50%) rotate(90deg)}
+
+  /* ─── donts ─── */
+  .donts .stage{position:relative}
+  .donts .x{position:absolute;top:8px;right:10px;width:24px;height:24px;border-radius:50%;background:var(--amber,#D08A2C);background:#D08A2C;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:600;font-family:var(--sans)}
+  .dont-stretch .word{font-size:40px;transform:scaleX(1.6);transform-origin:left}
+  .dont-rotate{transform:rotate(-8deg)}
+  .dont-recolor .word{color:#C76A78 !important}
+  .dont-recolor .i::before{background:#C76A78 !important}
+  .dont-recolor .rule{background:#C76A78 !important}
+  .dont-shadow{filter:drop-shadow(0 8px 18px rgba(0,0,0,0.45))}
+  .dont-stained{background:repeating-linear-gradient(45deg,#7F86C8 0 12px,#3D67B8 12px 24px) !important}
+  .dont-bold .word{font-weight:800 !important}
+
+  /* ─── token table ─── */
+  table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--cream-300);border-radius:12px;overflow:hidden;font-size:14px}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--cream-200)}
+  th{background:var(--cream-100);font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--stone-700);font-weight:600}
+  tr:last-child td{border-bottom:none}
+  td code{font-family:'JetBrains Mono','SF Mono',ui-monospace,monospace;font-size:12.5px;background:var(--cream-100);padding:2px 6px;border-radius:4px;color:var(--cobalt-900)}
+  .swatch{display:inline-block;width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,0.08);vertical-align:middle;margin-right:8px}
+
+  /* ─── footer ─── */
+  footer.foot{padding:64px 32px;text-align:center;font-size:13px;color:var(--stone-500)}
+  footer.foot a{color:var(--cobalt-600);text-decoration:none}
+
+  .pill{display:inline-block;padding:4px 10px;border-radius:999px;font-size:11px;letter-spacing:1px;text-transform:uppercase;font-weight:600}
+  .pill--gold{background:var(--gold-100);color:var(--gold-700)}
+  .pill--cobalt{background:var(--cobalt-50);color:var(--cobalt-700)}
+  .pill--rose{background:#F7DEE2;color:#7B2A35}
+
+  .anatomy{display:grid;grid-template-columns:1.4fr 1fr;gap:48px;align-items:center}
+  @media (max-width:780px){.anatomy{grid-template-columns:1fr}}
+  .anatomy ol{margin:0;padding-left:18px;line-height:1.7;color:var(--stone-700);font-size:15px}
+  .anatomy ol li{margin-bottom:8px}
+  .anatomy ol b{color:var(--cobalt-900)}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="eyebrow">BlessCupid · Brand Identity v1.0</div>
+  <h1>Logo B — Wordmark + Halo</h1>
+  <p class="lead">A reverent wordmark — not religious-kitsch. The gold dot above the <em>i</em> is the only halo. The thin gold rule beneath is sanctified ground. Mode-neutral across Dating, Friendship, Commonsphere.</p>
+  <div class="hero-mark">
+    <div class="wm wm--lg wm--cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule" style="width:60%"></div></div>
+  </div>
+  <div class="meta">FoundingDesigner · BLE-86 · supersedes BLE-22 v0.1 · Ships with Token v0.1</div>
+</header>
+
+<div class="wrap">
+
+<!-- ─────────── 01 · Anatomy ─────────── -->
+<section>
+  <h2><span class="num">01 · Anatomy</span>The mark, taken apart</h2>
+  <p class="section-sub">Every part of the lockup carries meaning. None of them are decorative.</p>
+  <div class="anatomy">
+    <div class="tile" style="border-radius:16px">
+      <div class="stage stage--cream" style="min-height:300px;flex-direction:column;gap:18px">
+        <div class="wm wm--lg wm--cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule" style="width:80%"></div></div>
+      </div>
+    </div>
+    <div>
+      <ol>
+        <li><b>Wordmark</b> — set in <em>Source Serif 4</em>, weight 500, optical-sizing 60. The serif is the voice; humanist, breathes.</li>
+        <li><b>Cobalt-900 stem</b> — <code>#142447</code>. The deepest cobalt in the system. Not black. Holds gravity without coldness.</li>
+        <li><b>Gold halo dot</b> — <code>#C99A3A</code>, replaces the tittle of the <em>i</em>. The single sacred signal. Not a glow, not a ray. Restraint is the point.</li>
+        <li><b>Sanctified-ground rule</b> — gold-300 <code>#E9C780</code>, 2px hairline beneath the wordmark, 80% of word width. "Holy ground beneath the name."</li>
+        <li><b>Letter-spacing</b> — +1px tracking; the serif breathes wider than UI sans, by design.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 02 · Primary Wordmark ─────────── -->
+<section>
+  <h2><span class="num">02 · Primary Wordmark</span>BlessCupid in five color treatments</h2>
+  <p class="section-sub">Use Primary on cream surfaces. Use Cream-on-cobalt for splash, modals, marketing. Mono variants are for print, single-channel, and edge cases only.</p>
+  <div class="grid grid-2">
+
+    <div class="tile">
+      <div class="stage stage--cream"><div class="wm wm--md wm--cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Primary · Cobalt-900 on cream</div><p class="desc">Default. Use everywhere unless background dictates otherwise. <code>wordmark-primary.svg</code></p></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage stage--cobalt"><div class="wm wm--md wm--cream"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Cream on cobalt-600</div><p class="desc">Splash screen, marketing hero, dark UI surfaces. Halo softens to gold-300 for cobalt-ground contrast. <code>wordmark-cream-on-cobalt.svg</code></p></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage stage--white"><div class="wm wm--md wm--mono-cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Mono cobalt</div><p class="desc">Single-color cobalt-900 for stationery, single-color print runs. <code>wordmark-mono-cobalt.svg</code></p></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage stage--white"><div class="wm wm--md wm--mono-black"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Mono black</div><p class="desc">Newsprint, fax, regulatory filings, contracts. <code>wordmark-mono-flat-black.svg</code></p></div>
+    </div>
+
+    <div class="tile">
+      <div class="stage stage--black"><div class="wm wm--md wm--mono-white"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Mono white</div><p class="desc">Photographic backgrounds, foil stamping, embossing. <code>wordmark-mono-flat-white.svg</code></p></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─────────── 03 · Monogram ─────────── -->
+<section>
+  <h2><span class="num">03 · Monogram (BC)</span>For app icon, favicon, small surfaces</h2>
+  <p class="section-sub">When the wordmark would render below 120px wide, switch to BC monogram. The halo dot is enlarged here so it never collapses to a fleck.</p>
+  <div class="grid grid-4">
+    <div class="tile">
+      <div class="stage stage--cream"><div class="mono mono--md mono--cream-cobalt">BC</div></div>
+      <div class="label"><div class="name">Primary · Cobalt on cream</div><p class="desc"><code>monogram-primary.svg</code></p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cobalt"><div class="mono mono--md mono--cobalt-cream">BC</div></div>
+      <div class="label"><div class="name">Cream on cobalt</div><p class="desc"><code>monogram-cream-on-cobalt.svg</code></p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--white"><div class="mono mono--md mono--mono-black">BC</div></div>
+      <div class="label"><div class="name">Mono black</div><p class="desc"><code>monogram-mono-black.svg</code></p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--black"><div class="mono mono--md mono--mono-white">BC</div></div>
+      <div class="label"><div class="name">Mono white</div><p class="desc"><code>monogram-mono-white.svg</code></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 04 · App Icon ─────────── -->
+<section>
+  <h2><span class="num">04 · App Icon</span>iOS + Android adaptive · 1024 master</h2>
+  <p class="section-sub">Cobalt ground is the default home-screen icon — cream blends with iOS default light wallpaper. iOS applies its own squircle mask: ship full-bleed PNG, no rounded corners in the source. Android adaptive ships as foreground/background pair with a 72dp safe zone.</p>
+
+  <div class="grid grid-3">
+    <div class="tile">
+      <div class="stage stage--cream"><div class="mono mono--lg mono--cobalt-cream" style="border-radius:48px">BC</div></div>
+      <div class="label"><div class="name">iOS · Cobalt ground <span class="pill pill--cobalt">Primary</span></div><p class="desc">1024×1024 master. Cobalt-600 ground · cream-50 BC · gold-300 halo. <code>app-icon-1024-cobalt.svg</code></p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><div class="mono mono--lg mono--cream-cobalt" style="border-radius:48px;border:1px solid var(--cream-300)">BC</div></div>
+      <div class="label"><div class="name">iOS · Cream ground <span class="pill pill--gold">Alt</span></div><p class="desc">Marketing, store screenshots, press kits. Not for home-screen default. <code>app-icon-1024-cream.svg</code></p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream" style="position:relative;flex-direction:column;gap:8px;align-items:center">
+        <div style="width:160px;height:160px;background:var(--cobalt-600);border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative">
+          <div style="position:absolute;inset:24px;display:flex;align-items:flex-end;justify-content:center">
+            <div style="width:100%;text-align:center;color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:80px;font-variation-settings:'opsz' 60;letter-spacing:-3.2px;line-height:1;padding-bottom:6px;position:relative">
+              BC
+              <span style="position:absolute;left:50%;top:-30%;width:9px;height:9px;border-radius:50%;background:var(--gold-300);transform:translateX(-50%)"></span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:10px;color:var(--stone-500);letter-spacing:0.5px;text-transform:uppercase">Circle mask</div>
+      </div>
+      <div class="label"><div class="name">Android Adaptive · BG + FG</div><p class="desc">Foreground 108×108dp · 72dp safe zone · cream BC + gold-300 halo. Background: cobalt-600 solid. OEM mask shown. <code>app-icon-android-{foreground,background}.svg</code></p></div>
+    </div>
+  </div>
+
+  <div style="margin-top:48px">
+    <h3 style="font-family:var(--serif);font-weight:500;font-size:22px;color:var(--cobalt-900);margin:0 0 16px">Home-screen preview · iOS</h3>
+    <div class="home-screen">
+      <div class="slot">Mail</div>
+      <div class="slot">Photos</div>
+      <div class="slot">Maps</div>
+      <div class="slot" style="background:var(--cobalt-600);position:relative">
+        <div style="color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:32px;font-variation-settings:'opsz' 60;letter-spacing:-1.2px;line-height:1">BC</div>
+        <span style="position:absolute;left:50%;top:18%;width:5px;height:5px;border-radius:50%;background:var(--gold-300);transform:translateX(-50%)"></span>
+      </div>
+      <div class="slot">Notes</div>
+      <div class="slot">Music</div>
+      <div class="slot">Camera</div>
+      <div class="slot">Clock</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px;padding:20px 24px;background:var(--cobalt-50);border-left:3px solid var(--cobalt-600);border-radius:8px;color:var(--cobalt-900);font-size:14px;line-height:1.55">
+    <b>Apple HIG checks:</b> full-bleed source ✓ · no rounded corners in source ✓ · no transparency ✓ · 1024×1024 PNG24 export ✓ · halo ≥ 6.5% canvas (survives 60×60 Spotlight) ✓<br>
+    <b>Material checks:</b> 108×108dp viewport ✓ · 72dp safe zone respected ✓ · separate foreground+background ✓ · works under circle / squircle / rounded-square OEM masks ✓
+  </div>
+</section>
+
+<!-- ─────────── 05 · Favicon ─────────── -->
+<section>
+  <h2><span class="num">05 · Favicon</span>32 / 64 / 192 / 512 / SVG · with 16px fallback</h2>
+  <p class="section-sub">Modern browsers consume <code>favicon.svg</code> directly. At 16×16 the gold dot collapses to ~1px and reads as noise — engineer must serve <code>favicon-16-fallback.svg</code> (BC only, no halo) sized at 16.</p>
+
+  <div class="fav-row">
+    <div class="fav">
+      <div style="width:16px;height:16px;border-radius:3px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:14px;font-variation-settings:'opsz' 60;letter-spacing:-0.5px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1px">BC</div>
+      <div class="px">16 · fallback (no halo)</div>
+    </div>
+    <div class="fav">
+      <div style="width:32px;height:32px;border-radius:6px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:22px;font-variation-settings:'opsz' 60;letter-spacing:-0.9px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1px;position:relative"><span>BC</span><span style="position:absolute;left:50%;top:3px;width:3.6px;height:3.6px;border-radius:50%;background:var(--gold-300);transform:translateX(-50%)"></span></div>
+      <div class="px">32 · default</div>
+    </div>
+    <div class="fav">
+      <div style="width:64px;height:64px;border-radius:12px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:44px;font-variation-settings:'opsz' 60;letter-spacing:-1.8px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:2px;position:relative"><span>BC</span><span style="position:absolute;left:50%;top:6px;width:7.2px;height:7.2px;border-radius:50%;background:var(--gold-300);transform:translateX(-50%)"></span></div>
+      <div class="px">64</div>
+    </div>
+    <div class="fav">
+      <div style="width:96px;height:96px;border-radius:18px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:68px;font-variation-settings:'opsz' 60;letter-spacing:-2.7px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;position:relative"><span>BC</span><span style="position:absolute;left:50%;top:9px;width:11px;height:11px;border-radius:50%;background:var(--gold-300);transform:translateX(-50%)"></span></div>
+      <div class="px">192 · PWA</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px">
+    <h3 style="font-family:var(--serif);font-weight:500;font-size:18px;color:var(--cobalt-900);margin:0 0 12px">Tab preview</h3>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <div class="fav-tab"><span style="width:14px;height:14px;border-radius:3px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:12px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1px">BC</span> BlessCupid — Faith-first dating</div>
+      <div class="fav-tab" style="background:#1a1a1a;color:#ccc;border-color:#333"><span style="width:14px;height:14px;border-radius:3px;background:var(--cobalt-600);color:var(--cream-50);font-family:var(--serif);font-weight:500;font-size:12px;line-height:1;display:flex;align-items:flex-end;justify-content:center;padding-bottom:1px">BC</span> BlessCupid — dark tab</div>
+    </div>
+  </div>
+
+  <div style="margin-top:32px;font-size:13px;color:var(--stone-700);background:#fff;border:1px solid var(--cream-300);border-radius:12px;padding:18px 22px">
+    <b>HTML drop-in (engineer):</b><br>
+    <pre style="margin:8px 0 0;font-family:'JetBrains Mono','SF Mono',ui-monospace,monospace;font-size:12.5px;color:var(--cobalt-900);line-height:1.5;background:var(--cream-50);padding:12px 14px;border-radius:8px;overflow-x:auto">&lt;link rel="icon" type="image/svg+xml" href="/favicon.svg"&gt;
+&lt;link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png"&gt;
+&lt;link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png"&gt;
+&lt;link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png"&gt;
+&lt;link rel="manifest" href="/site.webmanifest"&gt;</pre>
+  </div>
+</section>
+
+<!-- ─────────── 06 · Social Card ─────────── -->
+<section>
+  <h2><span class="num">06 · Social Card · OG Image</span>1200×630, OpenGraph + Twitter</h2>
+  <p class="section-sub">Cream ground reads warmer in feeds than cobalt. Tagline is a placeholder — final copy gated on Pastor (BLE-87 · BLE-29).</p>
+  <div class="tile">
+    <div class="stage stage--cream" style="padding:0;min-height:0">
+      <div style="width:100%;aspect-ratio:1200/630;background:var(--cream-50);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:48px">
+        <div style="font-family:var(--sans);font-weight:500;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--stone-500)">BlessCupid · Faith-first</div>
+        <div class="wm wm--lg wm--cobalt"><div class="word" style="font-size:96px">BlessCup<span class="i">ı</span>d</div><div class="rule" style="width:50%"></div></div>
+        <div style="font-family:var(--sans);font-weight:400;font-size:18px;letter-spacing:1.5px;text-transform:uppercase;color:var(--stone-700);text-align:center;max-width:620px">Faith first · Friendship · Courtship · Community</div>
+      </div>
+    </div>
+    <div class="label"><div class="name">og-card.svg <span class="pill pill--rose">Pastor copy review pending</span></div><p class="desc">Engineer: rasterize to PNG before serving as <code>og:image</code>. Most scrapers (Twitter, Facebook, LinkedIn, Slack, Discord) do not render SVG webfonts. Use Puppeteer or sharp+resvg in build.</p></div>
+  </div>
+</section>
+
+<!-- ─────────── 07 · Clear Space + Min Size ─────────── -->
+<section>
+  <h2><span class="num">07 · Clear space &amp; minimum size</span>The mark needs to breathe</h2>
+  <p class="section-sub">Clear-space exclusion zone equals the cap-height of the wordmark on every side. Nothing — no type, image, or graphic — enters that zone. Minimum render sizes are enforced before switching to monogram.</p>
+
+  <div class="grid grid-2">
+    <div class="tile">
+      <div class="stage stage--cream" style="min-height:280px;position:relative">
+        <div class="clear-grid"></div>
+        <span class="clear-x t">x</span><span class="clear-x b">x</span><span class="clear-x l">x</span><span class="clear-x r">x</span>
+        <div class="wm wm--md wm--cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div>
+      </div>
+      <div class="label"><div class="name">Clear space</div><p class="desc">Exclusion zone <code>x</code> = cap-height of the wordmark.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream" style="flex-direction:column;gap:24px">
+        <div class="wm wm--cobalt"><div class="word" style="font-size:24px">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div>
+        <div style="font-size:11px;color:var(--stone-500);letter-spacing:0.5px;text-transform:uppercase">Min wordmark · 120px wide on screen / 18mm in print</div>
+      </div>
+      <div class="label"><div class="name">Minimum size</div><p class="desc">Below 120px screen / 18mm print, switch to BC monogram. Below 16px, switch to favicon-16 fallback (no halo).</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────────── 08 · Don'ts ─────────── -->
+<section class="donts">
+  <h2><span class="num">08 · Don'ts</span>Things that break the mark</h2>
+  <p class="section-sub">Each violation listed here corresponds to a real visual canon trap dating apps fall into. We are not them.</p>
+
+  <div class="grid grid-3">
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="wm wm--mono-cobalt dont-stretch"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Don't stretch or condense</div><p class="desc">Source Serif 4's optical sizing is calibrated. Stretching breaks the type's structural integrity.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="wm wm--mono-cobalt dont-rotate"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Don't rotate or skew</div><p class="desc">The wordmark sits on the sanctified-ground rule. Tilting it breaks the visual covenant.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="wm wm--mono-cobalt dont-recolor"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Don't recolor in rose</div><p class="desc">Rose-500 is reserved for matched/connection contexts only. The brand mark in rose reads as a Tinder lockup.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="wm wm--mono-cobalt dont-shadow"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Don't drop-shadow</div><p class="desc">Shadows imply Y2K weight or "premium" gloss. The mark holds its own. No bevel, no emboss, no gradient.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="mono mono--md dont-stained" style="color:#FFD86B">BC</div></div>
+      <div class="label"><div class="name">Don't stained-glass the ground</div><p class="desc">Religious-kitsch trap. Cream and cobalt are the only grounds. Patterned grounds are forbidden.</p></div>
+    </div>
+    <div class="tile">
+      <div class="stage stage--cream"><span class="x">×</span><div class="wm wm--mono-cobalt dont-bold"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+      <div class="label"><div class="name">Don't bold or italicize</div><p class="desc">Weight 500 (Medium) is the locked weight. Bold reads commercial. Italic reads flirty. Neither is on-brand.</p></div>
+    </div>
+  </div>
+
+  <div style="margin-top:40px;padding:24px;background:#fff;border:1px solid var(--cream-300);border-radius:12px">
+    <h3 style="font-family:var(--serif);font-weight:500;font-size:18px;color:var(--cobalt-900);margin:0 0 12px">Also forbidden (no preview shown — don't render these)</h3>
+    <ul style="margin:0;padding-left:20px;line-height:1.7;color:var(--stone-700);font-size:14px">
+      <li>Adding a cross, anchor, dove, crown, ichthus, or any iconographic symbol back into the lockup. (Cross-Anchor concept parked for merch only — CEO direction on BLE-22.)</li>
+      <li>Adding stained-glass texture, halo rays, glow, lens flare, or any "consecration shimmer" effect.</li>
+      <li>Replacing the gold halo dot with a heart, flame, ring, or anything that registers as a dating-app trope.</li>
+      <li>Outlining or inlining the wordmark — solid fill only.</li>
+      <li>Combining the wordmark with the BC monogram in a single lockup. Pick one per surface.</li>
+      <li>Using the mark on photographic backgrounds without a cream/cobalt scrim of ≥80% opacity behind it.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ─────────── 09 · Token Reference ─────────── -->
+<section>
+  <h2><span class="num">09 · Token reference</span>Engineer copy-paste</h2>
+  <p class="section-sub">Tokens consumed from <a href="/BLE/issues/BLE-22#document-tokens" style="color:var(--cobalt-600)">BLE-22 · Token v0.1</a>. This logo system uses only tokens already in the system — no new color or type primitives introduced.</p>
+
+  <table>
+    <thead><tr><th>Token</th><th>Value</th><th>Where it shows up in the mark</th></tr></thead>
+    <tbody>
+      <tr><td><code>--cobalt-900</code></td><td><span class="swatch" style="background:#142447"></span><code>#142447</code></td><td>Wordmark fill on cream / mono-cobalt fill</td></tr>
+      <tr><td><code>--cobalt-600</code></td><td><span class="swatch" style="background:#2F4F99"></span><code>#2F4F99</code></td><td>App-icon ground · favicon ground · Android adaptive bg</td></tr>
+      <tr><td><code>--cream-50</code></td><td><span class="swatch" style="background:#FDFBF6"></span><code>#FDFBF6</code></td><td>Wordmark fill on cobalt · OG card ground · cream-ground app icon</td></tr>
+      <tr><td><code>--gold-500</code></td><td><span class="swatch" style="background:#C99A3A"></span><code>#C99A3A</code></td><td>Halo dot on cream surfaces</td></tr>
+      <tr><td><code>--gold-300</code></td><td><span class="swatch" style="background:#E9C780"></span><code>#E9C780</code></td><td>Halo dot on cobalt · sanctified-ground rule</td></tr>
+      <tr><td><code>font: serif</code></td><td><code>Source Serif 4</code> · 500 · opsz 60</td><td>Wordmark · monogram</td></tr>
+      <tr><td><code>letter-spacing</code></td><td><code>+1px</code> wordmark · <code>-0.04em</code> monogram</td><td>Locked. Do not retune.</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ─────────── 10 · React/HTML drop-in ─────────── -->
+<section>
+  <h2><span class="num">10 · Drop-in component</span>For FoundingEngineer</h2>
+  <p class="section-sub">Self-contained Logo component. Reads tokens from the global CSS (already shipped with token v0.1). No new dependencies.</p>
+
+  <div class="tile">
+    <div class="stage stage--cream"><div class="wm wm--md wm--cobalt"><div class="word">BlessCup<span class="i">ı</span>d</div><div class="rule"></div></div></div>
+    <div class="label">
+      <div class="name">&lt;BlessCupidLogo /&gt;</div>
+      <pre style="margin:12px 0 0;font-family:'JetBrains Mono','SF Mono',ui-monospace,monospace;font-size:12.5px;color:var(--cobalt-900);line-height:1.55;background:var(--cream-50);padding:14px 16px;border-radius:8px;overflow-x:auto;border:1px solid var(--cream-200)">// Logo.tsx — wordmark variant
+export function BlessCupidLogo({size = 'md', tone = 'cobalt'}) {
+  const sizes = {sm: 30, md: 48, lg: 80};
+  return (
+    &lt;span className={`bc-wm bc-wm--${tone}`} style={{fontSize: sizes[size]}}&gt;
+      &lt;span className="bc-word"&gt;
+        BlessCup&lt;span className="bc-i"&gt;ı&lt;/span&gt;d
+      &lt;/span&gt;
+      &lt;span className="bc-rule" /&gt;
+    &lt;/span&gt;
+  );
+}
+
+// styles.css — relies on tokens from BLE-22
+.bc-wm{display:inline-flex;flex-direction:column;align-items:center;gap:0.36em;line-height:1}
+.bc-word{font-family:var(--font-serif);font-weight:500;font-variation-settings:'opsz' 60;letter-spacing:0.02em;color:var(--text-scripture)}
+.bc-i{position:relative;display:inline-block}
+.bc-i::before{content:'';position:absolute;left:50%;top:-0.62em;width:0.16em;height:0.16em;border-radius:50%;background:var(--accent-gold);transform:translateX(-50%)}
+.bc-rule{height:2px;background:var(--gold-300);width:80%}
+.bc-wm--cream .bc-word{color:var(--text-inverse)}
+.bc-wm--cream .bc-i::before{background:var(--gold-300)}
+.bc-wm--cream .bc-rule{background:var(--gold-300)}</pre>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<footer class="foot">
+  BlessCupid · Brand Identity v1.0 · Logo B (Wordmark + halo)<br>
+  FoundingDesigner · <a href="/BLE/issues/BLE-86">BLE-86</a> · ships on Token <a href="/BLE/issues/BLE-22#document-tokens">v0.1</a> · Pastor faith-imagery review <a href="/BLE/issues/BLE-87">BLE-87</a><br>
+  <span style="font-size:11px">Reverent, not religious-kitsch · Mode-neutral across Dating, Friendship, Commonsphere · Indonesian-first scaling</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appName": "BlessCupid",
+    "tagline": "Berjumpa dalam kasih, bertumbuh dalam iman",
+    "actions": {
+      "continue": "Lanjut",
+      "back": "Kembali",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "skip": "Lewati",
+      "retry": "Coba lagi",
+      "done": "Selesai",
+      "send": "Kirim",
+      "report": "Laporkan",
+      "block": "Blokir",
+      "unmatch": "Batalkan kecocokan"
+    },
+    "states": {
+      "loading": "Memuat...",
+      "empty": "Belum ada",
+      "offline": "Tidak ada koneksi"
+    }
+  },
+  "auth": {
+    "welcome": {
+      "title": "Selamat datang di BlessCupid",
+      "subtitle": "Tempat orang percaya bertemu pasangan yang seiman."
+    },
+    "login": {
+      "title": "Masuk",
+      "phonePlaceholder": "Nomor HP",
+      "cta": "Masuk dengan WhatsApp",
+      "newAccount": "Belum punya akun? Daftar di sini"
+    },
+    "otp": {
+      "title": "Masukkan kode",
+      "subtitle": "Kami kirim 6 digit kode ke {phone}.",
+      "resend": "Kirim ulang dalam {seconds, plural, one {# detik} other {# detik}}",
+      "resendNow": "Kirim ulang sekarang"
+    },
+    "consent": {
+      "title": "Sebelum lanjut",
+      "body": "Dengan masuk, Anda menyetujui Ketentuan Layanan dan Kebijakan Privasi kami."
+    }
+  },
+  "match": {
+    "feed": {
+      "title": "Untukmu",
+      "empty": {
+        "title": "Belum ada profil baru",
+        "subtitle": "Cek lagi nanti, atau perluas preferensimu."
+      }
+    },
+    "card": {
+      "age": "{age} tahun",
+      "distance": "{km, plural, other {# km dari kamu}}",
+      "denomination": "Gereja: {name}",
+      "verseFavorite": "Ayat favorit: {ref}"
+    },
+    "actions": {
+      "bless": "Berkati",
+      "pass": "Lewati",
+      "superBless": "Doakan",
+      "undo": "Urungkan"
+    },
+    "matched": {
+      "title": "Kalian saling memberkati!",
+      "subtitle": "Mulai percakapan dengan {name}.",
+      "cta": "Sapa duluan"
+    }
+  },
+  "profile": {
+    "title": "Profil",
+    "edit": "Sunting profil",
+    "fields": {
+      "name": "Nama",
+      "age": "Usia",
+      "city": "Kota",
+      "denomination": "Denominasi",
+      "homeChurch": "Gereja",
+      "favoriteVerse": "Ayat favorit",
+      "bio": "Tentang saya"
+    },
+    "completion": {
+      "title": "Lengkapi profilmu",
+      "progress": "{percent}% selesai",
+      "nextStep": "Langkah berikutnya: {step}"
+    }
+  },
+  "safety": {
+    "title": "Keamanan",
+    "report": {
+      "title": "Laporkan akun",
+      "reasonLabel": "Apa yang ingin kamu laporkan?",
+      "reasons": {
+        "fakeProfile": "Profil palsu",
+        "harassment": "Pelecehan atau ancaman",
+        "inappropriate": "Konten tidak pantas",
+        "scam": "Penipuan / spam",
+        "other": "Lainnya"
+      },
+      "submitted": "Terima kasih. Tim kami akan meninjau dalam 24 jam."
+    },
+    "block": {
+      "confirmTitle": "Blokir {name}?",
+      "confirmBody": "Mereka tidak akan bisa melihat profilmu atau mengirim pesan.",
+      "confirmCta": "Ya, blokir"
+    }
+  },
+  "faith": {
+    "verseOfDay": {
+      "title": "Ayat hari ini",
+      "subtitle": "Renungan singkat untuk hari ini."
+    },
+    "prayerPrompt": {
+      "title": "Doakan dia",
+      "body": "Luangkan waktu untuk mendoakan {name} sebelum memulai percakapan."
+    },
+    "denominationLabels": {
+      "katolik": "Katolik",
+      "protestan": "Protestan",
+      "kharismatik": "Kharismatik",
+      "injili": "Injili",
+      "ortodoks": "Ortodoks",
+      "lain": "Lainnya",
+      "belumYakin": "Belum yakin / Masih mencari"
+    },
+    "denominationHint": "Belum yakin? Tidak apa — kamu bisa lewati atau pilih \"Belum yakin / Masih mencari\" di bawah daftar.",
+    "pelayanan": {
+      "label": "Pelayanan (opsional)",
+      "hint": "Area pelayananmu di gereja. Bisa pilih lebih dari satu.",
+      "chips": {
+        "pujian": "Pujian",
+        "pemuda": "Pemuda",
+        "doa": "Doa",
+        "pengajaran": "Pengajaran",
+        "misi": "Misi",
+        "anak": "Anak",
+        "diakonia": "Diakonia",
+        "konseling": "Konseling",
+        "lainnya": "Lainnya"
+      }
+    },
+    "marriageTimeline": {
+      "within1": "Dalam 1 tahun",
+      "1to3": "1–3 tahun",
+      "moreThan3": "Lebih dari 3 tahun",
+      "stillPraying": "Masih berdoa"
+    },
+    "values": {
+      "purity": "Kemurnian",
+      "marriageMinded": "Berfokus pada pernikahan",
+      "serveTogether": "Melayani bersama",
+      "growTogether": "Bertumbuh bersama"
+    }
+  },
+  "errors": {
+    "generic": "Terjadi kesalahan. Coba lagi.",
+    "network": "Tidak ada koneksi internet.",
+    "auth": {
+      "invalidOtp": "Kode tidak valid.",
+      "otpExpired": "Kode kedaluwarsa. Minta kode baru."
+    },
+    "validation": {
+      "required": "{field} wajib diisi.",
+      "tooShort": "{field} minimal {min} karakter.",
+      "tooLong": "{field} maksimal {max} karakter."
+    }
+  }
+}

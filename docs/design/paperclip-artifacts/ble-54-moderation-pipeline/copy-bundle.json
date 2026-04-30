@@ -1,0 +1,162 @@
+{
+  "$source": "BLE-31 §1-§6 verbatim. Pastor approves any deviation. Indonesian translations are working drafts pending Pastor + native-speaker review.",
+  "$version": "1.1.0",
+  "$pastor_review": {
+    "reviewer": "Pastor (acd89680-4a61-4f55-b0ee-387f7983b3f6)",
+    "date": "2026-04-29",
+    "verdict": "Changes requested. Six §10 violations corrected inline. ID native-speaker pass still pending — see BLE-31 §10.6 + child issue.",
+    "next_pastor_review_required_after": "ID native-speaker pass complete + bundle re-rendered with $ban_canonical_heading + $ban_scripture_disclaimer wired through pipeline.renderAction"
+  },
+  "$placeholders": ["{name}", "{date}", "{N}", "{dates}", "{specific_issue}", "{group_name}", "{redacted}", "{messenger}", "{ordinal}", "{ask_type}", "{scam_type}", "{consortium_ref}", "{verify_link}", "{filter_pref}"],
+  "$appeal_email": "care@blesscupid.app",
+  "$appeal_window_days": 14,
+  "$translation_default": "NIV",
+  "$ban_canonical_heading": {
+    "en": "The door of restoration remains open.",
+    "id": "Pintu pemulihan tetap terbuka.",
+    "$where": "Voice 03 ban surface heading (BLE-31 §10 amendment v1.2 #3). Designer renders as banner heading on every ban screen. Engineer wires into ban-surface template (BLE-26 / BLE-27)."
+  },
+  "$ban_scripture_disclaimer": {
+    "en": "pastoral note, not a verdict",
+    "id": "catatan pastoral, bukan vonis",
+    "$where": "Required cite-line suffix for any scripture rendered on a Voice 03 ban screen (BLE-31 §10.6). pipeline.renderAction must append this to the cite line for any (category, 'ban') copy that has a scripture object. Format: '{ref} · {tx} · {disclaimer}'. Omit entirely when actor profile flags atheist/agnostic/seeker, or when category is CSAM / scam-ring (per §10.3)."
+  },
+
+  "harassment": {
+    "warning": {
+      "en": "We saw the message you sent to {name} on {date}. The words landed as harassment, even if that wasn't your aim. Please pause before sending heat — the person on the other side is a brother/sister made in God's image (Gen 1:27). One more incident like this will lead to removal. Reply if you believe we got this wrong.",
+      "id": "Kami membaca pesan yang Anda kirim ke {name} pada {date}. Kata-kata itu terasa sebagai pelecehan, walau mungkin bukan niat Anda. Mohon berhenti sejenak sebelum melempar amarah — orang di seberang sana adalah saudara/saudari yang diciptakan menurut gambar Allah (Kej 1:27). Satu kejadian lagi akan berujung pada pencopotan akun. Balas pesan ini bila Anda merasa kami salah menilai.",
+      "scripture": null,
+      "internal_note": "First-instance harassment, single hostile message, ambiguous intent. Reference: BLE-31 §1 Warning."
+    },
+    "removal": {
+      "en": "Your account is being removed for harassment of {name} across {N} messages between {dates}. We asked you to stop. You kept going. BlessCupid exists to help people find love in safety; that requires we honor \"no.\" You may appeal within 14 days at care@blesscupid.app.",
+      "id": "Akun Anda dicopot karena pelecehan terhadap {name} dalam {N} pesan antara {dates}. Kami sudah meminta Anda berhenti. Anda tetap melanjutkan. BlessCupid ada untuk membantu orang menemukan cinta dengan aman; itu menuntut kami menghormati kata \"tidak.\" Anda dapat mengajukan banding dalam 14 hari di care@blesscupid.app.",
+      "scripture": { "ref": "Proverbs 21:23", "tx": "ESV", "text_en": "Whoever guards his mouth and tongue keeps himself out of trouble.", "text_id": "Siapa memelihara mulut dan lidahnya, memelihara diri dari kesukaran." },
+      "internal_note": "Harassment removal, clear pattern. Reference: BLE-31 §1 Removal. Translation tag: ESV."
+    },
+    "ban": {
+      "en": "Your account is permanently ended for {specific_issue}. This is not who we are. This is not who Christ calls us to be. Words like these wound real people; we will not host them. If you believe this was an error of identity (account compromised), reply within 14 days.",
+      "id": "Akun kami hentikan secara permanen karena {specific_issue}. Ini bukan jati diri kami. Ini bukan panggilan Kristus untuk kami. Kata-kata seperti ini melukai orang sungguhan; kami tidak akan menampungnya. Bila Anda yakin ini kesalahan identitas (akun diretas), balas dalam 14 hari.",
+      "scripture": { "ref": "James 3:9-10", "tx": "NIV", "text_en": "With the tongue we praise our Lord and Father, and with it we curse human beings, who have been made in God's likeness. Out of the same mouth come praise and cursing. My brothers and sisters, this should not be.", "text_id": "Dengan lidah kita memuji Tuhan, Bapa kita, dan dengan lidah itu pula kita mengutuk manusia yang diciptakan menurut rupa Allah. Dari mulut yang satu keluar berkat dan kutuk. Saudara-saudaraku, hal ini tidak boleh demikian.", "voice_03_disclaimer_required": true },
+      "internal_note": "Slur / threat / doxx ban. Reference: BLE-31 §1 Ban. Translation tag: NIV. Voice 03 — render $ban_canonical_heading + $ban_scripture_disclaimer."
+    }
+  },
+
+  "sexual": {
+    "warning": {
+      "en": "{name} told you they weren't comfortable with where the conversation was going. You sent a sexual message anyway. BlessCupid is for marriage-minded relationships, and even outside that — pressing past a \"no\" is never love (1 Cor 13:4-5). Please don't do this again. Next instance is removal.",
+      "id": "{name} sudah memberitahu bahwa mereka tidak nyaman dengan arah percakapan. Anda tetap mengirim pesan bernuansa seksual. BlessCupid ditujukan untuk hubungan menuju pernikahan, dan di luar itu pun — memaksakan diri melewati kata \"tidak\" bukanlah kasih (1 Kor 13:4-5). Mohon tidak diulangi. Kejadian berikutnya berujung pada pencopotan akun.",
+      "scripture": null,
+      "internal_note": "Sexual language pushed past discomfort. Reference: BLE-31 §2 Warning."
+    },
+    "removal": {
+      "en": "You sent explicit imagery to {name} without their consent. The image has been removed and your account is being removed from BlessCupid. What you sent is not flirting; it is a violation. We treat the bodies of our members — and your body — as worthy of more honor than that. Appeals: care@blesscupid.app within 14 days.",
+      "id": "Anda mengirim gambar eksplisit kepada {name} tanpa persetujuan mereka. Gambar telah dihapus dan akun Anda dicopot dari BlessCupid. Yang Anda kirim bukan rayuan; itu pelanggaran. Kami memperlakukan tubuh anggota kami — dan tubuh Anda — sebagai layak dihormati lebih dari itu. Banding: care@blesscupid.app dalam 14 hari.",
+      "scripture": { "ref": "1 Corinthians 6:18-20", "tx": "NIV", "text_en": "Flee from sexual immorality... You are not your own; you were bought at a price. Therefore honor God with your bodies.", "text_id": "Jauhkanlah dirimu dari percabulan… Kamu bukan milik kamu sendiri; kamu telah dibeli dan harganya telah lunas dibayar. Karena itu muliakanlah Allah dengan tubuhmu." },
+      "internal_note": "Unsolicited explicit imagery. Reference: BLE-31 §2 Removal. Translation tag: NIV."
+    },
+    "ban": {
+      "en": "Account permanently terminated. Reported to law enforcement.",
+      "id": "Akun dihentikan secara permanen. Dilaporkan kepada penegak hukum.",
+      "scripture": null,
+      "internal_note": "CSAM ban. CEO + Legal own this path. Pastor does NOT draft. No scripture, no pastoral framing. Reference: BLE-31 §2 Ban (CSAM)."
+    }
+  },
+
+  "fake": {
+    "warning": {
+      "en": "A member flagged that your photos may not be of you. We're not accusing — sometimes profiles use older photos or borrowed ones. Within 7 days, please verify with a live selfie ({verify_link}). Until then, your profile is paused. We do this because love starts with truth (Eph 4:25).",
+      "id": "Seorang anggota melaporkan bahwa foto Anda mungkin bukan diri Anda. Kami tidak menuduh — kadang profil memakai foto lama atau pinjaman. Dalam 7 hari, mohon verifikasi dengan selfie langsung ({verify_link}). Sampai itu dilakukan, profil Anda dijeda. Kami melakukannya karena cinta dimulai dengan kebenaran (Ef 4:25).",
+      "scripture": null,
+      "internal_note": "Photo mismatch, benefit of doubt, profile paused 7d. Reference: BLE-31 §3 Warning."
+    },
+    "removal": {
+      "en": "We confirmed the photos on your profile belong to someone else. Your account is being removed. We don't know your story, and we're not here to humiliate you — but BlessCupid only works if the person on each side is real. If your story is \"I was lonely and didn't think I was enough,\" we hear you, and we believe you are. Come back as you. The door is open: care@blesscupid.app.",
+      "id": "Kami sudah memastikan bahwa foto di profil Anda milik orang lain. Akun Anda dicopot. Kami tidak tahu cerita Anda, dan kami tidak datang untuk mempermalukan — tapi BlessCupid hanya berjalan bila kedua sisi adalah orang nyata. Jika cerita Anda adalah \"saya kesepian dan merasa diri saya tidak cukup,\" kami mendengar Anda, dan kami percaya Anda cukup. Kembalilah sebagai diri Anda sendiri. Pintu tetap terbuka: care@blesscupid.app.",
+      "scripture": { "ref": "Ephesians 4:25", "tx": "NIV", "text_en": "Therefore each of you must put off falsehood and speak truthfully to your neighbor, for we are all members of one body.", "text_id": "Karena itu, buanglah dusta dan berkatalah benar seorang kepada yang lain, karena kita adalah sesama anggota." },
+      "internal_note": "Verified catfish, no financial element. Reference: BLE-31 §3 Removal. Translation tag: NIV."
+    },
+    "ban": {
+      "en": "Your account is permanently ended for impersonation tied to a known fraud pattern. Photos belonging to {redacted} were used to deceive multiple members. This was not loneliness; this was theft of trust.",
+      "id": "Akun kami hentikan secara permanen karena penyamaran identitas yang terhubung dengan pola penipuan yang sudah dikenal. Foto milik {redacted} digunakan untuk menipu sejumlah anggota. Ini bukan kesepian; ini pencurian kepercayaan.",
+      "scripture": { "ref": "Proverbs 12:22", "tx": "NIV", "text_en": "The Lord detests lying lips, but he delights in people who are trustworthy.", "text_id": "Bibir dusta adalah kekejian bagi TUHAN, tetapi orang yang berlaku setia dikenan-Nya.", "voice_03_disclaimer_required": true },
+      "internal_note": "Catfish + scam pattern ban. Reference: BLE-31 §3 Ban. Translation tag: NIV. Voice 03 — render $ban_canonical_heading + $ban_scripture_disclaimer."
+    }
+  },
+
+  "off-platform": {
+    "warning": {
+      "en": "You asked {name} to move to {messenger} in your {ordinal} message. We get it — apps are clunky. But moving off-platform too early removes the safety tools that protect both of you. Let trust build here first. If {name} is comfortable, they'll lead.",
+      "id": "Anda meminta {name} untuk pindah ke {messenger} pada pesan {ordinal} Anda. Kami paham — aplikasi sering terasa kaku. Tapi pindah platform terlalu cepat menghilangkan perangkat keamanan yang melindungi Anda berdua. Biarkan kepercayaan tumbuh dulu di sini. Jika {name} sudah nyaman, mereka akan memimpin.",
+      "scripture": null,
+      "internal_note": "Asking too early. Reference: BLE-31 §4 Warning."
+    },
+    "removal": {
+      "en": "{name} told you they wanted to keep talking on BlessCupid. You kept asking. Pressuring someone to leave the platform after they've said no is a red flag we take seriously — usually for the person being pressured, sometimes for the person doing the pressuring. Account removed. Appeal: care@blesscupid.app.",
+      "id": "{name} sudah memberitahu bahwa mereka ingin tetap mengobrol di BlessCupid. Anda terus mendesak. Memaksa seseorang keluar platform setelah mereka berkata tidak adalah tanda bahaya yang kami tanggapi serius — biasanya bagi yang ditekan, kadang bagi yang menekan. Akun dicopot. Banding: care@blesscupid.app.",
+      "scripture": { "ref": "1 Corinthians 13:5", "tx": "ESV", "text_en": "Love does not insist on its own way.", "text_id": "Kasih tidak memaksakan kehendaknya sendiri." },
+      "internal_note": "Repeated push after stop. Reference: BLE-31 §4 Removal. Translation tag: ESV."
+    },
+    "ban": {
+      "en": "See Financial section — off-platform pressure tied to a financial scam pattern uses the financial-ban template, not this one.",
+      "id": "Lihat bagian Keuangan — tekanan pindah platform yang terhubung dengan pola penipuan keuangan memakai templat ban keuangan, bukan templat ini.",
+      "scripture": null,
+      "internal_note": "Route through financial. Reference: BLE-31 §4 Ban (route)."
+    }
+  },
+
+  "financial": {
+    "warning": {
+      "en": "A member flagged a soft money ask in your conversation with {name}. We're not removing your account, but we want to name what we saw: leaning on a match for financial help — even framed as an emergency — pulls love into a transaction it isn't meant to be. Please redirect to your church, family, or local aid. One more instance like this is removal.",
+      "id": "Seorang anggota melaporkan permintaan uang halus dalam percakapan Anda dengan {name}. Kami tidak mencopot akun Anda, tetapi kami ingin menamai apa yang kami lihat: bersandar pada pasangan untuk bantuan keuangan — meski dibingkai sebagai keadaan darurat — menarik kasih ke dalam transaksi yang bukan tempatnya. Mohon dialihkan ke gereja, keluarga, atau bantuan setempat Anda. Satu kejadian lagi berujung pada pencopotan akun.",
+      "scripture": null,
+      "internal_note": "Sob-story + soft money ask. Human-review tier. Reference: BLE-31 §5 Warning derivation."
+    },
+    "removal": {
+      "en": "Your account is being removed for asking {name} for {ask_type}. BlessCupid is not a fundraising platform. If your situation is real, your church, your family, or local aid will help — your match is not the right asker. If your situation is not real, please understand: people send money because they believed you cared. That is not a small wound.",
+      "id": "Akun Anda dicopot karena meminta {ask_type} dari {name}. BlessCupid bukan platform penggalangan dana. Jika situasi Anda nyata, gereja, keluarga, atau bantuan setempat akan menolong — pasangan Anda bukan tempat untuk bertanya. Jika situasi Anda tidak nyata, mohon mengerti: orang mengirim uang karena percaya Anda peduli. Itu bukan luka kecil.",
+      "scripture": { "ref": "Hebrews 13:5", "tx": "NIV", "text_en": "Keep your lives free from the love of money and be content with what you have.", "text_id": "Janganlah kamu menjadi hamba uang dan cukupkanlah dirimu dengan apa yang ada padamu." },
+      "internal_note": "Direct money/crypto/giftcard ask. Reference: BLE-31 §5 Removal. Translation tag: NIV."
+    },
+    "ban": {
+      "en": "Your account is permanently ended for {scam_type}. We have flagged the relevant accounts to other platforms via {consortium_ref} where applicable. Anyone you defrauded should reach out to local authorities; we are cooperating with investigators where requested.",
+      "id": "Akun kami hentikan secara permanen karena {scam_type}. Kami telah menandai akun-akun terkait ke platform lain via {consortium_ref} bila berlaku. Siapa pun yang Anda tipu sebaiknya menghubungi aparat setempat; kami bekerja sama dengan penyelidik bila diminta.",
+      "scripture": { "ref": "Proverbs 13:11", "tx": "NIV", "text_en": "Dishonest money dwindles away, but whoever gathers money little by little makes it grow.", "text_id": "Harta yang cepat diperoleh akan berkurang, tetapi siapa mengumpulkan sedikit demi sedikit, menjadi kaya.", "voice_03_disclaimer_required": false, "$disclaimer_omit_reason": "scam-ring — §10.3 omits scripture+disclaimer for scam-ring CEO+Legal path. Surface as bare ban without verse blockquote when actor profile flags scam-ring; otherwise verse renders without disclaimer per §10.3." },
+      "internal_note": "Pig butchering / scam ring / MLM after warning ban. Reference: BLE-31 §5 Ban. Translation tag: NIV. §10.3 says omit scripture entirely for scam-ring path — pipeline must check actor.scam_ring flag and drop verse blockquote if true."
+    },
+    "pastoral-note": {
+      "en": "A member flagged that you offered to pray for them in exchange for payment. We don't believe you meant harm, but selling spiritual services puts you on shaky ground (Acts 8:18-23 — Simon the Magician). Please remove the offer from your profile and DMs. Prayer is free; you are loved without charge.",
+      "id": "Seorang anggota melaporkan bahwa Anda menawarkan doa dengan imbalan pembayaran. Kami tidak yakin Anda bermaksud jahat, tetapi menjual layanan rohani membuat Anda berdiri di atas tanah goyah (Kis 8:18-23 — Simon si Penyihir). Mohon hapus tawaran itu dari profil dan DM Anda. Doa itu cuma-cuma; Anda dikasihi tanpa biaya.",
+      "scripture": { "ref": "Acts 8:18-23", "tx": "NIV", "text_en": "(Simon the Magician — see full passage.)", "text_id": "(Simon si Penyihir — lihat seluruh perikop.)" },
+      "internal_note": "Charging for prayer/prophecy. Often misguided, not malicious. Reference: BLE-31 §5 Pastoral note. Translation tag: NIV."
+    }
+  },
+
+  "doctrinal": {
+    "warning": {
+      "en": "You told {name} they \"aren't a real Christian\" because {specific_issue}. BlessCupid hosts believers across traditions who all confess Jesus is Lord (Rom 10:9). Disagreement is allowed — disqualifying a brother or sister over a tertiary issue is not. Please don't repeat this. Compatibility is for filters; correction is for elders.",
+      "id": "Anda mengatakan {name} \"bukan orang Kristen sejati\" karena {specific_issue}. BlessCupid menampung orang percaya dari berbagai tradisi yang semua mengakui Yesus adalah Tuhan (Rm 10:9). Perbedaan pendapat diperbolehkan — mendiskualifikasi saudara atau saudari karena perkara tersier tidak. Mohon tidak diulangi. Kecocokan adalah urusan filter; koreksi adalah urusan tua-tua jemaat.",
+      "scripture": null,
+      "internal_note": "Sectarian attack. Reference: BLE-31 §6 Warning."
+    },
+    "removal": {
+      "en": "Your account is being removed for repeatedly teaching {specific_issue} to other members after our warning. We are not the church's magisterium — we host across traditions — but the historic creeds are our floor. We hope you sit with a pastor in your local body and wrestle with these questions there, not in DMs with strangers seeking love.",
+      "id": "Akun Anda dicopot karena berulang kali mengajarkan {specific_issue} kepada anggota lain setelah peringatan kami. Kami bukan magisterium gereja — kami menampung lintas tradisi — tetapi pengakuan iman historis adalah lantai kami. Kami berharap Anda duduk bersama pastor di jemaat lokal Anda dan bergulat dengan pertanyaan-pertanyaan ini di sana, bukan di DM dengan orang asing yang mencari cinta.",
+      "scripture": { "ref": "1 Timothy 4:16", "tx": "NIV", "text_en": "Watch your life and doctrine closely. Persevere in them, because if you do, you will save both yourself and your hearers.", "text_id": "Awasilah dirimu sendiri dan awasilah ajaranmu. Bertekunlah dalam semuanya itu, karena dengan berbuat demikian engkau akan menyelamatkan dirimu dan semua orang yang mendengar engkau." },
+      "internal_note": "Heresy taught aggressively, not seeking. Reference: BLE-31 §6 Removal. Translation tag: NIV."
+    },
+    "ban": {
+      "en": "Your account is permanently ended for cult-recruitment activity tied to {group_name}. Members trusted you with their hearts; you used that trust to pull them toward a system that has documented harm. We are notifying matches you contacted.",
+      "id": "Akun kami hentikan secara permanen karena aktivitas perekrutan kultus yang terhubung dengan {group_name}. Anggota mempercayakan hati mereka kepada Anda; Anda memakai kepercayaan itu untuk menarik mereka ke sistem yang sudah terdokumentasi merugikan. Kami sedang memberi tahu pasangan-pasangan yang Anda hubungi.",
+      "scripture": { "ref": "Matthew 7:15", "tx": "NIV", "text_en": "Watch out for false prophets. They come to you in sheep's clothing, but inwardly they are ferocious wolves.", "text_id": "Waspadalah terhadap nabi-nabi palsu. Mereka datang kepadamu dengan menyamar seperti domba, tetapi sesungguhnya mereka adalah serigala yang buas.", "voice_03_disclaimer_required": true },
+      "internal_note": "Predatory cult recruitment. Reference: BLE-31 §6 Ban. Translation tag: NIV. Voice 03 — render $ban_canonical_heading + $ban_scripture_disclaimer. Side-effect notify_contacted_matches: scope = matches actor messaged in last 90 days, outreach copy is Pastor-drafted (see BLE-31 §6 follow-up child issue), tone = 'we want you to know', NOT a panic alert."
+    },
+    "non-action": {
+      "en": "Thanks for the report. We looked at the conversation. The disagreement you had with {name} about {specific_issue} is one Christians have held different views on for centuries. We don't moderate tertiary doctrine — but you can adjust your match filters to prefer {filter_pref}, which will reduce these matches.",
+      "id": "Terima kasih atas laporannya. Kami sudah melihat percakapan tersebut. Perbedaan pendapat Anda dengan {name} tentang {specific_issue} adalah pandangan yang sudah lama diperdebatkan antar orang Kristen selama berabad-abad. Kami tidak memoderasi doktrin tersier — tetapi Anda dapat menyesuaikan filter pasangan ke {filter_pref}, yang akan mengurangi pertemuan seperti ini.",
+      "scripture": null,
+      "internal_note": "Tertiary, when one party reports the other. Reference: BLE-31 §6 Non-action notice."
+    }
+  }
+}

@@ -1,0 +1,187 @@
+/* BlessCupid · Match Feed
+   Consumes locked design tokens from BLE-22 v0.1.
+   This file mirrors the canonical naming from issue BLE-22 / document `tokens`. */
+
+:root {
+  /* ── Color · primitives ─────────────────────────── */
+  --color-cream-50:   #FDFBF6;
+  --color-cream-100:  #F8F2E6;
+  --color-cream-200:  #EFE6D2;
+  --color-cream-300:  #E2D4B5;
+
+  --color-cobalt-50:  #EEF2FB;
+  --color-cobalt-100: #D6E0F4;
+  --color-cobalt-300: #7FA1DD;
+  --color-cobalt-500: #3D67B8;
+  --color-cobalt-600: #2F4F99;
+  --color-cobalt-700: #243F7A;
+  --color-cobalt-900: #142447;
+
+  --color-gold-100:   #FBF1D7;
+  --color-gold-300:   #E9C780;
+  --color-gold-500:   #C99A3A;
+  --color-gold-700:   #8C6822;
+
+  --color-sage-100:   #E5EFE6;
+  --color-sage-500:   #5C8A6A;
+  --color-sage-700:   #3F6149;
+
+  --color-amber-100:  #FCEBD2;
+  --color-amber-500:  #D08A2C;
+  --color-amber-700:  #8C5912;
+
+  --color-stone-50:   #FAF8F4;
+  --color-stone-100:  #EFEAE0;
+  --color-stone-300:  #C8BFAF;
+  --color-stone-500:  #867C6A;
+  --color-stone-700:  #4A4338;
+  --color-stone-900:  #221F18;
+
+  --color-rose-300:   #E5A8B0;
+  --color-rose-500:   #C76A78;
+
+  /* ── Color · semantic ─────────────────────────── */
+  --bg-canvas:   var(--color-cream-50);
+  --bg-surface:  #FFFFFF;
+  --bg-raised:   var(--color-cream-100);
+  --bg-sunken:   var(--color-cream-200);
+
+  --text-primary:    var(--color-stone-900);
+  --text-secondary:  var(--color-stone-700);
+  --text-tertiary:   var(--color-stone-500);
+  --text-inverse:    var(--color-cream-50);
+  --text-scripture:  var(--color-cobalt-900);
+  --text-brand:      var(--color-cobalt-600);
+
+  --border-subtle: var(--color-cream-300);
+  --border-strong: var(--color-stone-300);
+  --border-focus:  var(--color-cobalt-600);
+
+  --state-success:  var(--color-sage-500);
+  --state-warning:  var(--color-amber-500);
+  --state-critical: var(--color-amber-700); /* never red */
+  --accent-gold:    var(--color-gold-500);
+  --accent-match:   var(--color-rose-500);  /* match-only contexts */
+
+  /* ── Type ─────────────────────────── */
+  --font-display: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-body:    "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --text-display-2xl: 48px; --lh-display-2xl: 52px;
+  --text-display-xl:  36px; --lh-display-xl:  42px;
+  --text-display-lg:  28px; --lh-display-lg:  34px;
+  --text-heading-lg:  22px; --lh-heading-lg:  28px;
+  --text-heading-md:  18px; --lh-heading-md:  24px;
+  --text-heading-sm:  16px; --lh-heading-sm:  22px;
+  --text-body-lg:     17px; --lh-body-lg:     26px;
+  --text-body-md:     15px; --lh-body-md:     22px;
+  --text-body-sm:     13px; --lh-body-sm:     18px;
+  --text-label:       12px; --lh-label:       16px;
+
+  /* ── Spacing (4px base) ─────────────────────────── */
+  --space-0: 0;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 8px;
+  --space-4: 12px;
+  --space-5: 16px;
+  --space-6: 20px;
+  --space-7: 24px;
+  --space-8: 32px;
+  --space-9: 40px;
+  --space-10: 48px;
+  --space-11: 64px;
+
+  /* ── Radii ─────────────────────────── */
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
+  --radius-2xl:  28px;
+  --radius-pill: 999px;
+
+  /* ── Elevation ─────────────────────────── */
+  --elev-0: none;
+  --elev-1: 0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2: 0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3: 0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-modal: 0 24px 60px rgba(20,24,40,.18);
+
+  /* ── Motion (no springs) ─────────────────────────── */
+  --duration-instant:    0ms;
+  --duration-fast:       120ms;
+  --duration-base:       200ms;
+  --duration-slow:       320ms;
+  --duration-deliberate: 480ms;
+  --ease-standard:  cubic-bezier(0.2, 0, 0.2, 1);
+  --ease-enter:     cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit:      cubic-bezier(0.4, 0, 1, 1);
+  --ease-reverent:  cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Z-index ─────────────────────────── */
+  --z-base: 0; --z-raised: 10; --z-dropdown: 100;
+  --z-sticky: 200; --z-modal: 1000; --z-toast: 1100; --z-tooltip: 1200;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms; --duration-base: 0ms;
+    --duration-slow: 0ms; --duration-deliberate: 0ms;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  line-height: var(--lh-body-md);
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* iPhone 14 frame for visual review (390 × 844). */
+.bc-frame {
+  width: 390px;
+  height: 844px;
+  margin: 0 auto;
+  background: var(--bg-canvas);
+  position: relative;
+  overflow: hidden;
+}
+
+.bc-status-bar {
+  height: 47px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 var(--space-7) var(--space-3);
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.bc-tabbar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 84px;
+  background: rgba(253, 251, 246, 0.92);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding-top: var(--space-3);
+}
+.bc-tabbar__item {
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 11px; color: var(--text-tertiary); padding: 4px 6px;
+}
+.bc-tabbar__item[aria-current="true"] { color: var(--text-brand); }
+.bc-tabbar__icon {
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+}

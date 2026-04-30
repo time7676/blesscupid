@@ -1,0 +1,577 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlessCupid — Pastor seal-on-revoke surfaces (BLE-132)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+
+  --bg-canvas:var(--cream-50); --bg-surface:#FFFFFF; --bg-raised:var(--cream-100);
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-inverse:var(--cream-50); --text-brand:var(--cobalt-700);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300); --border-focus:var(--cobalt-600);
+
+  --s-1:2px; --s-2:4px; --s-3:8px; --s-4:12px; --s-5:16px; --s-6:20px; --s-7:24px;
+  --s-8:32px; --s-9:40px; --s-10:48px; --s-11:64px; --s-12:80px;
+
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-pill:999px;
+
+  --elev-1:0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2:0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3:0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-phone:0 24px 60px rgba(20,24,40,.18), 0 8px 24px rgba(20,24,40,.10);
+
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body { font-family:var(--f-sans); background:var(--bg-canvas); color:var(--text-primary); font-size:15px; line-height:22px; -webkit-font-smoothing:antialiased; }
+
+.page { max-width:1280px; margin:0 auto; padding:var(--s-10) var(--s-7) var(--s-12); }
+.page-header { margin-bottom:var(--s-10); border-bottom:1px solid var(--border-subtle); padding-bottom:var(--s-9); }
+.eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-brand); margin:0 0 var(--s-3); }
+.page-title { font-family:var(--f-serif); font-size:44px; line-height:50px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.01em; }
+.page-sub { color:var(--text-secondary); max-width:62ch; margin:0; font-size:17px; line-height:26px; }
+.page-meta { color:var(--text-tertiary); margin-top:var(--s-4); font-size:13px; font-family:ui-monospace,monospace; }
+
+.section { margin-top:var(--s-12); }
+.section-head { margin-bottom:var(--s-9); }
+.section-eyebrow { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--cobalt-600); margin:0 0 var(--s-2); }
+.section-title { font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.section-sub { color:var(--text-secondary); max-width:70ch; margin:0; font-size:15px; line-height:24px; }
+
+.surfaces { display:flex; flex-wrap:wrap; gap:var(--s-9); align-items:flex-start; }
+.surface-cap { font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-brand); margin:0 0 var(--s-2); }
+.surface-cap-sub { font-size:13px; color:var(--text-secondary); margin:0 0 var(--s-4); line-height:18px; max-width:48ch; }
+
+/* desktop frame (mirrors parent hi-fi tokens) */
+.desktop-wrap { background:var(--stone-100); border:1px solid var(--stone-300); border-radius:14px; padding:var(--s-3); box-shadow:var(--elev-3); width:100%; max-width:1180px; }
+.desktop-bar { display:flex; align-items:center; gap:6px; padding:0 var(--s-2) var(--s-3); }
+.desktop-bar .dot { width:11px; height:11px; border-radius:99px; }
+.desktop-bar .dot.r { background:#FF5F57; } .desktop-bar .dot.y { background:#FEBC2E; } .desktop-bar .dot.g { background:#28C840; }
+.desktop-bar .url { margin-left:var(--s-5); flex:1; max-width:520px; background:#fff; border-radius:var(--r-pill); border:1px solid var(--stone-300); font-size:12px; padding:6px 14px; color:var(--text-tertiary); font-family:ui-monospace,monospace; }
+.desktop-frame { background:#fff; border-radius:10px; overflow:hidden; min-height:640px; display:grid; grid-template-columns:300px 1fr; }
+.desktop-side { background:var(--cream-100); border-right:1px solid var(--border-subtle); padding:var(--s-7) var(--s-5); }
+.desktop-side .brand { font-family:var(--f-serif); font-size:20px; color:var(--cobalt-900); margin-bottom:var(--s-7); }
+.desktop-side .nav-item { padding:10px var(--s-4); border-radius:var(--r-md); font-size:14px; color:var(--text-secondary); display:flex; align-items:center; gap:var(--s-3); }
+.desktop-side .nav-item.active { background:var(--cobalt-50); color:var(--cobalt-700); font-weight:600; }
+.desktop-side .nav-item + .nav-item { margin-top:var(--s-1); }
+.desktop-main { padding:var(--s-9) var(--s-10); }
+
+.sec-eyebrow-side { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); padding:0 var(--s-4) var(--s-3); }
+
+.avatar { width:40px; height:40px; border-radius:var(--r-pill); background:var(--cream-200); display:inline-flex; align-items:center; justify-content:center; color:var(--cobalt-700); font-weight:600; font-size:14px; flex-shrink:0; overflow:hidden; }
+.avatar.sm { width:28px; height:28px; font-size:11px; }
+.avatar.cobalt { background:var(--cobalt-100); color:var(--cobalt-900); }
+.avatar.muted { background:var(--stone-100); color:var(--stone-500); }
+
+/* sidebar entry: walking (active) */
+.side-entry { display:flex; gap:10px; align-items:center; padding:8px 12px; border-radius:10px; }
+.side-entry.active { background:var(--cobalt-50); }
+.side-entry .who { flex:1; }
+.side-entry .who .name { font-size:13px; font-weight:600; color:var(--stone-900); }
+.side-entry .who .meta { font-size:11px; color:var(--text-tertiary); margin-top:1px; }
+.side-entry.active .who .name { color:var(--cobalt-900); }
+.side-entry.active .who .meta { color:var(--cobalt-700); }
+
+/* sidebar entry: sealed */
+.side-entry.sealed .who .name { color:var(--text-secondary); font-weight:500; font-style:italic; }
+.side-entry.sealed .who .meta { color:var(--text-tertiary); }
+.side-entry.sealed .avatar { opacity:.55; filter:grayscale(.4); }
+.side-entry.sealed .seal-pip { font-size:10px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); padding:2px 8px; border-radius:var(--r-pill); border:1px solid var(--border-strong); background:transparent; }
+
+.section-divider { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); padding:var(--s-5) var(--s-4) var(--s-3); display:flex; align-items:center; gap:var(--s-3); }
+.section-divider::after { content:""; flex:1; height:1px; background:var(--border-subtle); }
+
+/* main panel: sealed empty/403 */
+.sealed-hero { background:var(--cream-100); border:1px solid var(--border-subtle); border-radius:var(--r-xl); padding:var(--s-12) var(--s-10); text-align:center; }
+.sealed-hero .glyph { width:88px; height:88px; margin:0 auto var(--s-7); display:flex; align-items:center; justify-content:center; }
+.sealed-hero h2 { font-family:var(--f-serif); font-size:28px; line-height:34px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); max-width:22ch; margin-left:auto; margin-right:auto; }
+.sealed-hero p { font-size:15px; line-height:23px; color:var(--text-secondary); max-width:48ch; margin:0 auto var(--s-7); }
+.sealed-hero .scripture { font-family:var(--f-serif); font-style:italic; color:var(--cobalt-900); font-size:14px; line-height:22px; border-left:2px solid var(--cobalt-300); padding-left:var(--s-4); max-width:36ch; margin:0 auto; text-align:left; }
+.sealed-hero .scripture cite { display:block; margin-top:var(--s-2); font-size:11px; font-style:normal; color:var(--text-tertiary); letter-spacing:.04em; text-transform:uppercase; }
+
+/* ribbon: HTTP 403 indicator */
+.http-ribbon { display:inline-flex; align-items:center; gap:var(--s-3); font-family:ui-monospace, monospace; font-size:11px; color:var(--text-tertiary); background:#fff; border:1px solid var(--border-strong); padding:6px 10px; border-radius:var(--r-pill); margin-top:var(--s-7); }
+.http-ribbon .pip { width:8px; height:8px; border-radius:99px; background:var(--stone-500); }
+
+/* journal */
+.journal-hero { padding:var(--s-7) 0 var(--s-7); border-bottom:1px solid var(--border-subtle); margin-bottom:var(--s-7); }
+.journal-hero .breadcrumb { font-size:12px; color:var(--text-tertiary); margin:0 0 var(--s-3); letter-spacing:.04em; text-transform:uppercase; font-weight:600; }
+.journal-hero h2 { font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); letter-spacing:-0.005em; }
+.journal-hero p { font-size:14px; line-height:21px; color:var(--text-secondary); max-width:62ch; margin:0; }
+.journal-hero .duration { display:inline-flex; align-items:center; gap:var(--s-2); font-size:12px; color:var(--cobalt-700); background:var(--cobalt-50); padding:4px 10px; border-radius:var(--r-pill); margin-top:var(--s-3); font-weight:600; }
+
+.journal-entry { background:var(--cream-50); border:1px solid var(--border-subtle); border-radius:var(--r-lg); padding:var(--s-5) var(--s-6); }
+.journal-entry + .journal-entry { margin-top:var(--s-4); }
+.journal-entry .head { display:flex; justify-content:space-between; align-items:baseline; margin-bottom:var(--s-3); }
+.journal-entry .when { font-size:11px; color:var(--text-tertiary); font-variant-numeric:tabular-nums; letter-spacing:.04em; text-transform:uppercase; font-weight:600; }
+.journal-entry .read-state { font-size:11px; color:var(--text-tertiary); font-style:italic; }
+.journal-entry .body { font-family:var(--f-serif); font-size:16px; line-height:24px; color:var(--cobalt-900); }
+.journal-empty { padding:var(--s-9) 0; text-align:center; color:var(--text-tertiary); font-size:13px; font-style:italic; }
+
+.day-sep { text-align:left; font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-tertiary); margin:var(--s-7) 0 var(--s-3); }
+
+/* spec sidebar */
+.spec { background:var(--cobalt-50); border:1px solid var(--cobalt-100); border-radius:var(--r-lg); padding:var(--s-5) var(--s-6); }
+.spec h3 { font-family:var(--f-serif); font-weight:400; font-size:18px; color:var(--cobalt-900); margin:0 0 var(--s-4); }
+.spec p { font-size:13px; line-height:19px; color:var(--cobalt-700); margin:0 0 var(--s-5); }
+.spec-list { margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:10px; }
+.spec-list li { display:flex; gap:var(--s-3); font-size:14px; line-height:20px; color:var(--cobalt-900); }
+.spec-list li .dot { flex-shrink:0; margin-top:6px; width:6px; height:6px; border-radius:99px; background:var(--cobalt-600); }
+.spec-list li.no .dot { background:transparent; border:1px solid var(--cobalt-600); }
+.spec-list li.no { color:var(--cobalt-700); }
+.spec-list li b { font-weight:600; }
+.scripture { font-family:var(--f-serif); font-style:italic; color:var(--cobalt-900); font-size:15px; line-height:24px; border-left:2px solid var(--cobalt-600); padding-left:var(--s-5); margin-top:var(--s-5); }
+.scripture cite { display:block; margin-top:var(--s-2); font-size:12px; font-style:normal; color:var(--text-tertiary); letter-spacing:.04em; text-transform:uppercase; }
+
+/* timeline */
+.timeline { display:grid; grid-template-columns:repeat(4, 1fr); gap:var(--s-3); margin-top:var(--s-7); }
+.timeline-step { background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg); padding:var(--s-5); position:relative; }
+.timeline-step .when { font-family:ui-monospace,monospace; font-size:11px; color:var(--cobalt-700); font-weight:600; letter-spacing:.04em; text-transform:uppercase; }
+.timeline-step h4 { font-family:var(--f-sans); font-size:14px; font-weight:600; color:var(--stone-900); margin:6px 0 4px; }
+.timeline-step p { font-size:12px; line-height:18px; color:var(--text-secondary); margin:0; }
+.timeline-step.is-end { background:var(--stone-100); border-color:var(--stone-300); color:var(--text-tertiary); }
+.timeline-step.is-end h4, .timeline-step.is-end .when { color:var(--text-secondary); }
+
+/* checklist */
+.check-list { display:flex; flex-direction:column; gap:var(--s-3); margin:var(--s-7) 0 0; padding:0; list-style:none; }
+.check-list li { display:grid; grid-template-columns:28px 1fr; gap:var(--s-4); padding:var(--s-5) var(--s-6); background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-md); }
+.check-list li .ck { width:24px; height:24px; border-radius:99px; background:var(--cobalt-700); color:#fff; display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.check-list li.pending .ck { background:#fff; border:1.5px dashed var(--cobalt-300); color:var(--cobalt-700); }
+.check-list li .body { font-size:14px; line-height:21px; color:var(--text-primary); }
+.check-list li .body b { color:var(--cobalt-900); font-weight:600; }
+.check-list li .body em { color:var(--text-tertiary); font-style:normal; font-size:12px; display:block; margin-top:2px; }
+
+hr.hair { border:none; border-top:1px solid var(--border-subtle); margin:var(--s-7) 0; }
+
+.toc { display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-7); }
+.toc a { text-decoration:none; font-size:12px; font-weight:600; padding:6px 12px; border-radius:var(--r-pill); background:var(--cobalt-50); color:var(--cobalt-700); border:1px solid var(--cobalt-100); }
+.toc a:hover { background:var(--cobalt-100); }
+
+.copy-table { width:100%; border-collapse:collapse; margin-top:var(--s-5); font-size:13px; }
+.copy-table th, .copy-table td { padding:var(--s-4) var(--s-5); border-bottom:1px solid var(--border-subtle); text-align:left; vertical-align:top; }
+.copy-table th { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); background:var(--cream-50); }
+.copy-table td.id { font-family:ui-monospace,monospace; color:var(--cobalt-700); font-weight:600; white-space:nowrap; }
+.copy-table td.copy { font-family:var(--f-serif); color:var(--cobalt-900); font-size:15px; line-height:22px; }
+.copy-table td.where { color:var(--text-secondary); }
+
+.foot { margin-top:var(--s-12); padding-top:var(--s-7); border-top:1px solid var(--border-subtle); color:var(--text-tertiary); font-size:13px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <p class="eyebrow">BLE-132 · BlessCupid · Hi-fi · 2026-04-29</p>
+    <h1 class="page-title">Pastor mode — 24h transcript seal on revoke</h1>
+    <p class="page-sub">When the audited user revokes pastor-mode, the mentor's reading must end. Within 24h the Pastor's admin transitions from "Berjalan bersama" to "Sudah selesai" — transcripts become inaccessible (403), Pastor's own notes survive in a read-only journal that no longer links back to the user's chat stream, and after 90 days the transcript hard-deletes unless legal hold is set. Audited user keeps her mirror permanently — the seal is asymmetric.</p>
+    <p class="page-meta">Builds on BLE-108 (parent). Constraint: extends checklist with #11. Pastor copy review pending. Mobile 390×844 / Desktop 1280w.</p>
+    <nav class="toc">
+      <a href="#flow-8a">8a · Sidebar transition</a>
+      <a href="#flow-8b">8b · 403 sealed transcript</a>
+      <a href="#flow-8c">8c · Pastor notes journal</a>
+      <a href="#timeline">Seal timeline</a>
+      <a href="#copy">Copy strings (for Pastor)</a>
+      <a href="#check">Constraint #11</a>
+    </nav>
+  </header>
+
+  <!-- =================================================================
+       FLOW 8a — Sidebar: "Berjalan bersama" → "Sudah selesai"
+       ================================================================= -->
+  <section class="section" id="flow-8a">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 11 · Sealed sidebar entry · No "Resume"</p>
+      <h2 class="section-title">8a · Sidebar transition — sealed entries leave the active list</h2>
+      <p class="section-sub">After the seal job runs (≤24h post-revoke), Maya P. leaves the "Berjalan bersama" group and reappears beneath a quiet "Sudah selesai" divider. Her entry shows duration only ("14 hari · sudah selesai"). There is no "resume" CTA — re-walking requires a fresh invitation, not a resume.</p>
+    </div>
+
+    <div class="desktop-wrap">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/walking-with</div>
+      </div>
+      <div class="desktop-frame">
+        <aside class="desktop-side">
+          <div class="brand">BlessCupid</div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+            Beranda
+          </div>
+          <div class="nav-item active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.5"/><path d="M14 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+            Berjalan bersama
+            <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">8</span>
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Catatan saya
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.7l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.7-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 0 1-4 0v-.1a1.6 1.6 0 0 0-1-1.5 1.6 1.6 0 0 0-1.7.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.7 1.6 1.6 0 0 0-1.5-1H3a2 2 0 0 1 0-4h.1a1.6 1.6 0 0 0 1.5-1 1.6 1.6 0 0 0-.3-1.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.7.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.7-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.7V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 0 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg>
+            Pengaturan
+          </div>
+
+          <div class="section-divider">Berjalan bersama</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="side-entry">
+              <span class="avatar sm" style="background:#F2EFE6; color:var(--stone-700);">A</span>
+              <div class="who"><div class="name">Andre S.</div><div class="meta">3 hari</div></div>
+            </div>
+            <div class="side-entry">
+              <span class="avatar sm" style="background:#F2EFE6; color:var(--stone-700);">L</span>
+              <div class="who"><div class="name">Lina K.</div><div class="meta">2 bulan</div></div>
+            </div>
+          </div>
+
+          <div class="section-divider">Sudah selesai</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="side-entry sealed active" style="background:var(--cream-50); border:1px solid var(--border-subtle);">
+              <span class="avatar sm muted">M</span>
+              <div class="who"><div class="name">Maya P.</div><div class="meta">14 hari · sudah selesai</div></div>
+              <span class="seal-pip">Selesai</span>
+            </div>
+            <div class="side-entry sealed">
+              <span class="avatar sm muted">R</span>
+              <div class="who"><div class="name">Rifqi A.</div><div class="meta">2 bulan · sudah selesai</div></div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="desktop-main">
+          <div class="sealed-hero">
+            <div class="glyph">
+              <!-- closed door — Wahyu 3:20 inversion: when the door closes, the mentor withdraws -->
+              <svg width="84" height="84" viewBox="0 0 96 96" fill="none" stroke="#243F7A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 80V20a4 4 0 0 1 4-4h44a4 4 0 0 1 4 4v60"/>
+                <line x1="14" y1="80" x2="82" y2="80"/>
+                <circle cx="62" cy="50" r="2.2" fill="#243F7A"/>
+                <path d="M48 12c4 0 6 2 6 6" opacity="0.4"/>
+              </svg>
+            </div>
+            <h2>Perjalanan ini sudah berakhir.</h2>
+            <p>Anda berjalan bersama Maya selama 14 hari — sebuah perjalanan yang baik. Sekarang ia berjalan sendiri, dan pintu Anda untuk membaca percakapannya sudah ditutup.</p>
+            <div class="scripture">
+              "Lihatlah, Aku berdiri di muka pintu dan mengetuk … " — pintu yang ia pilih untuk tutup, kita hormati.
+              <cite>Wahyu 3:20 · TB2</cite>
+            </div>
+            <div class="http-ribbon">
+              <span class="pip"></span>
+              <span>HTTP 403 · transcripts.read · sealed_at 2026-04-29 09:47 WIB</span>
+            </div>
+          </div>
+
+          <div style="margin-top:var(--s-7); display:grid; grid-template-columns:1fr 1fr; gap:var(--s-5);">
+            <div style="padding:var(--s-5) var(--s-6); border:1px solid var(--border-subtle); border-radius:var(--r-md); background:#fff;">
+              <div style="font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px;">Catatan Anda untuk Maya</div>
+              <p style="font-size:13px; line-height:19px; color:var(--text-secondary); margin:0 0 var(--s-3);">3 catatan disimpan di jurnal Anda — dapat dibaca, tidak lagi terhubung ke percakapan Maya.</p>
+              <a href="#flow-8c" style="font-size:13px; font-weight:600; color:var(--cobalt-700); text-decoration:underline; text-underline-offset:3px;">Buka jurnal saya →</a>
+            </div>
+            <div style="padding:var(--s-5) var(--s-6); border:1px dashed var(--border-strong); border-radius:var(--r-md); background:var(--cream-50);">
+              <div style="font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px;">Tidak ada tombol "lanjut"</div>
+              <p style="font-size:13px; line-height:19px; color:var(--text-secondary); margin:0;">Untuk berjalan bersama Maya lagi, Maya harus mengundang Anda kembali. Tidak ada cara dari sisi Anda — itu memang bagian dari penghormatan terhadap pilihannya.</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 8b — Pastor tries deep-link to old transcript URL → 403
+       ================================================================= -->
+  <section class="section" id="flow-8b">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 11 · Hard 403 · Neutral copy · No "you've been blocked"</p>
+      <h2 class="section-title">8b · Pastor reaches sealed transcript via old URL or bookmark</h2>
+      <p class="section-sub">If a Pastor types a previously-bookmarked URL like <code style="font-size:13px;">/walking-with/maya-p/threads/abc</code>, the server responds with 403 and this surface. Tone is benediction, not rejection. No "Anda dikeluarkan", no "Akses ditolak". Same string family as the sidebar empty state — it is the same sealed door.</p>
+    </div>
+
+    <div class="desktop-wrap">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/walking-with/maya-p/threads/abc</div>
+      </div>
+      <div class="desktop-frame">
+        <aside class="desktop-side">
+          <div class="brand">BlessCupid</div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+            Beranda
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.5"/><path d="M14 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+            Berjalan bersama
+            <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">8</span>
+          </div>
+          <div class="nav-item active">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Catatan saya
+          </div>
+          <div class="nav-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/></svg>
+            Pengaturan
+          </div>
+        </aside>
+
+        <main class="desktop-main" style="display:flex; flex-direction:column; justify-content:center; min-height:560px; background:linear-gradient(180deg, var(--cream-50) 0%, var(--cobalt-50) 100%);">
+          <div class="sealed-hero" style="background:transparent; border:none; padding:0;">
+            <div class="glyph">
+              <svg width="96" height="96" viewBox="0 0 96 96" fill="none" stroke="#243F7A" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M22 80V20a4 4 0 0 1 4-4h44a4 4 0 0 1 4 4v60"/>
+                <line x1="14" y1="80" x2="82" y2="80"/>
+                <circle cx="62" cy="50" r="2.2" fill="#243F7A"/>
+              </svg>
+            </div>
+            <h2>Perjalanan ini sudah berakhir.</h2>
+            <p>Tautan yang Anda ikuti menuju percakapan yang sudah ditutup. Pesan Maya tetap miliknya; bagian Anda dari perjalanan ini sudah selesai dengan baik.</p>
+            <div class="scripture">
+              "Selamat melanjutkan perjalananmu sendiri" — yang ia katakan kepada dirinya, kita katakan dengan menutup pintu di sisi kita.
+            </div>
+            <div style="display:flex; gap:var(--s-3); justify-content:center; margin-top:var(--s-7);">
+              <a href="#flow-8a" style="font-family:var(--f-sans); font-weight:600; font-size:14px; padding:10px 20px; border-radius:var(--r-md); background:var(--cobalt-700); color:#fff; text-decoration:none;">Kembali ke Berjalan bersama</a>
+              <a href="#flow-8c" style="font-family:var(--f-sans); font-weight:600; font-size:14px; padding:10px 20px; border-radius:var(--r-md); background:transparent; color:var(--cobalt-700); border:1px solid var(--cobalt-700); text-decoration:none;">Buka catatan saya</a>
+            </div>
+            <div class="http-ribbon">
+              <span class="pip"></span>
+              <span>HTTP 403 · transcript_sealed · audit_log_id A8F2-2026-04-29-09-47</span>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 8c — Pastor notes journal (read-only, post-seal)
+       ================================================================= -->
+  <section class="section" id="flow-8c">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 11 · Pastor's notes are HIS data · Asymmetric retention</p>
+      <h2 class="section-title">8c · Pastor's notes journal — read-only, no link back</h2>
+      <p class="section-sub">Pastor's own reflections about Maya are not deleted on revoke — they are HIS data, written by HIS hand. They move into a journal-shaped surface (serif, single-column, dated). The journal does <b>not</b> link back to Maya's chat stream, does <b>not</b> show whether she ever read them, and does <b>not</b> offer a "send another note" affordance.</p>
+    </div>
+
+    <div class="desktop-wrap">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/notes/journal/maya-p</div>
+      </div>
+      <div class="desktop-frame">
+        <aside class="desktop-side">
+          <div class="brand">BlessCupid</div>
+          <div class="nav-item">Beranda</div>
+          <div class="nav-item">Berjalan bersama <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">8</span></div>
+          <div class="nav-item active">Catatan saya</div>
+          <div class="nav-item">Pengaturan</div>
+
+          <div class="section-divider">Jurnal — sudah selesai</div>
+          <div style="display:flex; flex-direction:column; gap:6px;">
+            <div class="side-entry sealed active" style="background:var(--cream-50); border:1px solid var(--border-subtle);">
+              <span class="avatar sm muted">M</span>
+              <div class="who"><div class="name">Maya P.</div><div class="meta">14 hari · 3 catatan</div></div>
+            </div>
+            <div class="side-entry sealed">
+              <span class="avatar sm muted">R</span>
+              <div class="who"><div class="name">Rifqi A.</div><div class="meta">2 bulan · 7 catatan</div></div>
+            </div>
+          </div>
+        </aside>
+
+        <main class="desktop-main" style="background:var(--cream-50);">
+          <div class="journal-hero">
+            <p class="breadcrumb">Catatan saya · Jurnal</p>
+            <h2>Apa yang saya tulis ketika berjalan bersama Maya</h2>
+            <p>Catatan-catatan ini adalah refleksi Anda sendiri. Mereka tetap di sini untuk Anda baca kembali. Maya tidak melihat halaman ini, dan dari halaman ini tidak ada jalan kembali ke percakapan beliau.</p>
+            <span class="duration">14 hari · 14 April – 28 April 2026 · 3 catatan</span>
+          </div>
+
+          <div class="day-sep">22 April · sore</div>
+          <div class="journal-entry">
+            <div class="head">
+              <span class="when">22 April · 17:12</span>
+              <span class="read-state">ditulis ketika perjalanan masih berjalan</span>
+            </div>
+            <div class="body">Bersyukur Maya dan Tanto saling jujur tentang masa lalu masing-masing. Ini langkah yang berani; tidak banyak yang berani mulai dari sana. Saya kira inilah “saling mengaku dosamu seorang kepada yang lain” yang Yakobus tulis — bukan upacara, tapi keputusan.</div>
+          </div>
+
+          <div class="day-sep">25 April · pagi</div>
+          <div class="journal-entry">
+            <div class="head">
+              <span class="when">25 April · 06:45</span>
+              <span class="read-state">ditulis ketika perjalanan masih berjalan</span>
+            </div>
+            <div class="body">Maya menulis bahwa ia mulai merasa percakapan dengan Tanto sudah cukup matang untuk dilanjutkan tanpa saya. Itu kabar baik. Tujuan saya bukan tinggal — tujuan saya adalah memastikan ada teman seperjalanan yang lain.</div>
+          </div>
+
+          <div class="day-sep">28 April · malam</div>
+          <div class="journal-entry">
+            <div class="head">
+              <span class="when">28 April · 21:30</span>
+              <span class="read-state">ditulis di hari perjalanan ditutup</span>
+            </div>
+            <div class="body">Maya mengakhiri perjalanan kita malam ini. Ia siap. Saya tidak akan tahu bagaimana lanjutannya — itu memang bukan bagian saya untuk tahu. Doa saya tetap: Tuhan menjaga keluarnya dan masuknya, dari sekarang sampai selama-lamanya.</div>
+          </div>
+
+          <div class="journal-empty" style="border-top:1px solid var(--border-subtle); margin-top:var(--s-9); padding-top:var(--s-7);">
+            Tidak ada cara menulis catatan baru di halaman ini. Pintu sudah ditutup.
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- spec sidebar -->
+    <div style="margin-top:var(--s-9); display:grid; grid-template-columns:1fr 1fr; gap:var(--s-7);">
+      <div class="spec">
+        <h3>Why the journal exists</h3>
+        <p>The Pastor's reflection-work is part of HIS spiritual labor. Deleting it on Maya's revoke would punish him for her healthy choice. Preserving it teaches the opposite: ending a walk is a good event for both walkers, and the mentor gets to keep the lessons.</p>
+        <ul class="spec-list">
+          <li><span class="dot"></span><span><b>Pastor's notes are kept indefinitely.</b> They survive transcript hard-delete (90d) because they are a different actor's data.</span></li>
+          <li><span class="dot"></span><span><b>Single-column serif body.</b> Frames the surface as a personal journal, not as a chat record.</span></li>
+          <li><span class="dot"></span><span><b>Marked "ditulis ketika perjalanan masih berjalan".</b> Provenance is visible — these were not written after the fact.</span></li>
+          <li class="no"><span class="dot"></span><span><b>No link back to Maya's chat stream.</b> The seal is one-way.</span></li>
+          <li class="no"><span class="dot"></span><span><b>No "kirim catatan baru" button.</b> Notes about Maya are closed; Maya is not a thread anymore.</span></li>
+          <li class="no"><span class="dot"></span><span><b>No read-receipt revealed post-seal.</b> Whether Maya read or not is no longer Pastor's information.</span></li>
+        </ul>
+        <div class="scripture">
+          "Bersyukurlah dalam segala hal" — termasuk dalam berakhirnya hal-hal yang baik.
+          <cite>1 Tesalonika 5:18 · TB2</cite>
+        </div>
+      </div>
+
+      <div class="spec">
+        <h3>What the API enforces</h3>
+        <p>Behind the surface is a small set of server contracts. The hi-fi is the visible half; the spec doc <code style="font-family:ui-monospace,monospace; font-size:12px;">pastor-seal-spec.md</code> in this folder is the other half.</p>
+        <ul class="spec-list">
+          <li><span class="dot"></span><span><b>seal_after = revoked_at + 24h.</b> Job runs hourly, idempotent, picks up everything past its seal_after.</span></li>
+          <li><span class="dot"></span><span><b>403 on transcript reads</b> when relationship.state ∈ {"sealed","hard_deleted"} and actor = pastor.</span></li>
+          <li><span class="dot"></span><span><b>Notes survive seal.</b> pastor_notes.audited_user_id is replaced with audited_user_snapshot (display_name, avatar_color, walked_for_days).</span></li>
+          <li><span class="dot"></span><span><b>hard_delete_after = revoked_at + 90d.</b> Cron drops transcript rows. Pastor notes untouched. Skipped if legal_hold = true.</span></li>
+          <li><span class="dot"></span><span><b>Audited user's mirror is unaffected.</b> Maya keeps her record permanently — that surface lives in user-side schema, not pastor-side.</span></li>
+        </ul>
+        <p style="margin-top:var(--s-5);"><a href="./pastor-seal-spec.md" style="color:var(--cobalt-700); text-decoration:underline; text-underline-offset:3px; font-weight:600;">Read the full spec →</a></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       SEAL TIMELINE
+       ================================================================= -->
+  <section class="section" id="timeline">
+    <div class="section-head">
+      <p class="section-eyebrow">From revoke to hard-delete · 90 days</p>
+      <h2 class="section-title">Seal timeline at a glance</h2>
+      <p class="section-sub">Four discrete states. The Pastor's view shifts at T+24h; transcript bytes leave the database at T+90d unless legal hold. Maya's mirror is unaffected throughout.</p>
+    </div>
+
+    <div class="timeline">
+      <div class="timeline-step">
+        <div class="when">T = 0</div>
+        <h4>User revokes</h4>
+        <p>Maya taps "Ya, akhiri" (BLE-108 surface 5a → 5b). relationship.state = "revoked". Pastor receives gentle in-app notice; sidebar entry already shows "Sudah berakhir" pill.</p>
+      </div>
+      <div class="timeline-step">
+        <div class="when">T + ≤24h</div>
+        <h4>Seal job runs</h4>
+        <p>Hourly cron: relationships where state = "revoked" and revoked_at ≤ now − 24h → state = "sealed". Pastor's transcript reads start returning 403. Notes get the user_snapshot copy and move into journal queries.</p>
+      </div>
+      <div class="timeline-step">
+        <div class="when">T + 90d</div>
+        <h4>Hard delete</h4>
+        <p>Daily cron: sealed relationships past 90d with legal_hold = false → transcript rows dropped (messages, read receipts, attachments). Pastor notes untouched. Pastor sidebar entry stays as journal pointer.</p>
+      </div>
+      <div class="timeline-step is-end">
+        <div class="when">Indefinite</div>
+        <h4>Maya's mirror persists</h4>
+        <p>Surface 6 (BLE-108) lives in user-side schema and is never touched by these jobs. Maya keeps the record of what was read, when, by whom — for as long as she wants it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       COPY STRINGS — pulled out for Pastor sign-off
+       ================================================================= -->
+  <section class="section" id="copy">
+    <div class="section-head">
+      <p class="section-eyebrow">Pastor copy review · do not merge until signed off</p>
+      <h2 class="section-title">All Indonesian copy on these surfaces</h2>
+      <p class="section-sub">Every visible Indonesian string from the three surfaces above is enumerated here. Pastor reviews tone, doctrinal grounding, and pastoral pitch before merge. Strings are placeholders until reviewed.</p>
+    </div>
+
+    <table class="copy-table">
+      <thead>
+        <tr><th style="width:18%;">String ID</th><th style="width:12%;">Surface</th><th style="width:42%;">Indonesian copy (TB2 register)</th><th>Where it appears</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="id">SEAL.SIDEBAR.GROUP</td><td>8a</td><td class="copy">Sudah selesai</td><td class="where">Sidebar divider replacing "Berjalan bersama" once the relationship is sealed.</td></tr>
+        <tr><td class="id">SEAL.SIDEBAR.DURATION</td><td>8a</td><td class="copy">{N} hari · sudah selesai</td><td class="where">Sidebar entry meta-line. N = days walked together (revoked_at − accepted_at).</td></tr>
+        <tr><td class="id">SEAL.SIDEBAR.PIP</td><td>8a</td><td class="copy">Selesai</td><td class="where">Small outline pill on the most recently sealed entry. Disappears after 7 days.</td></tr>
+        <tr><td class="id">SEAL.HERO.TITLE</td><td>8a, 8b</td><td class="copy">Perjalanan ini sudah berakhir.</td><td class="where">Big serif headline on both the sidebar empty state and the 403 page. Same string both places — same door.</td></tr>
+        <tr><td class="id">SEAL.HERO.BODY.SIDEBAR</td><td>8a</td><td class="copy">Anda berjalan bersama Maya selama 14 hari — sebuah perjalanan yang baik. Sekarang ia berjalan sendiri, dan pintu Anda untuk membaca percakapannya sudah ditutup.</td><td class="where">Body when Pastor opens the sealed entry from the sidebar.</td></tr>
+        <tr><td class="id">SEAL.HERO.BODY.403</td><td>8b</td><td class="copy">Tautan yang Anda ikuti menuju percakapan yang sudah ditutup. Pesan Maya tetap miliknya; bagian Anda dari perjalanan ini sudah selesai dengan baik.</td><td class="where">Body when Pastor lands on a sealed transcript via deep link or bookmark (HTTP 403 surface).</td></tr>
+        <tr><td class="id">SEAL.HERO.SCRIPTURE</td><td>8a</td><td class="copy">"Lihatlah, Aku berdiri di muka pintu dan mengetuk … " — pintu yang ia pilih untuk tutup, kita hormati.</td><td class="where">Scripture rule paired with the sidebar empty state. Wahyu 3:20 (TB2). Pastor: confirm framing of Christ-as-knocker as license for mentor withdrawal.</td></tr>
+        <tr><td class="id">SEAL.HERO.SCRIPTURE.403</td><td>8b</td><td class="copy">"Selamat melanjutkan perjalananmu sendiri" — yang ia katakan kepada dirinya, kita katakan dengan menutup pintu di sisi kita.</td><td class="where">Pull-quote on the 403 page, recalling the user's benediction at end of BLE-108 surface 5b.</td></tr>
+        <tr><td class="id">SEAL.HERO.NOTES.HINT</td><td>8a</td><td class="copy">{N} catatan disimpan di jurnal Anda — dapat dibaca, tidak lagi terhubung ke percakapan Maya.</td><td class="where">Card on sidebar empty state that points to the journal.</td></tr>
+        <tr><td class="id">SEAL.HERO.NOTES.CTA</td><td>8a</td><td class="copy">Buka jurnal saya →</td><td class="where">Link CTA on the journal pointer card.</td></tr>
+        <tr><td class="id">SEAL.HERO.NORESUME.LABEL</td><td>8a</td><td class="copy">Tidak ada tombol "lanjut"</td><td class="where">Eyebrow on the dashed card explaining why there is no resume affordance.</td></tr>
+        <tr><td class="id">SEAL.HERO.NORESUME.BODY</td><td>8a</td><td class="copy">Untuk berjalan bersama Maya lagi, Maya harus mengundang Anda kembali. Tidak ada cara dari sisi Anda — itu memang bagian dari penghormatan terhadap pilihannya.</td><td class="where">Dashed-card body. Pastor: confirm "penghormatan terhadap pilihannya" frame is correct (vs. doctrinal alternatives).</td></tr>
+        <tr><td class="id">SEAL.403.CTA.PRIMARY</td><td>8b</td><td class="copy">Kembali ke Berjalan bersama</td><td class="where">Primary CTA on 403 page (returns to active relationships list).</td></tr>
+        <tr><td class="id">SEAL.403.CTA.SECONDARY</td><td>8b</td><td class="copy">Buka catatan saya</td><td class="where">Secondary CTA on 403 page (deep-link to notes journal index).</td></tr>
+        <tr><td class="id">JOURNAL.NAV.GROUP</td><td>8c</td><td class="copy">Jurnal — sudah selesai</td><td class="where">Sidebar divider in "Catatan saya" view that contains journals for ended relationships.</td></tr>
+        <tr><td class="id">JOURNAL.SIDE.META</td><td>8c</td><td class="copy">{N} hari · {C} catatan</td><td class="where">Sidebar entry meta-line in journal view.</td></tr>
+        <tr><td class="id">JOURNAL.HERO.BREADCRUMB</td><td>8c</td><td class="copy">Catatan saya · Jurnal</td><td class="where">Breadcrumb above the journal title.</td></tr>
+        <tr><td class="id">JOURNAL.HERO.TITLE</td><td>8c</td><td class="copy">Apa yang saya tulis ketika berjalan bersama Maya</td><td class="where">Journal page title. First-person voice (saya), not pastoral-third-person.</td></tr>
+        <tr><td class="id">JOURNAL.HERO.BODY</td><td>8c</td><td class="copy">Catatan-catatan ini adalah refleksi Anda sendiri. Mereka tetap di sini untuk Anda baca kembali. Maya tidak melihat halaman ini, dan dari halaman ini tidak ada jalan kembali ke percakapan beliau.</td><td class="where">Journal page intro. Pastor: confirm the second-person address inside a first-person journal frame is acceptable (or whether to switch to consistent first-person).</td></tr>
+        <tr><td class="id">JOURNAL.HERO.DURATION</td><td>8c</td><td class="copy">{N} hari · {date_start} – {date_end} · {C} catatan</td><td class="where">Pill below the journal hero showing the bounds of the walk and the note count.</td></tr>
+        <tr><td class="id">JOURNAL.ENTRY.PROVENANCE.ACTIVE</td><td>8c</td><td class="copy">ditulis ketika perjalanan masih berjalan</td><td class="where">Provenance tag on every journal entry written before revoke.</td></tr>
+        <tr><td class="id">JOURNAL.ENTRY.PROVENANCE.CLOSE</td><td>8c</td><td class="copy">ditulis di hari perjalanan ditutup</td><td class="where">Provenance tag on entries written on the revoke day itself (within ±12h of revoked_at).</td></tr>
+        <tr><td class="id">JOURNAL.EMPTY.FOOTER</td><td>8c</td><td class="copy">Tidak ada cara menulis catatan baru di halaman ini. Pintu sudah ditutup.</td><td class="where">Footer at the end of the journal entries — explicit refusal of the "add new" affordance.</td></tr>
+        <tr><td class="id">JOURNAL.SCRIPTURE</td><td>8c</td><td class="copy">"Bersyukurlah dalam segala hal" — termasuk dalam berakhirnya hal-hal yang baik.</td><td class="where">Scripture rule on the spec sidebar next to journal. 1 Tesalonika 5:18 (TB2). Pastor: confirm reading "segala hal" includes ended pastoral relationships.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- =================================================================
+       CONSTRAINT CHECKLIST — extends BLE-108 with #11
+       ================================================================= -->
+  <section class="section" id="check">
+    <div class="section-head">
+      <p class="section-eyebrow">Extends BLE-108 constraints checklist</p>
+      <h2 class="section-title">Constraint #11 — Mentor withdrawal must be as complete as Christ models it</h2>
+      <p class="section-sub">Adds one row to the checklist that Pastor signs at merge. Listed alongside the BLE-108 ten constraints for the reviewer's convenience; only #11 is new.</p>
+    </div>
+
+    <ul class="check-list">
+      <li class="pending">
+        <span class="ck">11</span>
+        <div class="body"><b>11 · Sealing on revoke is one-way and complete within 24h.</b> Pastor's transcript reads return 403 with neutral pastoral copy ("Perjalanan ini sudah berakhir."). Pastor's own notes survive in a read-only journal that does not link to the user's chat stream and offers no "send new note" affordance. Sidebar entry shows duration only, never a "resume" CTA. Audited user's mirror is unaffected. Hard-delete fires at T+90d unless legal_hold is set.<em>Surfaces: 8a, 8b, 8c. Doctrine: Wahyu 3:20 (Christ withdraws when door closes), Yakobus 5:16 (mutual confession ends when one party closes the conversation), 1 Tesalonika 5:18 (gratitude for endings).</em></div>
+      </li>
+    </ul>
+
+    <hr class="hair">
+
+    <h3 style="font-family:var(--f-serif); font-weight:400; font-size:22px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Hand-off</h3>
+    <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:23px;">
+      <li><b>Pastor:</b> review every Indonesian string in the §Copy table above. Particular attention to the SEAL.HERO.SCRIPTURE rows (Wahyu 3:20 framing) and JOURNAL.HERO.BODY (mixed first/second-person voice).</li>
+      <li><b>FoundingEngineer (next subtask):</b> implementation. Server-side seal job, 403 response on the transcript route, journal data model, hard-delete cron. Spec lives in <code style="font-family:ui-monospace,monospace;">pastor-seal-spec.md</code> in this folder.</li>
+      <li><b>QA (when hired):</b> verify (a) sidebar transitions inside 24h after revoke, (b) old bookmarked transcript URLs return 403, (c) no "resume" or "kirim catatan baru" affordance appears on any sealed surface, (d) Maya's mirror still loads after Pastor's seal.</li>
+      <li><b>CEO consult:</b> precedent-setting. Confirm asymmetric retention (pastor loses access, user keeps record) is the doctrinal default, not a v2 add-on.</li>
+    </ul>
+
+    <p class="foot">BLE-132 · BlessCupid Pastor seal-on-revoke surfaces · Indonesian copy pending Pastor sign-off · 2026-04-29</p>
+  </section>
+
+</div>
+</body>
+</html>

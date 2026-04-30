@@ -1,0 +1,528 @@
+/* Match feed component styles. Consumes BLE-22 v0.1 tokens. */
+
+/* ── Header ─────────────────────────── */
+.bc-header {
+  padding: var(--space-4) var(--space-6);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.bc-header__title {
+  font-family: var(--font-display);
+  font-size: var(--text-heading-lg);
+  line-height: var(--lh-heading-lg);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+  margin: 0;
+}
+.bc-header__sub {
+  font-size: var(--text-body-sm);
+  line-height: var(--lh-body-sm);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.bc-header__icon-btn {
+  width: 44px; height: 44px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  display: grid; place-items: center;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+/* ── Mode toggle (Dating / Friendship) ─────────────────────────── */
+.bc-mode-toggle {
+  margin: 0 var(--space-6) var(--space-4);
+  background: var(--bg-raised);
+  border-radius: var(--radius-pill);
+  padding: 4px;
+  display: flex;
+  gap: 2px;
+}
+.bc-mode-toggle__btn {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--text-body-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.bc-mode-toggle__btn[aria-selected="true"] {
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+  box-shadow: var(--elev-1);
+  font-weight: 600;
+}
+
+/* ── Filter chips ─────────────────────────── */
+.bc-filters {
+  display: flex;
+  gap: var(--space-3);
+  padding: 0 var(--space-6) var(--space-5);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bc-filters::-webkit-scrollbar { display: none; }
+.bc-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-body-sm);
+  color: var(--text-secondary);
+  white-space: nowrap;
+  cursor: pointer;
+}
+.bc-chip[aria-pressed="true"] {
+  background: var(--color-cobalt-50);
+  border-color: var(--color-cobalt-600);
+  color: var(--color-cobalt-700);
+  font-weight: 500;
+}
+.bc-chip__caret { font-size: 10px; opacity: 0.7; }
+
+/* ── Feed scroll area ─────────────────────────── */
+.bc-feed {
+  position: absolute;
+  top: 192px;
+  bottom: 84px;
+  left: 0; right: 0;
+  overflow-y: auto;
+  padding: 0 var(--space-6) var(--space-7);
+  scroll-behavior: smooth;
+}
+
+/* ── Match card ─────────────────────────── */
+.bc-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+  box-shadow: var(--elev-2);
+  position: relative;
+}
+.bc-card__photo {
+  width: 100%;
+  aspect-ratio: 16 / 13;
+  background: linear-gradient(135deg, #d8c8b0 0%, #b89e7e 100%);
+  position: relative;
+  overflow: hidden;
+}
+.bc-card__photo img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bc-card__photo-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(20, 24, 40, 0.55) 0%,
+    rgba(20, 24, 40, 0.0) 38%);
+  pointer-events: none;
+}
+
+/* ── Verified / mode badge on photo ─────────────────────────── */
+.bc-badge {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(253, 251, 246, 0.94);
+  backdrop-filter: blur(8px);
+  font-size: var(--text-label);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--color-gold-700);
+  box-shadow: var(--elev-1);
+}
+.bc-badge--mode {
+  left: var(--space-4);
+  right: auto;
+  color: var(--text-brand);
+}
+
+/* ── Card overlay (name + meta on photo) ─────────────────────────── */
+.bc-card__overlay {
+  position: absolute;
+  bottom: var(--space-4);
+  left: var(--space-5);
+  right: var(--space-5);
+  color: var(--text-inverse);
+}
+.bc-card__name {
+  font-family: var(--font-display);
+  font-size: var(--text-display-lg);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  margin: 0;
+  line-height: var(--lh-display-lg);
+}
+.bc-card__meta {
+  margin-top: var(--space-2);
+  font-size: var(--text-body-sm);
+  opacity: 0.94;
+}
+.bc-card__meta-dot {
+  margin: 0 6px;
+  opacity: 0.7;
+}
+
+/* ── Card body ─────────────────────────── */
+.bc-card__body {
+  padding: var(--space-4) var(--space-5) var(--space-5);
+}
+.bc-attr-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border-subtle);
+  margin-bottom: var(--space-4);
+}
+.bc-attr {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.bc-attr__label {
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+.bc-attr__value {
+  font-size: var(--text-body-sm);
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+/* ── Verse snippet ─────────────────────────── */
+.bc-verse {
+  background: var(--color-gold-100);
+  border-left: 2px solid var(--color-gold-300);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 4px var(--radius-sm) var(--radius-sm) 4px;
+  margin-bottom: var(--space-4);
+}
+.bc-verse__quote {
+  font-family: var(--font-display);
+  font-size: var(--text-body-md);
+  line-height: 22px;
+  color: var(--text-scripture);
+  font-style: normal;
+  margin: 0;
+}
+.bc-verse__cite {
+  display: block;
+  margin-top: 4px;
+  font-size: var(--text-label);
+  color: var(--color-gold-700);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-style: normal;
+}
+
+/* ── Friendship overlap chips ─────────────────────────── */
+.bc-overlap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+.bc-overlap__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--color-cobalt-50);
+  color: var(--color-cobalt-700);
+  font-size: var(--text-label);
+  font-weight: 500;
+}
+.bc-overlap__chip svg { flex-shrink: 0; }
+
+/* ── Card actions ─────────────────────────── */
+.bc-card__actions {
+  display: flex;
+  gap: var(--space-4);
+}
+.bc-btn {
+  flex: 1;
+  height: 48px;
+  border-radius: var(--radius-lg);
+  border: none;
+  font-family: var(--font-body);
+  font-size: var(--text-body-md);
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: background var(--duration-base) var(--ease-standard);
+}
+.bc-btn--primary {
+  background: var(--color-cobalt-600);
+  color: var(--text-inverse);
+}
+.bc-btn--primary:active { background: var(--color-cobalt-700); }
+.bc-btn--ghost {
+  background: var(--bg-surface);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-subtle);
+  flex: 0 0 48px;
+  width: 48px;
+}
+.bc-btn--secondary {
+  background: var(--bg-surface);
+  color: var(--text-brand);
+  border: 1px solid var(--color-cobalt-600);
+}
+
+/* ── Female-controlled / mixed-gender note ─────────────────────────── */
+.bc-control-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--color-gold-100);
+  font-size: var(--text-label);
+  line-height: 16px;
+  color: var(--text-secondary);
+}
+
+/* ── Empty state ─────────────────────────── */
+.bc-empty {
+  position: absolute;
+  top: 192px; bottom: 84px; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 var(--space-8);
+  gap: var(--space-5);
+}
+.bc-empty__art {
+  width: 96px; height: 96px;
+  border-radius: var(--radius-pill);
+  background: var(--color-sage-100);
+  display: grid; place-items: center;
+  color: var(--color-sage-500);
+}
+.bc-empty__title {
+  font-family: var(--font-display);
+  font-size: var(--text-heading-lg);
+  font-weight: 400;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: var(--lh-heading-lg);
+}
+.bc-empty__copy {
+  font-size: var(--text-body-md);
+  color: var(--text-secondary);
+  line-height: var(--lh-body-md);
+  margin: 0;
+  max-width: 30ch;
+}
+.bc-empty__cta {
+  margin-top: var(--space-3);
+  height: 48px;
+  padding: 0 var(--space-7);
+  border-radius: var(--radius-pill);
+  background: var(--color-cobalt-600);
+  color: var(--text-inverse);
+  border: none;
+  font-weight: 600;
+  font-size: var(--text-body-md);
+  font-family: var(--font-body);
+}
+
+/* ── Loading skeleton ─────────────────────────── */
+.bc-skel-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  margin-bottom: var(--space-5);
+  overflow: hidden;
+  box-shadow: var(--elev-1);
+}
+.bc-skel-photo {
+  width: 100%;
+  aspect-ratio: 16 / 13;
+  background: linear-gradient(90deg,
+    var(--color-cream-200) 0%,
+    var(--color-cream-100) 50%,
+    var(--color-cream-200) 100%);
+  background-size: 200% 100%;
+  animation: bc-shimmer 1.4s ease-in-out infinite;
+}
+.bc-skel-line {
+  height: 12px;
+  border-radius: 4px;
+  margin: 12px 16px;
+  background: linear-gradient(90deg,
+    var(--color-cream-200) 0%,
+    var(--color-cream-100) 50%,
+    var(--color-cream-200) 100%);
+  background-size: 200% 100%;
+  animation: bc-shimmer 1.4s ease-in-out infinite;
+}
+.bc-skel-line--short { width: 40%; }
+.bc-skel-line--mid { width: 70%; }
+
+@keyframes bc-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Error state ─────────────────────────── */
+.bc-error {
+  position: absolute;
+  top: 192px; bottom: 84px; left: 0; right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 var(--space-8);
+  gap: var(--space-5);
+}
+.bc-error__art {
+  width: 88px; height: 88px;
+  border-radius: var(--radius-pill);
+  background: var(--color-amber-100);
+  border: 1px solid var(--color-amber-100);
+  display: grid; place-items: center;
+  color: var(--state-critical);
+}
+
+/* ── Filters drawer ─────────────────────────── */
+.bc-drawer-scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 24, 40, 0.5);
+  z-index: var(--z-modal);
+}
+.bc-drawer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--bg-surface);
+  border-radius: var(--radius-2xl) var(--radius-2xl) 0 0;
+  padding: var(--space-4) var(--space-6) var(--space-7);
+  max-height: 78%;
+  overflow-y: auto;
+  box-shadow: var(--elev-modal);
+  z-index: var(--z-modal);
+}
+.bc-drawer__handle {
+  width: 36px; height: 4px;
+  background: var(--color-cream-300);
+  border-radius: 999px;
+  margin: 0 auto var(--space-5);
+}
+.bc-drawer__title {
+  font-family: var(--font-display);
+  font-size: var(--text-heading-lg);
+  font-weight: 400;
+  margin: 0 0 var(--space-3);
+}
+.bc-drawer__sub {
+  font-size: var(--text-body-sm);
+  color: var(--text-tertiary);
+  margin-bottom: var(--space-6);
+}
+.bc-filter-group { margin-bottom: var(--space-6); }
+.bc-filter-group__label {
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: var(--space-3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.bc-filter-group__value {
+  font-weight: 400;
+  color: var(--text-brand);
+}
+.bc-pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.bc-pill {
+  padding: 8px 12px;
+  border-radius: var(--radius-pill);
+  background: var(--bg-raised);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-body-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.bc-pill[aria-pressed="true"] {
+  background: var(--color-cobalt-50);
+  border-color: var(--color-cobalt-600);
+  color: var(--color-cobalt-700);
+  font-weight: 500;
+}
+.bc-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--border-subtle);
+}
+.bc-toggle-row__label {
+  font-size: var(--text-body-md);
+  color: var(--text-primary);
+}
+.bc-toggle-row__sub {
+  display: block;
+  font-size: var(--text-label);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+.bc-switch {
+  width: 48px; height: 28px;
+  border-radius: 999px;
+  background: var(--color-stone-300);
+  position: relative;
+  border: none;
+  cursor: pointer;
+  transition: background var(--duration-base) var(--ease-standard);
+}
+.bc-switch[aria-checked="true"] { background: var(--color-cobalt-600); }
+.bc-switch::after {
+  content: "";
+  position: absolute;
+  width: 22px; height: 22px;
+  border-radius: 999px;
+  background: var(--bg-surface);
+  top: 3px; left: 3px;
+  box-shadow: var(--elev-1);
+  transition: transform var(--duration-base) var(--ease-standard);
+}
+.bc-switch[aria-checked="true"]::after { transform: translateX(20px); }
+
+.bc-drawer__actions {
+  display: flex;
+  gap: var(--space-4);
+  margin-top: var(--space-5);
+}

@@ -1,0 +1,648 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>BLE-109 — Pastoral tone surfaces (lo-fi)</title>
+<link rel="stylesheet" href="tokens.css">
+<style>
+  body { background: #1c1f24; font-family: var(--font-body); padding: 32px 16px; color: #e7e2d6; }
+  .doc-head { max-width: 1280px; margin: 0 auto 32px; padding: 0 8px; color: #e7e2d6; }
+  .doc-head h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0 0 8px; letter-spacing: -0.01em; }
+  .doc-head p { margin: 4px 0; font-size: 13px; line-height: 1.55; color: #b8b3a4; max-width: 880px; }
+  .doc-head code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; background: #2a2e35; padding: 1px 5px; border-radius: 4px; color: #e9c780; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, 390px); gap: 28px; justify-content: center; max-width: 1280px; margin: 0 auto; }
+  .surface { width: 390px; }
+  .surface-cap { font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase; color: #b8b3a4; margin-bottom: 8px; padding: 0 4px; }
+  .surface-cap strong { color: #e7e2d6; font-weight: 600; }
+  .phone {
+    width: 390px; height: 844px; background: var(--bg-canvas);
+    border-radius: 36px; overflow: hidden; position: relative;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 24px 60px rgba(0,0,0,0.5);
+    color: var(--text-primary); font-size: 15px; line-height: 1.55;
+  }
+  .status-bar {
+    height: 44px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between;
+    font-size: 14px; font-weight: 600; color: var(--text-primary);
+    background: var(--bg-canvas);
+  }
+  .status-right { display: flex; gap: 6px; align-items: center; font-size: 12px; }
+  .nav-bar {
+    height: 56px; padding: 0 16px; display: flex; align-items: center; gap: 12px;
+    border-bottom: 1px solid var(--border-subtle); background: var(--bg-canvas);
+  }
+  .nav-bar .back { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: var(--text-primary); font-size: 22px; cursor: default; }
+  .nav-bar .title { font-family: var(--font-display); font-size: 17px; font-weight: 400; color: var(--text-primary); flex: 1; }
+  .nav-bar .avatar {
+    width: 32px; height: 32px; border-radius: var(--radius-pill);
+    background: linear-gradient(135deg, var(--bc-cobalt-100), var(--bc-cream-200));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 14px; color: var(--bc-cobalt-700);
+  }
+  .nav-bar .meta { display: flex; flex-direction: column; flex: 1; }
+  .nav-bar .meta .title { font-size: 15px; font-weight: 600; font-family: var(--font-body); margin: 0; }
+  .nav-bar .meta .sub { font-size: 12px; color: var(--text-tertiary); }
+
+  /* Chat thread */
+  .thread { padding: 16px; display: flex; flex-direction: column; gap: 10px; flex: 1; overflow: hidden; }
+  .bubble { max-width: 78%; padding: 10px 14px; border-radius: var(--radius-xl); font-size: 15px; line-height: 1.4; }
+  .bubble.them { background: var(--bg-raised); color: var(--text-primary); align-self: flex-start; border-top-left-radius: var(--radius-md); }
+  .bubble.me { background: var(--bc-cobalt-600); color: var(--text-inverse); align-self: flex-end; border-top-right-radius: var(--radius-md); }
+  .timestamp { font-size: 11px; color: var(--text-tertiary); text-align: center; margin: 8px 0 0; }
+  .placeholder-bubble {
+    align-self: flex-start; max-width: 88%; background: var(--bc-cobalt-50); border: 1px solid var(--bc-cobalt-100);
+    border-radius: var(--radius-xl); padding: 12px 14px; font-size: 13px; color: var(--text-secondary);
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .placeholder-bubble .info-icon { color: var(--bc-cobalt-600); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .placeholder-bubble .ph-body strong { color: var(--bc-cobalt-700); font-weight: 600; }
+  .placeholder-bubble .ph-link { color: var(--bc-cobalt-600); text-decoration: underline; font-weight: 500; cursor: default; display: inline-block; margin-top: 4px; }
+
+  /* Soft-prompt compose banner */
+  .compose-banner {
+    background: var(--bc-amber-100); border-top: 1px solid var(--bc-amber-500);
+    padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start;
+    color: var(--text-primary);
+  }
+  .compose-banner .icon { color: var(--bc-amber-700); font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .compose-banner .body { font-size: 13px; line-height: 1.4; }
+  .compose-banner .body strong { font-weight: 600; }
+  .compose-banner .body .en { display: block; color: var(--text-tertiary); font-size: 12px; margin-top: 4px; font-style: italic; }
+  .compose-input {
+    height: 56px; border-top: 1px solid var(--border-subtle); padding: 8px 16px;
+    background: var(--bg-canvas); display: flex; gap: 8px; align-items: center;
+  }
+  .compose-input .field {
+    flex: 1; height: 40px; background: var(--bg-raised); border-radius: var(--radius-pill);
+    padding: 0 16px; display: flex; align-items: center; color: var(--text-tertiary); font-size: 14px;
+  }
+  .compose-input .send {
+    width: 40px; height: 40px; border-radius: var(--radius-pill);
+    background: var(--bc-cobalt-600); color: var(--text-inverse);
+    display: flex; align-items: center; justify-content: center; font-size: 16px;
+  }
+
+  /* Modal scrim */
+  .modal-scrim {
+    position: absolute; inset: 0; background: rgba(20,24,40,0.5);
+    display: flex; align-items: flex-end; padding: 0;
+  }
+  .modal {
+    background: var(--bg-surface); border-top-left-radius: var(--radius-2xl); border-top-right-radius: var(--radius-2xl);
+    width: 100%; padding: 24px 24px 32px; box-shadow: var(--elev-modal);
+  }
+  .modal h2 { font-family: var(--font-display); font-weight: 400; font-size: 22px; line-height: 1.25; margin: 0 0 12px; color: var(--text-primary); }
+  .modal .body-id { font-size: 14px; line-height: 1.5; color: var(--text-secondary); margin: 0 0 8px; }
+  .modal .body-en { font-size: 12px; line-height: 1.5; color: var(--text-tertiary); margin: 0 0 16px; font-style: italic; }
+  .modal .scripture {
+    border-left: 2px solid var(--bc-gold-500); padding: 4px 0 4px 12px;
+    font-family: var(--font-display); font-size: 14px; color: var(--text-scripture); margin: 12px 0 16px;
+    line-height: 1.5;
+  }
+  .modal .scripture .ref { display: block; font-family: var(--font-body); font-size: 11px; color: var(--text-tertiary); margin-top: 4px; letter-spacing: 0.04em; }
+  .modal .care { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--bc-cobalt-600); margin: 0 0 16px; }
+  .modal .actions { display: flex; flex-direction: column; gap: 8px; }
+  .btn { height: 48px; border-radius: var(--radius-lg); font-size: 15px; font-weight: 600; display: flex; align-items: center; justify-content: center; cursor: default; }
+  .btn-primary { background: var(--bc-cobalt-600); color: var(--text-inverse); }
+  .btn-secondary { background: var(--bg-raised); color: var(--text-primary); border: 1px solid var(--border-subtle); }
+  .btn-ghost { background: transparent; color: var(--bc-cobalt-600); }
+
+  /* Auto-mute full screen */
+  .full-notice { padding: 32px 24px; flex: 1; display: flex; flex-direction: column; }
+  .full-notice .icon-pad {
+    width: 56px; height: 56px; border-radius: var(--radius-pill);
+    background: var(--bc-cobalt-50); color: var(--bc-cobalt-600);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+    margin: 24px 0 24px;
+  }
+  .full-notice h1 { font-family: var(--font-display); font-weight: 400; font-size: 24px; line-height: 1.25; margin: 0 0 12px; color: var(--text-primary); }
+  .full-notice .why { font-size: 12px; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 6px; }
+  .full-notice p.id { font-size: 15px; line-height: 1.55; color: var(--text-secondary); margin: 0 0 12px; }
+  .full-notice p.en { font-size: 12px; line-height: 1.5; color: var(--text-tertiary); margin: 0 0 16px; font-style: italic; }
+  .full-notice .timeline {
+    background: var(--bc-cobalt-50); border-radius: var(--radius-xl);
+    padding: 14px 16px; font-size: 13px; line-height: 1.55; color: var(--text-secondary); margin: 8px 0 16px;
+  }
+  .full-notice .timeline strong { color: var(--bc-cobalt-700); display: block; margin-bottom: 4px; font-weight: 600; }
+  .full-notice .care-link { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--bc-cobalt-600); margin: 0 0 24px; }
+  .full-notice .actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+
+  /* Ban deactivation */
+  .ban-screen {
+    flex: 1; padding: 32px 24px; display: flex; flex-direction: column;
+    background: linear-gradient(180deg, var(--bg-canvas) 0%, var(--bg-canvas) 60%, var(--bc-cobalt-100) 100%);
+  }
+  .ban-screen .door {
+    width: 72px; height: 72px; border-radius: var(--radius-pill);
+    background: var(--bc-cobalt-100); color: var(--bc-cobalt-700);
+    display: flex; align-items: center; justify-content: center; font-size: 36px;
+    margin: 16px 0 24px;
+  }
+  .ban-screen h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 1.25; margin: 0 0 16px; color: var(--text-primary); }
+  .ban-screen .why { font-size: 12px; color: var(--text-tertiary); letter-spacing: 0.04em; text-transform: uppercase; margin: 0 0 6px; }
+  .ban-screen p.id { font-size: 14px; line-height: 1.55; color: var(--text-secondary); margin: 0 0 12px; }
+  .ban-screen p.en { font-size: 12px; line-height: 1.5; color: var(--text-tertiary); margin: 0 0 16px; font-style: italic; }
+  .ban-screen .door-line {
+    background: var(--bc-cobalt-50); border-radius: var(--radius-xl); border: 1px solid var(--bc-cobalt-100);
+    padding: 14px 16px; font-size: 13px; line-height: 1.55; color: var(--bc-cobalt-700); margin: 8px 0 20px;
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .ban-screen .door-line .glyph { font-size: 18px; flex-shrink: 0; }
+  .ban-screen .door-line strong { font-weight: 600; display: block; margin-bottom: 2px; }
+  .ban-screen .care-link { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--bc-cobalt-600); margin: 0 0 24px; }
+  .ban-screen .actions { margin-top: auto; display: flex; flex-direction: column; gap: 8px; }
+
+  /* Report sheet */
+  .scrim-mid { position: absolute; inset: 0; background: rgba(20,24,40,0.5); display: flex; align-items: flex-end; }
+  .sheet {
+    background: var(--bg-surface); border-top-left-radius: var(--radius-2xl); border-top-right-radius: var(--radius-2xl);
+    width: 100%; padding: 12px 0 24px; max-height: 88%; display: flex; flex-direction: column;
+  }
+  .sheet .grabber { width: 36px; height: 4px; border-radius: var(--radius-pill); background: var(--bc-stone-300); margin: 0 auto 12px; }
+  .sheet h2 { font-family: var(--font-display); font-weight: 400; font-size: 22px; margin: 0 24px 4px; color: var(--text-primary); }
+  .sheet .sub { font-size: 13px; color: var(--text-tertiary); margin: 0 24px 16px; }
+  .sheet .cat { padding: 14px 24px; border-top: 1px solid var(--border-subtle); display: flex; gap: 12px; align-items: flex-start; }
+  .sheet .cat:first-of-type { border-top: 1px solid var(--border-subtle); }
+  .sheet .cat .label-id { font-size: 15px; font-weight: 500; color: var(--text-primary); margin: 0 0 2px; }
+  .sheet .cat .label-en { font-size: 11px; color: var(--text-tertiary); margin: 0 0 4px; letter-spacing: 0.02em; }
+  .sheet .cat .helper { font-size: 12px; color: var(--text-secondary); line-height: 1.5; margin: 0; }
+  .sheet .cat .tag-mark {
+    width: 28px; height: 28px; border-radius: var(--radius-md); background: var(--bc-cobalt-50); color: var(--bc-cobalt-700);
+    display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; font-weight: 600; font-family: var(--font-display);
+  }
+  .sheet .cat-other { padding: 16px 24px; border-top: 1px solid var(--border-subtle); }
+  .sheet .cat-other .label-id { font-size: 15px; font-weight: 500; color: var(--text-secondary); margin: 0 0 8px; }
+  .sheet .cat-other .field {
+    background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-md);
+    height: 64px; padding: 10px 12px; font-size: 13px; color: var(--text-tertiary);
+  }
+  .sheet .footer-row { padding: 12px 24px 0; display: flex; gap: 8px; }
+
+  /* Panic exit */
+  .panic { padding: 24px 24px 32px; flex: 1; display: flex; flex-direction: column; }
+  .panic h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; line-height: 1.25; margin: 16px 0 12px; color: var(--text-primary); }
+  .panic .lead-id { font-size: 14px; line-height: 1.55; color: var(--text-secondary); margin: 0 0 6px; }
+  .panic .lead-en { font-size: 12px; line-height: 1.5; color: var(--text-tertiary); margin: 0 0 24px; font-style: italic; }
+  .panic .call-btn {
+    background: #C0322F; color: #fff; border-radius: var(--radius-lg);
+    height: 64px; padding: 0 18px; display: flex; gap: 14px; align-items: center;
+    margin-bottom: 12px; box-shadow: var(--elev-1);
+  }
+  .panic .call-btn .glyph { font-size: 24px; }
+  .panic .call-btn .label { display: flex; flex-direction: column; }
+  .panic .call-btn .label .top { font-size: 12px; opacity: 0.85; letter-spacing: 0.04em; text-transform: uppercase; }
+  .panic .call-btn .label .num { font-size: 18px; font-weight: 600; }
+  .panic .resources {
+    background: var(--bc-cream-100); border-radius: var(--radius-xl); padding: 14px 16px;
+    margin: 12px 0 16px; font-size: 13px; line-height: 1.55; color: var(--text-secondary);
+  }
+  .panic .resources strong { display: block; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+  .panic .resources li { margin: 4px 0; list-style: none; padding-left: 18px; position: relative; }
+  .panic .resources li::before { content: "✦"; color: var(--bc-cobalt-500); position: absolute; left: 0; top: 0; font-size: 11px; }
+  .panic .resources ul { margin: 0; padding: 0; }
+  .panic .care-link { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--bc-cobalt-600); margin: 0 0 16px; }
+  .panic .footer-note { margin-top: auto; font-size: 11px; line-height: 1.55; color: var(--text-tertiary); }
+
+  /* Safety center home */
+  .safety { flex: 1; display: flex; flex-direction: column; padding: 0 0 88px; overflow: hidden; }
+  .safety .scroll { flex: 1; overflow-y: auto; padding: 16px 16px 0; }
+  .safety h1 { font-family: var(--font-display); font-weight: 400; font-size: 26px; margin: 0 0 4px; color: var(--text-primary); }
+  .safety .lead { font-size: 13px; color: var(--text-tertiary); margin: 0 0 16px; }
+  .safety .section-title { font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); margin: 16px 0 8px; }
+  .safety .row {
+    background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+    padding: 14px 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: center;
+    box-shadow: var(--elev-1);
+  }
+  .safety .row .glyph { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--bc-cobalt-50); color: var(--bc-cobalt-600); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .safety .row .body { flex: 1; }
+  .safety .row .body .t { font-size: 14px; font-weight: 500; color: var(--text-primary); margin: 0 0 2px; }
+  .safety .row .body .s { font-size: 12px; color: var(--text-tertiary); margin: 0; }
+  .safety .row .chev { color: var(--text-tertiary); font-size: 18px; }
+  .safety .panic-row { background: var(--bc-cream-100); border: 1px solid var(--bc-cream-300); }
+  .safety .panic-row .glyph { background: var(--bc-cobalt-50); color: var(--bc-cobalt-700); }
+  .safety .care-tile {
+    position: absolute; left: 16px; right: 16px; bottom: 16px;
+    background: var(--bc-cobalt-50); border: 1px solid var(--bc-cobalt-100); border-radius: var(--radius-xl);
+    padding: 14px 16px; display: flex; gap: 12px; align-items: center;
+  }
+  .safety .care-tile .glyph { width: 32px; height: 32px; border-radius: var(--radius-md); background: var(--bg-surface); color: var(--bc-cobalt-700); display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .safety .care-tile .body { flex: 1; }
+  .safety .care-tile .body .t { font-size: 13px; font-weight: 600; color: var(--bc-cobalt-700); margin: 0; }
+  .safety .care-tile .body .s { font-size: 12px; color: var(--bc-cobalt-700); opacity: 0.8; margin: 2px 0 0; }
+
+  /* Fallback callout common */
+  .lang-flag { display: inline-flex; align-items: center; gap: 4px; font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); margin-bottom: 4px; }
+  .lang-flag::before { content: ""; width: 6px; height: 6px; border-radius: 999px; background: var(--bc-cobalt-300); }
+  .lang-flag.en::before { background: var(--bc-stone-300); }
+
+  /* glyph helpers */
+  .pause-circle::before { content: "⏸"; font-style: normal; }
+  .info-circle::before  { content: "ⓘ"; font-style: normal; }
+  .door::before         { content: "⌂"; font-style: normal; }
+  .envelope::before     { content: "✉"; font-style: normal; }
+  .chevron::before      { content: "›"; font-style: normal; }
+  .quote-mark::before   { content: "✦"; font-style: normal; }
+</style>
+</head>
+<body>
+<div class="doc-head">
+  <h1>BLE-109 — Lo-fi pastoral tone surfaces</h1>
+  <p>Six representative surfaces at 390×844, drawn from <code>BLE-55 §5</code> verbatim copy bundles (Bahasa default + English fallback). Tokens from <code>BLE-22</code> only. No red anywhere except the two panic-exit call buttons (<code>BLE-27</code> §panic-exit). Forbidden icons (<code>lock / gavel / flame / alert-triangle</code>) absent — vocabulary uses <code>pause-circle / info-circle / open-door / envelope / quote-mark ✦</code>. <code>care@blesscupid.app</code> visible on every moderation surface. No convert tag anywhere.</p>
+  <p><strong>Designer note — doctrine v1.3 absorbed (Pastor + CEO ratified, BLE-31):</strong> (1) Surface 3 harassment <code>ban</code> gold-rule frame <strong>dropped</strong> per §6 omit-when-empty iron rule (Mat 7:12 candidate rejected as verdict-register contradiction). (2) Surface 2 swapped from <code>(harassment, removal)</code> to <code>(auto-mute, notification)</code> distinct bundle (different audience: muter not offender, category-agnostic, no scripture). (3) Panic-exit hotline list extended with <strong>LBH Jakarta</strong> as universal gender-neutral legal aid — closes men-side trauma resource gap, profile-state independent. Channel separation locked: panic-exit = secular safety, <code>care@</code> = faith-care, never mixed. Faith-aware Christian counselor list deferred to v2 backlog (BLE-141, Pastor-owned, post-v1).</p>
+</div>
+
+<div class="grid">
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 1 — Compose-time voice: chat thread + soft-prompt   -->
+  <!-- banner + hard-pause modal (sexual `warning` body, §5.2)     -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>1 · Compose-time voice</strong> — chat + soft-prompt banner + hard-pause modal · sexual <code>warning</code> §5.2</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <div class="nav-bar">
+        <span class="back">‹</span>
+        <div class="avatar">A</div>
+        <div class="meta">
+          <span class="title">Andre · Dating</span>
+          <span class="sub">Online · Pelan-pelan dulu</span>
+        </div>
+      </div>
+      <div class="thread">
+        <div class="timestamp">Hari ini 8:34 PM</div>
+        <div class="bubble them">Halo, profilmu menarik sekali — kita kenalan dulu yuk?</div>
+        <div class="bubble me">Halo Andre. Senang kenal kamu.</div>
+        <div class="bubble them">Sama-sama. Kamu suka ayat apa?</div>
+        <div class="bubble me">Mazmur 23 — mengingatkan damai.</div>
+        <div class="bubble them">Aku juga. Boleh tanya — kamu pakai baju apa malam ini?</div>
+      </div>
+      <div class="compose-banner">
+        <span class="icon pause-circle"></span>
+        <div class="body">
+          <span class="lang-flag">ID</span>
+          <strong>Pelan dulu.</strong> Pesan ini bisa terbaca terlalu dekat untuk percakapan sekarang. Mau coba kata lain?
+          <span class="en">EN — Easy now. This message could read as too close for where you are now. Want to try different words?</span>
+        </div>
+      </div>
+      <div class="compose-input">
+        <div class="field">Boleh tanya — kamu pakai…</div>
+        <div class="send">↑</div>
+      </div>
+
+      <!-- Hard-pause modal layered on top -->
+      <div class="modal-scrim">
+        <div class="modal">
+          <span class="lang-flag">ID · §5.2 sexual / warning</span>
+          <h2><span class="pause-circle" style="color:var(--bc-amber-700);font-size:22px;margin-right:6px;"></span>Kami pause pesan ini sebentar.</h2>
+          <p class="body-id">Coba pikirkan dulu — pesan ini bisa terbaca terlalu dekat untuk percakapan sekarang. Di BlessCupid, kita pelan-pelan dulu, hormati satu sama lain. Tetap kirim? Edit dulu?</p>
+          <p class="body-en"><span class="lang-flag en">EN</span>Pause for a sec — this message could read as too close for where you are now. On BlessCupid we go slow and honor each other. Send anyway? Edit?</p>
+          <div class="care"><span class="envelope"></span>care@blesscupid.app · banding tidak adil? Cerita ke kami.</div>
+          <div class="actions">
+            <div class="btn btn-secondary">Edit dulu</div>
+            <div class="btn btn-ghost">Tetap kirim</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 2 — Post-action voice: reported-message viewer      -->
+  <!-- (cobalt-soft band) inline in thread + auto-mute notice      -->
+  <!-- (cobalt-soft full-screen, harassment `removal` §5.1)        -->
+  <!-- Combined into one phone: thread band stacked above mute     -->
+  <!-- notice would push 844px; instead show full-screen with      -->
+  <!-- thread placeholder snapshot at top.                          -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>2 · Post-action voice</strong> — auto-mute notice (cobalt-soft full-screen) · <code>(auto-mute, notification)</code> doctrine v1.3 §1 · category-agnostic · no scripture</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <div class="nav-bar">
+        <span class="back">‹</span>
+        <div class="meta">
+          <span class="title" style="font-family:var(--font-display);font-size:17px;font-weight:400;">Pemberitahuan</span>
+          <span class="sub">Tinjauan tim BlessCupid</span>
+        </div>
+      </div>
+      <div class="full-notice">
+        <div class="icon-pad info-circle"></div>
+        <span class="lang-flag">ID · (auto-mute, notification) · v1.3 §1</span>
+        <h1>Kami sudah mute Andre dari kotak masukmu.</h1>
+        <p class="why">apa yang terjadi</p>
+        <p class="id">Tim kami baru saja menyelesaikan tinjauan terhadap laporan dari anggota lain dan memutuskan untuk bertindak — jadi kamu tidak perlu lihat pesannya lagi sampai kamu sendiri yang memilih sebaliknya. Kamu bisa unmute kapan saja dari pengaturan.</p>
+        <span class="lang-flag en">EN</span>
+        <p class="en">We've muted Andre from your inbox. Our team just finished reviewing another member's report and decided to act — so you don't need to see their messages again unless you choose otherwise. You can unmute anytime from settings.</p>
+        <div class="timeline">
+          <strong>Pemicu: outcome tinjauan-manusia</strong>
+          Mute ini bukan karena hitungan laporan — moderator manusia menyetujui tindakan terlebih dulu. Itu cara kami menjaga rahmat tetap berjalan: bukan ambang yang otomatis, tapi keputusan manusia yang mempertimbangkanmu.
+        </div>
+        <div class="care-link"><span class="envelope"></span><span>care@blesscupid.app · Mau cerita atau merasa keliru? Tulis ke kami.</span></div>
+        <div class="actions">
+          <div class="btn btn-primary">Pengaturan mute</div>
+          <div class="btn btn-secondary">Lihat profil</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:8px;font-size:11px;color:#b8b3a4;line-height:1.55;">Doctrine v1.3 §1: <code>(auto-mute, notification)</code> distinct bundle. Audience = muter (protected user), not offender. Trigger key = <code>human-review</code> outcome, not raw report count. No scripture (verse weight reserved for actor-facing voices). Reversibility surfaced (one-tap unmute, no friction-confirm).</div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 3 — Ban / serious voice: account deactivation       -->
+  <!-- cream + cobalt-100, harassment `ban` §5.1, open-door glyph  -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>3 · Ban / serious voice</strong> — account deactivation · harassment <code>ban</code> §5.1 · open-door glyph (no scripture · §6 omit-when-empty)</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <div class="nav-bar" style="border-bottom:none;">
+        <div class="meta" style="text-align:center;">
+          <span class="title" style="font-family:var(--font-display);font-size:17px;font-weight:400;width:100%;text-align:center;">BlessCupid</span>
+        </div>
+      </div>
+      <div class="ban-screen">
+        <div class="door door"><span style="font-size:38px;">⌂</span></div>
+        <span class="lang-flag">ID · §5.1 harassment / ban</span>
+        <h1>Kami menonaktifkan akunmu.</h1>
+        <span class="lang-flag">apa yang terjadi</span>
+        <p class="id">Kami memutuskan menonaktifkan akunmu di BlessCupid. Pola pesanmu kepada beberapa anggota lain meninggalkan luka, bukan damai. Ini bukan penghakiman atas dirimu — ini tentang menjaga rumah bersama tetap aman. Pintu pemulihan tetap terbuka: tulis ke care@blesscupid.app.</p>
+        <span class="lang-flag en">EN</span>
+        <p class="en">We've decided to deactivate your account on BlessCupid. The pattern of messages you sent left wounds in other members, not peace. This isn't a verdict on who you are — it's about keeping our shared home safe. Restoration is still possible: write to care@blesscupid.app.</p>
+        <!-- §6 iron rule: §5.1 harassment ban ships without scripture; gold-rule frame omitted (empty slot, no decorative substitute). Doctrine v1.3 §2. -->
+        <div class="door-line">
+          <span class="glyph door"></span>
+          <div>
+            <strong>Pintu pemulihan tetap terbuka.</strong>
+            Tulis ke care@blesscupid.app. Kami baca semua surat banding dalam 7 hari kerja.
+          </div>
+        </div>
+        <div class="actions">
+          <div class="btn btn-primary">Kirim banding ke care@</div>
+          <div class="btn btn-secondary">Keluar dari BlessCupid</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 4 — BLE-27 report sheet                             -->
+  <!-- bottom-sheet, six categories + helper lines + Other         -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>4 · BLE-27 report sheet</strong> — bottom-sheet · 6 §4 categories + helper lines + Other</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <!-- dimmed background context -->
+      <div style="flex:1;background:var(--bg-canvas);opacity:0.5;padding:16px;">
+        <div class="bubble them" style="opacity:0.6;">Halo, kamu pakai baju apa…</div>
+      </div>
+      <div class="scrim-mid" style="position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:flex-end;background:rgba(20,24,40,0.5);">
+        <div class="sheet" style="max-height:760px;">
+          <div class="grabber"></div>
+          <h2>Laporkan percakapan ini</h2>
+          <div class="sub">Tim kami meninjau dalam 24 jam. Kami menjaga laporanmu tetap privat. <span style="display:block;font-style:italic;color:var(--text-tertiary);font-size:11px;margin-top:2px;">EN — Our team reviews within 24 hours. We keep your report private.</span></div>
+          <div style="overflow-y:auto;flex:1;">
+            <div class="cat">
+              <div class="tag-mark">A</div>
+              <div>
+                <div class="label-id">Pelecehan / kata-kata kasar</div>
+                <div class="label-en">Harassment or harsh words</div>
+                <p class="helper">Pesan yang merendahkan, ancaman, atau kontak terus-menerus setelah ditolak.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Demeaning messages, threats, or repeated contact after a 'no'.</p>
+              </div>
+            </div>
+            <div class="cat">
+              <div class="tag-mark">S</div>
+              <div>
+                <div class="label-id">Konten seksual</div>
+                <div class="label-en">Sexual content</div>
+                <p class="helper">Pesan eksplisit, permintaan foto intim, atau ajakan di luar pernikahan.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Explicit messages, requests for intimate photos, or solicitations outside marriage.</p>
+              </div>
+            </div>
+            <div class="cat">
+              <div class="tag-mark">F</div>
+              <div>
+                <div class="label-id">Profil palsu</div>
+                <div class="label-en">Fake profile</div>
+                <p class="helper">Foto curian, identitas palsu, usia atau status pernikahan tidak benar, atau pura-pura beriman.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Stolen photos, false identity, untrue age or marital status, or pretending to share the faith.</p>
+              </div>
+            </div>
+            <div class="cat">
+              <div class="tag-mark">O</div>
+              <div>
+                <div class="label-id">Tekanan keluar platform</div>
+                <div class="label-en">Off-platform pressure</div>
+                <p class="helper">Mendesak pindah ke WA/IG/telepon sebelum kepercayaan terbangun.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Pressure to move to WA/IG/phone before trust is built.</p>
+              </div>
+            </div>
+            <div class="cat">
+              <div class="tag-mark">$</div>
+              <div>
+                <div class="label-id">Tekanan keuangan / penipuan</div>
+                <div class="label-en">Financial pressure or scam</div>
+                <p class="helper">Permintaan uang, ajakan investasi, atau tekanan rohani untuk memberi.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Requests for money, investment pitches, or spiritual pressure to give.</p>
+              </div>
+            </div>
+            <div class="cat">
+              <div class="tag-mark">D</div>
+              <div>
+                <div class="label-id">Penyalahgunaan ajaran</div>
+                <div class="label-en">Doctrinal misuse</div>
+                <p class="helper">Memakai ayat untuk mempermalukan, memaksa konversi denominasi, atau menyangkal keselamatan orang lain.</p>
+                <p class="helper" style="font-style:italic;color:var(--text-tertiary);font-size:11px;">EN — Using scripture to shame, coercing denominational conversion, or denying another's salvation.</p>
+              </div>
+            </div>
+            <div class="cat-other">
+              <div class="label-id">Lainnya — jelaskan</div>
+              <div class="field">Tulis singkat… <span style="color:var(--text-tertiary);font-style:italic;">(Other — explain)</span></div>
+            </div>
+          </div>
+          <div style="padding: 8px 24px 0; display:flex; gap:8px; align-items:center; font-size:12px; color: var(--bc-cobalt-600);">
+            <span class="envelope"></span><span>care@blesscupid.app — Banding tidak adil? Cerita ke kami.</span>
+          </div>
+          <div class="footer-row">
+            <div class="btn btn-secondary" style="flex:1;">Batal</div>
+            <div class="btn btn-primary" style="flex:1;">Kirim laporan</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 5 — BLE-27 panic-exit                               -->
+  <!-- emergency-help screen, two red call-buttons on cream canvas -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>5 · BLE-27 panic-exit</strong> — emergency help · two red call-buttons (only red surface)</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <div class="nav-bar">
+        <span class="back">‹</span>
+        <div class="meta">
+          <span class="title" style="font-family:var(--font-display);font-size:17px;font-weight:400;">Saya dalam bahaya</span>
+          <span class="sub">I am in danger · 24-jam</span>
+        </div>
+      </div>
+      <div class="panic">
+        <h1>Kami di sini. Pilih bantuan yang paling cepat untukmu.</h1>
+        <p class="lead-id">Kalau kamu sedang dalam bahaya langsung, telepon nomor di bawah ini sekarang. Kami tidak melaporkan apa yang kamu pilih ke siapa pun.</p>
+        <p class="lead-en">EN — If you're in immediate danger, call a number below now. We don't tell anyone what you choose.</p>
+
+        <div class="call-btn">
+          <span class="glyph">☎</span>
+          <div class="label">
+            <span class="top">Polisi · 24-jam</span>
+            <span class="num">110 — Telepon polisi</span>
+          </div>
+        </div>
+        <div class="call-btn">
+          <span class="glyph">♡</span>
+          <div class="label">
+            <span class="top">Bantuan jiwa · Sejiwa</span>
+            <span class="num">119 ext 8 — Hotline</span>
+          </div>
+        </div>
+
+        <div class="resources">
+          <strong>Sumber lain</strong>
+          <ul>
+            <li>Yayasan Pulih · 021-78842580 (konseling trauma kekerasan)</li>
+            <li>LBH Jakarta · 021-3145518 (bantuan hukum gratis · gender-netral)</li>
+            <li>Komnas Perempuan · pengaduan@komnasperempuan.go.id</li>
+            <li>SAPA 129 · hotline kekerasan terhadap perempuan + anak</li>
+          </ul>
+        </div>
+        <div class="care-link"><span class="envelope"></span><span>care@blesscupid.app — kalau aman dan mau cerita ke kami</span></div>
+        <p class="footer-note">Pintu pemulihan tetap terbuka. Tidak ada catatan publik. Layar ini bisa kamu buka kapan saja dari Pusat Keamanan.<br><em>Restoration stays open. No public record. Reopen this screen anytime from the Safety Center.</em></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================ -->
+  <!-- SURFACE 6 — BLE-27 safety center home                       -->
+  <!-- sections + care tile pinned bottom + panic-exit chevron     -->
+  <!-- ============================================================ -->
+  <div class="surface">
+    <div class="surface-cap"><strong>6 · BLE-27 safety center home</strong> — sections + panic-exit row + care tile pinned bottom</div>
+    <div class="phone">
+      <div class="status-bar">
+        <span>9:41</span>
+        <div class="status-right"><span>•••</span><span>◧</span><span>▮</span></div>
+      </div>
+      <div class="nav-bar">
+        <span class="back">‹</span>
+        <div class="meta">
+          <span class="title" style="font-family:var(--font-display);font-size:17px;font-weight:400;">Pusat Keamanan</span>
+          <span class="sub">Safety Center</span>
+        </div>
+      </div>
+      <div class="safety">
+        <div class="scroll">
+          <h1>Pusat Keamanan</h1>
+          <p class="lead">Apa yang sudah saya lakukan, siapa yang saya batasi, dan dari mana saya bisa minta tolong.</p>
+
+          <div class="section-title">Yang sudah saya lakukan</div>
+          <div class="row">
+            <span class="glyph info-circle"></span>
+            <div class="body">
+              <div class="t">Laporan saya</div>
+              <div class="s">3 dalam tinjauan · 5 sudah selesai</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+          <div class="row">
+            <span class="glyph pause-circle"></span>
+            <div class="body">
+              <div class="t">Pesan yang disembunyikan</div>
+              <div class="s">2 pesan masuk · 1 pesan keluar</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+
+          <div class="section-title">Yang saya batasi</div>
+          <div class="row">
+            <span class="glyph"><span style="font-size:14px;">⊝</span></span>
+            <div class="body">
+              <div class="t">Daftar yang saya sembunyikan</div>
+              <div class="s">4 anggota · pintu pemulihan tetap terbuka</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+          <div class="row">
+            <span class="glyph"><span style="font-size:14px;">⊕</span></span>
+            <div class="body">
+              <div class="t">Pastor Mode</div>
+              <div class="s">Aktif · kakak rohani melihat ringkasan, bukan isi</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+
+          <div class="section-title">Bantuan</div>
+          <div class="row panic-row">
+            <span class="glyph"><span style="font-size:16px;">☎</span></span>
+            <div class="body">
+              <div class="t">Saya dalam bahaya</div>
+              <div class="s">I am in danger · telepon polisi / hotline</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+          <div class="row">
+            <span class="glyph"><span style="font-size:14px;">☰</span></span>
+            <div class="body">
+              <div class="t">Panduan komunitas</div>
+              <div class="s">Cara kami menjaga rumah bersama</div>
+            </div>
+            <span class="chev chevron"></span>
+          </div>
+
+          <div style="height:96px;"></div>
+        </div>
+
+        <div class="care-tile">
+          <span class="glyph envelope"></span>
+          <div class="body">
+            <div class="t">care@blesscupid.app</div>
+            <div class="s">Banding tidak adil? Cerita ke kami. We read every email.</div>
+          </div>
+          <span class="chev chevron" style="color:var(--bc-cobalt-700);font-size:18px;"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="doc-head" style="margin-top:32px;">
+  <h1 style="font-size:18px;">Audit notes</h1>
+  <p><strong>No-red audit:</strong> red (<code>#C0322F</code>) appears only inside the two <code>.call-btn</code> elements on surface 5 (panic-exit) — the BLE-27 §panic-exit allow-list per BLE-55 §1 / §3. Safety-center panic row on surface 6 uses cobalt for the glyph and chevron, deferring all red to the panic-exit destination itself. All other surfaces resolve to <code>cream-50</code> canvas with <code>amber</code> (compose-time) or <code>cobalt</code> (post-action / ban) accents.</p>
+  <p><strong>No-block-word audit:</strong> grep targets — <em>block, banned, violated, guilty, punishment, wicked, sinner, judgment, wrong</em> — none present in user-facing copy. <em>"Penghakiman"</em> appears in §5.1 ban only as a denial (<em>"Ini bukan penghakiman atas dirimu"</em>) — verbatim from doctrine, intentionally re-framing.</p>
+  <p><strong>Convert-from-Islam:</strong> no convert tag, badge, filter, or column anywhere across the six surfaces. Per BLE-55 §5.3 non-negotiable.</p>
+  <p><strong>Pastor + CEO sign-off (BLE-31, doctrine v1.3 — RESOLVED):</strong> (1) Surface 3 gold-rule frame <em>dropped</em> per §6 omit-when-empty + verdict-register doctrinal contradiction (Pastor c5ec9219 / CEO 7a8c82b4). (2) Auto-mute notice swapped to distinct <code>(auto-mute, notification)</code> bundle per doctrine v1.3 §1 — audience differs from offender, category-agnostic key, no scripture. (3) Panic-exit hotline list extended with LBH Jakarta entry 4 (CEO call A — option a, profile-state independent over conditional render). All hotline numbers ratified doctrine-fit + secular per channel separation principle.</p>
+  <p><strong>CEO §Open questions (BLE-27 — RESOLVED):</strong> (1) Category order = doctrine §1–§6 order, not severity. (2) Panic-exit reachable from Safety Center as a row, not floating tile. (3) <code>care@blesscupid.app</code> tile pinned bottom on Safety Center home. (4) Reported-message in-thread placeholder uses cobalt-soft band. All four confirmed in CEO 7a8c82b4 + standing v1.3 doctrine.</p>
+  <p><strong>BLE-26 spec rev 2 §Open carry-forwards (Pastor c5ec9219 — APPROVED):</strong> 24h-reflection <em>"sometimes a night of prayer changes things, sometimes it doesn't"</em>, empty-state <em>"a conversation that points somewhere meaningful"</em>, reported-message placeholder <em>"Kami simpan dulu pesan ini. / We held this one for you."</em> — all three approved verbatim, codified in doctrine v1.3 §3.</p>
+  <p><strong>v2 backlog (BLE-141, Pastor-owned, post-v1):</strong> curated faith-aware counselor list for <code>care@</code> pastoral routing. Not on panic-exit. Channel separation principle holds.</p>
+</div>
+
+</body>
+</html>

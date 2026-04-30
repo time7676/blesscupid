@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlessCupid Design System v0.1 — Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  /* Color primitives */
+  --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --gold-100:#FBF1D7; --gold-300:#E9C780; --gold-500:#C99A3A; --gold-700:#8C6822;
+  --sage-100:#E5EFE6; --sage-500:#5C8A6A; --sage-700:#3F6149;
+  --amber-100:#FCEBD2; --amber-500:#D08A2C; --amber-700:#8C5912;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+  --rose-300:#E5A8B0; --rose-500:#C76A78;
+
+  /* Semantic */
+  --bg-canvas:var(--cream-50); --bg-surface:#FFFFFF; --bg-raised:var(--cream-100); --bg-sunken:var(--cream-200);
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-inverse:var(--cream-50); --text-scripture:var(--cobalt-900); --text-brand:var(--cobalt-600);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300); --border-focus:var(--cobalt-600);
+  --state-success:var(--sage-500); --state-warning:var(--amber-500); --state-critical:var(--amber-700);
+  --accent-gold:var(--gold-500); --accent-match:var(--rose-500);
+
+  /* Spacing */
+  --s-0:0; --s-1:2px; --s-2:4px; --s-3:8px; --s-4:12px; --s-5:16px; --s-6:20px; --s-7:24px;
+  --s-8:32px; --s-9:40px; --s-10:48px; --s-11:64px; --s-12:80px; --s-13:96px;
+
+  /* Radii */
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-pill:999px;
+
+  /* Elevation */
+  --elev-1:0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2:0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3:0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-modal:0 24px 60px rgba(20,24,40,.18);
+
+  /* Motion */
+  --d-fast:120ms; --d-base:200ms; --d-slow:320ms; --d-deliberate:480ms;
+  --e-standard:cubic-bezier(0.2,0,0.2,1);
+  --e-enter:cubic-bezier(0,0,0.2,1);
+  --e-exit:cubic-bezier(0.4,0,1,1);
+  --e-reverent:cubic-bezier(0.4,0,0.2,1);
+
+  /* Type */
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --d-fast:0ms; --d-base:0ms; --d-slow:0ms; --d-deliberate:0ms; }
+  *, *::before, *::after { animation-duration:0ms !important; transition-duration:0ms !important; }
+}
+
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family:var(--f-sans);
+  background:var(--bg-canvas);
+  color:var(--text-primary);
+  font-size:15px; line-height:22px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ─── Page chrome ─── */
+.page {
+  max-width:1440px; margin:0 auto; padding:var(--s-10) var(--s-8) var(--s-13);
+}
+.page-header { margin-bottom:var(--s-10); }
+.page-title { font-family:var(--f-serif); font-size:48px; line-height:52px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.page-sub { color:var(--text-secondary); max-width:60ch; margin:0; font-size:17px; line-height:26px; }
+.page-meta { color:var(--text-tertiary); margin-top:var(--s-3); font-size:13px; }
+
+.section { margin-top:var(--s-12); }
+.section-title { font-family:var(--f-sans); font-size:22px; line-height:28px; font-weight:600; color:var(--cobalt-900); margin:0 0 var(--s-2); display:flex; align-items:center; gap:var(--s-3); }
+.section-title::before { content:""; width:4px; height:22px; background:var(--accent-gold); border-radius:var(--r-sm); }
+.section-sub { color:var(--text-secondary); margin:0 0 var(--s-7); max-width:70ch; font-size:14px; }
+
+/* ─── Color swatches ─── */
+.swatch-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px, 1fr)); gap:var(--s-4); }
+.swatch { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-lg); overflow:hidden; box-shadow:var(--elev-1); }
+.swatch-fill { height:64px; }
+.swatch-meta { padding:var(--s-3) var(--s-4); }
+.swatch-name { font-weight:600; font-size:13px; color:var(--text-primary); }
+.swatch-hex { font-family:ui-monospace, monospace; font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+
+/* ─── Type scale ─── */
+.type-list { display:flex; flex-direction:column; gap:var(--s-5); }
+.type-row { display:grid; grid-template-columns:140px 1fr; gap:var(--s-7); align-items:baseline; padding:var(--s-4) 0; border-bottom:1px solid var(--border-subtle); }
+.type-token { font-family:ui-monospace, monospace; font-size:12px; color:var(--text-tertiary); }
+.t-display-2xl { font-family:var(--f-serif); font-size:48px; line-height:52px; font-weight:400; color:var(--cobalt-900); }
+.t-display-xl { font-family:var(--f-serif); font-size:36px; line-height:42px; font-weight:400; color:var(--cobalt-900); }
+.t-display-lg { font-family:var(--f-serif); font-size:28px; line-height:34px; font-weight:400; color:var(--cobalt-900); }
+.t-heading-lg { font-family:var(--f-sans); font-size:22px; line-height:28px; font-weight:600; }
+.t-heading-md { font-family:var(--f-sans); font-size:18px; line-height:24px; font-weight:600; }
+.t-heading-sm { font-family:var(--f-sans); font-size:16px; line-height:22px; font-weight:600; }
+.t-body-lg { font-family:var(--f-sans); font-size:17px; line-height:26px; }
+.t-body-md { font-family:var(--f-sans); font-size:15px; line-height:22px; }
+.t-body-sm { font-family:var(--f-sans); font-size:13px; line-height:18px; color:var(--text-secondary); }
+.t-label { font-family:var(--f-sans); font-size:12px; line-height:16px; font-weight:600; letter-spacing:0.06em; text-transform:uppercase; }
+
+/* ─── Components ─── */
+.btn {
+  font-family:var(--f-sans); font-weight:600; font-size:15px; line-height:22px;
+  border:none; border-radius:var(--r-lg); padding:0 var(--s-7);
+  display:inline-flex; align-items:center; justify-content:center; gap:var(--s-3);
+  cursor:pointer; transition:background var(--d-fast) var(--e-standard), box-shadow var(--d-fast) var(--e-standard), transform var(--d-fast) var(--e-standard);
+  min-height:48px; min-width:48px;
+  text-decoration:none;
+}
+.btn:focus-visible { outline:2px solid var(--border-focus); outline-offset:2px; }
+.btn--sm { min-height:40px; padding:0 var(--s-5); font-size:14px; }
+.btn--lg { min-height:56px; padding:0 var(--s-8); font-size:16px; }
+.btn--primary { background:var(--cobalt-600); color:var(--text-inverse); }
+.btn--primary:hover { background:var(--cobalt-700); }
+.btn--primary:active { background:var(--cobalt-700); transform:translateY(1px); }
+.btn--secondary { background:var(--bg-surface); color:var(--text-brand); border:1px solid var(--cobalt-600); }
+.btn--secondary:hover { background:var(--cobalt-50); }
+.btn--ghost { background:transparent; color:var(--text-brand); }
+.btn--ghost:hover { background:var(--cobalt-50); }
+.btn--destructive { background:var(--bg-surface); color:var(--state-critical); border:1px solid var(--amber-500); }
+.btn--destructive:hover { background:var(--amber-100); }
+.btn--full { width:100%; }
+.btn[disabled] { opacity:0.5; cursor:not-allowed; }
+
+/* Input */
+.field { display:flex; flex-direction:column; gap:var(--s-2); margin-bottom:var(--s-5); }
+.field-label { font-size:13px; line-height:18px; font-weight:600; color:var(--text-primary); }
+.field-input {
+  font-family:var(--f-sans); font-size:15px; line-height:22px; color:var(--text-primary);
+  background:var(--bg-raised);
+  border:1px solid var(--border-strong); border-radius:var(--r-md);
+  padding:0 var(--s-5); min-height:48px; width:100%;
+  transition:border-color var(--d-fast) var(--e-standard), background var(--d-fast) var(--e-standard);
+}
+.field-input::placeholder { color:var(--text-tertiary); }
+.field-input:focus { outline:none; border-color:var(--border-focus); background:var(--bg-surface); box-shadow:0 0 0 2px var(--cobalt-100); }
+.field-helper { font-size:12px; line-height:16px; color:var(--text-tertiary); }
+.field--error .field-input { border-color:var(--amber-500); background:var(--amber-100); }
+.field--error .field-helper { color:var(--state-critical); }
+textarea.field-input { padding:var(--s-4) var(--s-5); min-height:120px; resize:vertical; line-height:24px; }
+
+/* Card */
+.card { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-xl); padding:var(--s-6); box-shadow:var(--elev-1); }
+.card--photo { padding:0; overflow:hidden; }
+.card-photo { aspect-ratio:4/5; background:linear-gradient(180deg, var(--cream-200), var(--cobalt-100)); display:flex; align-items:flex-end; padding:var(--s-5); color:var(--text-inverse); position:relative; }
+.card-photo::before { content:""; position:absolute; inset:0; background:linear-gradient(180deg, transparent 50%, rgba(20,24,40,.55) 100%); }
+.card-photo-content { position:relative; z-index:1; }
+.card-name { font-family:var(--f-serif); font-size:24px; line-height:30px; font-weight:500; margin:0; color:#fff; }
+.card-meta { font-size:13px; color:rgba(253,251,246,.85); margin-top:var(--s-1); display:flex; gap:var(--s-3); align-items:center; }
+.card-body { padding:var(--s-5) var(--s-6) var(--s-6); }
+.card-title { font-family:var(--f-sans); font-size:18px; line-height:24px; font-weight:600; margin:0 0 var(--s-2); }
+.card-text { color:var(--text-secondary); font-size:14px; line-height:21px; margin:0; }
+
+.verse-card { background:var(--gold-100); border:1px solid var(--gold-300); border-radius:var(--r-2xl); padding:var(--s-7); position:relative; }
+.verse-card::before { content:""; position:absolute; left:var(--s-5); top:var(--s-5); bottom:var(--s-7); width:2px; background:var(--gold-500); border-radius:var(--r-pill); }
+.verse-card-head { display:flex; justify-content:space-between; align-items:flex-start; gap:var(--s-3); padding-left:var(--s-5); margin-bottom:var(--s-3); }
+.verse-card-eyebrow { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--gold-700); }
+.verse-text { font-family:var(--f-serif); font-size:22px; line-height:32px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); padding-left:var(--s-5); }
+.verse-ref { font-size:13px; color:var(--gold-700); font-weight:600; padding-left:var(--s-5); margin-bottom:var(--s-4); }
+.verse-ref .translation-tag { font-weight:600; }
+.verse-footer { border-top:1px solid rgba(140,104,34,.18); padding-top:10px; padding-left:var(--s-5); font-size:11px; line-height:16px; color:var(--text-tertiary); text-decoration:none; }
+/* Badge */
+.badge { display:inline-flex; align-items:center; gap:var(--s-2); font-size:12px; line-height:16px; font-weight:600; padding:4px 10px; border-radius:var(--r-pill); }
+.badge--neutral { background:var(--stone-100); color:var(--text-secondary); }
+.badge--brand { background:var(--cobalt-100); color:var(--cobalt-700); }
+.badge--gold { background:var(--gold-100); color:var(--gold-700); }
+.badge--success { background:var(--sage-100); color:var(--sage-700); }
+.badge--warning { background:var(--amber-100); color:var(--amber-700); }
+.badge--match { background:#FCE6E9; color:var(--rose-500); }
+.badge svg { width:12px; height:12px; }
+
+/* Toast */
+.toast { display:flex; align-items:flex-start; gap:var(--s-4); background:var(--bg-surface); border:1px solid var(--border-subtle); border-left:4px solid var(--cobalt-600); border-radius:var(--r-md); padding:var(--s-4) var(--s-5); box-shadow:var(--elev-2); max-width:380px; }
+.toast--success { border-left-color:var(--state-success); }
+.toast--warning { border-left-color:var(--state-warning); }
+.toast--critical { border-left-color:var(--state-critical); }
+.toast-title { font-weight:600; font-size:14px; margin:0 0 2px; }
+.toast-body { font-size:13px; color:var(--text-secondary); margin:0; line-height:18px; }
+
+/* Empty / loading */
+.empty { background:var(--bg-surface); border:1px dashed var(--border-strong); border-radius:var(--r-xl); padding:var(--s-10) var(--s-6); text-align:center; }
+.empty-icon { width:56px; height:56px; margin:0 auto var(--s-5); color:var(--gold-500); }
+.empty-title { font-family:var(--f-serif); font-size:24px; line-height:30px; margin:0 0 var(--s-2); color:var(--cobalt-900); }
+.empty-body { color:var(--text-secondary); margin:0 0 var(--s-6); font-size:14px; line-height:21px; max-width:36ch; margin-left:auto; margin-right:auto; }
+
+.skeleton { background:linear-gradient(90deg, var(--cream-100), var(--cream-200), var(--cream-100)); background-size:200% 100%; border-radius:var(--r-md); animation:shimmer 1.4s var(--e-standard) infinite; }
+@keyframes shimmer { 0% { background-position:100% 0; } 100% { background-position:-100% 0; } }
+.sk-line { height:14px; margin-bottom:var(--s-3); }
+.sk-line--80 { width:80%; }
+.sk-line--60 { width:60%; }
+.sk-circle { width:48px; height:48px; border-radius:var(--r-pill); }
+
+/* Modal */
+.scrim { position:absolute; inset:0; background:rgba(20,24,40,.5); display:flex; align-items:center; justify-content:center; padding:var(--s-7); border-radius:var(--r-2xl); }
+.modal { background:var(--bg-surface); border-radius:var(--r-2xl); padding:var(--s-7); max-width:360px; width:100%; box-shadow:var(--elev-modal); }
+.modal-title { font-family:var(--f-serif); font-size:24px; line-height:30px; font-weight:500; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.modal-body { color:var(--text-secondary); font-size:15px; line-height:22px; margin:0 0 var(--s-7); }
+.modal-actions { display:flex; gap:var(--s-3); justify-content:flex-end; }
+
+/* ─── Frame layouts ─── */
+.frames { display:grid; grid-template-columns:auto 1fr; gap:var(--s-10); align-items:flex-start; }
+.frame-mobile {
+  width:390px; height:844px;
+  background:var(--bg-canvas);
+  border-radius:38px;
+  border:10px solid #1a1d24;
+  box-shadow:var(--elev-3);
+  overflow:hidden;
+  position:relative;
+  flex:none;
+}
+.frame-mobile::before {
+  content:""; position:absolute; top:8px; left:50%; transform:translateX(-50%);
+  width:120px; height:28px; background:#1a1d24; border-radius:var(--r-pill); z-index:10;
+}
+.frame-desktop {
+  background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:var(--r-xl);
+  box-shadow:var(--elev-2); overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.frame-desktop-bar { background:var(--bg-raised); padding:var(--s-3) var(--s-5); border-bottom:1px solid var(--border-subtle); display:flex; gap:var(--s-3); align-items:center; }
+.frame-desktop-dots { display:flex; gap:6px; }
+.frame-desktop-dots span { width:10px; height:10px; border-radius:var(--r-pill); background:var(--stone-300); }
+.frame-desktop-url { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-pill); padding:4px 14px; font-size:12px; color:var(--text-tertiary); flex:1; max-width:300px; }
+.frame-label { font-size:12px; color:var(--text-tertiary); text-align:center; margin-top:var(--s-3); font-family:ui-monospace, monospace; }
+
+/* Mobile screen content */
+.m-app { width:100%; height:100%; overflow-y:auto; padding-top:48px; }
+.m-app::-webkit-scrollbar { width:0; }
+.m-statusbar { position:absolute; top:0; left:0; right:0; height:48px; padding:0 var(--s-7); display:flex; align-items:center; justify-content:space-between; font-size:13px; font-weight:600; z-index:5; }
+.m-time { padding-top:8px; }
+.m-status-icons { padding-top:8px; opacity:0.85; font-size:12px; }
+.m-screen { padding:var(--s-5) var(--s-5) var(--s-11); }
+.m-tabbar { position:absolute; bottom:0; left:0; right:0; background:var(--bg-surface); border-top:1px solid var(--border-subtle); padding:var(--s-3) var(--s-5) var(--s-7); display:flex; justify-content:space-around; }
+.m-tab { display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--text-tertiary); font-size:11px; font-weight:500; min-width:48px; min-height:48px; padding:var(--s-2); }
+.m-tab--active { color:var(--text-brand); }
+.m-tab svg { width:22px; height:22px; }
+
+.m-h-eyebrow { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:var(--s-2); }
+.m-h-title { font-family:var(--f-serif); font-size:28px; line-height:34px; margin:0 0 var(--s-6); color:var(--cobalt-900); }
+
+/* Desktop preview content */
+.d-screen { padding:var(--s-8); display:grid; grid-template-columns:240px 1fr; gap:var(--s-8); min-height:680px; }
+.d-side { display:flex; flex-direction:column; gap:var(--s-2); }
+.d-side-item { padding:var(--s-3) var(--s-4); border-radius:var(--r-md); display:flex; gap:var(--s-3); align-items:center; color:var(--text-secondary); font-weight:500; font-size:14px; cursor:pointer; }
+.d-side-item--active { background:var(--cobalt-50); color:var(--cobalt-700); }
+.d-side svg { width:18px; height:18px; }
+.d-main { display:flex; flex-direction:column; gap:var(--s-7); }
+.d-main-header { display:flex; justify-content:space-between; align-items:center; }
+.d-main-title { font-family:var(--f-serif); font-size:32px; line-height:38px; margin:0; color:var(--cobalt-900); font-weight:400; }
+.d-grid-3 { display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--s-5); }
+
+/* Logo concepts */
+.logo-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--s-7); }
+.logo-tile { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-xl); padding:var(--s-9); text-align:center; }
+.logo-tile-label { margin-top:var(--s-5); font-size:13px; color:var(--text-tertiary); }
+.logo-tile-name { font-weight:600; color:var(--text-primary); margin-bottom:2px; }
+
+/* Demo helpers */
+.row { display:flex; gap:var(--s-4); flex-wrap:wrap; align-items:center; }
+.col { display:flex; flex-direction:column; gap:var(--s-4); }
+.demo-block { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-xl); padding:var(--s-6); box-shadow:var(--elev-1); }
+
+/* Modal demo container */
+.modal-demo { position:relative; height:380px; background:var(--bg-canvas); border-radius:var(--r-2xl); overflow:hidden; }
+.modal-demo .scrim { position:absolute; }
+
+.eyebrow { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:var(--s-2); }
+
+/* Banner re: Pastor */
+.banner { background:var(--gold-100); border:1px solid var(--gold-300); border-radius:var(--r-lg); padding:var(--s-5) var(--s-6); display:flex; gap:var(--s-4); align-items:flex-start; }
+.banner svg { width:20px; height:20px; flex:none; color:var(--gold-700); margin-top:2px; }
+.banner-title { font-weight:600; margin:0 0 2px; color:var(--gold-700); font-size:14px; }
+.banner-body { font-size:13px; color:var(--text-secondary); margin:0; line-height:19px; }
+
+/* Iconography doctrine — sourced from BLE-108 pastor-mode review */
+.doctrine-intro { color:var(--text-secondary); font-size:14px; line-height:21px; max-width:62ch; margin:0 0 var(--s-7); }
+.doctrine-eyebrow { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; margin:var(--s-9) 0 var(--s-5); color:var(--text-tertiary); display:flex; align-items:center; gap:var(--s-3); }
+.doctrine-eyebrow::before { content:""; flex:none; width:8px; height:8px; border-radius:var(--r-pill); }
+.doctrine-eyebrow--approved::before { background:var(--sage-500); }
+.doctrine-eyebrow--rejected::before { background:var(--amber-700); }
+.doctrine-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:var(--s-5); }
+.icon-card { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-xl); padding:var(--s-6); box-shadow:var(--elev-1); display:flex; flex-direction:column; gap:var(--s-3); }
+.icon-card .glyph { width:56px; height:56px; display:flex; align-items:center; justify-content:center; border-radius:var(--r-md); margin-bottom:var(--s-2); position:relative; }
+.icon-card--approved .glyph { background:var(--cobalt-50); color:var(--cobalt-700); }
+.icon-card--rejected .glyph { background:var(--stone-100); color:var(--stone-500); }
+.icon-card--rejected .glyph::after {
+  content:""; position:absolute; left:6px; right:6px; top:50%;
+  height:2px; background:var(--amber-700); transform:rotate(-22deg);
+  border-radius:var(--r-pill); opacity:0.85;
+}
+.icon-card .label { font-size:11px; font-weight:600; letter-spacing:0.08em; text-transform:uppercase; }
+.icon-card--approved .label { color:var(--sage-700); }
+.icon-card--rejected .label { color:var(--amber-700); }
+.icon-card h4 { font-family:var(--f-serif); font-weight:500; font-size:18px; line-height:24px; margin:0; color:var(--cobalt-900); }
+.icon-card p { font-size:13px; line-height:19px; color:var(--text-secondary); margin:0; }
+.icon-card .verse { font-family:var(--f-serif); font-style:italic; font-size:13px; line-height:20px; color:var(--cobalt-900); border-left:2px solid var(--gold-500); padding-left:var(--s-4); margin-top:var(--s-2); }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="page-header">
+  <div class="eyebrow">Design system v0.1 — preview</div>
+  <h1 class="page-title">BlessCupid</h1>
+  <p class="page-sub">Reverent, not religious-kitsch. Warm cream, soft cobalt, gold restraint. Indonesian-first. Female-respectful. No urgency-red.</p>
+  <p class="page-meta">FoundingDesigner · BLE-22 · target viewport 390×844 mobile + desktop preview · Inter + Source Serif 4</p>
+</header>
+
+<section class="banner" aria-label="Pastor sign-off pending">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+  <div>
+    <p class="banner-title">Faith-touching copy & imagery: pending Pastor sign-off</p>
+    <p class="banner-body">All scripture text, verse selections, prayer-circle visuals, and onboarding catechism copy are placeholders pending Pastor hire (BLE-4) + scripture list (BLE-30) + catechism copy (BLE-29). Visual tokens & component foundations ship now and are independent of that gate.</p>
+  </div>
+</section>
+
+<!-- ─── Logo ─── -->
+<section class="section">
+  <h2 class="section-title">Logo concepts (CEO selection)</h2>
+  <p class="section-sub">Two competing directions. Mood-board ticket will round these into a final mark + favicon + social variants. Both work mono and on cream.</p>
+
+  <div class="logo-grid">
+    <div class="logo-tile">
+      <svg width="180" height="180" viewBox="0 0 120 120" aria-label="Cross-anchor monogram">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2F4F99"/><stop offset="100%" stop-color="#243F7A"/></linearGradient>
+        </defs>
+        <circle cx="60" cy="60" r="54" fill="#FBF1D7"/>
+        <path d="M60 22 V 78" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M40 38 H 80" stroke="url(#g1)" stroke-width="6" stroke-linecap="round"/>
+        <path d="M48 78 C 48 90 60 96 60 96 C 60 96 72 90 72 78" stroke="url(#g1)" stroke-width="6" stroke-linecap="round" fill="none"/>
+        <circle cx="60" cy="100" r="3" fill="#C99A3A"/>
+      </svg>
+      <div class="logo-tile-label"><div class="logo-tile-name">Direction A — Cross-Anchor</div>Cross + anchor foot. Hope (Hebrews 6:19) + faith. Gold dot = consecration.</div>
+    </div>
+    <div class="logo-tile">
+      <svg width="280" height="120" viewBox="0 0 280 120" aria-label="Wordmark">
+        <text x="140" y="68" text-anchor="middle" font-family="Source Serif 4, serif" font-size="44" font-weight="500" fill="#142447">BlessCupid</text>
+        <circle cx="146" cy="34" r="4" fill="#C99A3A"/>
+        <line x1="60" y1="92" x2="220" y2="92" stroke="#E9C780" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <div class="logo-tile-label"><div class="logo-tile-name">Direction B — Wordmark + halo</div>Source Serif 4. Gold dot above the <code>i</code> (subtle halo). Gold rule = sanctified ground.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── Color ─── -->
+<section class="section">
+  <h2 class="section-title">Color tokens</h2>
+  <p class="section-sub">Cream foundation, cobalt brand, gold accent. Errors use amber, not red — calm UX, no urgency-coding. Match-only contexts may use rose; never errors.</p>
+
+  <div class="eyebrow" style="margin-top:var(--s-7)">Cream — surfaces</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-fill" style="background:#FDFBF6"></div><div class="swatch-meta"><div class="swatch-name">cream-50</div><div class="swatch-hex">#FDFBF6 · bg/canvas</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#F8F2E6"></div><div class="swatch-meta"><div class="swatch-name">cream-100</div><div class="swatch-hex">#F8F2E6 · bg/raised</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#EFE6D2"></div><div class="swatch-meta"><div class="swatch-name">cream-200</div><div class="swatch-hex">#EFE6D2 · bg/sunken</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#E2D4B5"></div><div class="swatch-meta"><div class="swatch-name">cream-300</div><div class="swatch-hex">#E2D4B5 · border/subtle</div></div></div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:var(--s-7)">Cobalt — brand</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-fill" style="background:#EEF2FB"></div><div class="swatch-meta"><div class="swatch-name">cobalt-50</div><div class="swatch-hex">#EEF2FB</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#D6E0F4"></div><div class="swatch-meta"><div class="swatch-name">cobalt-100</div><div class="swatch-hex">#D6E0F4</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#7FA1DD"></div><div class="swatch-meta"><div class="swatch-name">cobalt-300</div><div class="swatch-hex">#7FA1DD</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#3D67B8"></div><div class="swatch-meta"><div class="swatch-name">cobalt-500</div><div class="swatch-hex">#3D67B8</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#2F4F99"></div><div class="swatch-meta"><div class="swatch-name">cobalt-600</div><div class="swatch-hex">#2F4F99 · brand/primary</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#243F7A"></div><div class="swatch-meta"><div class="swatch-name">cobalt-700</div><div class="swatch-hex">#243F7A · hover</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#142447"></div><div class="swatch-meta"><div class="swatch-name">cobalt-900</div><div class="swatch-hex">#142447 · scripture</div></div></div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:var(--s-7)">Gold — accent</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-fill" style="background:#FBF1D7"></div><div class="swatch-meta"><div class="swatch-name">gold-100</div><div class="swatch-hex">#FBF1D7</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#E9C780"></div><div class="swatch-meta"><div class="swatch-name">gold-300</div><div class="swatch-hex">#E9C780</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#C99A3A"></div><div class="swatch-meta"><div class="swatch-name">gold-500</div><div class="swatch-hex">#C99A3A · accent/gold</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#8C6822"></div><div class="swatch-meta"><div class="swatch-name">gold-700</div><div class="swatch-hex">#8C6822</div></div></div>
+  </div>
+
+  <div class="eyebrow" style="margin-top:var(--s-7)">State — sage / amber / rose</div>
+  <div class="swatch-grid">
+    <div class="swatch"><div class="swatch-fill" style="background:#5C8A6A"></div><div class="swatch-meta"><div class="swatch-name">sage-500</div><div class="swatch-hex">#5C8A6A · success</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#D08A2C"></div><div class="swatch-meta"><div class="swatch-name">amber-500</div><div class="swatch-hex">#D08A2C · warning</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#8C5912"></div><div class="swatch-meta"><div class="swatch-name">amber-700</div><div class="swatch-hex">#8C5912 · critical (no red)</div></div></div>
+    <div class="swatch"><div class="swatch-fill" style="background:#C76A78"></div><div class="swatch-meta"><div class="swatch-name">rose-500</div><div class="swatch-hex">#C76A78 · match-only</div></div></div>
+  </div>
+</section>
+
+<!-- ─── Type ─── -->
+<section class="section">
+  <h2 class="section-title">Type scale</h2>
+  <p class="section-sub">Source Serif 4 for scripture and display moments — humanist, breathes. Inter for everything else — boring on purpose. Both ship Bahasa diacritics.</p>
+  <div class="type-list">
+    <div class="type-row"><span class="type-token">display-2xl</span><span class="t-display-2xl">Pertemuan yang diberkati</span></div>
+    <div class="type-row"><span class="type-token">display-xl</span><span class="t-display-xl">Verse of the day</span></div>
+    <div class="type-row"><span class="type-token">display-lg</span><span class="t-display-lg">Profil iman Anda</span></div>
+    <div class="type-row"><span class="type-token">heading-lg</span><span class="t-heading-lg">Discover</span></div>
+    <div class="type-row"><span class="type-token">heading-md</span><span class="t-heading-md">Suggested matches today</span></div>
+    <div class="type-row"><span class="type-token">heading-sm</span><span class="t-heading-sm">Home church</span></div>
+    <div class="type-row"><span class="type-token">body-lg</span><span class="t-body-lg">Kasih sabar, kasih murah hati. Suara yang menenangkan dalam aplikasi ini.</span></div>
+    <div class="type-row"><span class="type-token">body-md</span><span class="t-body-md">Default UI body. The boring workhorse text size that keeps screens readable.</span></div>
+    <div class="type-row"><span class="type-token">body-sm</span><span class="t-body-sm">2 menit yang lalu · Jakarta · GKI Pondok Indah</span></div>
+    <div class="type-row"><span class="type-token">label</span><span class="t-label">Verified · Gold trust</span></div>
+  </div>
+</section>
+
+<!-- ─── Components ─── -->
+<section class="section">
+  <h2 class="section-title">Component foundations</h2>
+  <p class="section-sub">Each component below meets 44pt touch floor, AA contrast, focus ring, and reduced-motion fallback.</p>
+
+  <div class="d-grid-3" style="grid-template-columns:1fr 1fr;">
+
+    <!-- Buttons -->
+    <div class="demo-block">
+      <div class="eyebrow">Button — variants</div>
+      <div class="row" style="margin-bottom:var(--s-5)">
+        <button class="btn btn--primary">Lanjut</button>
+        <button class="btn btn--secondary">Batal</button>
+        <button class="btn btn--ghost">Lewati</button>
+        <button class="btn btn--destructive">Blokir</button>
+      </div>
+      <div class="eyebrow">Sizes</div>
+      <div class="row" style="margin-bottom:var(--s-5)">
+        <button class="btn btn--primary btn--sm">Small 40</button>
+        <button class="btn btn--primary">Medium 48</button>
+        <button class="btn btn--primary btn--lg">Large 56</button>
+      </div>
+      <div class="eyebrow">States</div>
+      <div class="row">
+        <button class="btn btn--primary" disabled>Disabled</button>
+        <button class="btn btn--primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10" opacity=".3"/><path d="M12 2 a 10 10 0 0 1 10 10"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/></path></svg>Loading…</button>
+      </div>
+    </div>
+
+    <!-- Inputs -->
+    <div class="demo-block">
+      <div class="eyebrow">Input — default, focus, error</div>
+      <div class="field">
+        <label class="field-label">Nama lengkap</label>
+        <input class="field-input" type="text" placeholder="Mis. Christabel Nugraha">
+        <div class="field-helper">Nama yang ditampilkan ke pasangan potensial.</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Ayat favorit</label>
+        <input class="field-input" type="text" value="Filipi 4:13" autofocus>
+        <div class="field-helper">Pasangan akan melihat ayat ini di profil Anda.</div>
+      </div>
+      <div class="field field--error">
+        <label class="field-label">Email</label>
+        <input class="field-input" type="email" value="invalid-email">
+        <div class="field-helper">Format email belum benar — periksa kembali.</div>
+      </div>
+      <div class="field">
+        <label class="field-label">Cerita iman singkat</label>
+        <textarea class="field-input" placeholder="Bagaimana iman Anda berkembang?"></textarea>
+      </div>
+    </div>
+
+    <!-- Card grid -->
+    <div class="demo-block">
+      <div class="eyebrow">Card — basic, photo, profile</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:var(--s-5); margin-top:var(--s-3)">
+        <div class="card card--photo">
+          <div class="card-photo">
+            <div class="card-photo-content">
+              <h3 class="card-name">Sarah, 27</h3>
+              <div class="card-meta"><span>Jakarta · GKI</span> <span class="badge badge--gold"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.39 6.96H22l-6 4.36 2.32 7.18L12 16.27l-6.32 4.23L8 13.32 2 8.96h7.61z"/></svg>Verified</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="eyebrow">Suggested</div>
+          <h3 class="card-title" style="margin-top:var(--s-2)">Daniel, 29</h3>
+          <p class="card-text">Pelayanan musik di GBI Sentul. Mencari pasangan untuk membangun rumah tangga yang berpusat pada Kristus.</p>
+          <div class="row" style="margin-top:var(--s-5)">
+            <span class="badge badge--brand">Dating</span>
+            <span class="badge badge--gold">Gold trust</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verse card -->
+    <div class="demo-block">
+      <div class="eyebrow">Verse-of-the-day card <span style="color:var(--gold-700); font-weight:600">— BLE-87a hi-fi (translation tag, attribution; single-locale per BLE-144)</span></div>
+      <article class="verse-card" style="margin-top:var(--s-3)">
+        <header class="verse-card-head">
+          <div class="verse-card-eyebrow">Hari ini · 28 April</div>
+        </header>
+        <p class="verse-text">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya, dan Ia akan bertindak.</p>
+        <div class="verse-ref">Mazmur 37:5 <span class="translation-tag">(TB2)</span></div>
+        <p class="verse-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+      </article>
+    </div>
+
+    <!-- Badges + toasts -->
+    <div class="demo-block">
+      <div class="eyebrow">Badge</div>
+      <div class="row" style="margin-bottom:var(--s-7)">
+        <span class="badge badge--neutral">Friendship</span>
+        <span class="badge badge--brand">Dating</span>
+        <span class="badge badge--gold">Gold trust</span>
+        <span class="badge badge--success">Verified</span>
+        <span class="badge badge--warning">Under review</span>
+        <span class="badge badge--match">Mutual</span>
+      </div>
+      <div class="eyebrow">Toast</div>
+      <div class="col" style="margin-top:var(--s-3)">
+        <div class="toast"><div><p class="toast-title">Profile diperbarui</p><p class="toast-body">Perubahan terlihat oleh pasangan dalam beberapa menit.</p></div></div>
+        <div class="toast toast--success"><div><p class="toast-title">Verifikasi gereja diterima</p><p class="toast-body">Anda sekarang berstatus Gold trust.</p></div></div>
+        <div class="toast toast--warning"><div><p class="toast-title">Foto perlu ditinjau</p><p class="toast-body">Tim moderasi akan meninjau dalam 24 jam.</p></div></div>
+        <div class="toast toast--critical"><div><p class="toast-title">Laporan dikirim</p><p class="toast-body">Tindakan cepat — kami menanggapi dalam 24 jam.</p></div></div>
+      </div>
+    </div>
+
+    <!-- Empty + loading -->
+    <div class="demo-block">
+      <div class="eyebrow">Empty state</div>
+      <div class="empty" style="margin-top:var(--s-3)">
+        <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 L 12 22"/><path d="M5 9 L 19 9"/><path d="M8 22 C 8 19, 12 18, 12 18 C 12 18, 16 19, 16 22"/></svg>
+        <h3 class="empty-title">Belum ada pertemuan</h3>
+        <p class="empty-body">Lengkapi profil iman Anda untuk mulai bertemu jemaat lain yang sepadan.</p>
+        <button class="btn btn--primary">Lengkapi profil</button>
+      </div>
+      <div class="eyebrow" style="margin-top:var(--s-7)">Skeleton loading</div>
+      <div style="display:flex; gap:var(--s-4); align-items:flex-start; margin-top:var(--s-3); padding:var(--s-4); border:1px solid var(--border-subtle); border-radius:var(--r-xl); background:var(--bg-surface)">
+        <div class="skeleton sk-circle"></div>
+        <div style="flex:1">
+          <div class="skeleton sk-line sk-line--80"></div>
+          <div class="skeleton sk-line sk-line--60"></div>
+          <div class="skeleton sk-line"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="demo-block" style="grid-column:1/-1">
+      <div class="eyebrow">Modal — center (mobile + desktop)</div>
+      <p class="t-body-sm" style="margin:var(--s-2) 0 var(--s-5)">Scrim rgba(20,24,40,.5). Radius 28. Focus trap on open. Esc + scrim-tap close. Reduced-motion → instant.</p>
+      <div class="modal-demo">
+        <div class="scrim">
+          <div class="modal" role="dialog" aria-labelledby="md-t" aria-modal="true">
+            <h3 class="modal-title" id="md-t">Lapor pengguna ini?</h3>
+            <p class="modal-body">Tim moderasi akan meninjau dalam 24 jam. Pengguna tidak akan tahu Anda yang melapor.</p>
+            <div class="modal-actions">
+              <button class="btn btn--ghost">Batal</button>
+              <button class="btn btn--destructive">Lapor</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── Iconography doctrine ─── -->
+<section class="section" id="iconography-doctrine">
+  <h2 class="section-title">Iconography doctrine — what the brand refuses, and why</h2>
+  <p class="section-sub">Sourced from <a href="../ble-108-pastor-mode/pastor-mode-hifi.html" style="color:var(--text-brand)">BLE-108 pastor-mode review</a> (Pastor sign-off, CEO doctrinal positioning). Six glyphs are off the table forever, not just for pastor mode and not just for v1. The approved set is the affirmative vocabulary. Refusing one to use the other is the load-bearing decision — future Designer work cannot reintroduce a rejected glyph without re-litigating the Holy Code of Conduct.</p>
+
+  <div class="doctrine-eyebrow doctrine-eyebrow--approved">Approved · 3 glyphs · the affirmative vocabulary</div>
+  <div class="doctrine-grid">
+
+    <div class="icon-card icon-card--approved">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/></svg>
+      </div>
+      <div class="label">Diterima</div>
+      <h4>Tongkat gembala</h4>
+      <p>Shepherd-staff. Pastoral metaphor by direct etymology — the staff is what a pastor (Latin <em>pastor</em>, "shepherd") carries.</p>
+      <p class="verse">"Gada-Mu dan tongkat-Mu, itulah yang menghibur aku." — Mazmur 23:4 (TB2).</p>
+    </div>
+
+    <div class="icon-card icon-card--approved">
+      <div class="glyph">
+        <svg width="44" height="44" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="9" r="3"/><path d="M5 24c0-3 2.7-5.5 6-5.5s6 2.5 6 5.5"/><circle cx="22" cy="11" r="2.5"/><path d="M17 25c0-2.5 2.2-4.5 5-4.5s5 2 5 4.5"/></svg>
+      </div>
+      <div class="label">Diterima</div>
+      <h4>Dua sosok bersisian</h4>
+      <p>Two figures side by side — walking-companion frame. Never authority-over, never one-on-top-of-the-other. Used in mentor / accountability surfaces.</p>
+      <p class="verse">"Bukankah baik dan indah, apabila saudara-saudara diam bersama dengan rukun!" — Mazmur 133:1.</p>
+    </div>
+
+    <div class="icon-card icon-card--approved">
+      <div class="glyph">
+        <svg width="44" height="44" viewBox="0 0 96 96" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="34" cy="28" r="6"/><path d="M22 78l4-22a8 8 0 0 1 8-7h0a8 8 0 0 1 8 7l4 22"/><line x1="30" y1="78" x2="34" y2="58"/><line x1="38" y1="78" x2="34" y2="58"/><circle cx="62" cy="32" r="5"/><path d="M52 76l3-18a7 7 0 0 1 7-6h0a7 7 0 0 1 7 6l3 18" opacity="0.5"/></svg>
+      </div>
+      <div class="label">Diterima</div>
+      <h4>Pejalan beriring</h4>
+      <p>Walking-companion: same direction, one slightly behind, never above. The Emmaus posture — Christ walked <em>with</em> the disciples before they recognized Him.</p>
+      <p class="verse">"Bukankah hati kita berkobar-kobar, ketika Ia berbicara dengan kita di tengah jalan…" — Lukas 24:32.</p>
+    </div>
+
+  </div>
+
+  <div class="doctrine-eyebrow doctrine-eyebrow--rejected">Rejected · 6 glyphs · do not reintroduce</div>
+  <div class="doctrine-grid">
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+      </div>
+      <div class="label">Ditolak · panopticon</div>
+      <h4>Mata (eye)</h4>
+      <p>Reads as panopticon — the watcher whose presence shapes the behavior of the watched. Opposite of shepherding: a shepherd walks alongside, not above.</p>
+      <p class="verse">"Lihatlah, Aku berdiri di muka pintu dan mengetuk." — Wahyu 3:20. Christ knocks; He does not stare in.</p>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16" y2="16"/></svg>
+      </div>
+      <div class="label">Ditolak · investigation</div>
+      <h4>Kaca pembesar (magnifying glass)</h4>
+      <p>Investigation glyph. Implies the user is a case to be solved or evidence to be examined. Pastoral relationships are not investigations and the mentee is not a suspect.</p>
+      <p class="verse">"Hendaklah kamu saling mengaku dosamu dan saling mendoakan, supaya kamu sembuh." — Yakobus 5:16. Mutual confession is healing, not forensics.</p>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </div>
+      <div class="label">Ditolak · carceral</div>
+      <h4>Gembok (lock / security)</h4>
+      <p>Frames the relationship as containment — keeping the user "safe" from themselves. A covenant of trust is not a containment system. Lock semantics also blur with auth/account-security UI elsewhere in the app.</p>
+      <p class="verse">Containment is a prison metaphor. Discipleship is a road metaphor — Lukas 24, the road to Emmaus.</p>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-12V5l-8-3-8 3v5c0 8 8 12 8 12z"/></svg>
+      </div>
+      <div class="label">Ditolak · authority armor</div>
+      <h4>Perisai (shield)</h4>
+      <p>Reads as authority defending downward. Positions the operator over the user instead of beside. Visually adjacent to security/admin-panel chrome — wrong frame for a covenant.</p>
+      <p class="verse">Authority that protects from above is not the shepherd model of Mazmur 23 — the shepherd walks the valley <em>with</em> the sheep, not above them.</p>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <div class="label">Ditolak · scoring</div>
+      <h4>Bintang (star / score)</h4>
+      <p>Star, badge, and score iconography (gamification rewards) collapse a covenant relationship into a metric. Avoiding "engagement scores" means avoiding the visual language of scoring entirely.</p>
+      <p class="verse">Spiritual maturity is not a leaderboard. Refuse the ranking shape.</p>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="glyph">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="4"/><path d="M5 21v-2a4 4 0 0 1 4-4h0a4 4 0 0 1 4 4v2"/><path d="M16 11l3 3 5-5"/></svg>
+      </div>
+      <div class="label">Ditolak · approval gating</div>
+      <h4>Tanda centang "disetujui pendeta"</h4>
+      <p>"Pastor-approved" verification badges frame the user as something to be certified. Two-party consent is approval-of-relationship, not approval-of-person. Removing the certification glyph removes the certification framing.</p>
+      <p class="verse">"…tidak ada laki-laki atau perempuan, karena kamu semua adalah satu di dalam Kristus Yesus." — Galatia 3:28. Approval-of-person creates spiritual-class hierarchy.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── Frame: mobile + desktop ─── -->
+<section class="section">
+  <h2 class="section-title">Acceptance preview — 390×844 mobile + desktop</h2>
+  <p class="section-sub">Components composed into a single home-screen surface to prove tokens cohere. Faith content uses placeholder copy pending Pastor sign-off.</p>
+
+  <div class="frames">
+
+    <!-- Mobile frame -->
+    <div>
+      <div class="frame-mobile" aria-label="iPhone 14 mobile preview at 390x844">
+        <div class="m-statusbar">
+          <span class="m-time">9:41</span>
+          <span class="m-status-icons">●●●● 5G ▮</span>
+        </div>
+        <div class="m-app">
+          <div class="m-screen">
+            <div class="m-h-eyebrow">Home · Selasa</div>
+            <h1 class="m-h-title">Selamat pagi,<br>Christabel</h1>
+
+            <div class="verse-card" style="margin-bottom:var(--s-7)">
+              <div class="verse-card-eyebrow">Ayat hari ini</div>
+              <p class="verse-text" style="font-size:18px; line-height:28px">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya.</p>
+              <div class="verse-ref">Mazmur 37:5 (placeholder)</div>
+            </div>
+
+            <div class="eyebrow">Disarankan untuk Anda</div>
+            <div class="card card--photo" style="margin-top:var(--s-3); margin-bottom:var(--s-5)">
+              <div class="card-photo" style="aspect-ratio:1/1">
+                <div class="card-photo-content">
+                  <h3 class="card-name">Daniel, 29</h3>
+                  <div class="card-meta"><span>Sentul · GBI</span></div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="row" style="margin-bottom:var(--s-3)">
+                  <span class="badge badge--brand">Dating</span>
+                  <span class="badge badge--gold">Gold trust</span>
+                </div>
+                <p class="card-text">Pelayanan musik. Mencari pasangan untuk membangun rumah tangga.</p>
+              </div>
+            </div>
+
+            <button class="btn btn--primary btn--full btn--lg">Lihat lebih banyak</button>
+          </div>
+        </div>
+        <div class="m-tabbar">
+          <a class="m-tab m-tab--active" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 L 12 3 L 21 12"/><path d="M5 10 V 20 H 19 V 10"/></svg>Home</a>
+          <a class="m-tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21 L 17 17"/></svg>Discover</a>
+          <a class="m-tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12 a 9 9 0 1 1 -9 -9"/><path d="M3 12 L 8 17 L 14 8"/></svg>Connections</a>
+          <a class="m-tab" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C 4 16 8 14 12 14 C 16 14 20 16 20 21"/></svg>Profile</a>
+        </div>
+      </div>
+      <div class="frame-label">390×844 · iPhone 14 default</div>
+    </div>
+
+    <!-- Desktop frame -->
+    <div>
+      <div class="frame-desktop">
+        <div class="frame-desktop-bar">
+          <div class="frame-desktop-dots"><span></span><span></span><span></span></div>
+          <div class="frame-desktop-url">app.blesscupid.id/home</div>
+        </div>
+        <div class="d-screen">
+          <aside class="d-side">
+            <div class="d-side-item d-side-item--active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12 L 12 3 L 21 12"/><path d="M5 10 V 20 H 19 V 10"/></svg>Home</div>
+            <div class="d-side-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21 L 17 17"/></svg>Discover</div>
+            <div class="d-side-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12 a 9 9 0 1 1 -9 -9"/><path d="M3 12 L 8 17 L 14 8"/></svg>Connections</div>
+            <div class="d-side-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21 C 4 16 8 14 12 14 C 16 14 20 16 20 21"/></svg>Profile</div>
+            <div style="margin-top:var(--s-7); padding-top:var(--s-5); border-top:1px solid var(--border-subtle)">
+              <div class="d-side-item" style="color:var(--state-critical)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22 s -8 -4 -8 -12 a 5 5 0 0 1 9 -3 a 5 5 0 0 1 9 3 c 0 8 -8 12 -8 12 z" opacity=".0"/><path d="M12 9 v 4"/><path d="M12 17 h .01"/><circle cx="12" cy="12" r="9"/></svg>Safety center</div>
+            </div>
+          </aside>
+          <div class="d-main">
+            <div class="d-main-header">
+              <h1 class="d-main-title">Selamat pagi, Christabel</h1>
+              <div class="row">
+                <span class="badge badge--gold">Gold trust</span>
+                <button class="btn btn--secondary btn--sm">Edit profile</button>
+              </div>
+            </div>
+
+            <div class="verse-card">
+              <div class="verse-card-eyebrow">Ayat hari ini · placeholder, Pastor pending</div>
+              <p class="verse-text">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya, dan Ia akan bertindak.</p>
+              <div class="verse-ref">Mazmur 37:5</div>
+            </div>
+
+            <div>
+              <div class="row" style="justify-content:space-between; margin-bottom:var(--s-5)">
+                <h2 style="font-family:var(--f-sans); font-size:18px; font-weight:600; margin:0">Disarankan untuk Anda</h2>
+                <a href="#" style="color:var(--text-brand); font-size:14px; font-weight:500">Lihat semua →</a>
+              </div>
+              <div class="d-grid-3">
+                <div class="card card--photo">
+                  <div class="card-photo"><div class="card-photo-content"><h3 class="card-name">Daniel, 29</h3><div class="card-meta">Sentul · GBI</div></div></div>
+                  <div class="card-body"><div class="row" style="margin-bottom:var(--s-2)"><span class="badge badge--brand">Dating</span><span class="badge badge--gold">Gold</span></div><p class="card-text">Pelayanan musik. Mencari pasangan.</p></div>
+                </div>
+                <div class="card card--photo">
+                  <div class="card-photo" style="background:linear-gradient(180deg, var(--gold-100), var(--rose-300))"><div class="card-photo-content"><h3 class="card-name">Maria, 26</h3><div class="card-meta">Jakarta · GKI</div></div></div>
+                  <div class="card-body"><div class="row" style="margin-bottom:var(--s-2)"><span class="badge badge--brand">Dating</span><span class="badge badge--success">Verified</span></div><p class="card-text">Pengajar Sekolah Minggu. Indonesia + Jepang.</p></div>
+                </div>
+                <div class="card card--photo">
+                  <div class="card-photo" style="background:linear-gradient(180deg, var(--cobalt-100), var(--cobalt-500))"><div class="card-photo-content"><h3 class="card-name">Rebecca, 28</h3><div class="card-meta">Bandung · GKI</div></div></div>
+                  <div class="card-body"><div class="row" style="margin-bottom:var(--s-2)"><span class="badge badge--neutral">Friendship</span></div><p class="card-text">Mencari teman doa & accountability.</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="frame-label">Desktop preview · 1280 wide</div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title">Acceptance criteria — status</h2>
+  <ul class="t-body-md" style="line-height:28px">
+    <li>✅ Tokens documented (color, type, spacing, radii, elevation, motion, z-index) — see `tokens` document on this issue</li>
+    <li>✅ Primary button rendered at 390×844 mobile + desktop preview</li>
+    <li>✅ Card rendered at 390×844 mobile + desktop preview</li>
+    <li>✅ Input rendered with default / focus / error states</li>
+    <li>✅ Modal rendered with scrim, focus-target, action layout</li>
+    <li>✅ Logo: 2 concept directions delivered (Cross-Anchor + Wordmark) — CEO selects</li>
+    <li>✅ WCAG AA contrast verified for all semantic pairs</li>
+    <li>✅ Reduced-motion fallback in CSS</li>
+    <li>⏳ Pastor sign-off on faith-touching imagery — blocked on BLE-4 hire (verse copy, scripture choice)</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

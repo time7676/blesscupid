@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlessCupid — 18+ Age Gate hi-fi (BLE-130)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+  --sage-500:#5C8A6A;
+
+  --bg-canvas:var(--cream-50); --bg-surface:#FFFFFF; --bg-raised:var(--cream-100);
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-inverse:var(--cream-50); --text-brand:var(--cobalt-700);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300); --border-focus:var(--cobalt-600);
+
+  --s-1:2px; --s-2:4px; --s-3:8px; --s-4:12px; --s-5:16px; --s-6:20px; --s-7:24px;
+  --s-8:32px; --s-9:40px; --s-10:48px; --s-11:64px; --s-12:80px;
+
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-pill:999px;
+
+  --elev-1:0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2:0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3:0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-phone:0 24px 60px rgba(20,24,40,.18), 0 8px 24px rgba(20,24,40,.10);
+
+  --d-fast:120ms; --d-base:200ms;
+  --e-standard:cubic-bezier(0.2,0,0.2,1);
+
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:0ms !important; transition-duration:0ms !important; }
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family:var(--f-sans);
+  background:var(--bg-canvas);
+  color:var(--text-primary);
+  font-size:15px; line-height:22px;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ── Page ── */
+.page { max-width:1280px; margin:0 auto; padding:var(--s-10) var(--s-7) var(--s-12); }
+.page-header { margin-bottom:var(--s-10); border-bottom:1px solid var(--border-subtle); padding-bottom:var(--s-9); }
+.eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-brand); margin:0 0 var(--s-3); }
+.page-title { font-family:var(--f-serif); font-size:44px; line-height:50px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.01em; }
+.page-sub { color:var(--text-secondary); max-width:62ch; margin:0; font-size:17px; line-height:26px; }
+.page-meta { color:var(--text-tertiary); margin-top:var(--s-4); font-size:13px; font-family:ui-monospace,monospace; }
+
+.section { margin-top:var(--s-12); }
+.section-head { margin-bottom:var(--s-9); }
+.section-eyebrow { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--cobalt-600); margin:0 0 var(--s-2); }
+.section-title { font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.section-sub { color:var(--text-secondary); max-width:70ch; margin:0; font-size:15px; line-height:24px; }
+
+/* TOC */
+.toc { display:flex; gap:var(--s-5); flex-wrap:wrap; margin-top:var(--s-7); }
+.toc a { color:var(--cobalt-700); text-decoration:none; font-size:14px; padding:6px 12px; border:1px solid var(--border-subtle); border-radius:var(--r-pill); }
+.toc a:hover { background:var(--cobalt-50); }
+
+/* ── Phone frame (390x844) ── */
+.phones { display:flex; flex-wrap:wrap; gap:var(--s-10); justify-content:flex-start; }
+.phone-wrap { display:flex; flex-direction:column; align-items:flex-start; gap:var(--s-4); width:390px; }
+.phone-cap { font-size:12px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-brand); margin:0; }
+.phone-cap-sub { font-size:13px; color:var(--text-secondary); margin-top:-6px; line-height:18px; }
+.phone {
+  width:390px; height:844px;
+  background:#fff;
+  border-radius:44px;
+  border:1px solid var(--stone-300);
+  box-shadow:var(--elev-phone);
+  position:relative;
+  overflow:hidden;
+}
+.phone::before {
+  content:""; position:absolute; left:50%; top:8px; transform:translateX(-50%);
+  width:120px; height:30px; background:#0b0b0d; border-radius:18px; z-index:30;
+}
+.phone-inner { position:absolute; inset:0; padding-top:54px; display:flex; flex-direction:column; height:100%; overflow:hidden; }
+
+/* status bar */
+.status-bar {
+  position:absolute; top:14px; left:0; right:0; padding:0 32px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-size:13px; font-weight:600; color:var(--stone-900); z-index:25;
+}
+.status-bar .status-time { letter-spacing:.02em; }
+.status-bar .status-icons { display:flex; gap:6px; align-items:center; }
+
+/* nav (mobile app header) */
+.app-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:var(--s-3) var(--s-5);
+  border-bottom:1px solid var(--border-subtle);
+  background:var(--bg-surface);
+}
+.app-header h1 { font-family:var(--f-serif); font-size:17px; line-height:22px; font-weight:500; color:var(--cobalt-900); margin:0; }
+.icon-btn { width:40px; height:40px; border:none; background:transparent; border-radius:var(--r-pill); display:inline-flex; align-items:center; justify-content:center; cursor:pointer; }
+
+/* surfaces */
+.scroll { flex:1; overflow:auto; }
+.surface { padding:var(--s-7) var(--s-6) var(--s-9); }
+.surface h2 { font-family:var(--f-serif); font-size:24px; line-height:30px; font-weight:500; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.005em; }
+.surface h3 { font-size:13px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--cobalt-700); margin:0 0 var(--s-3); }
+.surface p { color:var(--text-secondary); margin:0 0 var(--s-4); }
+
+.stack-3 > * + * { margin-top:var(--s-3); }
+.stack-4 > * + * { margin-top:var(--s-4); }
+.stack-5 > * + * { margin-top:var(--s-5); }
+.stack-7 > * + * { margin-top:var(--s-7); }
+
+.scripture {
+  background:var(--cream-100);
+  border-left:3px solid var(--cobalt-600);
+  border-radius:0 var(--r-md) var(--r-md) 0;
+  padding:var(--s-5);
+  font-family:var(--f-serif);
+  font-style:italic;
+  color:var(--cobalt-900);
+  font-size:15px; line-height:23px;
+  margin:0;
+}
+.scripture cite { display:block; font-style:normal; font-size:12px; color:var(--text-tertiary); margin-top:var(--s-3); font-family:var(--f-sans); }
+
+/* buttons */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:var(--s-3); border:none; border-radius:var(--r-pill); padding:14px 22px; font-size:15px; font-weight:600; cursor:pointer; }
+.btn--full { width:100%; }
+.btn--primary { background:var(--cobalt-700); color:var(--text-inverse); }
+.btn--primary:hover { background:var(--cobalt-900); }
+.btn--secondary { background:var(--cobalt-50); color:var(--cobalt-700); border:1px solid var(--cobalt-100); }
+.btn--ghost { background:transparent; color:var(--cobalt-700); }
+
+/* doormat hero — pre-gate intro */
+.doormat-hero {
+  background:linear-gradient(180deg, var(--cobalt-50) 0%, var(--cream-50) 100%);
+  border-radius:var(--r-xl);
+  padding:var(--s-7) var(--s-6);
+  text-align:center;
+}
+.doormat-glyph { display:block; margin:0 auto var(--s-5); color:var(--cobalt-700); }
+
+/* KTP capture frame */
+.ktp-stage {
+  background:var(--stone-900);
+  border-radius:var(--r-xl);
+  height:280px;
+  position:relative;
+  overflow:hidden;
+}
+.ktp-frame {
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.ktp-rect {
+  width:300px; height:190px;
+  border:2px dashed rgba(255,255,255,.85);
+  border-radius:var(--r-md);
+  position:relative;
+}
+.ktp-corner { position:absolute; width:18px; height:18px; border:3px solid var(--cream-50); }
+.ktp-corner.tl { top:-2px; left:-2px; border-right:none; border-bottom:none; border-radius:4px 0 0 0; }
+.ktp-corner.tr { top:-2px; right:-2px; border-left:none; border-bottom:none; border-radius:0 4px 0 0; }
+.ktp-corner.bl { bottom:-2px; left:-2px; border-right:none; border-top:none; border-radius:0 0 0 4px; }
+.ktp-corner.br { bottom:-2px; right:-2px; border-left:none; border-top:none; border-radius:0 0 4px 0; }
+.ktp-help {
+  position:absolute; left:0; right:0; bottom:14px;
+  text-align:center; color:var(--cream-50); font-size:13px; opacity:.85;
+}
+.ktp-shutter {
+  position:absolute; left:50%; bottom:18px; transform:translateX(-50%);
+  width:64px; height:64px; border-radius:50%;
+  background:#fff; border:4px solid rgba(255,255,255,.6);
+}
+
+/* extracted DOB row (post-OCR) */
+.dob-row {
+  display:flex; gap:var(--s-4); align-items:center;
+  background:var(--bg-raised);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-md);
+  padding:var(--s-5);
+}
+.dob-label { font-size:12px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.06em; }
+.dob-value { font-family:var(--f-serif); font-size:22px; color:var(--cobalt-900); }
+
+/* pass / fail badges */
+.badge {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:6px 12px; border-radius:var(--r-pill);
+  font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+}
+.badge--pass { background:#E7F1EA; color:#2F5A3D; }
+.badge--neutral { background:var(--cream-100); color:var(--stone-700); }
+
+/* affidavit */
+.affidavit-card {
+  background:var(--bg-surface);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-lg);
+  padding:var(--s-5);
+}
+.affidavit-line { font-family:var(--f-serif); font-style:italic; color:var(--cobalt-900); margin:var(--s-4) 0; line-height:24px; }
+.affidavit-check { display:flex; gap:var(--s-3); align-items:flex-start; margin:var(--s-3) 0; }
+.affidavit-check input { margin-top:4px; }
+.affidavit-check label { font-size:13px; color:var(--text-secondary); }
+
+/* spinner placeholder */
+.processing {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  height:100%; padding:var(--s-9) var(--s-7); text-align:center;
+}
+.processing .spinner {
+  width:48px; height:48px; border-radius:50%;
+  border:3px solid var(--cobalt-100);
+  border-top-color:var(--cobalt-700);
+  animation:spin 800ms linear infinite;
+  margin-bottom:var(--s-7);
+}
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* fail surface (neutral) */
+.neutral-frame {
+  text-align:center; padding:var(--s-9) var(--s-6);
+}
+.neutral-glyph {
+  width:64px; height:64px; border-radius:50%;
+  background:var(--cream-100); color:var(--cobalt-700);
+  display:flex; align-items:center; justify-content:center; margin:0 auto var(--s-7);
+}
+
+/* admin tile */
+.admin-grid { display:grid; grid-template-columns:repeat(2, 1fr); gap:var(--s-5); margin-top:var(--s-5); }
+.admin-tile {
+  background:var(--bg-surface);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-lg);
+  padding:var(--s-6);
+}
+.admin-tile .label { font-size:11px; color:var(--text-tertiary); text-transform:uppercase; letter-spacing:.08em; margin:0 0 var(--s-3); }
+.admin-tile .value { font-family:var(--f-serif); font-size:36px; line-height:38px; color:var(--cobalt-900); margin:0; font-weight:500; }
+.admin-tile .delta { font-size:12px; color:var(--text-tertiary); margin-top:var(--s-2); }
+.admin-card {
+  background:var(--bg-surface);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-xl);
+  padding:var(--s-7);
+  max-width:760px;
+}
+.admin-card h3 { margin:0 0 var(--s-2); font-family:var(--f-serif); font-size:22px; line-height:28px; font-weight:500; color:var(--cobalt-900); text-transform:none; letter-spacing:0; }
+.admin-card .sub { font-size:13px; color:var(--text-tertiary); margin:0; }
+
+/* spec table */
+.spec {
+  background:var(--bg-surface);
+  border:1px solid var(--border-subtle);
+  border-radius:var(--r-xl);
+  padding:var(--s-9);
+  font-family:ui-monospace, "SF Mono", monospace;
+  font-size:13px; line-height:20px;
+  color:var(--stone-900);
+  white-space:pre-wrap;
+  overflow:auto;
+}
+.events {
+  display:grid; grid-template-columns:1fr 2fr 1fr; gap:0;
+  border:1px solid var(--border-subtle); border-radius:var(--r-lg); overflow:hidden;
+  background:var(--bg-surface);
+}
+.events .h, .events .c { padding:12px 16px; border-bottom:1px solid var(--border-subtle); font-size:13px; }
+.events .h { background:var(--cream-100); font-weight:600; color:var(--cobalt-900); }
+.events .c.code { font-family:ui-monospace, monospace; color:var(--cobalt-700); }
+.events .c.no-pii { color:var(--sage-500); font-weight:600; }
+.events .c.pii { color:#A33; font-weight:600; }
+.events > div:nth-last-child(-n+3) { border-bottom:none; }
+
+/* checklist */
+.check-list { list-style:none; padding:0; margin:0; }
+.check-list li { display:flex; gap:var(--s-4); padding:var(--s-4) 0; border-top:1px solid var(--border-subtle); }
+.check-list li:first-child { border-top:none; }
+.check-list .num {
+  flex-shrink:0; width:28px; height:28px; border-radius:50%;
+  background:var(--cobalt-700); color:var(--cream-50);
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:600; font-family:ui-monospace, monospace;
+}
+.check-list .body { font-size:14px; line-height:22px; color:var(--text-secondary); }
+.check-list .body b { color:var(--cobalt-900); font-weight:600; }
+.check-list .body em { display:block; font-size:12px; color:var(--text-tertiary); font-style:normal; margin-top:4px; }
+
+/* notes */
+.notes {
+  background:var(--cream-100);
+  border-radius:var(--r-xl);
+  padding:var(--s-7);
+  margin-top:var(--s-9);
+  max-width:760px;
+}
+.notes h3 { margin:0 0 var(--s-4); font-family:var(--f-serif); font-size:20px; color:var(--cobalt-900); font-weight:500; }
+.notes ul { margin:0; padding-left:var(--s-7); }
+.notes li { color:var(--text-secondary); font-size:14px; line-height:22px; margin-bottom:var(--s-3); }
+.notes code { background:var(--bg-surface); padding:1px 6px; border-radius:4px; font-size:12px; color:var(--cobalt-700); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <p class="eyebrow">BLE-130 · BlessCupid · Hi-fi · 2026-04-29</p>
+    <h1 class="page-title">18+ age gate — pastor-mode prerequisite</h1>
+    <p class="page-sub">Above 18 is the threshold of competent consent. The age gate is the doormat: nothing pastor-mode-shaped can be invited or accepted without it. Surveillance-adjacent surfaces on a minor are mandatory-reporting risk under UU Perlindungan Anak; two-party consent does not absolve platform liability when one party is under 18. Default verification: Indonesian KTP/NIK DOB extraction; affidavit fallback only when KTP unavailable.</p>
+    <p class="page-meta">FoundingEngineer · Constraints set by: Pastor (BLE-87e, doctrinal) + Indonesian counsel pending (<a href="#" style="color:var(--text-brand)">BLE-69</a>) · Mobile 390×844 · Reusable component: <code>AgeGate</code></p>
+    <nav class="toc">
+      <a href="#flow-1">1 · Doormat intro</a>
+      <a href="#flow-2">2 · KTP capture</a>
+      <a href="#flow-3">3 · DOB review</a>
+      <a href="#flow-4">4 · Affidavit fallback</a>
+      <a href="#flow-5">5 · Processing</a>
+      <a href="#flow-6">6 · Pass</a>
+      <a href="#flow-7">7 · Neutral fail</a>
+      <a href="#admin">Admin telemetry</a>
+      <a href="#spec">Component spec</a>
+      <a href="#events">Telemetry events</a>
+      <a href="#check">Constraints checklist</a>
+    </nav>
+  </header>
+
+  <!-- ============ FLOW 1 + 2 — DOORMAT INTRO + KTP CAPTURE ============ -->
+  <section class="section" id="flow-1">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 1 · Doormat, not gatekeeper</p>
+      <h2 class="section-title">1 · Doormat intro · 2 · KTP capture</h2>
+      <p class="section-sub">Entry surface frames the gate as a threshold of consent, not a hostile checkpoint. Wahyu 3:20 doormat metaphor surfaces here exactly once — never reused as urgency or shame copy elsewhere. KTP capture stage uses a high-contrast camera frame with corner brackets; no "scanning" language, no "verifying you're not a minor" framing.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 1 — DOORMAT INTRO ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 1 · Pre-gate intro</p>
+        <p class="phone-cap-sub">Triggered before pastor-mode invitation flow (sender or receiver). Explains why and what's needed. No "verify your identity" framing.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:41</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Tutup">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg>
+              </button>
+              <h1>Verifikasi usia</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <div class="doormat-hero">
+                  <svg class="doormat-glyph" width="56" height="56" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                    <!-- door + threshold (doormat) -->
+                    <path d="M18 14h28v36H18z"/>
+                    <path d="M18 50h28"/>
+                    <circle cx="40" cy="32" r="1.6" fill="currentColor"/>
+                    <path d="M12 56h40"/>
+                  </svg>
+                  <h2 style="font-family:var(--f-serif); font-size:24px; line-height:30px; color:var(--cobalt-900); margin:0 0 var(--s-3);">Sebelum Anda mengetuk pintu</h2>
+                  <p style="color:var(--text-secondary); margin:0;">Mode Pastor adalah perjalanan saling melihat. Untuk masuk ke ambangnya, kami perlu memastikan Anda sudah berumur 18 tahun ke atas.</p>
+                </div>
+
+                <div>
+                  <h3>Yang akan kami minta</h3>
+                  <p style="margin:0 0 var(--s-3);">Foto KTP Anda. Kami hanya membaca tanggal lahir dari KTP — tidak menyimpan foto setelah verifikasi selesai.</p>
+                  <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:22px;">
+                    <li>Tanggal lahir dibaca otomatis.</li>
+                    <li>Foto KTP dihapus dari server dalam 24 jam.</li>
+                    <li>Tidak ada NIK, alamat, atau data lain yang disimpan.</li>
+                  </ul>
+                </div>
+
+                <div class="scripture">
+                  “Lihatlah, Aku berdiri di muka pintu dan mengetuk; jikalau ada orang yang mendengar suara-Ku dan membukakan pintu, Aku akan masuk mendapatkannya.”
+                  <cite>Wahyu 3:20 · TB2</cite>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">Lanjut — siapkan KTP</button>
+                  <button class="btn btn--ghost btn--full">Saya tidak punya KTP</button>
+                </div>
+
+                <p style="font-size:12px; color:var(--text-tertiary); text-align:center; margin:0;">Anda bisa terus pakai BlessCupid tanpa mode Pastor.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 2 — KTP CAPTURE ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 2 · KTP capture</p>
+        <p class="phone-cap-sub">Camera viewfinder with KTP-shape corner brackets. No "scanning your face" copy. No countdown. User taps shutter when frame aligns.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:42</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Foto KTP Anda</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <p style="margin:0; color:var(--text-secondary);">Letakkan KTP di dalam bingkai. Pastikan tanggal lahir terlihat jelas. Foto akan dihapus dalam 24 jam.</p>
+
+                <div class="ktp-stage">
+                  <div class="ktp-frame">
+                    <div class="ktp-rect">
+                      <span class="ktp-corner tl"></span>
+                      <span class="ktp-corner tr"></span>
+                      <span class="ktp-corner bl"></span>
+                      <span class="ktp-corner br"></span>
+                    </div>
+                  </div>
+                  <div class="ktp-help">Sejajarkan KTP dalam bingkai</div>
+                  <button class="ktp-shutter" aria-label="Ambil foto"></button>
+                </div>
+
+                <div>
+                  <h3>Hak Anda</h3>
+                  <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:22px;">
+                    <li>Anda boleh menutup tanggal lahir tetangga (NIK boleh ditutup jari).</li>
+                    <li>Foto tidak diunggah ke layanan pihak ketiga di luar BlessCupid.</li>
+                    <li>Verifikasi gagal? Anda bisa coba lagi atau pilih jalur pernyataan.</li>
+                  </ul>
+                </div>
+
+                <button class="btn btn--ghost btn--full">Saya tidak punya KTP</button>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FLOW 3 + 4 — DOB REVIEW + AFFIDAVIT ============ -->
+  <section class="section" id="flow-3">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 2 · Minimum data, user confirms</p>
+      <h2 class="section-title">3 · DOB review · 4 · Affidavit fallback</h2>
+      <p class="section-sub">After OCR extracts DOB, user confirms or corrects before submission. This is the human-in-the-loop step. Affidavit is the no-KTP path: signed attestation under UU ITE Pasal 11 (electronic signature legality), bound to account by liveness selfie + IP timestamp. Affidavit failures still neutral — never reveals which check failed.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 3 — DOB REVIEW ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 3 · DOB review (post-OCR)</p>
+        <p class="phone-cap-sub">DOB extracted from KTP. User confirms or corrects. Only DOB is shown — no NIK, no address, no name overlay.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:43</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Konfirmasi tanggal lahir</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <p style="margin:0;">Kami membaca tanggal lahir berikut dari KTP Anda. Silakan periksa.</p>
+
+                <div class="dob-row">
+                  <div style="flex:1;">
+                    <div class="dob-label">Tanggal lahir</div>
+                    <div class="dob-value">14 Maret 1998</div>
+                  </div>
+                  <button class="btn btn--ghost" style="padding:8px 14px;">Ubah</button>
+                </div>
+
+                <div>
+                  <h3>Yang akan dikirim</h3>
+                  <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:22px;">
+                    <li>Tanggal lahir di atas (sudah dibaca).</li>
+                    <li>Hash dari foto KTP (untuk audit, tanpa gambar asli).</li>
+                  </ul>
+                </div>
+
+                <div>
+                  <h3>Yang <b>tidak</b> dikirim</h3>
+                  <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:22px;">
+                    <li>NIK</li>
+                    <li>Nama lengkap di KTP</li>
+                    <li>Alamat</li>
+                    <li>Foto KTP setelah 24 jam</li>
+                  </ul>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">Konfirmasi dan lanjut</button>
+                  <button class="btn btn--secondary btn--full">Foto ulang KTP</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 4 — AFFIDAVIT FALLBACK ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 4 · Affidavit fallback</p>
+        <p class="phone-cap-sub">No-KTP path. Signed attestation + DOB self-entry. Friction higher (intentional) to discourage casual misuse. Wording reviewed for legal weight under UU ITE Pasal 11.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:44</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <button class="icon-btn" aria-label="Kembali">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#243F7A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+              </button>
+              <h1>Pernyataan usia</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7">
+
+                <p style="margin:0;">Tanpa KTP, Anda dapat mengisi pernyataan usia. Pernyataan ini bersifat hukum di bawah UU ITE Pasal 11.</p>
+
+                <div class="affidavit-card">
+                  <div class="dob-label">Tanggal lahir Anda</div>
+                  <div style="display:flex; gap:var(--s-3); margin-top:var(--s-3);">
+                    <input type="text" placeholder="DD" style="flex:1; padding:12px; border:1px solid var(--border-subtle); border-radius:var(--r-md); font-size:18px; text-align:center; font-family:var(--f-serif);">
+                    <input type="text" placeholder="MM" style="flex:1; padding:12px; border:1px solid var(--border-subtle); border-radius:var(--r-md); font-size:18px; text-align:center; font-family:var(--f-serif);">
+                    <input type="text" placeholder="YYYY" style="flex:1.4; padding:12px; border:1px solid var(--border-subtle); border-radius:var(--r-md); font-size:18px; text-align:center; font-family:var(--f-serif);">
+                  </div>
+
+                  <p class="affidavit-line">
+                    “Saya menyatakan dengan sebenarnya bahwa saya telah berusia 18 tahun atau lebih pada tanggal pernyataan ini, dan saya memahami bahwa pernyataan palsu dapat berakibat hukum.”
+                  </p>
+
+                  <div class="affidavit-check">
+                    <input type="checkbox" id="ack1">
+                    <label for="ack1">Saya memahami pernyataan ini bersifat sah secara hukum.</label>
+                  </div>
+                  <div class="affidavit-check">
+                    <input type="checkbox" id="ack2">
+                    <label for="ack2">Saya bersedia melakukan verifikasi wajah singkat untuk mengikat pernyataan ini ke akun.</label>
+                  </div>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">Tanda tangan dan lanjut</button>
+                  <button class="btn btn--secondary btn--full">Coba foto KTP saja</button>
+                </div>
+
+                <p style="font-size:12px; color:var(--text-tertiary); text-align:center; margin:0;">Anda bisa membatalkan kapan saja. Tidak ada konsekuensi pada akun reguler Anda.</p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ FLOW 5 + 6 + 7 — PROCESSING + PASS + FAIL ============ -->
+  <section class="section" id="flow-5">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 3 · Neutral failure, no shame</p>
+      <h2 class="section-title">5 · Processing · 6 · Pass · 7 · Neutral fail</h2>
+      <p class="section-sub">Three terminal states. Processing has no progress bar (avoids "we're judging you" framing) — just steady spinner with reassuring copy. Pass surface is intentionally low-celebration; the gate is a doormat, not an achievement. Fail surface is the hardest piece: never says "you are too young", never reveals OCR vs document-quality vs DOB mismatch as the cause. Single neutral message, single redirect, no escalation path.</p>
+    </div>
+
+    <div class="phones">
+
+      <!-- ============ PHONE 5 — PROCESSING ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 5 · Processing</p>
+        <p class="phone-cap-sub">After confirmation. Spinner only — no progress percent. Cannot be cancelled past this point (request is in-flight).</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:45</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <span style="width:40px"></span>
+              <h1>Memeriksa</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="processing">
+                <div class="spinner"></div>
+                <h2 style="font-family:var(--f-serif); font-size:22px; line-height:28px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Sedang membaca KTP Anda</h2>
+                <p style="color:var(--text-secondary); margin:0;">Biasanya selesai dalam 10 detik. Jangan tutup aplikasi.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 6 — PASS ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 6 · Pass</p>
+        <p class="phone-cap-sub">Gate cleared. Single button continues to original 18+ surface (e.g., pastor-mode invitation). Low-celebration — this is a doormat, not a graduation.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:45</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <span style="width:40px"></span>
+              <h1>Selesai</h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="surface stack-7" style="text-align:center; padding-top:var(--s-10);">
+
+                <div class="neutral-glyph" style="background:#E7F1EA; color:#2F5A3D;">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+
+                <div>
+                  <span class="badge badge--pass">Verifikasi selesai</span>
+                </div>
+
+                <h2 style="font-family:var(--f-serif); font-size:26px; line-height:32px; color:var(--cobalt-900); margin:0;">Ambang sudah dibuka</h2>
+                <p style="color:var(--text-secondary); margin:0; max-width:30ch; margin-left:auto; margin-right:auto;">Anda dapat melanjutkan ke undangan mode Pastor.</p>
+
+                <div class="scripture" style="text-align:left; max-width:none;">
+                  “Pintu telah dibukakan bagi-Ku.”
+                  <cite>1 Korintus 16:9 · TB2 (sebagian)</cite>
+                </div>
+
+                <div class="stack-3">
+                  <button class="btn btn--primary btn--full">Lanjut ke mode Pastor</button>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ PHONE 7 — NEUTRAL FAIL ============ -->
+      <div class="phone-wrap">
+        <p class="phone-cap">Surface 7 · Neutral fail</p>
+        <p class="phone-cap-sub">Whatever the cause (under-18, OCR error, document quality, no KTP, affidavit refused), the user sees this exact surface. No detail leak.</p>
+        <div class="phone">
+          <div class="status-bar"><span class="status-time">9:45</span><span class="status-icons">●●●● 􀙇 100%</span></div>
+          <div class="phone-inner">
+
+            <header class="app-header">
+              <span style="width:40px"></span>
+              <h1></h1>
+              <span style="width:40px"></span>
+            </header>
+
+            <div class="scroll">
+              <div class="neutral-frame">
+
+                <div class="neutral-glyph">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 14h-12v-4h12z"/>
+                    <path d="M3 18h18"/>
+                  </svg>
+                </div>
+
+                <div style="margin-bottom:var(--s-5);">
+                  <span class="badge badge--neutral">Mode Pastor tidak tersedia</span>
+                </div>
+
+                <h2 style="font-family:var(--f-serif); font-size:24px; line-height:30px; color:var(--cobalt-900); margin:0 0 var(--s-5);">Mode Pastor tersedia untuk pengguna 18+</h2>
+
+                <p style="color:var(--text-secondary); margin:0 auto var(--s-9); max-width:32ch;">Lanjutkan pakai akun reguler — semua fitur lainnya tetap terbuka.</p>
+
+                <div class="stack-3" style="max-width:280px; margin:0 auto;">
+                  <button class="btn btn--primary btn--full">Kembali ke beranda</button>
+                </div>
+
+                <p style="font-size:12px; color:var(--text-tertiary); margin-top:var(--s-9);">Ada masalah dengan KTP? <a href="#" style="color:var(--text-brand);">Hubungi dukungan</a></p>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ ADMIN TELEMETRY ============ -->
+  <section class="section" id="admin">
+    <div class="section-head">
+      <p class="section-eyebrow">Constraint 4 · Aggregate counts only, zero PII</p>
+      <h2 class="section-title">Admin telemetry — gate health</h2>
+      <p class="section-sub">Surfaced in admin dashboard. Counters bucketed by 1-day windows + region (province-level). No per-user records, no per-event PII. Drop-off ratio is the leading signal — sudden spike = OCR regression or new spoofing pattern, not user behaviour.</p>
+    </div>
+
+    <div class="admin-card">
+      <h3>Mode Pastor — gate metrics (last 7 hari)</h3>
+      <p class="sub">Reset window: rolling 7 dari hari ini · Sumber: <code>age_gate.*</code> events (zero-PII)</p>
+
+      <div class="admin-grid">
+        <div class="admin-tile">
+          <p class="label">Gate viewed</p>
+          <p class="value">1,284</p>
+          <p class="delta">+18% vs minggu lalu</p>
+        </div>
+        <div class="admin-tile">
+          <p class="label">Gate passed</p>
+          <p class="value">947</p>
+          <p class="delta">73.8% pass-rate</p>
+        </div>
+        <div class="admin-tile">
+          <p class="label">Gate failed (neutral)</p>
+          <p class="value">231</p>
+          <p class="delta">no breakdown shown to user</p>
+        </div>
+        <div class="admin-tile">
+          <p class="label">Affidavit path</p>
+          <p class="value">106</p>
+          <p class="delta">8.2% of viewed</p>
+        </div>
+      </div>
+
+      <div style="margin-top:var(--s-7); border-top:1px solid var(--border-subtle); padding-top:var(--s-5); font-size:13px; color:var(--text-tertiary);">
+        Internal-only (admin can see breakdown buckets that the user cannot): <b>OCR failure</b> 84 · <b>DOB &lt;18</b> 121 · <b>Affidavit declined</b> 26. User surface for all three is identical Surface 7.
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ COMPONENT SPEC ============ -->
+  <section class="section" id="spec">
+    <div class="section-head">
+      <p class="section-eyebrow">Implementation handoff</p>
+      <h2 class="section-title">Component spec — <code>AgeGate</code></h2>
+      <p class="section-sub">Reusable across all 18+ surfaces. Pastor-mode is the first user; future 18+ surfaces (e.g. inviting an external observer, certain financial surfaces) reuse the same component without re-litigating doctrine. Designed to be RN-friendly (single boundary; no platform branching except camera adapter).</p>
+    </div>
+
+    <div class="spec">{
+  "component": "AgeGate",
+  "version": "0.1.0-spec",
+  "owner": "FoundingEngineer",
+  "props": {
+    "trigger":      "string  // identifier of feature triggering the gate (e.g. 'pastor-mode-invite')",
+    "onPass":       "() => void",
+    "onFail":       "() => void  // navigates user to neutral redirect; never receives reason",
+    "onCancel":     "() => void",
+    "minAgeYears":  "number = 18",
+    "locale":       "'id-ID'  // v1 Indonesian only",
+    "ktpAdapter":   "KtpAdapter  // injectable for testing / future region swap",
+    "telemetry":    "TelemetryEmitter  // emits zero-PII events"
+  },
+  "internal_state": {
+    "step":    "'intro' | 'capture' | 'review' | 'affidavit' | 'processing' | 'pass' | 'fail'",
+    "dob":     "ISODate | null  // only held in memory until pass/fail; never persisted client-side",
+    "ktpHash": "string | null   // sha256 of captured image, kept for 24h server-side"
+  },
+  "boundary_invariants": [
+    "1. Component never reveals failure reason to caller. onFail() carries no payload.",
+    "2. KTP image bytes never leave the device unencrypted. Upload uses server-pinned key.",
+    "3. KTP image deleted server-side ≤ 24h after pass-or-fail decision.",
+    "4. NIK, full name, address are masked client-side BEFORE OCR call (we OCR only the DOB region).",
+    "5. Component cannot be re-mounted to retry within the same session if `fail` was returned (rate-limit anti-grind).",
+    "6. Liveness selfie required only on affidavit path in v1. KTP path is doc-only by default (CEO consult before launch may add KTP+selfie)."
+  ],
+  "platform_dependencies": {
+    "camera":       "expo-camera or react-native-vision-camera",
+    "ocr":          "server-side endpoint (POST /age-gate/ktp) — Tesseract+regex fallback or AWS Textract",
+    "signature":    "client-side ed25519 keypair for affidavit (UU ITE Pasal 11 attestation hash)"
+  },
+  "blocked_by_external": [
+    "BLE-69 — Indonesian counsel guidance on KTP-only vs KTP+selfie liveness (CEO consult required pre-launch)"
+  ]
+}</div>
+  </section>
+
+  <!-- ============ TELEMETRY EVENTS ============ -->
+  <section class="section" id="events">
+    <div class="section-head">
+      <p class="section-eyebrow">Telemetry contract</p>
+      <h2 class="section-title">Events — zero PII</h2>
+      <p class="section-sub">Every event is pre-flight reviewed for PII leak. Bucketing rules: <code>region</code> = ISO Indonesian province code (max 38 buckets); <code>day</code> = UTC date string. No <code>userId</code>, no IP, no DOB.</p>
+    </div>
+
+    <div class="events">
+      <div class="h">Event</div>
+      <div class="h">Fields</div>
+      <div class="h">PII?</div>
+
+      <div class="c code">age_gate.viewed</div>
+      <div class="c">trigger, region, day</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.ktp_capture_started</div>
+      <div class="c">trigger, region, day</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.ktp_extracted</div>
+      <div class="c">success: bool, region, day  // no DOB on the wire</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.affidavit_started</div>
+      <div class="c">trigger, region, day</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.affidavit_signed</div>
+      <div class="c">trigger, region, day</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.passed</div>
+      <div class="c">trigger, path: 'ktp'|'affidavit', region, day</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.failed</div>
+      <div class="c">trigger, bucket: 'ocr_fail'|'under_age'|'doc_quality'|'affidavit_declined'|'rate_limited', region, day  // bucket is admin-only; user surface is identical</div>
+      <div class="c no-pii">no</div>
+
+      <div class="c code">age_gate.cancelled</div>
+      <div class="c">trigger, step, region, day</div>
+      <div class="c no-pii">no</div>
+    </div>
+  </section>
+
+  <!-- ============ CONSTRAINTS CHECKLIST ============ -->
+  <section class="section" id="check">
+    <div class="section-head">
+      <p class="section-eyebrow">Verification</p>
+      <h2 class="section-title">Constraints checklist — what must be true at ship</h2>
+      <p class="section-sub">Each item is a hard line; future Designer/Engineer work cannot regress these without re-litigating with Pastor + counsel.</p>
+    </div>
+
+    <ol class="check-list" style="counter-reset:none;">
+      <li>
+        <span class="num">1</span>
+        <div class="body"><b>Doormat metaphor exists exactly once.</b> Wahyu 3:20 surfaces only on Surface 1. Reuse as urgency or shame copy elsewhere is forbidden.<em>Surface: 1</em></div>
+      </li>
+      <li>
+        <span class="num">2</span>
+        <div class="body"><b>OCR reads DOB region only.</b> Client-side mask covers NIK + full name + address before bytes leave the device. Server endpoint rejects requests where mask is absent.<em>Surfaces: 2 → 3</em></div>
+      </li>
+      <li>
+        <span class="num">3</span>
+        <div class="body"><b>Failure surface reveals nothing.</b> Single message: <em>"Mode Pastor tersedia untuk pengguna 18+. Lanjutkan pakai akun reguler."</em> No retry-from-failure path within 24h. No "what went wrong" affordance.<em>Surface: 7</em></div>
+      </li>
+      <li>
+        <span class="num">4</span>
+        <div class="body"><b>Affidavit is legally weighty, not a back-door.</b> Wording reviewed under UU ITE Pasal 11. Attestation hash + timestamp + liveness binds the assertion to the account so misuse is prosecutable.<em>Surface: 4</em></div>
+      </li>
+      <li>
+        <span class="num">5</span>
+        <div class="body"><b>KTP image deleted server-side ≤ 24h.</b> Cron job, not policy. Audit log retains only sha256 + timestamp + pass/fail bit.<em>Backend</em></div>
+      </li>
+      <li>
+        <span class="num">6</span>
+        <div class="body"><b>Pastor side is also gated.</b> No minor-pastor edge case. The gate runs on whoever initiates the invitation flow, regardless of role.<em>Surface: 1 (both sides)</em></div>
+      </li>
+      <li>
+        <span class="num">7</span>
+        <div class="body"><b>Telemetry is aggregate-only.</b> No userId, no IP, no DOB on any event. Region = province (max 38 buckets), day = UTC date. Verified by event contract above.<em>Admin tile</em></div>
+      </li>
+      <li>
+        <span class="num">8</span>
+        <div class="body"><b>Component is reusable.</b> <code>AgeGate</code> takes a <code>trigger</code> prop so future 18+ surfaces (not just pastor-mode) reuse the same boundary. No copy-paste of OCR or affidavit logic per feature.<em>Spec</em></div>
+      </li>
+      <li>
+        <span class="num">9</span>
+        <div class="body"><b>CEO consult before public launch.</b> KTP-only vs KTP+selfie liveness decision pending Indonesian counsel (<a href="#" style="color:var(--text-brand)">BLE-69</a>). Default ships KTP-only; selfie path is a flag-gated upgrade.<em>Pre-launch gate</em></div>
+      </li>
+      <li>
+        <span class="num">10</span>
+        <div class="body"><b>Pre-gate development of <code>ConsentBanner</code> and <code>WalkingTogetherSurface</code> may proceed.</b> Real-user shipping of those surfaces is blocked on this gate landing first.<em>Coordination</em></div>
+      </li>
+    </ol>
+
+    <div class="notes">
+      <h3>Open questions for next heartbeat</h3>
+      <ul>
+        <li><b>OCR vendor.</b> AWS Textract (managed, costs ~$1.50/1000 pages) vs Tesseract self-hosted (free, lower accuracy on KTP fonts) vs an Indonesian KTP-specialised vendor like <code>Privy</code>. Defer pick to BLE-69 counsel decision — affects PII processing-location rules.</li>
+        <li><b>Liveness on affidavit.</b> Currently spec'd as required (Constraint 4). If counsel says affidavit alone is insufficient under UU Perlindungan Anak, the affidavit path is removed entirely — KTP becomes mandatory. Mark as launch-decision, not v1 scope.</li>
+        <li><b>Re-verification cadence.</b> Once a user passes, do we re-verify on a schedule? Counsel input needed; default v1 is one-shot at first pastor-mode trigger, no re-verify.</li>
+        <li><b>Cross-region (non-ID).</b> Out of scope v1; component should accept a <code>locale</code> prop now so region-specific adapters (PH, MY) plug in later without an API break.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

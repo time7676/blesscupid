@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BlessCupid — Pastor-mode silent revoke (BLE-133)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream-50:#FDFBF6; --cream-100:#F8F2E6; --cream-200:#EFE6D2; --cream-300:#E2D4B5;
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+  --sage-500:#5C8A6A;
+
+  --bg-canvas:var(--cream-50); --bg-surface:#FFFFFF; --bg-raised:var(--cream-100);
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-inverse:var(--cream-50); --text-brand:var(--cobalt-700);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300); --border-focus:var(--cobalt-600);
+
+  --s-1:2px; --s-2:4px; --s-3:8px; --s-4:12px; --s-5:16px; --s-6:20px; --s-7:24px;
+  --s-8:32px; --s-9:40px; --s-10:48px; --s-11:64px; --s-12:80px;
+
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-xl:20px; --r-2xl:28px; --r-pill:999px;
+
+  --elev-1:0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2:0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3:0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration:0ms !important; transition-duration:0ms !important; }
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body {
+  font-family:var(--f-sans);
+  background:var(--bg-canvas);
+  color:var(--text-primary);
+  font-size:15px; line-height:22px;
+  -webkit-font-smoothing:antialiased;
+}
+
+.page { max-width:1280px; margin:0 auto; padding:var(--s-10) var(--s-7) var(--s-12); }
+.page-header { margin-bottom:var(--s-10); border-bottom:1px solid var(--border-subtle); padding-bottom:var(--s-9); }
+.eyebrow { font-size:12px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-brand); margin:0 0 var(--s-3); }
+.page-title { font-family:var(--f-serif); font-size:44px; line-height:50px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.01em; }
+.page-sub { color:var(--text-secondary); max-width:62ch; margin:0; font-size:17px; line-height:26px; }
+.page-meta { color:var(--text-tertiary); margin-top:var(--s-4); font-size:13px; font-family:ui-monospace,monospace; }
+
+.section { margin-top:var(--s-12); }
+.section-head { margin-bottom:var(--s-9); }
+.section-eyebrow { font-size:11px; font-weight:600; letter-spacing:.1em; text-transform:uppercase; color:var(--cobalt-600); margin:0 0 var(--s-2); }
+.section-title { font-family:var(--f-serif); font-size:30px; line-height:36px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); }
+.section-sub { color:var(--text-secondary); max-width:70ch; margin:0; font-size:15px; line-height:24px; }
+
+.toc { display:flex; flex-wrap:wrap; gap:var(--s-3); margin-top:var(--s-7); }
+.toc a { text-decoration:none; font-size:12px; font-weight:600; padding:6px 12px; border-radius:var(--r-pill); background:var(--cobalt-50); color:var(--cobalt-700); border:1px solid var(--cobalt-100); }
+.toc a:hover { background:var(--cobalt-100); }
+
+/* doctrinal note block */
+.doctrine {
+  background:var(--cobalt-50); border:1px solid var(--cobalt-100); border-radius:var(--r-lg);
+  padding:var(--s-7) var(--s-7); display:grid; grid-template-columns:1fr 1fr; gap:var(--s-9);
+  margin-top:var(--s-7);
+}
+.doctrine h3 { font-family:var(--f-serif); font-size:22px; line-height:28px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); }
+.doctrine p { font-size:14px; line-height:22px; color:var(--cobalt-900); margin:0 0 var(--s-4); }
+.doctrine .scripture {
+  font-family:var(--f-serif); font-style:italic;
+  color:var(--cobalt-900); font-size:15px; line-height:24px;
+  border-left:2px solid var(--cobalt-600); padding-left:var(--s-5);
+  margin-top:var(--s-3);
+}
+.doctrine .scripture cite { display:block; margin-top:var(--s-2); font-size:12px; font-style:normal; color:var(--cobalt-700); letter-spacing:.04em; text-transform:uppercase; }
+
+/* desktop frame ────────────────────────────────────────── */
+.desktop-wrap { background:var(--stone-100); border:1px solid var(--stone-300); border-radius:14px; padding:var(--s-3); box-shadow:var(--elev-3); max-width:1180px; }
+.desktop-bar { display:flex; align-items:center; gap:6px; padding:0 var(--s-2) var(--s-3); }
+.desktop-bar .dot { width:11px; height:11px; border-radius:99px; }
+.desktop-bar .dot.r { background:#FF5F57; } .desktop-bar .dot.y { background:#FEBC2E; } .desktop-bar .dot.g { background:#28C840; }
+.desktop-bar .url {
+  margin-left:var(--s-5); flex:1; max-width:520px;
+  background:#fff; border-radius:var(--r-pill); border:1px solid var(--stone-300);
+  font-size:12px; padding:6px 14px; color:var(--text-tertiary); font-family:ui-monospace,monospace;
+}
+.desktop-frame { background:#fff; border-radius:10px; overflow:hidden; min-height:560px; display:grid; grid-template-columns:280px 1fr; }
+.desktop-side {
+  background:var(--cream-100); border-right:1px solid var(--border-subtle);
+  padding:var(--s-7) var(--s-5);
+}
+.desktop-side .brand { font-family:var(--f-serif); font-size:20px; color:var(--cobalt-900); margin-bottom:var(--s-7); }
+.desktop-side .nav-item { padding:10px var(--s-4); border-radius:var(--r-md); font-size:14px; color:var(--text-secondary); display:flex; align-items:center; gap:var(--s-3); }
+.desktop-side .nav-item.active { background:var(--cobalt-50); color:var(--cobalt-700); font-weight:600; }
+.desktop-side .nav-item + .nav-item { margin-top:var(--s-1); }
+.desktop-main { padding:var(--s-9) var(--s-10); }
+hr.hair { border:none; border-top:1px solid var(--border-subtle); margin:var(--s-7) 0; }
+.section-eyebrow-side { font-size:11px; font-weight:600; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); padding:0 var(--s-4) var(--s-3); }
+.side-row { display:flex; gap:10px; align-items:center; padding:8px 12px; border-radius:10px; }
+.side-row.active { background:var(--cobalt-50); }
+.side-row .avatar { width:28px; height:28px; border-radius:99px; background:var(--cream-200); display:inline-flex; align-items:center; justify-content:center; color:var(--cobalt-700); font-weight:600; font-size:11px; flex-shrink:0; }
+.side-row .avatar.cobalt { background:var(--cobalt-100); color:var(--cobalt-900); }
+.side-row .avatar.muted { background:#F2EFE6; color:var(--stone-500); }
+.side-row .who { flex:1; }
+.side-row .who .name { font-size:13px; font-weight:600; color:var(--cobalt-900); }
+.side-row .who .sub { font-size:11px; color:var(--cobalt-700); }
+.side-row .who .name.muted { color:var(--text-secondary); font-weight:500; }
+.side-row .who .sub.muted { color:var(--text-tertiary); }
+
+/* compare grid */
+.compare {
+  display:grid; grid-template-columns:1fr 1fr; gap:var(--s-7);
+}
+.compare .frame-cap {
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--cobalt-700); background:var(--cobalt-50); border:1px solid var(--cobalt-100);
+  border-radius:var(--r-pill); padding:5px 12px; display:inline-flex; gap:6px; align-items:center;
+  margin-bottom:var(--s-3);
+}
+.compare .frame-cap.muted {
+  color:var(--text-tertiary); background:var(--cream-100); border-color:var(--cream-300);
+}
+.compare .frame-sub { font-size:13px; color:var(--text-secondary); margin:0 0 var(--s-5); line-height:19px; max-width:42ch; }
+
+/* annotation diff card */
+.anno {
+  background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg);
+  padding:var(--s-5) var(--s-6); margin-top:var(--s-7);
+  display:grid; grid-template-columns:repeat(3, 1fr); gap:var(--s-5);
+}
+.anno .cell { display:flex; gap:var(--s-3); align-items:flex-start; }
+.anno .cell .x {
+  width:24px; height:24px; border-radius:99px; background:#fff; border:1.5px solid var(--stone-300);
+  display:inline-flex; align-items:center; justify-content:center; color:var(--stone-700);
+  flex-shrink:0; font-weight:600; font-size:12px;
+}
+.anno .cell .label { font-size:13px; line-height:18px; }
+.anno .cell .label b { display:block; color:var(--stone-900); font-weight:600; margin-bottom:2px; }
+.anno .cell .label span { color:var(--text-tertiary); }
+
+/* dead-link 403 page ────────────────────────────────────── */
+.deadlink-frame {
+  background:#fff;
+  min-height:560px;
+  display:flex; align-items:center; justify-content:center;
+  padding:var(--s-12) var(--s-10);
+  text-align:center;
+}
+.deadlink-stack { max-width:480px; }
+.deadlink-glyph {
+  width:96px; height:96px; border-radius:99px; background:var(--cobalt-50);
+  display:inline-flex; align-items:center; justify-content:center;
+  color:var(--cobalt-700); margin-bottom:var(--s-7);
+}
+.deadlink-stack h2 {
+  font-family:var(--f-serif); font-size:34px; line-height:42px; font-weight:400;
+  color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.005em;
+}
+.deadlink-stack p.lede {
+  font-size:16px; line-height:25px; color:var(--text-secondary);
+  margin:0 0 var(--s-7);
+}
+.deadlink-stack .verse {
+  font-family:var(--f-serif); font-style:italic; color:var(--cobalt-900);
+  font-size:15px; line-height:24px; border-left:2px solid var(--cobalt-600);
+  padding-left:var(--s-5); text-align:left; margin:0 auto var(--s-7); max-width:360px;
+}
+.deadlink-stack .verse cite {
+  display:block; margin-top:var(--s-2); font-size:12px; font-style:normal;
+  color:var(--cobalt-700); letter-spacing:.04em; text-transform:uppercase;
+}
+.deadlink-stack .actions { display:flex; gap:var(--s-3); justify-content:center; }
+.btn {
+  font-family:var(--f-sans); font-weight:600; font-size:15px;
+  border:none; border-radius:var(--r-lg); padding:0 var(--s-7);
+  display:inline-flex; align-items:center; justify-content:center;
+  cursor:pointer; min-height:48px; text-decoration:none;
+}
+.btn--primary { background:var(--cobalt-700); color:var(--text-inverse); }
+.btn--primary:hover { background:var(--cobalt-900); }
+.btn--ghost { background:transparent; color:var(--cobalt-700); }
+.btn--ghost:hover { background:var(--cobalt-50); }
+
+/* matrix table */
+.matrix {
+  width:100%; border-collapse:collapse; margin-top:var(--s-7);
+  background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg); overflow:hidden;
+}
+.matrix th, .matrix td { padding:var(--s-4) var(--s-6); border-bottom:1px solid var(--border-subtle); text-align:left; vertical-align:top; }
+.matrix th { background:var(--cream-100); font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase; color:var(--text-tertiary); }
+.matrix td { font-size:14px; line-height:21px; color:var(--text-primary); }
+.matrix tr:last-child td { border-bottom:none; }
+.matrix .surface-name { font-weight:600; color:var(--stone-900); }
+.matrix .verdict-no { color:#B91C1C; font-weight:600; font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
+.matrix .verdict-silent { color:var(--cobalt-700); font-weight:600; font-size:12px; letter-spacing:.04em; text-transform:uppercase; }
+
+/* engineering spec block */
+.eng {
+  background:#fff; border:1px solid var(--border-subtle); border-radius:var(--r-lg);
+  padding:var(--s-7) var(--s-7);
+}
+.eng h3 { font-family:var(--f-sans); font-size:14px; font-weight:600; color:var(--stone-900); margin:0 0 var(--s-3); text-transform:uppercase; letter-spacing:.06em; }
+.eng pre {
+  background:var(--cream-50); border:1px solid var(--border-subtle); border-radius:var(--r-md);
+  padding:var(--s-5); font-family:ui-monospace,monospace; font-size:12px; line-height:18px;
+  overflow-x:auto; color:var(--stone-900); margin:0 0 var(--s-5);
+}
+.eng ul { margin:0 0 var(--s-5); padding-left:var(--s-7); }
+.eng li { font-size:14px; line-height:22px; color:var(--text-primary); }
+.eng li b { color:var(--cobalt-900); font-weight:600; }
+.eng li code { font-family:ui-monospace,monospace; font-size:12px; background:var(--cream-100); padding:1px 5px; border-radius:4px; }
+
+.eng-grid { display:grid; grid-template-columns:1fr 1fr; gap:var(--s-7); margin-top:var(--s-7); }
+
+/* checklist */
+.check-list { display:flex; flex-direction:column; gap:var(--s-3); margin:var(--s-7) 0 0; padding:0; list-style:none; }
+.check-list li {
+  display:grid; grid-template-columns:28px 1fr; gap:var(--s-4);
+  padding:var(--s-5) var(--s-6);
+  background:var(--bg-surface); border:1px solid var(--border-subtle);
+  border-radius:var(--r-md);
+}
+.check-list li .ck {
+  width:24px; height:24px; border-radius:99px; background:var(--cobalt-700);
+  color:#fff; display:inline-flex; align-items:center; justify-content:center;
+  flex-shrink:0;
+}
+.check-list li .body { font-size:14px; line-height:21px; color:var(--text-primary); }
+.check-list li .body b { color:var(--cobalt-900); font-weight:600; }
+.check-list li .body em { color:var(--text-tertiary); font-style:normal; font-size:12px; display:block; margin-top:2px; }
+
+/* foot */
+.foot { margin-top:var(--s-12); padding-top:var(--s-7); border-top:1px solid var(--border-subtle); color:var(--text-tertiary); font-size:13px; }
+
+/* signoff card */
+.signoff {
+  margin-top:var(--s-7);
+  background:#fff; border:1px dashed var(--cobalt-300); border-radius:var(--r-lg);
+  padding:var(--s-7);
+  display:grid; grid-template-columns:24px 1fr; gap:var(--s-4);
+}
+.signoff .icon { width:24px; height:24px; border-radius:99px; background:var(--cobalt-50); color:var(--cobalt-700); display:inline-flex; align-items:center; justify-content:center; }
+.signoff h4 { margin:0 0 var(--s-2); font-family:var(--f-sans); font-size:14px; color:var(--cobalt-900); font-weight:600; }
+.signoff p { margin:0; font-size:13px; line-height:20px; color:var(--text-secondary); }
+.signoff p code { font-family:ui-monospace,monospace; background:var(--cream-100); padding:1px 5px; border-radius:4px; font-size:12px; }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="page-header">
+    <p class="eyebrow">BLE-133 · BlessCupid · Pastor-mode silent revoke · 2026-04-29</p>
+    <h1 class="page-title">Silent transition — revoke is a right, not a drama</h1>
+    <p class="page-sub">When the audited user revokes, Pastor's view changes silently — no push, no badge, no toast, no diff animation. The mentor must not be coached toward grievance. This artifact documents every surface where revocation is communicated to Pastor, and proves none of them are loss-framed.</p>
+    <p class="page-meta">FoundingEngineer · Builds on BLE-108 hi-fi · Scope v1 · Awaiting Pastor copy sign-off on dead-link page</p>
+    <nav class="toc">
+      <a href="#doctrine">Doctrinal frame</a>
+      <a href="#flow-1">1 · Sidebar — before / after</a>
+      <a href="#flow-2">2 · Mundur parity (Pastor's own end)</a>
+      <a href="#flow-3">3 · Dead-link 403 page</a>
+      <a href="#matrix">Surface matrix (what fires, what doesn't)</a>
+      <a href="#server">Server-layer suppression spec</a>
+      <a href="#test">E2E test scenario</a>
+      <a href="#check">Constraints checklist</a>
+    </nav>
+  </header>
+
+  <!-- =================================================================
+       Doctrinal frame
+       ================================================================= -->
+  <section class="section" id="doctrine">
+    <div class="section-head">
+      <p class="section-eyebrow">Why this exists</p>
+      <h2 class="section-title">Revocation as right, not as drama</h2>
+      <p class="section-sub">A push framed <em>"Maya ended pastor mode"</em> creates a coercion vector: Pastor receives the alert, calls/messages Maya externally to ask "what happened?" — that is exactly the spiritual-abuse vector the symmetry doctrine is built to prevent. Drama-shape coerces; right-shape liberates. Refuse the grievance shape from the first pixel.</p>
+    </div>
+
+    <div class="doctrine">
+      <div>
+        <h3>The mentor is also at risk</h3>
+        <p>Loss-framed alerts coach the mentor toward grievance — toward the shape "she fired me" instead of "she chose her own path." A pastoral relationship that ends well looks identical, from Pastor's side, whether Maya ended it or Pastor stepped away. Information-symmetry holds <em>in both directions</em>: Maya does not see Pastor's other audited users, and Pastor does not see <em>why</em> a journey ended.</p>
+        <p>Pastor's own <code style="font-family:ui-monospace,monospace;background:var(--cobalt-100);padding:1px 5px;border-radius:4px;">"Mundur"</code> action and Maya's revoke produce the <strong>same Pastor-side experience</strong>. Anti-discriminatory by construction.</p>
+      </div>
+      <div>
+        <div class="scripture">
+          “Saudara-saudara, kalaupun seorang kedapatan melakukan suatu pelanggaran, kamu yang rohani, harus memimpin orang itu ke jalan yang benar dalam roh lemah lembut, sambil menjaga dirimu sendiri, supaya kamu jangan kena pencobaan juga.”
+          <cite>Galatia 6:1 · TB2</cite>
+        </div>
+        <p style="margin-top:var(--s-5);">The mentor must keep guard over himself first. Loss-framed alerts are precisely the kind of pencobaan (temptation toward grievance) Paul names — they pull the would-be guide into the very dossier-shape the symmetry doctrine refuses.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 1 — Sidebar before / after (audited user revoke)
+       ================================================================= -->
+  <section class="section" id="flow-1">
+    <div class="section-head">
+      <p class="section-eyebrow">Surface 1 · Pastor's desktop sidebar</p>
+      <h2 class="section-title">1 · Maya revokes — sidebar transitions silently between sessions</h2>
+      <p class="section-sub">No banner. No toast. No animation flagging the change. No "removed" log line. Between two Pastor sessions, the row simply renders under <strong>"Sudah selesai"</strong> instead of <strong>"Berjalan bersama"</strong>. If Pastor never re-opens the sidebar, he never receives the change.</p>
+    </div>
+
+    <div class="compare">
+
+      <!-- BEFORE -->
+      <div>
+        <span class="frame-cap">
+          <span style="width:6px;height:6px;border-radius:99px;background:var(--cobalt-700);"></span>
+          BEFORE — session at 09:14 · Maya berjalan bersama
+        </span>
+        <p class="frame-sub">Last Pastor session. Maya is one of nine audited users — listed under the active heading.</p>
+
+        <div class="desktop-wrap">
+          <div class="desktop-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <div class="url">blesscupid.id/walking-with</div>
+          </div>
+          <div class="desktop-frame">
+            <aside class="desktop-side">
+              <div class="brand">BlessCupid</div>
+              <div class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+                Beranda
+              </div>
+              <div class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.5"/><path d="M14 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+                Berjalan bersama
+                <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">3</span>
+              </div>
+              <div class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Catatan saya
+              </div>
+
+              <hr class="hair">
+              <div class="section-eyebrow-side">Berjalan bersama</div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div class="side-row active">
+                  <span class="avatar cobalt">M</span>
+                  <div class="who"><div class="name">Maya P.</div><div class="sub">14 hari</div></div>
+                </div>
+                <div class="side-row">
+                  <span class="avatar muted">A</span>
+                  <div class="who"><div class="name muted">Andre S.</div><div class="sub muted">3 hari</div></div>
+                </div>
+                <div class="side-row">
+                  <span class="avatar muted">L</span>
+                  <div class="who"><div class="name muted">Lina K.</div><div class="sub muted">2 bulan</div></div>
+                </div>
+              </div>
+
+              <hr class="hair">
+              <div class="section-eyebrow-side">Sudah selesai</div>
+              <div style="display:flex; flex-direction:column; gap:6px; opacity:0.6;">
+                <div class="side-row">
+                  <span class="avatar muted">R</span>
+                  <div class="who"><div class="name muted">Rina T.</div><div class="sub muted">selesai 8 Maret</div></div>
+                </div>
+              </div>
+            </aside>
+
+            <main class="desktop-main">
+              <p class="section-eyebrow" style="margin:0 0 var(--s-2);">Berjalan bersama</p>
+              <h2 style="font-family:var(--f-serif); font-size:30px; line-height:38px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); letter-spacing:-0.005em;">Anda berjalan bersama 3 orang.</h2>
+              <p style="font-size:14px; color:var(--text-secondary); max-width:42ch; margin:0;">Pilih nama dari sisi kiri untuk membaca apa yang mereka pilih untuk Anda lihat.</p>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      <!-- AFTER -->
+      <div>
+        <span class="frame-cap muted">
+          <span style="width:6px;height:6px;border-radius:99px;background:var(--text-tertiary);"></span>
+          AFTER — next session at 14:42 · same view, no alert
+        </span>
+        <p class="frame-sub">Pastor reopens the tab. No notification badge, no banner, no toast. Maya's row has moved from <em>"Berjalan bersama"</em> to <em>"Sudah selesai"</em>, with neutral framing.</p>
+
+        <div class="desktop-wrap">
+          <div class="desktop-bar">
+            <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+            <div class="url">blesscupid.id/walking-with</div>
+          </div>
+          <div class="desktop-frame">
+            <aside class="desktop-side">
+              <div class="brand">BlessCupid</div>
+              <div class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+                Beranda
+              </div>
+              <div class="nav-item active">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="7" r="3"/><path d="M3 21c0-3 2.7-5 6-5s6 2 6 5"/><circle cx="18" cy="9" r="2.5"/><path d="M14 21c0-2 2-3.5 4-3.5s4 1.5 4 3.5"/></svg>
+                Berjalan bersama
+                <span style="margin-left:auto; font-size:11px; color:var(--cobalt-700); background:var(--cobalt-50); padding:2px 8px; border-radius:99px;">2</span>
+              </div>
+              <div class="nav-item">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                Catatan saya
+              </div>
+
+              <hr class="hair">
+              <div class="section-eyebrow-side">Berjalan bersama</div>
+              <div style="display:flex; flex-direction:column; gap:6px;">
+                <div class="side-row">
+                  <span class="avatar muted">A</span>
+                  <div class="who"><div class="name muted">Andre S.</div><div class="sub muted">3 hari</div></div>
+                </div>
+                <div class="side-row">
+                  <span class="avatar muted">L</span>
+                  <div class="who"><div class="name muted">Lina K.</div><div class="sub muted">2 bulan</div></div>
+                </div>
+              </div>
+
+              <hr class="hair">
+              <div class="section-eyebrow-side">Sudah selesai</div>
+              <div style="display:flex; flex-direction:column; gap:6px; opacity:0.6;">
+                <div class="side-row">
+                  <span class="avatar muted">M</span>
+                  <div class="who"><div class="name muted">Maya P.</div><div class="sub muted">selesai 29 April</div></div>
+                </div>
+                <div class="side-row">
+                  <span class="avatar muted">R</span>
+                  <div class="who"><div class="name muted">Rina T.</div><div class="sub muted">selesai 8 Maret</div></div>
+                </div>
+              </div>
+            </aside>
+
+            <main class="desktop-main">
+              <p class="section-eyebrow" style="margin:0 0 var(--s-2);">Berjalan bersama</p>
+              <h2 style="font-family:var(--f-serif); font-size:30px; line-height:38px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-3); letter-spacing:-0.005em;">Anda berjalan bersama 2 orang.</h2>
+              <p style="font-size:14px; color:var(--text-secondary); max-width:42ch; margin:0;">Pilih nama dari sisi kiri untuk membaca apa yang mereka pilih untuk Anda lihat.</p>
+            </main>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- diff annotations -->
+    <div class="anno">
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No push notification</b><span>Server suppresses the event entirely. Pastor's device receives nothing.</span></div>
+      </div>
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No in-app badge</b><span>No red dot, no count delta, no "1 new" label on the sidebar header.</span></div>
+      </div>
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No banner / no toast</b><span>No "Maya ended pastor mode" surface. The shape itself is forbidden.</span></div>
+      </div>
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No diff animation</b><span>The row is rendered in its new place on next paint, not animated across.</span></div>
+      </div>
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No reason surfacing</b><span>Sidebar reads only "selesai 29 April" — never "revoked", never "by Maya".</span></div>
+      </div>
+      <div class="cell">
+        <div class="x">⃠</div>
+        <div class="label"><b>No "Mulai lagi" CTA</b><span>Removed-row state is terminal in the UI. Re-engagement requires Maya re-inviting from her side.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 2 — Mundur parity (Pastor's own end)
+       ================================================================= -->
+  <section class="section" id="flow-2">
+    <div class="section-head">
+      <p class="section-eyebrow">Surface 2 · Pastor ends his own walk</p>
+      <h2 class="section-title">2 · "Mundur" produces the same sidebar shape</h2>
+      <p class="section-sub">When Pastor taps <em>"Mundur dari perjalanan Maya"</em> from his admin view (BLE-108 surface 7), the sidebar transitions exactly like a Maya-revoke. Both endings look identical from Pastor's side — anti-discriminatory, anti-revenge-framing. There is no "I ended it" vs "she ended it" visual distinction anywhere in the product.</p>
+    </div>
+
+    <div class="desktop-wrap" style="max-width:880px;">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/walking-with/maya</div>
+      </div>
+      <div class="desktop-frame" style="grid-template-columns:1fr;">
+        <main class="desktop-main" style="padding:var(--s-9) var(--s-10);">
+          <div style="max-width:620px;">
+            <p class="section-eyebrow" style="margin:0 0 var(--s-2);">Selesai dengan tenang</p>
+            <h2 style="font-family:var(--f-serif); font-size:30px; line-height:38px; font-weight:400; color:var(--cobalt-900); margin:0 0 var(--s-4); letter-spacing:-0.005em;">Apa Anda ingin mundur dari perjalanan Maya?</h2>
+            <p style="font-size:14px; line-height:22px; color:var(--text-secondary); margin:0 0 var(--s-7);">Mundur adalah hal yang baik ketika Maya sudah siap berjalan sendiri. Setelah Anda mundur, halaman ini berakhir untuk Anda. Maya tidak menerima kabar tentang siapa yang menutup; baginya, perjalanan ini hanya selesai.</p>
+
+            <div style="background:var(--cobalt-50); border:1px solid var(--cobalt-100); border-radius:var(--r-lg); padding:var(--s-5) var(--s-6); margin-bottom:var(--s-7);">
+              <p style="margin:0; font-size:13px; line-height:20px; color:var(--cobalt-900);"><strong>Yang akan terjadi:</strong> baris Maya akan pindah ke <em>"Sudah selesai"</em> di sesi berikutnya. Tidak ada tombol "ulangi". Jika kelak Maya ingin Anda berjalan bersamanya lagi, undangan datang dari sisinya.</p>
+            </div>
+
+            <div style="display:flex; gap:var(--s-3);">
+              <button class="btn btn--primary">Ya, saya mundur</button>
+              <button class="btn btn--ghost">Belum sekarang</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <div class="signoff">
+      <span class="icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h0"/></svg>
+      </span>
+      <div>
+        <h4>Symmetry from Pastor's side</h4>
+        <p>The "Mundur" confirmation is a Pastor-private surface (Maya never sees it). Maya's matching surface — Pastor-mode revoke from her chat banner — is in BLE-108 surface 5 ("Akhiri"). Neither side reveals to the other <em>which side initiated</em>. From Maya's side, Pastor stepping away looks like the journey ending. From Pastor's side, Maya revoking looks like the journey ending. Same shape, both ways.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       FLOW 3 — Dead-link 403 page
+       ================================================================= -->
+  <section class="section" id="flow-3">
+    <div class="section-head">
+      <p class="section-eyebrow">Surface 3 · Stale-tab navigation</p>
+      <h2 class="section-title">3 · Dead-link page — Pastor opens an ended journey</h2>
+      <p class="section-sub">Pastor has a stale tab open or follows a bookmark to <code style="font-family:ui-monospace,monospace;">/walking-with/maya</code> after the journey has ended. The page is information-symmetric: it tells him the journey ended, and nothing else. No "revoked", no "ended by Maya", no "you were removed". Pastor sees only "ended" — never "she fired me".</p>
+    </div>
+
+    <div class="desktop-wrap" style="max-width:880px;">
+      <div class="desktop-bar">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <div class="url">blesscupid.id/walking-with/maya</div>
+      </div>
+      <div class="desktop-frame" style="grid-template-columns:1fr;">
+        <div class="deadlink-frame">
+          <div class="deadlink-stack">
+            <span class="deadlink-glyph">
+              <!-- shepherd-staff glyph from approved iconography (BLE-108 §good) -->
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 4.5c0-1.1.9-2 2-2h.5c2.2 0 3.5 1.6 3.5 3.5v0c0 1.6-1.2 3-3 3-1.4 0-2.5 1.1-2.5 2.5V21"/>
+              </svg>
+            </span>
+            <h2>Perjalanan ini sudah berakhir.</h2>
+            <p class="lede">Doakan Maya dalam perjalanan barunya.</p>
+            <div class="verse">
+              “TUHAN akan menjaga keluar masukmu, dari sekarang sampai selamanya.”
+              <cite>Mazmur 121:8 · TB2</cite>
+            </div>
+            <div class="actions">
+              <a class="btn btn--primary" href="#flow-1">Kembali ke Berjalan bersama</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="signoff">
+      <span class="icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+      <div>
+        <h4>Why this copy and only this copy</h4>
+        <p>The page MUST NOT name <em>which</em> end occurred (revoke vs. mutual end vs. Pastor stepped away). Information-symmetric: both directions of ending render the same page. The benediction <em>"Doakan Maya dalam perjalanan barunya"</em> reframes the moment as intercession, refusing the grievance shape. Mazmur 121:8 was already approved in BLE-108 §10 as the closure benediction.</p>
+        <p style="margin-top:var(--s-3);"><strong>Pending Pastor sign-off:</strong> the exact strings <code>"Perjalanan ini sudah berakhir."</code> and <code>"Doakan Maya dalam perjalanan barunya."</code> are the deliverable copy from BLE-133. These cannot ship without Pastor approval (Holy Code: faith/relationship copy = Pastor review gate).</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       Surface matrix
+       ================================================================= -->
+  <section class="section" id="matrix">
+    <div class="section-head">
+      <p class="section-eyebrow">Anti-surveillance matrix · what fires, what stays silent</p>
+      <h2 class="section-title">Every surface that could carry the loss-frame</h2>
+      <p class="section-sub">Each row is a surface where a Pastor-side notification could traditionally appear. We enumerate every one and document the verdict so this cannot regress in a future feature.</p>
+    </div>
+
+    <table class="matrix">
+      <thead>
+        <tr>
+          <th style="width:28%">Surface</th>
+          <th style="width:24%">Verdict</th>
+          <th>Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="surface-name">APNs / FCM push</td>
+          <td><span class="verdict-no">Suppressed at server</span></td>
+          <td>No push payload is generated for <code style="font-family:ui-monospace,monospace;">pastor_mode.revoked</code>. The notification publisher returns early before reaching the device-token fan-out.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">In-app activity feed / inbox</td>
+          <td><span class="verdict-no">Not written</span></td>
+          <td>No row is appended to Pastor's activity feed. There is intentionally no "Maya ended pastor mode" entry to scroll back to.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Sidebar count badge</td>
+          <td><span class="verdict-silent">Silent recompute</span></td>
+          <td>The "Berjalan bersama" count drops from 3 → 2 on next render. No delta indicator, no "−1" toast, no flash highlight on the heading.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Sidebar row position</td>
+          <td><span class="verdict-silent">Silent transition</span></td>
+          <td>Row re-renders under <em>"Sudah selesai"</em> on the next paint — not animated across, not flagged, not bumped to top. Sorted by <code style="font-family:ui-monospace,monospace;">endedAt desc</code> within the section.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Stale-tab navigation</td>
+          <td><span class="verdict-silent">Neutral 403 page</span></td>
+          <td>If Pastor follows a stale URL after the journey has ended, the dead-link page renders with the approved copy. No reason field is exposed in the response body or page metadata.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Email digest</td>
+          <td><span class="verdict-no">Excluded</span></td>
+          <td>Pastor-mode revoke events are excluded from the daily/weekly email digest entirely. No "Maya is no longer walking with you" line.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Pastor's own audit log / "Catatan saya"</td>
+          <td><span class="verdict-silent">Existing notes preserved, no end-event added</span></td>
+          <td>Notes Pastor wrote remain in his "Catatan saya" exactly as before — but no new system-generated note is appended to mark the end. The append-only mirror has already closed for that journey.</td>
+        </tr>
+        <tr>
+          <td class="surface-name">Other audited users' surfaces</td>
+          <td><span class="verdict-no">No leakage</span></td>
+          <td>Andre and Lina's chats with Pastor never reference Maya's revoke. Cross-user information-leak is already blocked by BLE-108 §sym, this just re-affirms that revoke is not an exception to the rule.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- =================================================================
+       Server-layer suppression spec
+       ================================================================= -->
+  <section class="section" id="server">
+    <div class="section-head">
+      <p class="section-eyebrow">Engineering spec · server-layer enforcement</p>
+      <h2 class="section-title">Suppression at the source — not as a UI hide</h2>
+      <p class="section-sub">The right place to refuse the loss-frame is the event-publish boundary, not the rendering layer. Anything written to a queue or feed will eventually surface; the only defence is to never write it. Below is the contract this artifact commits the implementation to.</p>
+    </div>
+
+    <div class="eng-grid">
+      <div class="eng">
+        <h3>State transition (server)</h3>
+        <pre>POST /api/pastor-mode/{journeyId}/end
+body: { initiator: "audited_user" | "pastor" }
+auth: caller must be a participant in the journey
+
+→ updates journeys.status: 'active' → 'ended'
+→ writes journeys.ended_at = now()
+→ records journeys.initiator (server-private; never exposed)
+→ closes append-only mirror for that journey
+
+does NOT:
+  - publish pastor_mode.revoked / .mundur events
+  - call notification-publisher
+  - write to pastor.activity_feed
+  - enqueue email digest entry</pre>
+
+        <h3>Pastor-side read API</h3>
+        <pre>GET /api/walking-with
+returns:
+{
+  active:   [...rows with endedAt: null],
+  finished: [...rows with endedAt: "2026-04-29T..."]
+}
+
+each row exposes:
+  - participantUserId, displayName, sinceAt
+  - endedAt (nullable)
+  NEVER:
+  - initiator, reason, endReason, revokedBy</pre>
+      </div>
+
+      <div class="eng">
+        <h3>Suppression invariants (must hold)</h3>
+        <ul>
+          <li><b>No event topic carries revoke.</b> Topics <code>notifications.push</code>, <code>notifications.in_app</code>, <code>email.digest</code> reject any event whose <code>type</code> matches <code>pastor_mode.revoked</code> or <code>pastor_mode.mundur</code>. Enforced by an allowlist, not a blocklist.</li>
+          <li><b>Pastor's GET response never carries reason.</b> The <code>initiator</code> column exists for audit forensics (abuse investigations) but is never serialized into a response that Pastor can read.</li>
+          <li><b>Realtime channel sends no end-event.</b> Pastor's WebSocket subscription does not receive a frame on revoke. The next sidebar render re-fetches and re-categorizes naturally.</li>
+          <li><b>Re-render parity.</b> On reconnect, Pastor's client cannot tell — by inspecting the response — whether Maya's row moved <em>during</em> his last session or <em>between</em> sessions. There is no <code>movedAt</code> field.</li>
+        </ul>
+
+        <h3>Why server-layer, not client-hide</h3>
+        <ul>
+          <li><b>Defence-in-depth.</b> A future client (mobile, third-party admin, extension) cannot accidentally re-surface what was never published.</li>
+          <li><b>Audit clarity.</b> The absence of an event in the logs is the proof we kept the doctrine.</li>
+          <li><b>No "feature flag" escape.</b> Suppression is a code-path, not a config — there is no toggle that turns the loss-frame back on.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       E2E test scenario
+       ================================================================= -->
+  <section class="section" id="test">
+    <div class="section-head">
+      <p class="section-eyebrow">Verification · the test that must pass</p>
+      <h2 class="section-title">End-to-end scenario</h2>
+      <p class="section-sub">A single test run that proves Pastor receives nothing on revoke. Failure of any assertion is a merge-blocker.</p>
+    </div>
+
+    <div class="eng">
+      <h3>Scenario · "Maya revokes, Pastor sees no diff except the next sidebar render"</h3>
+      <pre>given:
+  - journey J between Maya and Pastor is active
+  - Pastor has a logged-in browser session at /walking-with
+  - Pastor has a registered APNs device token
+
+when:
+  - Maya taps "Akhiri" from the consent banner and confirms
+  - server processes POST /pastor-mode/{J}/end with initiator="audited_user"
+
+then:
+  # SERVER ASSERTIONS
+  - DB: journeys.status('J') == 'ended'
+  - DB: journeys.ended_at('J') == &lt;now within 1s&gt;
+  - DB: journeys.initiator('J') == 'audited_user'
+  - QUEUE: notifications.push received 0 events for Pastor
+  - QUEUE: notifications.in_app received 0 events for Pastor
+  - QUEUE: email.digest contains 0 entries referencing J
+  - LOG: pastor.activity_feed has no row appended in window [t, t+5s]
+
+  # PASTOR-CLIENT ASSERTIONS (browser session)
+  - WS: Pastor's socket received 0 frames in window [t, t+5s]
+  - DOM: no toast / banner / alert dialog appeared
+  - DOM: sidebar count badge for "Berjalan bersama" did not flash or animate
+  - APNs: device token received 0 push payloads in window [t, t+30s]
+  - LOG: client console emitted no "journey ended" string
+
+  # PASTOR NEXT SESSION (force a re-render)
+  - reload /walking-with
+  - DOM: Maya row is rendered under "Sudah selesai" with endedAt formatted as "selesai 29 April"
+  - DOM: Maya row exposes no "Mulai lagi" / "Restore" / "Re-engage" CTA
+  - HTTP: GET /api/walking-with response body for Maya does NOT include
+          {initiator | reason | endReason | revokedBy} keys
+
+  # DEAD-LINK
+  - GET /walking-with/maya as Pastor
+  - HTTP: 200 with deadlink template (or 403 with same body — informationally identical)
+  - DOM: page text == "Perjalanan ini sudah berakhir." + "Doakan Maya dalam perjalanan barunya."
+  - DOM: response/page surfaces no field naming initiator</pre>
+
+      <h3>Mirror test · Pastor presses "Mundur"</h3>
+      <pre>same scenario, but: when:
+  - Pastor confirms "Mundur dari perjalanan Maya"
+  - server processes POST /pastor-mode/{J}/end with initiator="pastor"
+
+then:
+  - all of the above assertions hold IDENTICALLY
+  - additionally: Maya's side fires no "your pastor stepped away" loss-frame
+    (covered by Maya-side parity test in BLE-108 follow-up; out of scope here
+    but referenced for symmetry confirmation)</pre>
+    </div>
+  </section>
+
+  <!-- =================================================================
+       Constraints checklist
+       ================================================================= -->
+  <section class="section" id="check">
+    <div class="section-head">
+      <p class="section-eyebrow">Pastor sign-off · re-review on closure</p>
+      <h2 class="section-title">Constraints checklist</h2>
+      <p class="section-sub">Each item maps a doctrinal rule from the BLE-133 description to a verified surface or assertion. Pastor re-reviews this list on closure; any unchecked item blocks merge.</p>
+    </div>
+
+    <ul class="check-list">
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>1 · No push notification to Pastor on revoke.</b> Suppressed at the event-publish boundary; allowlist excludes <code>pastor_mode.revoked</code> from <code>notifications.push</code>. Verified by E2E queue-assertion (0 push payloads in window).<em>Surface: server</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>2 · No in-app badge / activity-feed entry on Pastor's app.</b> No row appended to <code>pastor.activity_feed</code>; sidebar count drops silently. No flash, no diff highlight on the heading.<em>Surface: matrix rows 2 + 3</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>3 · Sidebar entry transitions silently between sessions.</b> "Berjalan bersama" → "Sudah selesai", with row label <em>"selesai 29 April"</em>. No banner, no toast, no diff animation, no "Mulai lagi" CTA.<em>Surface: flow 1 AFTER frame</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>4 · Dead-link 403 is information-symmetric.</b> Copy: <em>"Perjalanan ini sudah berakhir. Doakan Maya dalam perjalanan barunya."</em> + Mazmur 121:8. Page exposes no <code>initiator</code> / <code>reason</code> / <code>endReason</code> field. Pastor never sees "she fired me."<em>Surface: flow 3</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>5 · "Mundur" parity.</b> Pastor's own end-action produces the identical sidebar shape and identical dead-link page. Both endings look the same from Pastor's side. Anti-discriminatory by construction.<em>Surface: flow 2</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>6 · Initiator never serialized in Pastor-readable responses.</b> Stored server-private for abuse-forensics only. <code>GET /api/walking-with</code> exposes <code>endedAt</code> but never <code>initiator</code> / <code>revokedBy</code>.<em>Surface: server spec</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>7 · Realtime / WS channel sends no end-event.</b> Pastor's socket receives 0 frames on revoke. Re-categorization happens on the next render fetch, not via a real-time push.<em>Surface: server spec + E2E WS-assertion</em></div>
+      </li>
+      <li>
+        <span class="ck"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <div class="body"><b>8 · End-to-end test enforces every assertion above.</b> Failure of any single queue / DOM / HTTP assertion blocks merge. The test exists not to catch regressions later — it exists to prove the doctrine held the moment we wrote it.<em>Surface: E2E scenario</em></div>
+      </li>
+    </ul>
+
+    <hr class="hair">
+
+    <h3 style="font-family:var(--f-serif); font-weight:400; font-size:22px; color:var(--cobalt-900); margin:0 0 var(--s-4);">Open hand-off</h3>
+    <ul style="margin:0; padding-left:var(--s-7); color:var(--text-secondary); font-size:14px; line-height:23px;">
+      <li><b>Pastor (BLE-87 dependency):</b> sign off on dead-link copy <code style="font-family:ui-monospace,monospace;background:var(--cream-100);padding:1px 5px;border-radius:4px;">"Perjalanan ini sudah berakhir. Doakan Maya dalam perjalanan barunya."</code> + reaffirm Mazmur 121:8 as the closure benediction. Sign off on the constraints checklist.</li>
+      <li><b>FoundingEngineer:</b> implementation lands behind Pastor copy approval. Tokens already exist in <code>blesscupid-ds-v0.html</code>; new components: <code>SidebarFinishedSection</code>, <code>DeadLinkPage</code>. Server changes: revoke event-publish suppression (allowlist), <code>journeys.initiator</code> column non-serialized.</li>
+      <li><b>QA (when hired):</b> run the E2E scenario twice — once with <code>initiator=audited_user</code>, once with <code>initiator=pastor</code>. Both must produce byte-identical Pastor-side response shapes.</li>
+      <li><b>CEO:</b> doctrinally-loaded surface. Worth a single read-through before the rollout PR is merged. Frames revocation as right rather than failure — central to the marriage-minded positioning.</li>
+    </ul>
+  </section>
+
+  <p class="foot">BLE-133 · FoundingEngineer · BlessCupid · 2026-04-29 · Builds on BLE-108 hi-fi · Awaiting Pastor copy sign-off · All copy in Indonesian, scriptures from TB2.</p>
+
+</div>
+</body>
+</html>

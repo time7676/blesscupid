@@ -1,0 +1,179 @@
+/* BLE-26 — Chat moderation banners
+   Three-voice pattern (BLE-57 / BLE-31 §10 derivation)
+   - Compose-time     yellow-warm   friend-leans-over-shoulder
+   - Post-action      cobalt-soft   calm explainer
+   - Ban / serious    cream+gold    warm, never red
+*/
+
+.review-board { max-width: 1180px; margin: 0 auto; padding: 48px 32px 96px; }
+.review-board h1 { font-family: var(--font-display); font-weight: 600; font-size: 32px; margin: 0 0 8px; color: var(--text-primary); letter-spacing: -.01em; }
+.review-board p.lead { color: var(--text-secondary); font-size: 15px; max-width: 720px; margin: 0 0 32px; }
+
+.legend { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: 0 0 40px; padding: 16px 20px; background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); }
+.legend > div { font-size: 13px; color: var(--text-secondary); line-height: 1.5; }
+.legend strong { display: block; color: var(--text-primary); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; margin-bottom: 4px; }
+
+.voice-row { display: grid; grid-template-columns: 420px 1fr; gap: 32px; align-items: start; padding: 32px 0; border-top: 1px solid var(--border-subtle); }
+.voice-row:first-of-type { border-top: 0; padding-top: 0; }
+.voice-row__meta { position: sticky; top: 24px; }
+.voice-row__num { display: inline-block; font-family: var(--font-display); font-size: 14px; color: var(--text-tertiary); letter-spacing: .08em; text-transform: uppercase; }
+.voice-row__title { font-family: var(--font-display); font-weight: 600; font-size: 24px; margin: 4px 0 8px; color: var(--text-primary); }
+.voice-row__voice { font-style: italic; color: var(--text-secondary); margin: 0 0 16px; font-size: 15px; }
+.voice-row__rules { display: flex; flex-direction: column; gap: 8px; margin: 0 0 12px; padding: 0; list-style: none; }
+.voice-row__rules li { font-size: 13px; color: var(--text-secondary); padding-left: 18px; position: relative; }
+.voice-row__rules li::before { content: "·"; position: absolute; left: 6px; color: var(--accent-gold); font-weight: 700; }
+.voice-row__tokens { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+.voice-row__tokens code { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 11px; padding: 3px 7px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-secondary); }
+
+.frames { display: flex; flex-direction: column; gap: 24px; }
+
+/* iPhone 14 frame at 390x844 — scaled down */
+.phone { width: 390px; height: 844px; background: var(--bg-canvas); border-radius: 44px; box-shadow: var(--elev-3); position: relative; overflow: hidden; border: 1px solid var(--border-subtle); }
+.phone__statusbar { height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 28px; font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.phone__appbar { height: 56px; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
+.phone__appbar-back { width: 32px; height: 32px; display: grid; place-items: center; color: var(--text-primary); background: transparent; border: 0; cursor: pointer; }
+.phone__appbar-name { font-weight: 600; color: var(--text-primary); font-size: 15px; line-height: 1.2; }
+.phone__appbar-meta { color: var(--text-tertiary); font-size: 12px; line-height: 1.2; }
+.phone__appbar-avatar { width: 36px; height: 36px; border-radius: 50%; background: var(--bc-cream-200); display: grid; place-items: center; color: var(--bc-stone-500); font-weight: 600; font-size: 14px; }
+.phone__appbar-text { flex: 1; }
+.phone__appbar-icon { width: 32px; height: 32px; display: grid; place-items: center; color: var(--text-secondary); background: transparent; border: 0; cursor: pointer; }
+
+.thread { padding: 16px; display: flex; flex-direction: column; gap: 10px; min-height: 480px; }
+.bubble { max-width: 78%; padding: 10px 14px; border-radius: 18px; font-size: 14px; line-height: 1.45; }
+.bubble--in { background: var(--bg-raised); color: var(--text-primary); align-self: flex-start; border-bottom-left-radius: 6px; }
+.bubble--out { background: var(--bc-cobalt-500); color: var(--text-inverse); align-self: flex-end; border-bottom-right-radius: 6px; }
+.bubble--draft { background: transparent; border: 1px dashed var(--border-strong); color: var(--text-tertiary); align-self: flex-end; border-bottom-right-radius: 6px; }
+.bubble__time { display: block; margin-top: 4px; font-size: 11px; opacity: .65; }
+
+/* Composer */
+.composer { display: flex; align-items: flex-end; gap: 8px; padding: 12px 12px 16px; border-top: 1px solid var(--border-subtle); background: var(--bg-surface); }
+.composer__field { flex: 1; min-height: 40px; padding: 10px 14px; background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-2xl); color: var(--text-primary); font-size: 14px; }
+.composer__field--draft { color: var(--text-tertiary); }
+.composer__send { width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--bc-cobalt-500); color: var(--text-inverse); display: grid; place-items: center; cursor: pointer; }
+.composer__send--disabled { background: var(--bc-stone-300); }
+
+/* ======= VOICE 1 — Compose-time, yellow-warm ======= */
+.banner--compose {
+  margin: 0 12px 8px;
+  padding: 14px 14px 14px 12px;
+  background: linear-gradient(180deg, var(--bc-gold-100) 0%, #FCE9C0 100%);
+  border: 1px solid #ECCB7C;
+  border-left: 4px solid var(--bc-gold-500);
+  border-radius: var(--radius-md);
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 10px;
+  align-items: start;
+  box-shadow: 0 1px 2px rgba(140, 104, 34, 0.08);
+}
+.banner--compose__icon { color: var(--bc-gold-700); display: grid; place-items: center; padding-top: 2px; }
+.banner--compose__title { font-weight: 600; color: var(--bc-gold-700); font-size: 13px; margin: 0 0 4px; line-height: 1.3; }
+.banner--compose__body { font-size: 13px; color: var(--bc-stone-700); margin: 0; line-height: 1.5; }
+.banner--compose__actions { display: flex; gap: 12px; margin-top: 8px; }
+.banner--compose__btn { font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: var(--radius-pill); border: 0; cursor: pointer; }
+.banner--compose__btn--primary { background: var(--bc-gold-700); color: var(--bc-cream-50); }
+.banner--compose__btn--ghost { background: transparent; color: var(--bc-gold-700); padding-left: 0; padding-right: 0; }
+
+/* ======= VOICE 2 — Post-action, cobalt-soft ======= */
+.banner--post {
+  margin: 12px 12px 0;
+  padding: 16px 16px 14px;
+  background: var(--bc-cobalt-50);
+  border: 1px solid var(--bc-cobalt-100);
+  border-radius: var(--radius-lg);
+  display: grid;
+  grid-template-columns: 28px 1fr;
+  gap: 12px;
+  align-items: start;
+}
+.banner--post__icon { color: var(--bc-cobalt-600); display: grid; place-items: center; padding-top: 2px; }
+.banner--post__title { font-family: var(--font-display); font-weight: 600; color: var(--bc-cobalt-900); font-size: 15px; margin: 0 0 6px; line-height: 1.3; letter-spacing: -.005em; }
+.banner--post__body { font-size: 13px; color: var(--bc-stone-700); margin: 0 0 8px; line-height: 1.55; }
+.banner--post__appeal { font-size: 12px; color: var(--bc-cobalt-700); margin: 0; }
+.banner--post__appeal a { color: var(--bc-cobalt-600); text-decoration: underline; text-underline-offset: 2px; }
+.banner--post__close { position: absolute; top: 10px; right: 10px; width: 28px; height: 28px; border-radius: 50%; border: 0; background: transparent; color: var(--bc-cobalt-700); display: grid; place-items: center; cursor: pointer; }
+
+.banner--post-wrap { position: relative; }
+
+/* ======= VOICE 3 — Ban / serious, cream + gold ======= */
+.ban-screen {
+  position: absolute;
+  inset: 100px 0 0;
+  background: var(--bg-canvas);
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px 24px;
+  overflow: auto;
+}
+.ban-screen__crest { width: 56px; height: 56px; border-radius: 50%; background: var(--bc-gold-100); border: 1px solid var(--bc-gold-300); display: grid; place-items: center; color: var(--bc-gold-700); margin: 0 0 24px; }
+.ban-screen__title { font-family: var(--font-display); font-weight: 600; font-size: 26px; line-height: 1.2; color: var(--text-primary); margin: 0 0 12px; letter-spacing: -.01em; }
+.ban-screen__body { font-size: 15px; line-height: 1.6; color: var(--text-secondary); margin: 0 0 16px; }
+.ban-screen__door { background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg); padding: 14px 16px; margin: 4px 0 20px; }
+.ban-screen__door-label { font-size: 12px; font-weight: 600; color: var(--bc-gold-700); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 4px; }
+.ban-screen__door-text { font-size: 13px; color: var(--text-secondary); margin: 0; line-height: 1.5; }
+.ban-screen__verse {
+  border-left: 2px solid var(--bc-gold-500);
+  padding: 4px 0 4px 14px;
+  margin: 0 0 24px;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-scripture);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.ban-screen__verse-cite { display: block; font-style: normal; font-family: var(--font-body); font-size: 12px; color: var(--text-tertiary); margin-top: 6px; letter-spacing: .02em; }
+.ban-screen__cta { display: block; width: 100%; padding: 14px 16px; background: var(--bc-cobalt-500); color: var(--text-inverse); border: 0; border-radius: var(--radius-pill); font-weight: 600; font-size: 15px; cursor: pointer; text-align: center; }
+.ban-screen__appeal { font-size: 13px; color: var(--text-tertiary); text-align: center; margin: 14px 0 0; }
+.ban-screen__appeal a { color: var(--bc-cobalt-600); text-decoration: underline; }
+
+/* annotation */
+.note { margin-top: 16px; padding: 16px 18px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
+.note h4 { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-tertiary); margin: 0 0 8px; font-weight: 600; }
+.note ul { margin: 0; padding-left: 18px; color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+.note ul li { margin-bottom: 4px; }
+.note code { font-family: ui-monospace, "SF Mono", Menlo, monospace; background: var(--bg-raised); padding: 1px 5px; border-radius: 4px; font-size: 12px; }
+
+
+/* ============================================================
+   BLE-148 — Canonical heading + cite-line disclaimer suffix.
+   Spec: ../ble-148-ban-heading-spec/SPEC.md
+   $ban_canonical_heading and $ban_scripture_disclaimer come from
+   copy-bundle.json and render verbatim on every ban surface. */
+
+/* Voice 03 fixed framing — sits between dove crest and per-case title. */
+.ban-canonical-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: var(--bc-gold-700);
+  margin: 0 0 16px;
+  max-width: 28ch;
+  text-wrap: balance;
+}
+@media (min-width: 768px) {
+  .ban-canonical-heading { font-size: 22px; }
+}
+
+/* Per-case title re-tuned to defer to canonical heading: sans-semibold,
+   not serif-display. The canonical heading carries the pastoral register;
+   the per-case title carries the factual register. */
+.ban-screen__title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+/* Cite-line enrichment — accepts {ref} · {tx} · <em>{disclaimer}</em>
+   structure. Disclaimer is the only italicized segment. */
+.ban-screen__verse-cite .cite-disclaimer {
+  font-style: italic;
+  font-weight: 400;
+}
+.ban-screen__verse-cite .cite-sep {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}

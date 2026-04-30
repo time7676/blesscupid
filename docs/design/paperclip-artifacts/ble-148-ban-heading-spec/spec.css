@@ -1,0 +1,387 @@
+/* BLE-148 — visual spec page styles.
+   Page chrome only. Phone + ban-screen rules live in ../ble-26-chat-moderation/banners.css.
+   Two BLE-148 NEW elements (.ban-canonical-heading and .ban-screen__verse-cite enrichments)
+   are defined here so the spec page is self-contained for review. */
+
+/* ---------- Page chrome ---------- */
+.spec-page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 32px 96px;
+  background: var(--bg-canvas);
+  color: var(--text-primary);
+}
+.spec-page__head {
+  margin: 0 0 56px;
+  padding: 0 0 32px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.spec-tag {
+  display: inline-block;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--bc-cobalt-700);
+  background: var(--bc-cobalt-50);
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  margin: 0 0 16px;
+}
+.spec-page__head h1 {
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 0 0 14px;
+  letter-spacing: -0.01em;
+}
+.spec-page__lead {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+  max-width: 70ch;
+}
+.spec-page__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 28px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+.spec-page__meta strong {
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+.spec-page__meta code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+/* ---------- Spec rows ---------- */
+.spec-row {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 48px;
+  padding: 48px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+.spec-row:last-of-type { border-bottom: 0; }
+.spec-row__meta h2 {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 12px;
+  letter-spacing: -0.005em;
+}
+.spec-row__meta p {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 16px;
+}
+.spec-row__meta code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  background: var(--bg-raised);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+.spec-row__rules {
+  margin: 0;
+  padding: 0 0 0 18px;
+  list-style: disc;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+.spec-row__rules li { margin-bottom: 6px; }
+
+/* ---------- Frames ---------- */
+.spec-frames {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.spec-frames--single {
+  grid-template-columns: 1fr;
+  max-width: 380px;
+}
+.spec-phone-fig {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+.spec-phone-fig figcaption {
+  font-size: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  color: var(--text-tertiary);
+  margin: 0 0 12px;
+  letter-spacing: 0.02em;
+}
+.spec-phone-fig figcaption strong {
+  color: var(--text-primary);
+}
+
+/* ---------- BLE-148 NEW: canonical heading ---------- */
+.ban-canonical-heading {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-style: italic;
+  font-size: 20px;
+  line-height: 1.35;
+  letter-spacing: -0.005em;
+  color: var(--bc-gold-700);
+  margin: 0 0 16px;
+  max-width: 28ch;
+  text-wrap: balance;
+}
+@media (min-width: 768px) {
+  .ban-canonical-heading { font-size: 22px; }
+}
+
+/* ---------- BLE-148: per-case title re-tune ---------- */
+/* Drops one weight increment from the pre-148 prototype to defer to canonical heading. */
+.ban-screen .ban-screen__title {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 22px;
+  line-height: 1.25;
+  color: var(--text-primary);
+  margin: 0 0 12px;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- BLE-148 NEW: cite-line enrichment ---------- */
+.ban-screen .ban-screen__verse-cite {
+  display: block;
+  font-family: var(--font-body);
+  font-style: normal;
+  font-size: 12px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.02em;
+  margin-top: 6px;
+  line-height: 1.55;
+}
+.ban-screen .ban-screen__verse-cite .cite-disclaimer {
+  font-style: italic;
+  font-weight: 400;
+}
+.ban-screen .ban-screen__verse-cite .cite-sep {
+  color: var(--text-tertiary);
+  opacity: 0.7;
+}
+
+/* ---------- Phone shell tweaks for spec page ---------- */
+.spec-phone-fig .phone {
+  position: relative;
+  width: 360px;
+  height: 720px;
+  background: var(--bg-canvas);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--elev-2);
+  overflow: hidden;
+}
+.spec-phone-fig .phone__statusbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  padding: 0 18px;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+.spec-phone-fig .ban-screen {
+  position: absolute;
+  inset: 36px 0 0;
+  background: var(--bg-canvas);
+  display: flex;
+  flex-direction: column;
+  padding: 28px 22px 22px;
+  overflow: auto;
+}
+.spec-phone-fig .ban-screen__crest {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--bc-gold-100);
+  border: 1px solid var(--bc-gold-300);
+  display: grid; place-items: center;
+  color: var(--bc-gold-700);
+  margin: 0 0 20px;
+}
+.spec-phone-fig .ban-screen__body {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin: 0 0 18px;
+}
+.spec-phone-fig .ban-screen__verse {
+  border-left: 2px solid var(--bc-gold-500);
+  padding: 4px 0 4px 14px;
+  margin: 0 0 22px;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--text-scripture);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.spec-phone-fig .ban-screen__cta {
+  display: block; width: 100%;
+  padding: 13px 16px;
+  background: var(--bc-cobalt-500);
+  color: var(--text-inverse);
+  border: 0;
+  border-radius: var(--radius-pill);
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  text-align: center;
+  font-family: var(--font-body);
+}
+.spec-phone-fig .ban-screen__appeal {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  text-align: center;
+  margin: 14px 0 0;
+}
+.spec-phone-fig .ban-screen__appeal a {
+  color: var(--bc-cobalt-600);
+  text-decoration: underline;
+}
+
+/* ---------- Anatomy ---------- */
+.spec-anatomy {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+}
+@media (max-width: 900px) {
+  .spec-anatomy { grid-template-columns: 1fr; }
+  .spec-row { grid-template-columns: 1fr; gap: 24px; }
+  .spec-frames { grid-template-columns: 1fr; }
+}
+.anatomy-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.anatomy-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.anatomy-list li:last-child { border-bottom: 0; }
+.anatomy-list li.is-new {
+  background: var(--bc-gold-100);
+  color: var(--text-primary);
+}
+.anatomy-list li strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+.anatomy-list li em {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  color: var(--bc-gold-700);
+  text-transform: uppercase;
+}
+.dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--bc-stone-300);
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+.dot--new {
+  background: var(--bc-gold-500);
+  box-shadow: 0 0 0 3px var(--bc-gold-100);
+}
+
+.token-table h3 {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 12px;
+}
+.token-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.token-table th, .token-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+.token-table th {
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--bg-raised);
+}
+.token-table td:first-child {
+  color: var(--text-primary);
+}
+.token-table tr.is-forbidden {
+  background: rgba(181, 52, 31, 0.04);
+}
+.token-table tr.is-forbidden td:first-child {
+  color: var(--state-critical);
+  font-weight: 600;
+}
+
+/* ---------- Code block ---------- */
+.spec-code {
+  background: var(--bc-stone-900);
+  color: var(--bc-cream-100);
+  border-radius: var(--radius-lg);
+  padding: 20px 24px;
+  overflow-x: auto;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12.5px;
+  line-height: 1.6;
+}
+.spec-code pre { margin: 0; }
+.spec-code code { font-family: inherit; color: inherit; background: transparent; padding: 0; }
+
+.spec-page__note {
+  margin: 16px 0 0;
+  padding: 14px 16px;
+  background: var(--bc-gold-100);
+  border-left: 3px solid var(--bc-gold-500);
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  max-width: 70ch;
+}
+.spec-page__note strong { color: var(--text-primary); }
+.spec-page__note code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  background: var(--bg-surface);
+  padding: 1px 5px;
+  border-radius: 4px;
+}

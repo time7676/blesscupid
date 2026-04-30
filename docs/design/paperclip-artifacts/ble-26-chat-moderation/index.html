@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BLE-26 — Chat moderation banners (three-voice pattern)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="banners.css" />
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-back" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M4 12L20 4l-3 16-5-7-8-1z" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/></symbol>
+    <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19c0-7 6-13 14-14-1 8-7 14-14 14zM5 19l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 11v5M12 8.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="i-door" viewBox="0 0 24 24"><path d="M6 3h12v18H6zM6 21V3M14 12.5h.01" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-dove" viewBox="0 0 24 24"><path d="M5 14c2-1 5-2 9-1l3-5 1 4 3 1-4 2-1 4-2-3c-3 2-7 2-9-2zM5 14l-2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="review-board">
+  <h1>BLE-26 · Chat moderation banners — three-voice pattern</h1>
+  <p class="lead">Source: BLE-31 §10 (pastoral tone reference, draft — Pastor sign-off pending). Three distinct voices for three distinct moments. Cream surface, gold accent, cobalt action; amber for warmth. Red is reserved exclusively for genuine panic-exit and never appears on moderation.</p>
+
+  <div class="legend">
+    <div><strong>Color rule</strong>Cream canvas · gold accent · cobalt action. Amber-warm for compose-time. No red.</div>
+    <div><strong>Tone rule</strong>Plain, adult, kind. Not corporate. Not church-bulletin. Pastor canonical voice from §1–§6.</div>
+    <div><strong>Door rule</strong>Every banner must surface a door — appeal path, cooldown info, or restoration step.</div>
+    <div><strong>Bilingual</strong>Bahasa default. English fallback. Templates verbatim from §1–§6, never paraphrased.</div>
+  </div>
+
+  <!-- ============== VOICE 1 — COMPOSE-TIME ============== -->
+  <section class="voice-row">
+    <div class="voice-row__meta">
+      <span class="voice-row__num">Voice 01 · Compose-time</span>
+      <h2 class="voice-row__title">Friend leans over your shoulder</h2>
+      <p class="voice-row__voice">"Hey — eyes on what you just typed. You sure?"</p>
+      <ul class="voice-row__rules">
+        <li>Triggered before send when classifier flags risk (slur token, scam keyword, off-platform push).</li>
+        <li>Yellow-warm — gold-100 → amber-100 gradient. Gold-500 left rule.</li>
+        <li>Never blocks. Always includes "send anyway" path. Friction, not gate.</li>
+        <li>Subject of doctrinal warmth, not corporate compliance ("we noticed", not "violation detected").</li>
+      </ul>
+      <div class="voice-row__tokens">
+        <code>--bc-gold-100</code><code>--bc-gold-500</code><code>--bc-gold-700</code><code>border-radius:--radius-md</code>
+      </div>
+    </div>
+    <div class="frames">
+      <div class="phone">
+        <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+        <div class="phone__appbar">
+          <button class="phone__appbar-back" aria-label="Kembali"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+          <div class="phone__appbar-avatar">S</div>
+          <div class="phone__appbar-text">
+            <div class="phone__appbar-name">Sarah</div>
+            <div class="phone__appbar-meta">Aktif sekarang · GBI Ciputra</div>
+          </div>
+          <button class="phone__appbar-icon" aria-label="Laporkan"><svg width="20" height="20"><use href="#i-shield"/></svg></button>
+        </div>
+        <div class="thread">
+          <div class="bubble bubble--in">Halo kak 🙏 senang bisa kenalan. Boleh tanya tentang gereja kakak?<span class="bubble__time">10:32</span></div>
+          <div class="bubble bubble--out">Sure, GBI Ciputra. Kakak biasanya ibadah jam berapa?<span class="bubble__time">10:34</span></div>
+          <div class="bubble bubble--in">Jam 10 pagi. Btw mending kita lanjut chat di WA aja yuk, lebih cepet.<span class="bubble__time">10:36</span></div>
+          <div class="bubble bubble--draft">Boleh, ini WA aku 0812-…<span class="bubble__time">menulis</span></div>
+        </div>
+
+        <!-- BANNER -->
+        <div class="banner--compose" role="status" aria-live="polite">
+          <div class="banner--compose__icon"><svg width="20" height="20"><use href="#i-leaf"/></svg></div>
+          <div>
+            <p class="banner--compose__title">Pelan dulu — kamu mau pindah ke WhatsApp?</p>
+            <p class="banner--compose__body">Pindah platform terlalu cepat menghilangkan alat keamanan yang melindungi kalian berdua. Biarkan kepercayaan tumbuh di sini dulu. Kalau Sarah nyaman, dia yang akan mengajak.</p>
+            <div class="banner--compose__actions">
+              <button class="banner--compose__btn banner--compose__btn--primary">Edit dulu</button>
+              <button class="banner--compose__btn banner--compose__btn--ghost">Tetap kirim</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="composer">
+          <div class="composer__field composer__field--draft">Boleh, ini WA aku 0812-…</div>
+          <button class="composer__send" aria-label="Kirim"><svg width="18" height="18"><use href="#i-send"/></svg></button>
+        </div>
+      </div>
+
+      <div class="note">
+        <h4>Engineer notes · banner—compose</h4>
+        <ul>
+          <li>Insert before composer; pushes thread up. Slide-in 200ms ease-standard. Dismiss on outside-tap or "Edit dulu".</li>
+          <li>Trigger source: <code>moderation/preflight</code> classifier. Categories: <code>off_platform</code>, <code>financial.softask</code>, <code>sexual.escalation</code>, <code>harassment.heat</code>.</li>
+          <li>Copy is verbatim from BLE-31 §4 (off-platform warning) — adapted to compose-tense ("kamu mau" vs "kamu meminta"). Pastor sign-off required for adapted strings.</li>
+          <li><strong>Never block.</strong> "Tetap kirim" stays clickable. Friction, not gate. Send-anyway logs to <code>preflight.bypass</code> for repeat-pattern detection.</li>
+          <li>Reduced motion: fade only, no slide.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== VOICE 2 — POST-ACTION ============== -->
+  <section class="voice-row">
+    <div class="voice-row__meta">
+      <span class="voice-row__num">Voice 02 · Post-action</span>
+      <h2 class="voice-row__title">Calm explainer, not drumbeat</h2>
+      <p class="voice-row__voice">"Here's what happened. Here's the door back."</p>
+      <ul class="voice-row__rules">
+        <li>Surfaces after a message was hidden, an account was paused, or a report was actioned.</li>
+        <li>Cobalt-soft — cobalt-50 background, cobalt-100 border, cobalt-900 headline.</li>
+        <li>Always names the action, the reason, and the appeal path. No scripture in headline — only as supporting note.</li>
+        <li>Dismissable but persists in safety center until appeal window closes.</li>
+      </ul>
+      <div class="voice-row__tokens">
+        <code>--bc-cobalt-50</code><code>--bc-cobalt-100</code><code>--bc-cobalt-600</code><code>border-radius:--radius-lg</code>
+      </div>
+    </div>
+    <div class="frames">
+      <div class="phone">
+        <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+        <div class="phone__appbar">
+          <button class="phone__appbar-back" aria-label="Kembali"><svg width="20" height="20"><use href="#i-back"/></svg></button>
+          <div class="phone__appbar-avatar">D</div>
+          <div class="phone__appbar-text">
+            <div class="phone__appbar-name">Daniel</div>
+            <div class="phone__appbar-meta">Akun ditangguhkan sementara</div>
+          </div>
+          <button class="phone__appbar-icon" aria-label="Laporkan"><svg width="20" height="20"><use href="#i-shield"/></svg></button>
+        </div>
+
+        <div class="banner--post-wrap">
+          <div class="banner--post" role="status" aria-live="polite">
+            <div class="banner--post__icon"><svg width="22" height="22"><use href="#i-info"/></svg></div>
+            <div>
+              <p class="banner--post__title">Kami sembunyikan satu pesan dari percakapan ini</p>
+              <p class="banner--post__body">Pesan tadi mengandung permintaan finansial, dan itu bukan hal yang BlessCupid izinkan antar member. Kalau ini kekeliruan, beritahu kami — kami baca semua banding.</p>
+              <p class="banner--post__appeal">Banding: <a href="mailto:care@blesscupid.app">care@blesscupid.app</a> · 14 hari</p>
+            </div>
+            <button class="banner--post__close" aria-label="Tutup"><svg width="14" height="14"><use href="#i-close"/></svg></button>
+          </div>
+        </div>
+
+        <div class="thread" style="min-height: 380px;">
+          <div class="bubble bubble--in">Hai, salam kenal. Aku lagi butuh bantuan modal usaha kecil-kecilan, mau dengar?<span class="bubble__time">10:11</span></div>
+          <div class="bubble bubble--in" style="background: var(--bg-sunken); color: var(--text-tertiary); font-style: italic;">Pesan disembunyikan oleh tim BlessCupid<span class="bubble__time">10:14</span></div>
+          <div class="bubble bubble--out">Hai Daniel, makasih sudah kontak. Tapi maaf aku kurang nyaman lanjut.<span class="bubble__time">10:18</span></div>
+        </div>
+
+        <div class="composer">
+          <div class="composer__field composer__field--draft">Tulis pesan…</div>
+          <button class="composer__send composer__send--disabled" aria-label="Kirim" disabled><svg width="18" height="18"><use href="#i-send"/></svg></button>
+        </div>
+      </div>
+
+      <div class="note">
+        <h4>Engineer notes · banner—post-action</h4>
+        <ul>
+          <li>Render at top of thread, above first bubble. Persists across thread re-entry until appeal window closes (default 14d) or user dismisses + acknowledges in safety center.</li>
+          <li>Variants by action: <code>message_hidden</code>, <code>account_paused</code>, <code>match_unmatched_by_safety</code>, <code>verification_required</code>. Each variant uses category from BLE-31 §1–§6 (harassment / sexual / fake / off_platform / financial / doctrinal).</li>
+          <li>Always render <code>care@blesscupid.app</code> link + appeal window. Never red. Never an alert icon — info glyph or shield, calm.</li>
+          <li>Scripture: <strong>not</strong> in headline. Optional supporting note only when category is doctrinal or §2/§5 ban-tier — and never as a sermon block here. Save the verse for the ban screen (Voice 03).</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== VOICE 3 — BAN / SERIOUS ============== -->
+  <section class="voice-row">
+    <div class="voice-row__meta">
+      <span class="voice-row__num">Voice 03 · Ban / serious notice</span>
+      <h2 class="voice-row__title">Warm, never red. Pintu pemulihan tetap terbuka.</h2>
+      <p class="voice-row__voice">"This is real. So is the door back."</p>
+      <ul class="voice-row__rules">
+        <li>Full-screen takeover when account is removed or banned. Replaces app shell on next open.</li>
+        <li>Cream canvas, gold-accent crest, cobalt CTA. The page is grave, not angry.</li>
+        <li>Names what was seen → names the harm → names the action → names the door (appeal or restoration).</li>
+        <li>Scripture is supporting, set off in gold-rule blockquote — never the headline of a removal.</li>
+        <li>For convert-from-Islam users: status NEVER surfaced. All tone references stripped of identity-revealing framing.</li>
+      </ul>
+      <div class="voice-row__tokens">
+        <code>--bc-cream-50</code><code>--bc-gold-300</code><code>--bc-cobalt-500</code><code>border-left:gold-500 verse</code>
+      </div>
+    </div>
+    <div class="frames">
+      <div class="phone" style="position:relative;">
+        <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+
+        <div class="ban-screen">
+          <div class="ban-screen__crest"><svg width="28" height="28"><use href="#i-dove"/></svg></div>
+
+          <!-- BLE-148 NEW · $ban_canonical_heading[locale] from copy-bundle.json. Verbatim, never per-case. -->
+          <p class="ban-canonical-heading">Pintu pemulihan tetap terbuka.</p>
+
+          <h2 class="ban-screen__title">Kami menahan profil kamu untuk sekarang</h2>
+          <p class="ban-screen__body">Kami melihat foto profil yang kamu pakai bukan milikmu.</p>
+          <p class="ban-screen__body">Kami tidak tahu seluruh ceritamu, dan kami tidak di sini untuk mempermalukanmu — tapi BlessCupid hanya bisa berjalan kalau setiap orang yang muncul adalah dirinya sendiri.</p>
+
+          <div class="ban-screen__door">
+            <p class="ban-screen__door-label">Pintu pemulihan tetap terbuka</p>
+            <p class="ban-screen__door-text">Kalau kamu yakin ini kekeliruan identitas, kirim banding dalam 14 hari. Kalau ceritamu adalah "aku kesepian dan merasa kurang", kami dengar, dan kami percaya kamu cukup. Datang lagi sebagai dirimu.</p>
+          </div>
+
+          <blockquote class="ban-screen__verse">
+            "Karena itu buanglah dusta dan berkatalah benar seorang kepada yang lain, karena kita adalah sesama anggota."
+            <!-- BLE-148 · cite-line format: {ref} · {tx} · $ban_scripture_disclaimer[locale]. Disclaimer wrapped in <em>. -->
+            <span class="ban-screen__verse-cite">
+              <span class="cite-ref">Efesus 4:25</span>
+              <span class="cite-sep" aria-hidden="true"> · </span>
+              <span class="cite-tx">TB</span>
+              <span class="cite-sep cite-sep--disclaimer" aria-hidden="true"> · </span>
+              <em class="cite-disclaimer">catatan pastoral, bukan vonis</em>
+            </span>
+          </blockquote>
+
+          <button class="ban-screen__cta">Ajukan banding</button>
+          <p class="ban-screen__appeal"><a href="mailto:care@blesscupid.app">care@blesscupid.app</a> · 14 hari sejak hari ini</p>
+        </div>
+      </div>
+
+      <div class="note">
+        <h4>Engineer notes · banner—ban</h4>
+        <ul>
+          <li>Full-screen modal on next app open after ban. Cannot be dismissed. CTA goes to mail compose with prefilled subject + ban-id.</li>
+          <li>Crest icon: dove (restoration) — <strong>never</strong> warning triangle, never circle-X. Gold-100 fill, gold-300 stroke.</li>
+          <li>Verse is optional. Pastor's BLE-31 §1–§6 lists scripture pool per category. UI renders verse when <code>ban.scripture_id</code> is set; omits the entire blockquote block when null. Atheist/agnostic/seeker accounts: <code>scripture_id = null</code> by policy default.</li>
+          <li>Convert-from-Islam: when <code>account.faith_journey.from_islam = true</code>, copy generator strips any phrasing that would surface that fact. Use <code>account.flags.faith_origin_protected</code> as the gate.</li>
+          <li>"Pintu pemulihan tetap terbuka" — fixed framing across all bans. The label is always rendered, even when the body says appeal-only (no restoration possible). The door is symbolic and pastoral.</li>
+          <li><strong>BLE-148:</strong> two new strings come from <code>copy-bundle.json</code>: <code>$ban_canonical_heading</code> renders as <code>.ban-canonical-heading</code> above the per-case title; <code>$ban_scripture_disclaimer</code> appends to the cite-line as <code>{ref} · {tx} · {disclaimer}</code>. Read both via <code>pipeline.renderAction(decision, locale, &#123; bundle &#125;)</code>; never duplicate strings here. Disclaimer omitted per §10.3 for atheist/agnostic/seeker actors and CSAM / scam-ring categories. Spec: <code>../ble-148-ban-heading-spec/SPEC.md</code>.</li>
+          <li>CSAM / scam-ring bans: variant strips scripture, strips restoration framing, keeps appeal only when Legal allows. See BLE-31 §2 CSAM clause + §5 scam-ring clause.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section style="margin-top: 48px; padding: 24px 28px; background: var(--bg-raised); border: 1px solid var(--border-subtle); border-radius: var(--radius-lg);">
+    <h2 style="font-family: var(--font-display); font-size: 20px; margin: 0 0 12px; color: var(--text-primary);">Doctrine v1.3 — RESOLVED</h2>
+    <p style="font-size: 14px; color: var(--text-secondary); margin: 0 0 8px; line-height: 1.6;">
+      Three-voice spec ratified by Pastor as <em>BLE-31 §10</em> (canonical, doctrine v1.3). Bilingual TB templates approved verbatim. Voice 03 demo above re-framed to <strong>Removal-tier (catfish-from-loneliness)</strong> per Pastor c5ec9219 — verse Efesus 4:25 stays (Removal pool), title softened from ban to "kami menahan… untuk sekarang", scam-pattern line dropped to align with the verse register.
+    </p>
+    <p style="font-size: 14px; color: var(--text-secondary); margin: 0; line-height: 1.6;">
+      <strong style="color: var(--text-primary);">Carry-forwards (all approved):</strong> 24h-reflection <em>"sometimes a night of prayer changes things, sometimes it doesn't"</em>, empty-state <em>"a conversation that points somewhere meaningful"</em>, reported-message placeholder <em>"Kami simpan dulu pesan ini. / We held this one for you."</em> Forbidden-vocab gate (§10.4): <code>blokir</code> / <code>banned</code> / <code>diblokir</code> never on user-facing surfaces; doctrine v1.2 §3 verb is <code>hentikan</code> / <code>akhiri</code>. <code>care@</code> is the canonical email path (never <code>appeals@</code>).
+    </p>
+  </section>
+
+</main>
+
+</body>
+</html>

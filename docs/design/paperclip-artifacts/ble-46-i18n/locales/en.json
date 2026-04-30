@@ -1,0 +1,170 @@
+{
+  "common": {
+    "appName": "BlessCupid",
+    "tagline": "Meet in love, grow in faith",
+    "actions": {
+      "continue": "Continue",
+      "back": "Back",
+      "save": "Save",
+      "cancel": "Cancel",
+      "skip": "Skip",
+      "retry": "Try again",
+      "done": "Done",
+      "send": "Send",
+      "report": "Report",
+      "block": "Block",
+      "unmatch": "Unmatch"
+    },
+    "states": {
+      "loading": "Loading...",
+      "empty": "Nothing here yet",
+      "offline": "No connection"
+    }
+  },
+  "auth": {
+    "welcome": {
+      "title": "Welcome to BlessCupid",
+      "subtitle": "Where believers meet partners of the same faith."
+    },
+    "login": {
+      "title": "Sign in",
+      "phonePlaceholder": "Phone number",
+      "cta": "Continue with WhatsApp",
+      "newAccount": "No account yet? Sign up"
+    },
+    "otp": {
+      "title": "Enter the code",
+      "subtitle": "We sent a 6-digit code to {phone}.",
+      "resend": "Resend in {seconds, plural, one {# second} other {# seconds}}",
+      "resendNow": "Resend now"
+    },
+    "consent": {
+      "title": "Before you continue",
+      "body": "By signing in, you agree to our Terms and Privacy Policy."
+    }
+  },
+  "match": {
+    "feed": {
+      "title": "For you",
+      "empty": {
+        "title": "No new profiles yet",
+        "subtitle": "Check back later or broaden your preferences."
+      }
+    },
+    "card": {
+      "age": "{age, plural, one {# year old} other {# years old}}",
+      "distance": "{km, plural, one {# km away} other {# km away}}",
+      "denomination": "Church: {name}",
+      "verseFavorite": "Favorite verse: {ref}"
+    },
+    "actions": {
+      "bless": "Bless",
+      "pass": "Pass",
+      "superBless": "Pray for",
+      "undo": "Undo"
+    },
+    "matched": {
+      "title": "You blessed each other!",
+      "subtitle": "Start a conversation with {name}.",
+      "cta": "Say hi first"
+    }
+  },
+  "profile": {
+    "title": "Profile",
+    "edit": "Edit profile",
+    "fields": {
+      "name": "Name",
+      "age": "Age",
+      "city": "City",
+      "denomination": "Denomination",
+      "homeChurch": "Home church",
+      "favoriteVerse": "Favorite verse",
+      "bio": "About me"
+    },
+    "completion": {
+      "title": "Complete your profile",
+      "progress": "{percent}% complete",
+      "nextStep": "Next step: {step}"
+    }
+  },
+  "safety": {
+    "title": "Safety",
+    "report": {
+      "title": "Report account",
+      "reasonLabel": "What would you like to report?",
+      "reasons": {
+        "fakeProfile": "Fake profile",
+        "harassment": "Harassment or threats",
+        "inappropriate": "Inappropriate content",
+        "scam": "Scam or spam",
+        "other": "Other"
+      },
+      "submitted": "Thank you. Our team will review within 24 hours."
+    },
+    "block": {
+      "confirmTitle": "Block {name}?",
+      "confirmBody": "They won't be able to see your profile or message you.",
+      "confirmCta": "Yes, block"
+    }
+  },
+  "faith": {
+    "verseOfDay": {
+      "title": "Verse of the day",
+      "subtitle": "A short reflection for today."
+    },
+    "prayerPrompt": {
+      "title": "Pray for them",
+      "body": "Take a moment to pray for {name} before starting a conversation."
+    },
+    "denominationLabels": {
+      "katolik": "Catholic",
+      "protestan": "Protestant",
+      "kharismatik": "Charismatic",
+      "injili": "Evangelical",
+      "ortodoks": "Orthodox",
+      "lain": "Other",
+      "belumYakin": "Still discerning / exploring"
+    },
+    "denominationHint": "Not sure? That's okay — you can skip this or pick \"Still discerning / exploring\" at the bottom of the list.",
+    "pelayanan": {
+      "label": "Areas of serving (optional)",
+      "hint": "Where you serve at church. Pick as many as apply.",
+      "chips": {
+        "pujian": "Worship",
+        "pemuda": "Youth",
+        "doa": "Prayer",
+        "pengajaran": "Teaching",
+        "misi": "Missions",
+        "anak": "Children",
+        "diakonia": "Diakonia",
+        "konseling": "Counseling",
+        "lainnya": "Other"
+      }
+    },
+    "marriageTimeline": {
+      "within1": "Within 1 year",
+      "1to3": "1–3 years",
+      "moreThan3": "More than 3 years",
+      "stillPraying": "Still praying about it"
+    },
+    "values": {
+      "purity": "Purity",
+      "marriageMinded": "Marriage-minded",
+      "serveTogether": "Serve together",
+      "growTogether": "Grow together"
+    }
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "No internet connection.",
+    "auth": {
+      "invalidOtp": "Invalid code.",
+      "otpExpired": "Code expired. Request a new one."
+    },
+    "validation": {
+      "required": "{field} is required.",
+      "tooShort": "{field} must be at least {min} characters.",
+      "tooLong": "{field} must be at most {max} characters."
+    }
+  }
+}

@@ -1,0 +1,122 @@
+/* BlessCupid tokens — aligned to BLE-22 v0.1 (source of truth).
+   Light-only for v1. WCAG AA verified per BLE-22 doc. */
+
+:root {
+  /* Cream surfaces — "morning prayer light" */
+  --bc-cream-50:  #FDFBF6;
+  --bc-cream-100: #F8F2E6;
+  --bc-cream-200: #EFE6D2;
+  --bc-cream-300: #E2D4B5;
+
+  /* Cobalt brand */
+  --bc-cobalt-50:  #EEF2FB;
+  --bc-cobalt-100: #D6E0F4;
+  --bc-cobalt-300: #7FA1DD;
+  --bc-cobalt-500: #3D67B8;
+  --bc-cobalt-600: #2F4F99;
+  --bc-cobalt-700: #243F7A;
+  --bc-cobalt-900: #142447;
+
+  /* Gold accent */
+  --bc-gold-100: #FBF1D7;
+  --bc-gold-300: #E9C780;
+  --bc-gold-500: #C99A3A;
+  --bc-gold-700: #8C6822;
+
+  /* Sage success */
+  --bc-sage-100: #E5EFE6;
+  --bc-sage-500: #5C8A6A;
+  --bc-sage-700: #3F6149;
+
+  /* Amber — warning + critical (NOT red) */
+  --bc-amber-100: #FCEBD2;
+  --bc-amber-500: #D08A2C;
+  --bc-amber-700: #8C5912;
+
+  /* Stone neutrals */
+  --bc-stone-50:  #FAF8F4;
+  --bc-stone-100: #EFEAE0;
+  --bc-stone-300: #C8BFAF;
+  --bc-stone-500: #867C6A;
+  --bc-stone-700: #4A4338;
+  --bc-stone-900: #221F18;
+
+  /* Rose — match-only contexts. Never errors. */
+  --bc-rose-300: #E5A8B0;
+  --bc-rose-500: #C76A78;
+
+  /* Semantic */
+  --bg-canvas:   var(--bc-cream-50);
+  --bg-surface:  #FFFFFF;
+  --bg-raised:   var(--bc-cream-100);
+  --bg-sunken:   var(--bc-cream-200);
+  --text-primary:   var(--bc-stone-900);
+  --text-secondary: var(--bc-stone-700);
+  --text-tertiary:  var(--bc-stone-500);
+  --text-inverse:   var(--bc-cream-50);
+  --text-brand:     var(--bc-cobalt-600);
+  --text-scripture: var(--bc-cobalt-900);
+  --border-subtle:  var(--bc-cream-300);
+  --border-strong:  var(--bc-stone-300);
+  --border-focus:   var(--bc-cobalt-600);
+  --state-success:  var(--bc-sage-500);
+  --state-warning:  var(--bc-amber-500);
+  --state-critical: var(--bc-amber-700);
+  --accent-gold:    var(--bc-gold-500);
+  --accent-match:   var(--bc-rose-500);
+
+  /* Spacing — 4px base */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* Radii */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-pill: 999px;
+
+  /* Elevation */
+  --elev-1: 0 1px 2px rgba(20,24,40,.06), 0 1px 1px rgba(20,24,40,.04);
+  --elev-2: 0 4px 12px rgba(20,24,40,.08), 0 2px 4px rgba(20,24,40,.04);
+  --elev-3: 0 12px 32px rgba(20,24,40,.10), 0 4px 8px rgba(20,24,40,.05);
+  --elev-modal: 0 24px 60px rgba(20,24,40,.18);
+
+  /* Motion */
+  --dur-fast: 120ms;
+  --dur-base: 200ms;
+  --dur-slow: 320ms;
+  --dur-deliberate: 480ms;
+  --ease-standard: cubic-bezier(0.2, 0, 0.2, 1);
+  --ease-reverent: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Type */
+  --font-display: "Source Serif 4","Source Serif Pro","Cormorant Garamond",ui-serif,Georgia,serif;
+  --font-body:    "Inter",-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-fast: 0ms; --dur-base: 0ms; --dur-slow: 0ms; --dur-deliberate: 0ms;
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--text-primary);
+  background: var(--bg-canvas);
+  -webkit-font-smoothing: antialiased;
+}

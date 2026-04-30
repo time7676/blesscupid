@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BlessCupid — Moderator Console (BLE-54)</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="console.css" />
+</head>
+<body>
+  <div class="shell">
+    <div class="topbar">
+      <h1>BlessCupid · Moderator Console</h1>
+      <div class="role-switch">
+        <span>Viewer role</span>
+        <select id="viewerRole">
+          <option value="Moderator">Moderator</option>
+          <option value="Pastor">Pastor</option>
+          <option value="CEO">CEO</option>
+        </select>
+      </div>
+    </div>
+
+    <aside class="queue" id="queue"></aside>
+    <main class="detail" id="detail"></main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="pipeline.js"></script>
+  <script>
+    /* BLE-54 admin console wiring.
+       Loads rules + bundle + seed reports, runs each through the pipeline,
+       renders queue and action UI. Convert-privacy cohort masked unless viewer
+       is CEO or Pastor. */
+
+    const FILES = {
+      rules: 'rules.json',
+      bundle: 'copy-bundle.json',
+      seed: 'seed-reports.json',
+    };
+
+    const state = {
+      rules: null,
+      bundle: null,
+      reports: [],
+      decisions: {},
+      activeId: null,
+      viewerRole: 'Moderator',
+      activeTab: 'human-review',
+      lang: 'en',
+      chosenAction: {},
+      seekerTeacherChoice: {},
+    };
+
+    async function loadJson(path) {
+      const r = await fetch(path);
+      if (!r.ok) throw new Error('failed to load ' + path);
+      return r.json();
+    }
+
+    function buildHistoryFor(report) {
+      const companions = report._brigade_companions || [];
+      return companions.concat(
+        state.reports
+          .filter((r) => r.id !== report.id && r.target_id === report.target_id)
+          .map((r) => ({ target_id: r.target_id, reporter_id: r.reporter_id, timestamp: r.timestamp }))
+      );
+    }
+
+    function evaluateAll() {
+      state.decisions = {};
+      for (const r of state.reports) {
+        const history = buildHistoryFor(r);
+        const decision = BlessCupidPipeline.evaluate(r, {
+          rules: state.rules,
+          bundle: state.bundle,
+          history,
+        });
+        state.decisions[r.id] = decision;
+      }
+    }
+
+    function categoryLabel(catId, lang) {
+      const cat = state.rules.categories.find((c) => c.id === catId);
+      if (!cat) return catId;
+      return cat.label[lang] || cat.label.en;
+    }
+
+    function cohortLabel(tag, lang) {
+      const c = (state.rules.edge_case_cohorts || []).find((x) => x.id === tag);
+      if (!c) return tag;
+      return c.label[lang] || c.label.en;
+    }
+
+    function renderQueue() {
+      const queue = document.getElementById('queue');
+      const lang = state.lang;
+      const tabs = ['human-review', 'pastor-ceo', 'auto-log'];
+      const counts = { 'human-review': 0, 'pastor-ceo': 0, 'auto-log': 0 };
+      for (const r of state.reports) counts[state.decisions[r.id].queue] += 1;
+
+      const tabHtml = tabs
+        .map((t) => {
+          const label =
+            t === 'human-review' ? 'Human review' : t === 'pastor-ceo' ? 'Pastor + CEO' : 'Auto-logged';
+          return (
+            '<div class="queue-tab ' +
+            (t === state.activeTab ? 'active' : '') +
+            '" data-tab="' +
+            t +
+            '"><span>' +
+            label +
+            '</span><span>' +
+            counts[t] +
+            '</span></div>'
+          );
+        })
+        .join('');
+
+      const visible = state.reports.filter((r) => state.decisions[r.id].queue === state.activeTab);
+
+      const items = visible
+        .map((r) => {
+          const d = state.decisions[r.id];
+          const masked = BlessCupidPipeline.maskCohortTagsForViewer(d, state.viewerRole);
+          const cohorts = masked.tags
+            .map((t) => '<span class="tag cohort">' + cohortLabel(t, lang) + '</span>')
+            .join('');
+          const cohortMaskedNote = masked.masked
+            ? '<span class="tag cohort-masked" title="One cohort tag masked at this role">cohort: hidden</span>'
+            : '';
+          const brigadeTag = d.flags.indexOf('brigade') !== -1 ? '<span class="tag brigade">brigade</span>' : '';
+          const tierTag = '<span class="tag tier-' + d.tier + '">' + d.tier + '</span>';
+          const catTag = '<span class="tag category">' + categoryLabel(r.category_id, lang) + '</span>';
+          const targetName = r.target_name || r.target_id;
+          return (
+            '<li class="queue-item ' +
+            (state.activeId === r.id ? 'active' : '') +
+            '" data-id="' +
+            r.id +
+            '">' +
+            '<div class="qrow"><span class="target">' +
+            targetName +
+            '</span><span class="when">' +
+            new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) +
+            '</span></div>' +
+            '<div class="summary">' +
+            r.summary +
+            '</div>' +
+            '<div class="tags">' +
+            tierTag +
+            catTag +
+            brigadeTag +
+            cohorts +
+            cohortMaskedNote +
+            '</div>' +
+            '</li>'
+          );
+        })
+        .join('');
+
+      queue.innerHTML =
+        '<div class="queue-header"><span>Queues</span></div>' +
+        tabHtml +
+        '<div class="queue-header"><span>Reports</span><span>' +
+        visible.length +
+        '</span></div>' +
+        '<ul class="queue-list">' +
+        (items || '<li style="padding:var(--space-5);color:var(--text-tertiary);font-size:13px;">Empty queue.</li>') +
+        '</ul>';
+
+      queue.querySelectorAll('.queue-tab').forEach((el) => {
+        el.addEventListener('click', () => {
+          state.activeTab = el.dataset.tab;
+          state.activeId = null;
+          renderAll();
+        });
+      });
+      queue.querySelectorAll('.queue-item').forEach((el) => {
+        el.addEventListener('click', () => {
+          state.activeId = el.dataset.id;
+          renderAll();
+        });
+      });
+    }
+
+    function categoryActions(catId) {
+      const cat = state.rules.categories.find((c) => c.id === catId);
+      if (!cat) return ['warning', 'removal', 'ban'];
+      const set = new Set();
+      for (const row of cat.matrix) set.add(row.action);
+      set.delete('non-action');
+      const order = ['warning', 'removal', 'ban', 'pastoral-note'];
+      return order.filter((a) => set.has(a));
+    }
+
+    function findRowFor(catId, action) {
+      const cat = state.rules.categories.find((c) => c.id === catId);
+      if (!cat) return null;
+      return cat.matrix.find((row) => row.action === action) || null;
+    }
+
+    function templateFor(catId, action) {
+      return (state.bundle[catId] || {})[action] || null;
+    }
+
+    function renderDetail() {
+      const detail = document.getElementById('detail');
+      if (!state.activeId) {
+        detail.innerHTML =
+          '<div class="card"><h3>Select a report</h3><p style="color:var(--text-secondary);font-size:14px;line-height:1.6;">Choose a report from the queue. Convert-from-Islam cohort tags are masked unless you are CEO or Pastor (BLE-31 admin requirement).</p></div>';
+        return;
+      }
+      const report = state.reports.find((r) => r.id === state.activeId);
+      const decision = state.decisions[state.activeId];
+      const lang = state.lang;
+      const masked = BlessCupidPipeline.maskCohortTagsForViewer(decision, state.viewerRole);
+
+      const stChoice = state.seekerTeacherChoice[report.id] || null;
+      if (stChoice && decision.seeker_teacher_prompt) {
+        BlessCupidPipeline.applySeekerTeacherChoice(decision, stChoice);
+      }
+
+      const banners = [];
+      if (decision.flags.indexOf('brigade') !== -1) {
+        banners.push(
+          '<div class="banner banner-warn"><strong>Brigade detected.</strong> 3+ reports against this target inside 1h. Auto-actions suppressed; routed to human-review per §0 universal trigger.</div>'
+        );
+      }
+      if (decision.seeker_teacher_prompt) {
+        const seekerActive = stChoice === 'seeker' ? ' active' : '';
+        const teacherActive = stChoice === 'teacher' ? ' active' : '';
+        banners.push(
+          '<div class="banner banner-info">' +
+            '<strong>Pastoral discernment required (§6 deny_creedal_floor).</strong> ' +
+            'Is this a seeker asking, or a teacher claiming? Wrong call either bans a sincere doubter or platforms an active heretic. Pastor + CEO only.' +
+            '<div class="seeker-teacher-buttons" style="margin-top:var(--space-3);display:flex;gap:var(--space-3);">' +
+              '<button class="btn btn-secondary' + seekerActive + '" data-st="seeker">Seeker → non-action + pastoral DM</button>' +
+              '<button class="btn btn-secondary' + teacherActive + '" data-st="teacher">Teacher → §6 doctrinal removal</button>' +
+            '</div>' +
+            (stChoice ? '<div style="margin-top:var(--space-2);font-size:13px;color:var(--text-secondary);">Classified as <strong>' + stChoice + '</strong>. Action below has been re-derived.</div>' : '') +
+          '</div>'
+        );
+      }
+      const universalFlag = decision.flags.find((f) => f.indexOf('universal:') === 0);
+      if (universalFlag) {
+        const tid = universalFlag.split(':')[1];
+        const trigger = state.rules.universal_escalation_triggers.find((t) => t.id === tid);
+        banners.push(
+          '<div class="banner banner-warn"><strong>Universal escalation: ' +
+            trigger.label +
+            '.</strong> Category outcome short-circuited. Owner: ' +
+            trigger.owner +
+            '. Side effects: ' +
+            (decision.side_effects.join(', ') || 'none') +
+            '.</div>'
+        );
+      }
+      if (masked.masked) {
+        banners.push(
+          '<div class="banner banner-info"><strong>Cohort tag hidden.</strong> Convert-from-Islam status is visible only to CEO + Pastor. Switch role above to view.</div>'
+        );
+      }
+
+      const evidenceHtml = (report.evidence || [])
+        .map(
+          (m) =>
+            '<div class="evidence-msg"><div class="who">' +
+            (m.from || 'unknown') +
+            '</div>' +
+            m.text +
+            '</div>'
+        )
+        .join('');
+
+      const cohorts = masked.tags
+        .map((t) => '<span class="tag cohort">' + cohortLabel(t, lang) + '</span>')
+        .join('');
+
+      const actions = categoryActions(report.category_id);
+      const chosen = state.chosenAction[report.id] || actions[0];
+      const tpl = templateFor(report.category_id, chosen);
+      const row = findRowFor(report.category_id, chosen);
+
+      const actionOptions = actions
+        .map(
+          (a) =>
+            '<option value="' +
+            a +
+            '"' +
+            (a === chosen ? ' selected' : '') +
+            '>' +
+            a +
+            (row && row.action === a ? ' · default tier ' + row.tier : '') +
+            '</option>'
+        )
+        .join('');
+
+      const previewBody = tpl ? tpl[lang] : '';
+      const isBanSurface = chosen === 'ban';
+      const banHeading =
+        isBanSurface && state.bundle.$ban_canonical_heading
+          ? '<div class="ban-heading"><strong>' +
+            (state.bundle.$ban_canonical_heading[lang] ||
+              state.bundle.$ban_canonical_heading.en) +
+            '</strong></div>'
+          : '';
+      const banDisclaimer =
+        isBanSurface &&
+        tpl &&
+        tpl.scripture &&
+        tpl.scripture.voice_03_disclaimer_required &&
+        state.bundle.$ban_scripture_disclaimer
+          ? ' · ' +
+            (state.bundle.$ban_scripture_disclaimer[lang] ||
+              state.bundle.$ban_scripture_disclaimer.en)
+          : '';
+      const previewScripture = tpl && tpl.scripture
+        ? '<div class="scripture">"' +
+          (lang === 'id' ? tpl.scripture.text_id || tpl.scripture.text_en : tpl.scripture.text_en) +
+          '" — ' +
+          tpl.scripture.ref +
+          ' · ' +
+          tpl.scripture.tx +
+          banDisclaimer +
+          '</div>'
+        : '';
+      const previewAppeal =
+        decision.appeal && chosen !== 'non-action'
+          ? '<div class="appeal">' +
+            (lang === 'id'
+              ? 'Banding: ' + decision.appeal.email + ' dalam ' + decision.appeal.window_days + ' hari.'
+              : 'Appeals: ' + decision.appeal.email + ' within ' + decision.appeal.window_days + ' days.') +
+            '</div>'
+          : '';
+
+      const internalNote = tpl && tpl.internal_note ? tpl.internal_note : '(no internal note for this template)';
+
+      detail.innerHTML =
+        banners.join('') +
+        '<div>' +
+          '<h2>' + (report.target_name || report.target_id) + '</h2>' +
+          '<div class="meta">' +
+            '<span>Category: ' + categoryLabel(report.category_id, lang) + '</span>' +
+            '<span>Pattern: <code>' + report.pattern + '</code></span>' +
+            '<span>Tier: <strong>' + decision.tier + '</strong></span>' +
+            '<span>Reporter: ' + (report.reporter_name || report.reporter_id) + '</span>' +
+            '<span>' + new Date(report.timestamp).toLocaleString() + '</span>' +
+            (cohorts ? '<span>Cohort: ' + cohorts + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+
+        '<div class="card"><h3>Evidence</h3>' + evidenceHtml + '<div style="margin-top:var(--space-3);color:var(--text-tertiary);font-size:13px;">Reasoning: ' + decision.reasoning.join(' ') + '</div></div>' +
+
+        '<div class="card"><h3>Moderator action</h3>' +
+          '<div class="field-row">' +
+            '<div class="field"><label for="actionSel">Action</label><select id="actionSel">' + actionOptions + '</select></div>' +
+            '<div class="field"><label>Locale</label><div class="lang-toggle"><button data-lang="en" class="' + (lang === 'en' ? 'active' : '') + '">EN</button><button data-lang="id" class="' + (lang === 'id' ? 'active' : '') + '">ID</button></div></div>' +
+          '</div>' +
+          '<div class="field"><label>User-facing copy (verbatim from approved templates — do not paraphrase without Pastor sign-off)</label><div class="preview">' + banHeading + previewBody + previewScripture + previewAppeal + '</div></div>' +
+          '<div class="internal-note"><strong>Internal note (mod-only).</strong> ' + internalNote + '<small>Auto-populated. Translation tag preserved for audit. Not user-visible.</small></div>' +
+          '<div class="actions" style="margin-top:var(--space-4);">' +
+            '<button class="btn btn-primary" id="btnSend">Send action</button>' +
+            '<button class="btn btn-secondary" id="btnDefer">Defer to human-review</button>' +
+            '<button class="btn btn-warning" id="btnEscalate">Escalate to CEO + Pastor</button>' +
+          '</div>' +
+        '</div>';
+
+      document.getElementById('actionSel').addEventListener('change', (ev) => {
+        state.chosenAction[report.id] = ev.target.value;
+        renderDetail();
+      });
+      detail.querySelectorAll('.lang-toggle button').forEach((b) =>
+        b.addEventListener('click', () => {
+          state.lang = b.dataset.lang;
+          renderAll();
+        })
+      );
+      detail.querySelectorAll('.seeker-teacher-buttons button').forEach((b) =>
+        b.addEventListener('click', () => {
+          state.seekerTeacherChoice[report.id] = b.dataset.st;
+          evaluateAll();
+          renderAll();
+        })
+      );
+
+      document.getElementById('btnSend').addEventListener('click', () => {
+        const days = (decision.appeal && decision.appeal.window_days) || 14;
+        toast(
+          'Action sent: ' +
+            chosen +
+            ' · ' +
+            (lang === 'id' ? 'banding aktif ' + days + ' hari' : 'appeal window ' + days + 'd active')
+        );
+      });
+      document.getElementById('btnDefer').addEventListener('click', () => {
+        toast('Deferred to human-review queue.');
+      });
+      document.getElementById('btnEscalate').addEventListener('click', () => {
+        toast('Escalation wake fired → Pastor + CEO. Evidence bundle attached.');
+      });
+    }
+
+    function renderAll() {
+      renderQueue();
+      renderDetail();
+    }
+
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    document.getElementById('viewerRole').addEventListener('change', (ev) => {
+      state.viewerRole = ev.target.value;
+      renderAll();
+    });
+
+    (async function init() {
+      try {
+        const [rules, bundle, seed] = await Promise.all([
+          loadJson(FILES.rules),
+          loadJson(FILES.bundle),
+          loadJson(FILES.seed),
+        ]);
+        state.rules = rules;
+        state.bundle = bundle;
+        state.reports = seed;
+        evaluateAll();
+        if (state.reports.length) state.activeId = state.reports[0].id;
+        renderAll();
+      } catch (err) {
+        document.getElementById('detail').innerHTML =
+          '<div class="banner banner-warn"><strong>Console requires HTTP serving.</strong> Run from the directory: <code>python3 -m http.server 8080</code> then open <code>http://localhost:8080/</code>. Direct file:// load blocks fetch().<br/><small>' +
+          err.message +
+          '</small></div>';
+      }
+    })();
+  </script>
+</body>
+</html>

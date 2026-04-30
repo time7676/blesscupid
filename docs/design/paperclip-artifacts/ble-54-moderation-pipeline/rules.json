@@ -1,0 +1,207 @@
+{
+  "$schema_version": "1.0.0",
+  "$source": "BLE-31 Report-Triage Doctrine v1.1 (2026-04-28)",
+  "$notes": "Rule schema per §11 of doctrine. Surface label 'hard pause' but enum stays 'hard-block' (BLE-31 §amendment 2). Auto-mute only fires on first human-review-confirmed action against a member, not raw report count (BLE-31 §amendment 1).",
+
+  "tiers": ["auto", "human-review", "escalate-CEO"],
+  "actions": ["warning", "removal", "ban", "non-action", "pastoral-note"],
+
+  "universal_escalation_triggers": [
+    {
+      "id": "minor",
+      "label": "Subject is a minor (<18)",
+      "match": ["target_age_lt_18", "actor_age_lt_18", "minor_in_media"],
+      "force_tier": "escalate-CEO",
+      "short_circuit": true,
+      "legal": ["NCMEC report when sexual"],
+      "owner": "CEO+Legal"
+    },
+    {
+      "id": "self-harm",
+      "label": "Self-harm / suicide ideation by either party",
+      "match": ["self_harm_keyword", "suicide_keyword", "crisis_signal"],
+      "force_tier": "escalate-CEO",
+      "short_circuit": true,
+      "side_effect": "emit_crisis_resources_to_target",
+      "owner": "Pastor+CEO"
+    },
+    {
+      "id": "violence",
+      "label": "Credible threat of physical violence",
+      "match": ["weapon_mention", "kill_threat", "geo_threat", "stalking_admission"],
+      "force_tier": "escalate-CEO",
+      "short_circuit": true,
+      "side_effect": "panic_exit_offered",
+      "owner": "Pastor+CEO+Legal"
+    },
+    {
+      "id": "press",
+      "label": "Press / public attention surface",
+      "match": ["journalist_handle", "press_inquiry_flag", "viral_thread_link"],
+      "force_tier": "escalate-CEO",
+      "short_circuit": true,
+      "owner": "CEO"
+    },
+    {
+      "id": "brigade",
+      "label": "Coordinated mass-report against same target",
+      "match": ["reports_against_target_gte_3_in_1h"],
+      "force_tier": "human-review",
+      "short_circuit": true,
+      "side_effect": "suppress_auto_actions_against_target",
+      "owner": "Moderator"
+    }
+  ],
+
+  "categories": [
+    {
+      "id": "harassment",
+      "label": { "en": "Harassment", "id": "Pelecehan" },
+      "matrix": [
+        { "pattern": "slur_protected_class", "tier": "auto", "action": "ban" },
+        { "pattern": "explicit_threat", "tier": "auto", "action": "ban" },
+        { "pattern": "doxx", "tier": "auto", "action": "ban" },
+        { "pattern": "repeat_after_stop_2", "tier": "auto", "action": "removal" },
+        { "pattern": "single_hostile_ambiguous", "tier": "human-review", "action": "warning" },
+        { "pattern": "pile_on_coordinated", "tier": "escalate-CEO", "action": "ban" }
+      ],
+      "scripture_pool": [
+        { "ref": "Ephesians 4:29", "tx": "NIV" },
+        { "ref": "Proverbs 15:1", "tx": "NIV" },
+        { "ref": "Matthew 5:22", "tx": "NIV" },
+        { "ref": "Proverbs 21:23", "tx": "ESV" },
+        { "ref": "James 3:9-10", "tx": "NIV" }
+      ]
+    },
+    {
+      "id": "sexual",
+      "label": { "en": "Sexual content / solicitation", "id": "Konten seksual / ajakan" },
+      "matrix": [
+        { "pattern": "csam_any", "tier": "escalate-CEO", "action": "ban", "legal": "NCMEC" },
+        { "pattern": "unsolicited_explicit_imagery", "tier": "auto", "action": "removal", "side_effect": "media_purged" },
+        { "pattern": "solicit_nudes", "tier": "human-review", "action": "warning" },
+        { "pattern": "sexual_after_stop", "tier": "auto", "action": "warning" },
+        { "pattern": "mutual_opted_in", "tier": "auto", "action": "non-action" }
+      ],
+      "scripture_pool": [
+        { "ref": "1 Thessalonians 4:3-5", "tx": "NIV" },
+        { "ref": "1 Corinthians 6:18-20", "tx": "NIV" },
+        { "ref": "Song of Songs 2:7", "tx": "NIV" },
+        { "ref": "1 Corinthians 13:4-5", "tx": "NIV" },
+        { "ref": "Matthew 5:28", "tx": "NIV", "guard": "use_sparingly" }
+      ]
+    },
+    {
+      "id": "fake",
+      "label": { "en": "Fake profiles", "id": "Profil palsu" },
+      "matrix": [
+        { "pattern": "reverse_image_known_scam", "tier": "auto", "action": "ban" },
+        { "pattern": "ai_face_high_conf_low_engagement", "tier": "auto", "action": "removal" },
+        { "pattern": "photo_mismatch_member_flag", "tier": "human-review", "action": "warning", "side_effect": "profile_paused_7d" },
+        { "pattern": "identity_claim_mismatch", "tier": "human-review", "action": "warning" },
+        { "pattern": "catfish_plus_financial", "tier": "escalate-CEO", "action": "ban", "route_to": "financial" }
+      ],
+      "scripture_pool": [
+        { "ref": "Ephesians 4:25", "tx": "NIV" },
+        { "ref": "Proverbs 12:22", "tx": "NIV" },
+        { "ref": "1 John 1:6", "tx": "NLT" }
+      ]
+    },
+    {
+      "id": "off-platform",
+      "label": { "en": "Off-platform pressure", "id": "Tekanan pindah platform" },
+      "matrix": [
+        { "pattern": "burner_qr_in_bio_or_opener", "tier": "auto", "action": "warning", "side_effect": "mask_handle" },
+        { "pattern": "move_to_app_first_3_msgs", "tier": "human-review", "action": "warning" },
+        { "pattern": "repeat_push_after_stop", "tier": "auto", "action": "removal" },
+        { "pattern": "off_platform_plus_scam_keywords", "tier": "escalate-CEO", "action": "ban", "route_to": "financial" }
+      ],
+      "scripture_pool": [
+        { "ref": "1 Corinthians 13:5", "tx": "ESV" },
+        { "ref": "Proverbs 27:12", "tx": "NIV" }
+      ]
+    },
+    {
+      "id": "financial",
+      "label": { "en": "Financial / scam", "id": "Keuangan / penipuan" },
+      "matrix": [
+        { "pattern": "direct_money_or_crypto_or_giftcard_ask", "tier": "auto", "action": "removal" },
+        { "pattern": "pig_butchering_invite", "tier": "auto", "action": "removal" },
+        { "pattern": "mlm_recruitment", "tier": "auto", "action": "removal" },
+        { "pattern": "charge_for_prayer_or_prophecy", "tier": "human-review", "action": "pastoral-note" },
+        { "pattern": "sob_story_soft_money_ask", "tier": "human-review", "action": "warning" },
+        { "pattern": "coordinated_scam_ring", "tier": "escalate-CEO", "action": "ban", "side_effect": "consortium_share" }
+      ],
+      "scripture_pool": [
+        { "ref": "1 Timothy 6:10", "tx": "NIV" },
+        { "ref": "Hebrews 13:5", "tx": "NIV" },
+        { "ref": "Acts 8:18-23", "tx": "NIV", "guard": "monetized_spiritual_only" },
+        { "ref": "Proverbs 13:11", "tx": "NIV" }
+      ]
+    },
+    {
+      "id": "doctrinal",
+      "label": { "en": "Doctrinal disputes", "id": "Sengketa doktrin" },
+      "matrix": [
+        { "pattern": "deny_creedal_floor", "tier": "escalate-CEO", "action": "removal", "guard": "verify_intent_seeker_vs_teacher", "seeker_teacher_prompt": true, "$pastor_ruling": "Auto-route to pastor-ceo queue per BLE-56 hand-back (2026-04-29). Reason: §6 'verify intent — could be a seeker asking, not a teacher claiming' requires pastoral discernment, not generalist moderator judgment. Wrong call either bans a sincere doubter or platforms an active heretic. Seeker → non-action + soft pastoral DM (template deferred). Teacher → removal per §6 doctrinal removal template." },
+        { "pattern": "prosperity_gospel_pressuring", "tier": "human-review", "action": "warning" },
+        { "pattern": "sectarian_attack", "tier": "auto", "action": "warning", "next_tier_on_repeat": "human-review" },
+        { "pattern": "tertiary_disagreement", "tier": "auto", "action": "non-action" },
+        { "pattern": "predatory_cult_recruitment", "tier": "escalate-CEO", "action": "ban", "side_effect": "notify_contacted_matches" }
+      ],
+      "scripture_pool": [
+        { "ref": "Romans 10:9", "tx": "NIV" },
+        { "ref": "1 Timothy 4:16", "tx": "NIV" },
+        { "ref": "Matthew 7:15", "tx": "NIV" },
+        { "ref": "Romans 14:1-12", "tx": "NIV" }
+      ]
+    }
+  ],
+
+  "edge_case_cohorts": [
+    { "id": "divorced", "label": { "en": "Divorced", "id": "Bercerai" }, "surface": "queue_tag" },
+    { "id": "bereaved", "label": { "en": "Bereaved", "id": "Berduka" }, "surface": "queue_tag" },
+    { "id": "deconstruction", "label": { "en": "Faith deconstruction", "id": "Sedang dekonstruksi iman" }, "surface": "queue_tag" },
+    {
+      "id": "convert-privacy",
+      "label": { "en": "Convert-from-Islam (privacy)", "id": "Mualaf (privasi)" },
+      "surface": "queue_tag_masked",
+      "visibility": ["CEO", "Pastor"],
+      "default_view": "MASKED",
+      "rationale": "Convert-from-Islam status carries real-world risk; never expose to general moderator pool."
+    }
+  ],
+
+  "appeal": {
+    "email": "care@blesscupid.app",
+    "window_days": 14,
+    "$pastor_ruling": "Pastor ruled 14 days authoritative on 2026-04-29. BLE-56 issue scope said 7 days; BLE-31 §1–§5 templates all author 14 days. Doctrine wins ('do not paraphrase'). 14 days matches §10 Voice 03 'door of restoration' frame.",
+    "applies_to": ["warning", "removal", "ban", "pastoral-note"],
+    "exceptions": ["csam", "scam_ring_legal_hold"]
+  },
+
+  "auto_mute": {
+    "trigger": "first_human_review_confirmed_action_against_member",
+    "voice": "post-action cobalt-soft (BLE-55 §1)",
+    "duration_h": 24
+  },
+
+  "hard_pause": {
+    "surface_label": "hard pause",
+    "internal_enum": "hard-block",
+    "applies_to": ["compose-time blockers", "BLE-26 chat moderation", "BLE-27 safety surfaces"]
+  },
+
+  "panic_exit": {
+    "color_token": "state/panic-exit",
+    "rule": "Red ONLY on panic-exit affordance + confirmation modal.",
+    "forbidden_surfaces": ["report flow", "removal notice", "ban surface", "compose-time hard-pause", "chat moderation banners"]
+  },
+
+  "brigade": {
+    "window_h": 1,
+    "threshold_reports_against_same_target": 3,
+    "effect": "suppress_auto_actions_against_target",
+    "queue": "human-review"
+  }
+}

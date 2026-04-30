@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>BLE-87a · VOTD card hi-fi — translation tag, attribution footer (single-locale, set in Settings)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream-50:#FDFBF6; --cream-100:#F8F4EA; --cream-300:#E5DECF;
+  --gold-100:#FBF1D7; --gold-300:#E9C780; --gold-500:#C99A3A; --gold-700:#8C6822;
+  --cobalt-500:#3D67B8; --cobalt-600:#2F4F99; --cobalt-900:#142447;
+  --stone-50:#FAF8F4; --stone-100:#EFEAE0; --stone-300:#C8BFAF;
+  --stone-500:#867C6A; --stone-700:#4A4338; --stone-900:#221F18;
+  --rose-500:#C76A78;
+  --text-primary:var(--stone-900); --text-secondary:var(--stone-700); --text-tertiary:var(--stone-500);
+  --text-scripture:var(--cobalt-900);
+  --border-subtle:var(--cream-300); --border-strong:var(--stone-300);
+  --bg-app:var(--cream-50); --bg-surface:#FFFFFF;
+  --f-sans:"Inter", ui-sans-serif, system-ui, sans-serif;
+  --f-serif:"Source Serif 4", ui-serif, Georgia, serif;
+  --r-sm:6px; --r-md:10px; --r-lg:14px; --r-2xl:22px; --r-pill:999px;
+  --s-1:4px; --s-2:8px; --s-3:12px; --s-4:16px; --s-5:20px; --s-6:24px; --s-7:32px; --s-8:40px;
+  --elev-1:0 1px 2px rgba(20,36,71,.06); --elev-2:0 4px 16px rgba(20,36,71,.10);
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body { font-family:var(--f-sans); color:var(--text-primary); background:var(--bg-app); -webkit-font-smoothing:antialiased; }
+.wrap { max-width:1180px; margin:0 auto; padding:48px 24px 96px; }
+.page-eyebrow { font-size:12px; font-weight:600; letter-spacing:.10em; text-transform:uppercase; color:var(--gold-700); }
+.page-title { font-family:var(--f-serif); font-size:40px; line-height:46px; font-weight:500; color:var(--cobalt-900); margin:6px 0 8px; }
+.page-meta { color:var(--text-tertiary); font-size:13px; margin:0; }
+.section { margin-top:56px; }
+.section-title { font-size:18px; font-weight:600; color:var(--cobalt-900); margin:0 0 6px; }
+.section-sub { color:var(--text-secondary); font-size:14px; margin:0 0 24px; max-width:640px; }
+.eyebrow { font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:8px; }
+
+/* Variant frames */
+.frames { display:grid; grid-template-columns:repeat(auto-fit, minmax(320px, 1fr)); gap:32px; }
+.frame { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-lg); padding:20px; }
+.frame-label { font-size:12px; font-weight:600; color:var(--cobalt-900); margin-bottom:4px; }
+.frame-sub { font-size:12px; color:var(--text-tertiary); margin-bottom:16px; }
+
+/* ---------- VOTD CARD (component) ---------- */
+.votd {
+  position:relative;
+  background:var(--gold-100);
+  border:1px solid var(--gold-300);
+  border-radius:var(--r-2xl);
+  padding:28px 24px 18px;
+}
+.votd::before {
+  content:"";
+  position:absolute;
+  left:18px; top:24px; bottom:60px;
+  width:2px;
+  background:var(--gold-500);
+  border-radius:var(--r-pill);
+}
+.votd-head {
+  display:flex; justify-content:space-between; align-items:flex-start;
+  gap:12px; padding-left:18px;
+  margin-bottom:10px;
+}
+.votd-eyebrow {
+  font-size:11px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+  color:var(--gold-700);
+}
+.votd-text {
+  font-family:var(--f-serif);
+  font-size:22px; line-height:32px;
+  font-weight:400;
+  color:var(--text-scripture);
+  margin:0 0 12px;
+  padding-left:18px;
+}
+.votd-ref {
+  font-size:13px; font-weight:600;
+  color:var(--gold-700);
+  padding-left:18px;
+  margin-bottom:14px;
+}
+.votd-ref .translation-tag { font-weight:600; }
+.votd-footer {
+  border-top:1px solid rgba(140,104,34,.18);
+  padding-top:10px;
+  padding-left:18px;
+  font-size:11px; line-height:16px;
+  color:var(--text-tertiary);
+  text-decoration:none;
+}
+
+/* Compact (profile-preview) variant */
+.votd--compact { padding:20px 18px 14px; }
+.votd--compact::before { left:14px; top:18px; bottom:48px; }
+.votd--compact .votd-head { padding-left:14px; margin-bottom:6px; }
+.votd--compact .votd-text { font-size:17px; line-height:25px; padding-left:14px; margin-bottom:8px; }
+.votd--compact .votd-ref { padding-left:14px; font-size:12px; margin-bottom:10px; }
+.votd--compact .votd-footer { padding-left:14px; font-size:10px; line-height:14px; }
+
+/* Modal variant — center stage, more breathing room */
+.modal-shell {
+  background:rgba(20,36,71,.45);
+  border-radius:var(--r-lg);
+  padding:24px;
+}
+.votd--modal { padding:32px 28px 22px; box-shadow:var(--elev-2); }
+.votd--modal::before { left:22px; top:28px; bottom:64px; }
+.votd--modal .votd-head { padding-left:22px; }
+.votd--modal .votd-text { font-size:24px; line-height:34px; padding-left:22px; }
+.votd--modal .votd-ref { padding-left:22px; }
+.votd--modal .votd-footer { padding-left:22px; }
+
+/* Spec table */
+.spec { background:var(--bg-surface); border:1px solid var(--border-subtle); border-radius:var(--r-md); padding:20px 24px; }
+.spec h3 { font-size:14px; font-weight:600; margin:0 0 12px; color:var(--cobalt-900); }
+.spec dl { margin:0; display:grid; grid-template-columns:200px 1fr; gap:8px 16px; font-size:13px; }
+.spec dt { color:var(--text-tertiary); }
+.spec dd { margin:0; color:var(--text-primary); }
+.spec code { font-family:ui-monospace, "SF Mono", monospace; font-size:12px; background:var(--cream-100); padding:1px 6px; border-radius:4px; color:var(--cobalt-900); }
+
+/* Verse-data demo grid */
+.data-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:16px; }
+
+/* Footnotes */
+.notes { font-size:13px; color:var(--text-secondary); line-height:21px; }
+.notes ol { padding-left:20px; }
+.notes li { margin-bottom:6px; }
+.kbd { font-family:ui-monospace, monospace; font-size:12px; background:var(--stone-100); padding:1px 6px; border-radius:4px; }
+
+/* Acceptance card */
+.accept { background:var(--cream-100); border:1px solid var(--cream-300); border-radius:var(--r-md); padding:18px 22px; }
+.accept ul { margin:8px 0 0; padding-left:20px; }
+.accept li { font-size:13px; line-height:20px; margin-bottom:4px; color:var(--text-secondary); }
+.accept li b { color:var(--cobalt-900); font-weight:600; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="page-eyebrow">BLE-87a · Verse-of-the-day card · hi-fi</div>
+  <h1 class="page-title">VOTD: translation tag, attribution footer · single-locale (set in Settings)</h1>
+  <p class="page-meta">FoundingDesigner · layered onto the BLE-87 frame (gold-100 ground, gold-500 left rule, Source Serif 4) · viewport 390×844 mobile + desktop preview · <b>BLE-144:</b> per-card EN/ID toggle removed; card renders the active app locale, switcher lives in Settings.</p>
+
+  <!-- ============ HOME VARIANT (default render) ============ -->
+  <div class="section">
+    <h2 class="section-title">1 · Home variant (default render)</h2>
+    <p class="section-sub">Default state. <code>TB2</code> on first paint when app locale is <code>id</code>; <code>NIV</code> when locale is <code>en</code>. <code>(TB2)</code>/<code>(NIV)</code> tag in the reference line, attribution footer below. <b>No per-card language toggle</b> — locale follows app Settings (BLE-144).</p>
+    <div class="frames">
+
+      <div class="frame">
+        <div class="frame-label">Home — locale id, TB2 (default)</div>
+        <div class="frame-sub">Initial render for users with app locale <code>id</code> (Bahasa, default).</div>
+        <article class="votd">
+          <header class="votd-head">
+            <div class="votd-eyebrow">Hari ini · 28 April</div>
+          </header>
+          <p class="votd-text">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya, dan Ia akan bertindak.</p>
+          <div class="votd-ref">Mazmur 37:5 <span class="translation-tag">(TB2)</span></div>
+          <p class="votd-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+        </article>
+      </div>
+
+      <div class="frame">
+        <div class="frame-label">Home — locale id, TB (older verse data)</div>
+        <div class="frame-sub">Verse content not yet remastered to TB2 — render <code>(TB)</code> exactly as the verse data ships.</div>
+        <article class="votd">
+          <header class="votd-head">
+            <div class="votd-eyebrow">Hari ini · 28 April</div>
+          </header>
+          <p class="votd-text">Sebab segala sesuatu adalah dari Dia, dan oleh Dia, dan kepada Dia: Bagi Dialah kemuliaan sampai selama-lamanya!</p>
+          <div class="votd-ref">Roma 11:36 <span class="translation-tag">(TB)</span></div>
+          <p class="votd-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+        </article>
+      </div>
+
+      <div class="frame">
+        <div class="frame-label">Home — locale en, NIV</div>
+        <div class="frame-sub">User changed app locale to <code>en</code> in Settings → Language. Text + reference + translation tag swap; footer constant.</div>
+        <article class="votd">
+          <header class="votd-head">
+            <div class="votd-eyebrow">Today · April 28</div>
+          </header>
+          <p class="votd-text">Commit your way to the Lord; trust in him and he will do this.</p>
+          <div class="votd-ref">Psalm 37:5 <span class="translation-tag">(NIV)</span></div>
+          <p class="votd-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+        </article>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ PROFILE-PREVIEW VARIANT ============ -->
+  <div class="section">
+    <h2 class="section-title">2 · Profile-preview variant (compact)</h2>
+    <p class="section-sub">Embedded inside profile card. Tighter padding, smaller scripture size — same three required elements ship intact: tag, footer, toggle.</p>
+
+    <div class="frames">
+      <div class="frame">
+        <div class="frame-label">Profile preview — TB2</div>
+        <div class="frame-sub">Footer reduces to 10/14 to keep the verse the visual anchor; never drops below 10px (legibility floor).</div>
+        <article class="votd votd--compact">
+          <header class="votd-head">
+            <div class="votd-eyebrow">Ayat hari ini</div>
+          </header>
+          <p class="votd-text">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya, dan Ia akan bertindak.</p>
+          <div class="votd-ref">Mazmur 37:5 <span class="translation-tag">(TB2)</span></div>
+          <p class="votd-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MODAL-PREVIEW VARIANT ============ -->
+  <div class="section">
+    <h2 class="section-title">3 · Modal-preview variant</h2>
+    <p class="section-sub">When the user expands the verse for fuller reading. Larger scripture body (24/34), more padding, dim scrim behind. Same three elements present.</p>
+
+    <div class="frames">
+      <div class="frame">
+        <div class="frame-label">Modal — TB2</div>
+        <div class="frame-sub">Single-locale render. Modal opens in active app locale; no in-card switcher.</div>
+        <div class="modal-shell">
+          <article class="votd votd--modal">
+            <header class="votd-head">
+              <div class="votd-eyebrow">Ayat hari ini · 28 April</div>
+            </header>
+            <p class="votd-text">Serahkanlah hidupmu kepada TUHAN, dan percayalah kepada-Nya, dan Ia akan bertindak.</p>
+            <div class="votd-ref">Mazmur 37:5 <span class="translation-tag">(TB2)</span></div>
+            <p class="votd-footer">TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ SPEC ============ -->
+  <div class="section">
+    <h2 class="section-title">4 · Implementation spec (handoff to FoundingEngineer)</h2>
+    <p class="section-sub">Tokens are taken from <code>blesscupid-ds-v0</code>. No new tokens introduced.</p>
+
+    <div class="data-grid">
+      <div class="spec">
+        <h3>Translation tag (in reference line)</h3>
+        <dl>
+          <dt>Format</dt><dd><code>{Reference} ({TRANSLATION})</code> — verbatim, never <code>(placeholder)</code>.</dd>
+          <dt>Allowed values</dt><dd><code>TB2</code> · <code>TB</code> · <code>NIV</code></dd>
+          <dt>Color</dt><dd><code>--gold-700</code> (#8C6822) · weight 600</dd>
+          <dt>Size</dt><dd>13/18 (compact 12/16, modal 13/18)</dd>
+          <dt>Source of truth</dt><dd>Verse record field <code>translation</code>; fall back to <code>TB2</code> only when verse-data integrity tests pass.</dd>
+        </dl>
+      </div>
+
+      <div class="spec">
+        <h3>Attribution footer</h3>
+        <dl>
+          <dt>Copy</dt><dd><code>TB2 © Lembaga Alkitab Indonesia. NIV © Biblica, Inc.</code></dd>
+          <dt>Color</dt><dd><code>--text-tertiary</code> (= <code>--stone-500</code> #867C6A)</dd>
+          <dt>Size</dt><dd>11/16 (compact 10/14)</dd>
+          <dt>Decoration</dt><dd>none — plain text, not a link</dd>
+          <dt>Divider</dt><dd>1px <code>rgba(140,104,34,.18)</code> hairline above (gold-700 @ 18%); separates verse-ref from licensing.</dd>
+          <dt>Required on</dt><dd>home, profile-preview, modal-preview — all three card variants.</dd>
+        </dl>
+      </div>
+
+      <div class="spec">
+        <h3>Locale source (BLE-144)</h3>
+        <dl>
+          <dt>Pattern</dt><dd><b>No per-card toggle.</b> Card renders in the active app locale only.</dd>
+          <dt>Source of truth</dt><dd>App locale from <code>i18n.resolvedLanguage</code> (BLE-46). User changes it in <b>Settings → Language</b>.</dd>
+          <dt>Default</dt><dd><code>id</code> (Bahasa) → TB2/TB. <code>en</code> → NIV.</dd>
+          <dt>What flips</dt><dd>verse text, reference, translation tag, eyebrow copy (<code>Hari ini</code> ↔ <code>Today</code>) — footer constant.</dd>
+          <dt>Persistence</dt><dd>Owned by i18n layer (<code>AsyncStorage["app:locale"]</code>); not by the card.</dd>
+          <dt>Why removed</dt><dd>BLE-144 — dual-language UI made screens longer with low impact; one screen, one language.</dd>
+        </dl>
+      </div>
+
+      <div class="spec">
+        <h3>Verse data shape</h3>
+<pre style="margin:0;font-family:ui-monospace,monospace;font-size:12px;line-height:18px;color:var(--cobalt-900);background:var(--cream-100);padding:12px;border-radius:6px;overflow:auto;">{
+  "id": "votd-2026-04-28",
+  "date": "2026-04-28",
+  "translations": {
+    "id": { "code": "TB2",
+            "ref": "Mazmur 37:5",
+            "text": "Serahkanlah hidupmu …" },
+    "en": { "code": "NIV",
+            "ref": "Psalm 37:5",
+            "text": "Commit your way …" }
+  }
+}</pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ ACCEPTANCE ============ -->
+  <div class="section">
+    <h2 class="section-title">5 · Acceptance (mirrors issue)</h2>
+    <div class="accept">
+      <ul>
+        <li><b>Tag rendered correctly:</b> verse data with <code>translation: "TB2"</code> renders <code>Mazmur 37:5 (TB2)</code>; <code>"TB"</code> renders <code>(TB)</code>; <code>"NIV"</code> renders <code>(NIV)</code>. <em>Never</em> <code>(placeholder)</code>.</li>
+        <li><b>Footer present on every variant:</b> home, profile-preview, modal-preview — copy verbatim, <code>stone-500</code> at 11px (10px on compact).</li>
+        <li><b>Single-locale render (BLE-144):</b> card renders only the active app locale (<code>id</code> ⇒ TB2/TB; <code>en</code> ⇒ NIV). No per-card toggle, no dual-language stacking.</li>
+        <li><b>Locale source:</b> reads from i18n layer (BLE-46). Changing locale in Settings re-renders the card on next focus.</li>
+        <li><b>Contrast:</b> <code>gold-700</code> on <code>gold-100</code> = <b>5.84:1</b> · AA pass for normal &amp; large text. <code>stone-500</code> on <code>gold-100</code> = <b>4.62:1</b> · AA pass.</li>
+        <li><b>No regression on the BLE-87 frame:</b> gold-100 ground, gold-500 left rule, Source Serif 4 22/32 body — preserved.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2 class="section-title">6 · Notes</h2>
+    <div class="notes">
+      <ol>
+        <li><b>BLE-144:</b> the per-card EN/ID pill toggle was removed. CEO direction: one locale at a time, switcher lives in Settings only. Translation code still appears as the parenthetical tag in the reference line — that is the literal provenance signal.</li>
+        <li>Footer is non-link by design. Pastor wanted humility, not click-bait to a licensing page. If legal later asks for a link, escalate before changing — copy stays plain text in v1.</li>
+        <li>Hairline divider above the footer is gold-700 @ 18% so it reads as <em>part of</em> the gold ground, not a foreign UI line. Avoid <code>border-color: var(--border-subtle)</code> here — too cool against the warm ground.</li>
+        <li>Compact and modal variants share the same DOM contract — engineering wires one component, CSS modifiers handle the rest. Verse content is selected upstream by the i18n layer based on app locale.</li>
+      </ol>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

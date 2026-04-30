@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BLE-148 — $ban_canonical_heading + $ban_scripture_disclaimer · visual spec</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,ital,wght@8..60,0,400;8..60,0,500;8..60,0,600;8..60,1,500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../ble-26-chat-moderation/tokens.css" />
+  <link rel="stylesheet" href="../ble-26-chat-moderation/banners.css" />
+  <link rel="stylesheet" href="spec.css" />
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-dove" viewBox="0 0 24 24"><path d="M5 14c2-1 5-2 9-1l3-5 1 4 3 1-4 2-1 4-2-3c-3 2-7 2-9-2zM5 14l-2 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </defs>
+</svg>
+
+<main class="spec-page">
+  <header class="spec-page__head">
+    <span class="spec-tag">BLE-148</span>
+    <h1>Ban surface — canonical heading &amp; cite-line disclaimer</h1>
+    <p class="spec-page__lead">
+      Visual spec for the two new bundle-level keys introduced in BLE-31 §10 v1.2 #3 and §10.6.
+      Renders verbatim on every Voice 03 ban surface (BLE-26 chat moderation, BLE-27 safety, BLE-65 admin host-shell).
+      Both locales shown at 360 × 720 viewport. No panic-exit red token used on this surface.
+    </p>
+    <ul class="spec-page__meta">
+      <li><strong>Designer:</strong> FoundingDesigner</li>
+      <li><strong>Status:</strong> ready for Pastor sign-off</li>
+      <li><strong>Source of truth:</strong> <code>copy-bundle.json#$ban_canonical_heading</code> · <code>copy-bundle.json#$ban_scripture_disclaimer</code></li>
+      <li><strong>Tokens:</strong> aligned to BLE-22 v0.1</li>
+    </ul>
+    <p class="spec-page__note">
+      <strong>Note for Pastor:</strong> per-case title and body copy in mockups below are <em>illustrative placeholders</em> for the visual spec — production strings are pulled verbatim from <code>copy-bundle.json</code> per category. Pastor sign-off needed only on the <strong>visual treatment</strong> of <code>$ban_canonical_heading</code> + the cite-line <code>{ref} · {tx} · {disclaimer}</code> typographic pattern. Copy approval lives with the bundle review, not with this spec.
+    </p>
+  </header>
+
+  <section class="spec-row">
+    <div class="spec-row__meta">
+      <h2>Locale rendering — side-by-side</h2>
+      <p>Both screens render <em>harassment.ban</em> tier from <code>copy-bundle.json</code>. The canonical heading and cite-line disclaimer suffix flip atomically with the locale switch — never partial-fallback.</p>
+      <ul class="spec-row__rules">
+        <li>Canonical heading sits between dove crest and per-case title.</li>
+        <li>Italic Source Serif 4 in <code>--bc-gold-700</code> at 20px / line-height 1.35.</li>
+        <li>Cite-line follows fixed format <code>{ref} · {tx} · {disclaimer}</code>.</li>
+        <li>Disclaimer wrapped in <code>&lt;em&gt;</code> for screen-reader emphasis; middots <code>aria-hidden="true"</code>.</li>
+        <li>WCAG AA verified — gold-700 on cream-50 = 4.6:1 contrast.</li>
+      </ul>
+    </div>
+
+    <div class="spec-frames">
+      <!-- ============== ID locale (default) ============== -->
+      <figure class="spec-phone-fig">
+        <figcaption><strong>ID</strong> · default · <em>harassment.ban</em></figcaption>
+        <div class="phone">
+          <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+          <div class="ban-screen">
+            <div class="ban-screen__crest" aria-hidden="true">
+              <svg width="28" height="28"><use href="#i-dove"/></svg>
+            </div>
+
+            <!-- $ban_canonical_heading[id] — verbatim from bundle -->
+            <p class="ban-canonical-heading">Pintu pemulihan tetap terbuka.</p>
+
+            <h2 class="ban-screen__title">Akun Anda dicopot karena pelecehan.</h2>
+
+            <p class="ban-screen__body">
+              Kami sudah meminta Anda berhenti. Anda tetap melanjutkan. BlessCupid ada untuk membantu orang menemukan cinta dengan aman; itu menuntut kami menghormati kata "tidak."
+            </p>
+
+            <blockquote class="ban-screen__verse">
+              "Siapa memelihara mulut dan lidahnya, memelihara diri dari kesukaran."
+              <span class="ban-screen__verse-cite">
+                <span class="cite-ref">Amsal 21:23</span>
+                <span class="cite-sep" aria-hidden="true"> · </span>
+                <span class="cite-tx">TB</span>
+                <span class="cite-sep cite-sep--disclaimer" aria-hidden="true"> · </span>
+                <em class="cite-disclaimer">catatan pastoral, bukan vonis</em>
+              </span>
+            </blockquote>
+
+            <button class="ban-screen__cta">Ajukan banding</button>
+            <p class="ban-screen__appeal">
+              <a href="mailto:care@blesscupid.app">care@blesscupid.app</a> · 14 hari
+            </p>
+          </div>
+        </div>
+      </figure>
+
+      <!-- ============== EN locale (fallback) ============== -->
+      <figure class="spec-phone-fig">
+        <figcaption><strong>EN</strong> · fallback · <em>harassment.ban</em></figcaption>
+        <div class="phone">
+          <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+          <div class="ban-screen">
+            <div class="ban-screen__crest" aria-hidden="true">
+              <svg width="28" height="28"><use href="#i-dove"/></svg>
+            </div>
+
+            <!-- $ban_canonical_heading[en] — verbatim from bundle -->
+            <p class="ban-canonical-heading">The door of restoration remains open.</p>
+
+            <h2 class="ban-screen__title">Your account is being removed for harassment.</h2>
+
+            <p class="ban-screen__body">
+              We asked you to stop. You kept going. BlessCupid exists to help people find love in safety; that requires we honor "no."
+            </p>
+
+            <blockquote class="ban-screen__verse">
+              "Whoever guards his mouth and tongue keeps himself out of trouble."
+              <span class="ban-screen__verse-cite">
+                <span class="cite-ref">Proverbs 21:23</span>
+                <span class="cite-sep" aria-hidden="true"> · </span>
+                <span class="cite-tx">ESV</span>
+                <span class="cite-sep cite-sep--disclaimer" aria-hidden="true"> · </span>
+                <em class="cite-disclaimer">pastoral note, not a verdict</em>
+              </span>
+            </blockquote>
+
+            <button class="ban-screen__cta">Submit appeal</button>
+            <p class="ban-screen__appeal">
+              <a href="mailto:care@blesscupid.app">care@blesscupid.app</a> · 14 days
+            </p>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============== Disclaimer-omission case ============== -->
+  <section class="spec-row">
+    <div class="spec-row__meta">
+      <h2>Disclaimer-omission case — <code>financial.ban</code></h2>
+      <p>
+        Per BLE-31 §10.3, the disclaimer suffix is omitted on CSAM / scam-ring bans (<code>voice_03_disclaimer_required: false</code> in <code>copy-bundle.json</code>) and when actor profile flags atheist / agnostic / seeker. Cite-line collapses to <code>{ref} · {tx}</code>. <strong>Canonical heading is still rendered.</strong>
+      </p>
+      <ul class="spec-row__rules">
+        <li>Heading: present on every ban, every category, every actor profile.</li>
+        <li>Cite-line: <code>{ref} · {tx}</code> only when disclaimer is suppressed.</li>
+        <li>No scripture at all → no blockquote rendered.</li>
+      </ul>
+    </div>
+
+    <div class="spec-frames spec-frames--single">
+      <figure class="spec-phone-fig">
+        <figcaption><strong>ID</strong> · <em>financial.ban</em> (scam-ring) · disclaimer suppressed</figcaption>
+        <div class="phone">
+          <div class="phone__statusbar"><span>9:41</span><span>•••</span></div>
+          <div class="ban-screen">
+            <div class="ban-screen__crest" aria-hidden="true">
+              <svg width="28" height="28"><use href="#i-dove"/></svg>
+            </div>
+
+            <p class="ban-canonical-heading">Pintu pemulihan tetap terbuka.</p>
+
+            <h2 class="ban-screen__title">Akun Anda dicopot karena penipuan finansial.</h2>
+
+            <p class="ban-screen__body">
+              Kami melihat pola permintaan dana yang konsisten dengan jaringan penipuan. Banding ditinjau oleh tim keamanan; lihat email konfirmasi.
+            </p>
+
+            <blockquote class="ban-screen__verse">
+              "Janganlah serakah, sebab keserakahan adalah penyembahan berhala."
+              <span class="ban-screen__verse-cite">
+                <span class="cite-ref">Kolose 3:5</span>
+                <span class="cite-sep" aria-hidden="true"> · </span>
+                <span class="cite-tx">TB</span>
+                <!-- no disclaimer here — voice_03_disclaimer_required: false -->
+              </span>
+            </blockquote>
+
+            <button class="ban-screen__cta">Ajukan banding</button>
+            <p class="ban-screen__appeal">
+              <a href="mailto:care@blesscupid.app">care@blesscupid.app</a> · 14 hari
+            </p>
+          </div>
+        </div>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============== Anatomy diagram ============== -->
+  <section class="spec-row">
+    <div class="spec-row__meta">
+      <h2>Anatomy &amp; tokens</h2>
+      <p>The two elements added in BLE-148 (highlighted) sit at fixed positions in the ban-screen stack.</p>
+    </div>
+    <div class="spec-anatomy">
+      <ol class="anatomy-list">
+        <li><span class="dot"></span><strong>Dove crest</strong> — 56×56 · gold-100 fill · gold-300 stroke (existing)</li>
+        <li class="is-new"><span class="dot dot--new"></span><strong>Canonical heading</strong> — Source Serif 4 italic · 20px · gold-700 · italic. <em>NEW (BLE-148)</em></li>
+        <li><span class="dot"></span><strong>Per-case title</strong> — Inter 22px semibold · stone-900 (re-tuned from 26px serif to defer to canonical heading)</li>
+        <li><span class="dot"></span><strong>Body</strong> — Inter 15px · stone-700 · line-height 1.6</li>
+        <li><span class="dot"></span><strong>Door block</strong> — cream-100 surface · gold-700 label · still per-case</li>
+        <li><span class="dot"></span><strong>Verse</strong> — Source Serif 4 italic · cobalt-900 · gold-500 left rule</li>
+        <li class="is-new"><span class="dot dot--new"></span><strong>Cite-line w/ §10.6 suffix</strong> — Inter 12px · stone-500 · disclaimer in italic <code>&lt;em&gt;</code>. <em>NEW (BLE-148)</em></li>
+        <li><span class="dot"></span><strong>CTA</strong> — cobalt-500 pill · cream-50 text</li>
+      </ol>
+
+      <div class="token-table">
+        <h3>Token usage</h3>
+        <table>
+          <thead><tr><th>Element</th><th>Token</th><th>Hex</th><th>Where</th></tr></thead>
+          <tbody>
+            <tr><td>Canvas</td><td><code>--bc-cream-50</code></td><td>#FDFBF6</td><td>ban-screen background</td></tr>
+            <tr><td>Crest fill</td><td><code>--bc-gold-100</code></td><td>#FBF1D7</td><td>dove crest pad</td></tr>
+            <tr><td>Crest stroke</td><td><code>--bc-gold-300</code></td><td>#E9C780</td><td>dove crest border</td></tr>
+            <tr><td>Canonical heading</td><td><code>--bc-gold-700</code></td><td>#8C6822</td><td>BLE-148 NEW</td></tr>
+            <tr><td>Per-case title</td><td><code>--text-primary</code> → <code>--bc-stone-900</code></td><td>#221F18</td><td>per-case headline</td></tr>
+            <tr><td>Body</td><td><code>--text-secondary</code> → <code>--bc-stone-700</code></td><td>#4A4338</td><td>body copy</td></tr>
+            <tr><td>Cite-line</td><td><code>--text-tertiary</code> → <code>--bc-stone-500</code></td><td>#867C6A</td><td>BLE-148 NEW (with disclaimer)</td></tr>
+            <tr><td>Verse rule</td><td><code>--bc-gold-500</code></td><td>#C99A3A</td><td>scripture left border</td></tr>
+            <tr><td>Verse text</td><td><code>--text-scripture</code> → <code>--bc-cobalt-900</code></td><td>#142447</td><td>scripture body</td></tr>
+            <tr><td>CTA</td><td><code>--bc-cobalt-500</code></td><td>#3D67B8</td><td>action button</td></tr>
+            <tr class="is-forbidden"><td>FORBIDDEN</td><td><code>--state-panic-exit</code></td><td>#B5341F</td><td>NEVER on ban surface</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== Engineer hand-off ============== -->
+  <section class="spec-row spec-row--handoff">
+    <div class="spec-row__meta">
+      <h2>Engineer hand-off — markup contract</h2>
+      <p>Read both keys via <code>pipeline.renderAction(decision, locale, { bundle })</code>. Never duplicate strings into per-category templates.</p>
+    </div>
+    <div class="spec-code">
+<pre><code>&lt;div class="ban-screen"&gt;
+  &lt;div class="ban-screen__crest" aria-hidden="true"&gt;…dove…&lt;/div&gt;
+
+  &lt;!-- $ban_canonical_heading[locale] — verbatim, never per-case --&gt;
+  &lt;p class="ban-canonical-heading"&gt;{canonical_heading}&lt;/p&gt;
+
+  &lt;h2 class="ban-screen__title"&gt;{per_case_title}&lt;/h2&gt;
+  &lt;p class="ban-screen__body"&gt;{body}&lt;/p&gt;
+
+  &lt;blockquote class="ban-screen__verse"&gt;
+    "{verse_text[locale]}"
+    &lt;span class="ban-screen__verse-cite"&gt;
+      &lt;span class="cite-ref"&gt;{ref}&lt;/span&gt;
+      &lt;span class="cite-sep" aria-hidden="true"&gt; · &lt;/span&gt;
+      &lt;span class="cite-tx"&gt;{tx}&lt;/span&gt;
+      &lt;!-- only when voice_03_disclaimer_required AND actor not in {atheist,agnostic,seeker} --&gt;
+      &lt;span class="cite-sep cite-sep--disclaimer" aria-hidden="true"&gt; · &lt;/span&gt;
+      &lt;em class="cite-disclaimer"&gt;{$ban_scripture_disclaimer[locale]}&lt;/em&gt;
+    &lt;/span&gt;
+  &lt;/blockquote&gt;
+
+  &lt;button class="ban-screen__cta"&gt;{cta[locale]}&lt;/button&gt;
+&lt;/div&gt;</code></pre>
+    </div>
+  </section>
+</main>
+
+</body>
+</html>

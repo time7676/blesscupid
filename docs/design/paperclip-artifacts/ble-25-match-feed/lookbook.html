@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BlessCupid · BLE-25 Match Feed Lookbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="feed.css" />
+<style>
+  body {
+    background: #ECE5D7;
+    padding: 32px 0 64px;
+  }
+  .lookbook-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 390px);
+    gap: 32px 24px;
+    justify-content: center;
+    max-width: 1700px;
+    margin: 0 auto;
+  }
+  .specimen { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .specimen__label {
+    font-family: "Inter", system-ui, sans-serif;
+    font-size: 12px;
+    color: #44464D;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 600;
+  }
+  .bc-frame { box-shadow: 0 18px 48px rgba(0,0,0,0.10), 0 4px 12px rgba(0,0,0,0.06); border-radius: 38px; border: 1px solid rgba(0,0,0,0.08); }
+  .lookbook-title {
+    font-family: "Source Serif 4", serif;
+    font-weight: 500;
+    font-size: 32px;
+    color: #1F2024;
+    text-align: center;
+    margin: 0 0 8px;
+  }
+  .lookbook-sub {
+    font-family: "Inter", sans-serif;
+    font-size: 13px;
+    color: #6E7079;
+    text-align: center;
+    margin: 0 0 36px;
+  }
+  .lookbook-sub code {
+    background: rgba(0,0,0,0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+
+<!-- Inlined SVG icon sprite -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="ic-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+  <symbol id="ic-filter" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M6 12h12M10 18h4"/></symbol>
+  <symbol id="ic-flag" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h12l-2 4 2 4H5"/></symbol>
+  <symbol id="ic-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></symbol>
+  <symbol id="ic-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z"/><path d="m9 12 2 2 4-4"/></symbol>
+  <symbol id="ic-chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4V5z"/></symbol>
+  <symbol id="ic-pray" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v9M9 6l3-3 3 3M5 21h14M7 21l2-5h6l2 5"/></symbol>
+  <symbol id="ic-church" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M10 5h4M4 21V11l8-4 8 4v10M9 21v-5h6v5"/></symbol>
+  <symbol id="ic-heart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20s-7-4.5-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.5-7 10-7 10z"/></symbol>
+  <symbol id="ic-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></symbol>
+  <symbol id="ic-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9h-5v-6h-6v6H4z"/></symbol>
+  <symbol id="ic-discover" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-2 6-4 1 1-4 5-3z"/></symbol>
+  <symbol id="ic-cross" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v16M9 9h6"/></symbol>
+  <symbol id="ic-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="ic-cloud" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18h10a4 4 0 0 0 0-8 6 6 0 0 0-11.5 1.5A3 3 0 0 0 7 18z"/><path d="M9 14l3-3 3 3"/></symbol>
+</svg>
+
+<!-- Inlined SVG avatar sprite (modest, abstract, no AI faces) -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+  <symbol id="av-grace" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-grace" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E8C9A0"/><stop offset="100%" stop-color="#A8825F"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-grace)"/>
+    <ellipse cx="50" cy="48" rx="18" ry="22" fill="#3B2A1B" opacity="0.55"/>
+    <path d="M20 125 Q50 75 80 125 Z" fill="#3B2A1B" opacity="0.45"/>
+    <path d="M30 38 Q50 22 70 38 Q70 30 50 26 Q30 30 30 38 Z" fill="#1F140A" opacity="0.5"/>
+  </symbol>
+  <symbol id="av-mara" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-mara" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#D9B889"/><stop offset="100%" stop-color="#7E5C3D"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-mara)"/>
+    <ellipse cx="50" cy="46" rx="17" ry="21" fill="#2B1B0E" opacity="0.5"/>
+    <path d="M22 125 Q50 78 78 125 Z" fill="#2B1B0E" opacity="0.4"/>
+    <path d="M30 36 Q50 20 70 36 Q72 28 50 24 Q28 28 30 36 Z" fill="#0F0A06" opacity="0.55"/>
+  </symbol>
+  <symbol id="av-noah" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-noah" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#B49B7C"/><stop offset="100%" stop-color="#5C462F"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-noah)"/>
+    <ellipse cx="50" cy="46" rx="17" ry="20" fill="#1F1408" opacity="0.55"/>
+    <path d="M20 125 Q50 78 80 125 Z" fill="#1F1408" opacity="0.45"/>
+    <path d="M32 38 Q50 24 68 38 Q68 30 50 28 Q32 30 32 38 Z" fill="#0E0904" opacity="0.55"/>
+  </symbol>
+  <symbol id="av-isaiah" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-isaiah" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#A88A6B"/><stop offset="100%" stop-color="#4A3220"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-isaiah)"/>
+    <ellipse cx="50" cy="46" rx="18" ry="22" fill="#1A0F06" opacity="0.5"/>
+    <path d="M20 125 Q50 80 80 125 Z" fill="#1A0F06" opacity="0.45"/>
+  </symbol>
+  <symbol id="av-ruth" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-ruth" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E0BF92"/><stop offset="100%" stop-color="#9B7548"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-ruth)"/>
+    <ellipse cx="50" cy="48" rx="18" ry="22" fill="#2E1F10" opacity="0.55"/>
+    <path d="M20 125 Q50 78 80 125 Z" fill="#2E1F10" opacity="0.45"/>
+    <path d="M28 40 Q50 22 72 40 Q72 30 50 24 Q28 30 28 40 Z" fill="#160B04" opacity="0.55"/>
+  </symbol>
+  <symbol id="av-josh" viewBox="0 0 100 125" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="gv-josh" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#C7A480"/><stop offset="100%" stop-color="#6B4E33"/></linearGradient></defs>
+    <rect width="100" height="125" fill="url(#gv-josh)"/>
+    <ellipse cx="50" cy="44" rx="16" ry="20" fill="#1B1008" opacity="0.55"/>
+    <path d="M22 125 Q50 78 78 125 Z" fill="#1B1008" opacity="0.45"/>
+    <path d="M34 36 Q50 28 66 36 Q66 32 50 30 Q34 32 34 36 Z" fill="#0D0703" opacity="0.55"/>
+  </symbol>
+</svg>
+
+<h1 class="lookbook-title">BlessCupid · BLE-25 Match Feed</h1>
+<p class="lookbook-sub">Mobile-first · iPhone 14 viewport <code>390 × 844</code> · Tokens are draft pending <code>BLE-22</code></p>
+
+<div class="lookbook-grid">
+
+<!-- =====================================================================
+     SCREEN 1 · Dating · Female view (chat-open control surfaced)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-1">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+
+    <div class="bc-header">
+      <div>
+        <h2 class="bc-header__title">Discover</h2>
+        <div class="bc-header__sub">12 new this week · paced for prayer</div>
+      </div>
+      <button class="bc-header__icon-btn" aria-label="Filters"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+
+    <div class="bc-filters">
+      <button class="bc-chip" aria-pressed="true">Pentecostal <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="true">25–32 <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="false">25 km <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="false">Verified only</button>
+      <button class="bc-chip" aria-pressed="false">Within 1 yr</button>
+    </div>
+
+    <div class="bc-feed">
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-grace"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <span class="bc-badge"><svg width="12" height="12"><use href="#ic-check"/></svg>Verified</span>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Grace, 28</h3>
+            <div class="bc-card__meta">Pentecostal<span class="bc-card__meta-dot">·</span>Jakarta · 3 km</div>
+          </div>
+        </div>
+        <div class="bc-card__body">
+          <div class="bc-attr-row">
+            <div class="bc-attr"><span class="bc-attr__label">Marriage</span><span class="bc-attr__value">Within 1–2 years</span></div>
+            <div class="bc-attr"><span class="bc-attr__label">Home church</span><span class="bc-attr__value">JPCC Kemang</span></div>
+          </div>
+          <div class="bc-verse">
+            <p class="bc-verse__quote">"She is clothed with strength and dignity; she can laugh at the days to come."</p>
+            <cite class="bc-verse__cite">Proverbs 31:25</cite>
+          </div>
+          <div class="bc-card__actions">
+            <button class="bc-btn bc-btn--ghost" aria-label="Pass kindly"><svg width="20" height="20"><use href="#ic-close"/></svg></button>
+            <button class="bc-btn bc-btn--primary"><svg width="18" height="18"><use href="#ic-chat"/></svg>Open conversation</button>
+          </div>
+          <div class="bc-control-note">
+            <svg width="14" height="14"><use href="#ic-shield"/></svg>
+            <span>You decide who can message you. Conversation opens only when you say so.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-mara"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Mara, 31</h3>
+            <div class="bc-card__meta">Reformed<span class="bc-card__meta-dot">·</span>Bandung · 142 km</div>
+          </div>
+        </div>
+        <div class="bc-card__body">
+          <div class="bc-attr-row">
+            <div class="bc-attr"><span class="bc-attr__label">Marriage</span><span class="bc-attr__value">Open · 2–3 years</span></div>
+            <div class="bc-attr"><span class="bc-attr__label">Home church</span><span class="bc-attr__value">GRII Bandung</span></div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">1 · Dating · Female view</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 2 · Dating · Male view (express-interest, queued)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-2">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+
+    <div class="bc-header">
+      <div>
+        <h2 class="bc-header__title">Discover</h2>
+        <div class="bc-header__sub">9 women open to receiving today</div>
+      </div>
+      <button class="bc-header__icon-btn" aria-label="Filters"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+
+    <div class="bc-filters">
+      <button class="bc-chip" aria-pressed="true">Catholic <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="true">26–34 <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="true">Verified only</button>
+      <button class="bc-chip" aria-pressed="false">15 km <span class="bc-chip__caret">▾</span></button>
+    </div>
+
+    <div class="bc-feed">
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-ruth"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <span class="bc-badge"><svg width="12" height="12"><use href="#ic-check"/></svg>Verified</span>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Ruth, 29</h3>
+            <div class="bc-card__meta">Catholic<span class="bc-card__meta-dot">·</span>Tangerang · 8 km</div>
+          </div>
+        </div>
+        <div class="bc-card__body">
+          <div class="bc-attr-row">
+            <div class="bc-attr"><span class="bc-attr__label">Marriage</span><span class="bc-attr__value">Within 1 year</span></div>
+            <div class="bc-attr"><span class="bc-attr__label">Home parish</span><span class="bc-attr__value">St. Maria · Serpong</span></div>
+          </div>
+          <div class="bc-verse">
+            <p class="bc-verse__quote">"Be still, and know that I am God."</p>
+            <cite class="bc-verse__cite">Psalm 46:10</cite>
+          </div>
+          <div class="bc-card__actions">
+            <button class="bc-btn bc-btn--ghost" aria-label="Pass kindly"><svg width="20" height="20"><use href="#ic-close"/></svg></button>
+            <button class="bc-btn bc-btn--secondary"><svg width="18" height="18"><use href="#ic-heart"/></svg>Express interest</button>
+          </div>
+          <div class="bc-control-note">
+            <svg width="14" height="14"><use href="#ic-shield"/></svg>
+            <span>Ruth decides if a conversation opens. We'll let you know — no message until she says yes.</span>
+          </div>
+        </div>
+      </article>
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-mara"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Hannah, 32</h3>
+            <div class="bc-card__meta">Anglican<span class="bc-card__meta-dot">·</span>Jakarta · 12 km</div>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">2 · Dating · Male view (queued)</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 3 · Friendship · Same-gender default
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-3">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+
+    <div class="bc-header">
+      <div>
+        <h2 class="bc-header__title">Find friends</h2>
+        <div class="bc-header__sub">Sisters serving near you</div>
+      </div>
+      <button class="bc-header__icon-btn" aria-label="Filters"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="false">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="true">Friendship</button>
+    </div>
+
+    <div class="bc-filters">
+      <button class="bc-chip" aria-pressed="true">Same parish <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="true">Worship · Hospitality <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="false">5 km</button>
+      <button class="bc-chip" aria-pressed="false">Mixed friendships</button>
+    </div>
+
+    <div class="bc-feed">
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-grace"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <span class="bc-badge"><svg width="12" height="12"><use href="#ic-check"/></svg>Verified</span>
+          <span class="bc-badge bc-badge--mode" style="color:var(--color-cobalt-600)"><svg width="12" height="12"><use href="#ic-pray"/></svg>Friendship</span>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Grace, 28</h3>
+            <div class="bc-card__meta">Pentecostal<span class="bc-card__meta-dot">·</span>JPCC Kemang · 0.4 km</div>
+          </div>
+        </div>
+        <div class="bc-card__body">
+          <div class="bc-overlap">
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-church"/></svg>Same church</span>
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-pray"/></svg>Worship team</span>
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-heart"/></svg>Hospitality gift</span>
+          </div>
+          <div class="bc-verse">
+            <p class="bc-verse__quote">"As iron sharpens iron, so one person sharpens another."</p>
+            <cite class="bc-verse__cite">Proverbs 27:17</cite>
+          </div>
+          <div class="bc-card__actions">
+            <button class="bc-btn bc-btn--ghost" aria-label="Pass kindly"><svg width="20" height="20"><use href="#ic-close"/></svg></button>
+            <button class="bc-btn bc-btn--primary"><svg width="18" height="18"><use href="#ic-chat"/></svg>Say hello</button>
+          </div>
+        </div>
+      </article>
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-mara"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Lydia, 26</h3>
+            <div class="bc-card__meta">Reformed<span class="bc-card__meta-dot">·</span>GRII · 1.2 km</div>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">3 · Friendship · Same-gender default</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 4 · Friendship · Mixed-gender (flagged-as-friendship)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-4">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+
+    <div class="bc-header">
+      <div>
+        <h2 class="bc-header__title">Find friends</h2>
+        <div class="bc-header__sub">Mixed friendships · explicitly platonic</div>
+      </div>
+      <button class="bc-header__icon-btn" aria-label="Filters"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="false">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="true">Friendship</button>
+    </div>
+
+    <div class="bc-filters">
+      <button class="bc-chip" aria-pressed="true">Mixed friendships</button>
+      <button class="bc-chip" aria-pressed="true">Missions · Music <span class="bc-chip__caret">▾</span></button>
+      <button class="bc-chip" aria-pressed="false">10 km</button>
+    </div>
+
+    <div class="bc-feed">
+
+      <article class="bc-card">
+        <div class="bc-card__photo">
+          <svg width="100%" height="100%"><use href="#av-noah"/></svg>
+          <div class="bc-card__photo-veil"></div>
+          <span class="bc-badge"><svg width="12" height="12"><use href="#ic-check"/></svg>Verified</span>
+          <span class="bc-badge bc-badge--mode"><svg width="12" height="12"><use href="#ic-pray"/></svg>Friendship only</span>
+          <div class="bc-card__overlay">
+            <h3 class="bc-card__name">Noah, 30</h3>
+            <div class="bc-card__meta">Baptist<span class="bc-card__meta-dot">·</span>GBI Glory · 2 km</div>
+          </div>
+        </div>
+        <div class="bc-card__body">
+          <div class="bc-overlap">
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-cloud"/></svg>Missions team</span>
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-pray"/></svg>Worship gift</span>
+            <span class="bc-overlap__chip"><svg width="12" height="12"><use href="#ic-church"/></svg>Same district</span>
+          </div>
+          <div class="bc-control-note">
+            <svg width="14" height="14"><use href="#ic-shield"/></svg>
+            <span>Mixed-gender friendships open as platonic. Romantic intent is reported, not invited.</span>
+          </div>
+          <div class="bc-card__actions" style="margin-top:var(--bc-space-3)">
+            <button class="bc-btn bc-btn--ghost" aria-label="Pass kindly"><svg width="20" height="20"><use href="#ic-close"/></svg></button>
+            <button class="bc-btn bc-btn--primary"><svg width="18" height="18"><use href="#ic-chat"/></svg>Say hello</button>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">4 · Friendship · Mixed-gender flagged</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 5 · Filters drawer (Dating)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-5">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+    <div class="bc-header">
+      <div><h2 class="bc-header__title">Discover</h2><div class="bc-header__sub">12 new this week</div></div>
+      <button class="bc-header__icon-btn"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+    <div class="bc-filters">
+      <button class="bc-chip" aria-pressed="true">Pentecostal</button>
+      <button class="bc-chip" aria-pressed="true">25–32</button>
+      <button class="bc-chip" aria-pressed="false">25 km</button>
+    </div>
+    <div class="bc-feed" style="filter: blur(1.5px);">
+      <div class="bc-skel-card">
+        <div class="bc-skel-photo"></div>
+      </div>
+    </div>
+    <div class="bc-drawer-scrim"></div>
+    <div class="bc-drawer">
+      <div class="bc-drawer__handle"></div>
+      <h3 class="bc-drawer__title">Refine</h3>
+      <p class="bc-drawer__sub">Set what matters. We'll never sort by attractiveness.</p>
+
+      <div class="bc-filter-group">
+        <div class="bc-filter-group__label">Denomination <span class="bc-filter-group__value">Pentecostal · Reformed</span></div>
+        <div class="bc-pill-row">
+          <button class="bc-pill" aria-pressed="true">Pentecostal</button>
+          <button class="bc-pill" aria-pressed="true">Reformed</button>
+          <button class="bc-pill" aria-pressed="false">Catholic</button>
+          <button class="bc-pill" aria-pressed="false">Baptist</button>
+          <button class="bc-pill" aria-pressed="false">Anglican</button>
+          <button class="bc-pill" aria-pressed="false">Methodist</button>
+          <button class="bc-pill" aria-pressed="false">Non-denom</button>
+        </div>
+      </div>
+
+      <div class="bc-filter-group">
+        <div class="bc-filter-group__label">Marriage timeline <span class="bc-filter-group__value">Within 2 years</span></div>
+        <div class="bc-pill-row">
+          <button class="bc-pill" aria-pressed="false">Within 1 yr</button>
+          <button class="bc-pill" aria-pressed="true">1–2 yrs</button>
+          <button class="bc-pill" aria-pressed="false">3+ yrs</button>
+          <button class="bc-pill" aria-pressed="false">Open</button>
+        </div>
+      </div>
+
+      <div class="bc-toggle-row">
+        <div>
+          <div class="bc-toggle-row__label">Verified only</div>
+          <span class="bc-toggle-row__sub">Selfie + church confirmation</span>
+        </div>
+        <button class="bc-switch" aria-checked="true" role="switch"></button>
+      </div>
+      <div class="bc-toggle-row">
+        <div>
+          <div class="bc-toggle-row__label">Hide profiles I've passed</div>
+          <span class="bc-toggle-row__sub">For 30 days</span>
+        </div>
+        <button class="bc-switch" aria-checked="true" role="switch"></button>
+      </div>
+
+      <div class="bc-drawer__actions">
+        <button class="bc-btn bc-btn--ghost" style="flex:1; width:auto;">Reset</button>
+        <button class="bc-btn bc-btn--primary">Show 47 matches</button>
+      </div>
+    </div>
+  </div>
+  <div class="specimen__label">5 · Filters drawer</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 6 · Empty state (no matches today, no anxiety copy)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-6">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+    <div class="bc-header">
+      <div><h2 class="bc-header__title">Discover</h2><div class="bc-header__sub">Quiet day</div></div>
+      <button class="bc-header__icon-btn"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+    <div class="bc-empty">
+      <div class="bc-empty__art">
+        <svg width="40" height="40"><use href="#ic-pray"/></svg>
+      </div>
+      <h2 class="bc-empty__title">No new profiles right now</h2>
+      <p class="bc-empty__copy">We won't show people who don't match your filters just to keep you scrolling. Pray, rest, check back tomorrow.</p>
+      <button class="bc-empty__cta">Adjust filters</button>
+      <p style="font-size:12px; color:var(--text-tertiary); margin-top:8px;">Verse of the day · 1 Cor 13:4</p>
+    </div>
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">6 · Empty state</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 7 · Loading state (skeleton)
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-7">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+    <div class="bc-header">
+      <div><h2 class="bc-header__title">Discover</h2><div class="bc-header__sub">Loading profiles…</div></div>
+      <button class="bc-header__icon-btn"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+    <div class="bc-filters">
+      <div class="bc-chip" style="background:var(--color-cream-200); color:transparent; width:100px;">·</div>
+      <div class="bc-chip" style="background:var(--color-cream-200); color:transparent; width:80px;">·</div>
+      <div class="bc-chip" style="background:var(--color-cream-200); color:transparent; width:90px;">·</div>
+    </div>
+    <div class="bc-feed">
+      <div class="bc-skel-card">
+        <div class="bc-skel-photo"></div>
+        <div class="bc-skel-line bc-skel-line--mid"></div>
+        <div class="bc-skel-line bc-skel-line--short"></div>
+        <div class="bc-skel-line"></div>
+      </div>
+      <div class="bc-skel-card">
+        <div class="bc-skel-photo"></div>
+        <div class="bc-skel-line bc-skel-line--mid"></div>
+      </div>
+    </div>
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">7 · Loading skeleton</div>
+</div>
+
+
+<!-- =====================================================================
+     SCREEN 8 · Error state
+     ===================================================================== -->
+<div class="specimen">
+  <div class="bc-frame" id="screen-8">
+    <div class="bc-status-bar"><span>9:41</span><span>•••</span></div>
+    <div class="bc-header">
+      <div><h2 class="bc-header__title">Discover</h2><div class="bc-header__sub">Connection trouble</div></div>
+      <button class="bc-header__icon-btn"><svg width="20" height="20"><use href="#ic-filter"/></svg></button>
+    </div>
+    <div class="bc-mode-toggle" role="tablist">
+      <button class="bc-mode-toggle__btn" aria-selected="true">Dating</button>
+      <button class="bc-mode-toggle__btn" aria-selected="false">Friendship</button>
+    </div>
+    <div class="bc-error">
+      <div class="bc-error__art"><svg width="36" height="36"><use href="#ic-cloud"/></svg></div>
+      <h2 class="bc-empty__title">We couldn't reach our servers</h2>
+      <p class="bc-empty__copy">Your filters are saved. Try again when you're back online — nothing was lost.</p>
+      <button class="bc-empty__cta">Retry</button>
+      <button style="background:none; border:none; color:var(--color-cobalt-600); font-size:13px; font-family:inherit; font-weight:500; cursor:pointer; margin-top:4px;">Use offline mode</button>
+    </div>
+    <nav class="bc-tabbar">
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-home"/></svg></span>Home</div>
+      <div class="bc-tabbar__item" aria-current="true"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-discover"/></svg></span>Discover</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-chat"/></svg></span>Connections</div>
+      <div class="bc-tabbar__item"><span class="bc-tabbar__icon"><svg width="22" height="22"><use href="#ic-user"/></svg></span>Profile</div>
+    </nav>
+  </div>
+  <div class="specimen__label">8 · Error state</div>
+</div>
+
+</div>
+
+</body>
+</html>

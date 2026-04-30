@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BlessCupid · Social Card · 1200×630 (OpenGraph + Twitter standard).
+  - Cream-50 ground (warmer feed presentation than cobalt).
+  - Wordmark + tagline lockup centered.
+  - Tagline placeholder: "Faith first. Friendship, courtship, community." — REPLACE WITH PASTOR-APPROVED COPY (see BLE-87, BLE-29). Set in Inter so it stays neutral against the serif wordmark.
+  - Fine cobalt rule above tagline as separator.
+  - Engineer: must be rasterized to PNG before serving as og:image (most scrapers do not render SVG and almost none load remote webfonts).
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="BlessCupid — Faith first.">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-word{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:140px;font-variation-settings:'opsz' 60;letter-spacing:0.5px;fill:#142447;}
+      .bc-tag{font-family:'Inter',ui-sans-serif,system-ui,sans-serif;font-weight:400;font-size:30px;letter-spacing:1.5px;fill:#4A4338;text-transform:uppercase;}
+      .bc-mark{font-family:'Inter',ui-sans-serif,system-ui,sans-serif;font-weight:500;font-size:22px;letter-spacing:3px;fill:#867C6A;text-transform:uppercase;}
+    </style>
+  </defs>
+  <rect width="1200" height="630" fill="#FDFBF6"/>
+  <!-- Top mark line: small uppercase brand tag, matches the calm ethos. -->
+  <text x="600" y="140" text-anchor="middle" class="bc-mark">BlessCupid · Faith-first</text>
+  <!-- Wordmark -->
+  <text x="600" y="340" text-anchor="middle" class="bc-word">BlessCup&#x0131;d</text>
+  <circle cx="676" cy="240" r="10" fill="#C99A3A"/>
+  <!-- Sanctified-ground rule -->
+  <line x1="450" y1="378" x2="750" y2="378" stroke="#E9C780" stroke-width="2"/>
+  <!-- Tagline (Pastor-review-required placeholder) -->
+  <text x="600" y="480" text-anchor="middle" class="bc-tag">Faith first · Friendship · Courtship · Community</text>
+</svg>

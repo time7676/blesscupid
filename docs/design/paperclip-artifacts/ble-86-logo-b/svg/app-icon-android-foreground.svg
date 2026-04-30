@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Android Adaptive Icon · FOREGROUND layer (108×108dp).
+  Material guideline: critical content must live within central 72×72dp safe zone (centered).
+  BC monogram + halo are both placed inside the safe zone (18..90 range on each axis).
+  No background — Android composites over the background layer.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108" role="img" aria-label="BlessCupid">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-mono{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:62px;font-variation-settings:'opsz' 60;letter-spacing:-2.6px;fill:#FDFBF6;}
+    </style>
+  </defs>
+  <text x="54" y="80" text-anchor="middle" class="bc-mono">BC</text>
+  <circle cx="54" cy="28" r="5.5" fill="#E9C780"/>
+</svg>

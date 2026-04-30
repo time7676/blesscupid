@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  BlessCupid · BC Monogram (primary) · Direction B
+  - Source Serif 4, weight 500, large optical sizing (60).
+  - Cobalt-900 BC on cream-50 ground.
+  - Gold-500 halo dot centered above BC, radius scaled to ~6.5% canvas (does NOT become a fleck at icon scale).
+  - Tight letter-spacing locks B + C as a ligature pair.
+  - viewBox 0 0 200 200 — square master, scales to any icon size.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="BlessCupid BC monogram">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-mono{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:140px;font-variation-settings:'opsz' 60;letter-spacing:-6px;fill:#142447;}
+    </style>
+  </defs>
+  <rect width="200" height="200" fill="#FDFBF6"/>
+  <text x="100" y="148" text-anchor="middle" class="bc-mono">BC</text>
+  <!-- Halo: large enough to never collapse to fleck. -->
+  <circle cx="100" cy="38" r="9" fill="#C99A3A"/>
+</svg>

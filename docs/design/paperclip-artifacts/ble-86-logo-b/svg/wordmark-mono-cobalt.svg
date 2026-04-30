@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- BlessCupid · Mono cobalt — single-color cobalt-900, halo dot kept gold-500 ONLY when this lockup is used on cream/cobalt-50. For pure mono print, use wordmark-mono-flat-*.svg variants. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 360" role="img" aria-label="BlessCupid">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500&amp;display=swap');
+      .bc-word{font-family:'Source Serif 4',ui-serif,Georgia,serif;font-weight:500;font-size:200px;font-variation-settings:'opsz' 60;letter-spacing:1px;fill:#142447;}
+    </style>
+  </defs>
+  <text x="600" y="220" text-anchor="middle" class="bc-word">BlessCup&#x0131;d</text>
+  <circle cx="708" cy="62" r="14" fill="#C99A3A"/>
+  <line x1="385" y1="278" x2="815" y2="278" stroke="#C99A3A" stroke-width="2"/>
+</svg>

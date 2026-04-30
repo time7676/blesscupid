@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>BlessCupid · BLE-107 Prayer Circle Lookbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens.css" />
+<link rel="stylesheet" href="circle.css" />
+</head>
+<body class="lookbook">
+
+<!-- ════════════════════════════════════════════════════════════════
+     SVG SPRITE — every glyph used on the page is defined once here.
+     ════════════════════════════════════════════════════════════════ -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+
+    <!-- COMMUNITY-RING (primary identity glyph) -->
+    <symbol id="ic-ring" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="0.4 3.2" stroke-linecap="round"/>
+      <circle cx="12" cy="4.8" r="2" fill="currentColor"/>
+      <circle cx="18.24" cy="15.6" r="2" fill="currentColor"/>
+      <circle cx="5.76" cy="15.6" r="2" fill="currentColor"/>
+    </symbol>
+
+    <!-- COMMUNITY-RING-LARGE (hero artwork — denser ring of dots) -->
+    <symbol id="ic-ring-large" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="0.6 3.4" stroke-linecap="round"/>
+      <circle cx="50" cy="10" r="3.2" fill="currentColor"/>
+      <circle cx="84.6" cy="30" r="3.2" fill="currentColor"/>
+      <circle cx="84.6" cy="70" r="3.2" fill="currentColor"/>
+      <circle cx="50" cy="90" r="3.2" fill="currentColor"/>
+      <circle cx="15.4" cy="70" r="3.2" fill="currentColor"/>
+      <circle cx="15.4" cy="30" r="3.2" fill="currentColor"/>
+    </symbol>
+
+    <!-- CLASPED-HANDS (abstract two-arc form, NOT Dürer) -->
+    <symbol id="ic-clasp" viewBox="0 0 24 24">
+      <path d="M5 12c0-3.5 2.5-6 5-6.5v6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M19 12c0-3.5-2.5-6-5-6.5v6.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M5 12c0 3.5 3 6 7 6s7-2.5 7-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 12.5c.8 1 1.8 1.5 3 1.5s2.2-.5 3-1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- OPEN-PALMS -->
+    <symbol id="ic-palms" viewBox="0 0 24 24">
+      <path d="M3.5 14c0-3 2.2-5.5 5-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M20.5 14c0-3-2.2-5.5-5-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M5.5 14c0 3 3 5.5 6.5 5.5S18.5 17 18.5 14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="12" cy="9.5" r="1.4" fill="currentColor"/>
+    </symbol>
+
+    <!-- DOOR-IN (Join — door opens inward) -->
+    <symbol id="ic-join" viewBox="0 0 24 24">
+      <path d="M4 4h10v16H4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M14 4l6 2v12l-6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="11" cy="12" r="0.9" fill="currentColor"/>
+    </symbol>
+
+    <!-- DOOR-OUT (Leave — same door, mirrored. Equal weight.) -->
+    <symbol id="ic-leave" viewBox="0 0 24 24">
+      <path d="M20 4H10v16h10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M10 4L4 6v12l6 2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="13" cy="12" r="0.9" fill="currentColor"/>
+    </symbol>
+
+    <!-- EYE (consent: who can see) -->
+    <symbol id="ic-eye" viewBox="0 0 24 24">
+      <path d="M2.5 12c2.5-4 5.7-6 9.5-6s7 2 9.5 6c-2.5 4-5.7 6-9.5 6s-7-2-9.5-6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <circle cx="12" cy="12" r="2.6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+
+    <!-- LOCK (private) -->
+    <symbol id="ic-lock" viewBox="0 0 24 24">
+      <rect x="4.5" y="10" width="15" height="10" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M8 10V7a4 4 0 018 0v3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- PRAY-DOT (the pray-for-this affordance) -->
+    <symbol id="ic-praydot" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="7.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="0.4 2.6" stroke-linecap="round" opacity="0.6"/>
+      <circle cx="12" cy="4.5" r="2.5" fill="currentColor"/>
+    </symbol>
+
+    <!-- PLUS / CLOSE / BACK / SLIDERS / CHECK / HOME / HEART / CHAT / USER / WORD -->
+    <symbol id="ic-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="ic-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+    <symbol id="ic-back" viewBox="0 0 24 24"><path d="M14 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-sliders" viewBox="0 0 24 24">
+      <path d="M4 6h10M18 6h2M4 12h2M10 12h10M4 18h12M20 18h0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <circle cx="16" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="8" cy="12" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="18" cy="18" r="2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+    </symbol>
+    <symbol id="ic-check" viewBox="0 0 24 24"><path d="M5 12l5 5 9-11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-home" viewBox="0 0 24 24"><path d="M3 11l9-7 9 7v9a1 1 0 01-1 1h-5v-7h-6v7H4a1 1 0 01-1-1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-heart" viewBox="0 0 24 24"><path d="M12 20s-7-4.5-7-10a4 4 0 017-2.6A4 4 0 0119 10c0 5.5-7 10-7 10z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-chat" viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></symbol>
+    <symbol id="ic-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-word" viewBox="0 0 24 24">
+      <path d="M5 4h11l3 3v13H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M16 4v3h3" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="M8 11h8M8 14h8M8 17h5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+
+    <!-- REJECTED — for the iconography sheet record -->
+    <symbol id="ic-rej-durer" viewBox="0 0 24 24">
+      <path d="M9 21V8c0-2 1-3 1.5-3s.5 1 .5 3v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M15 21V8c0-2-1-3-1.5-3s-.5 1-.5 3v6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M9 14c0-1 1.5-2 3-2s3 1 3 2v7H9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="ic-rej-kneel" viewBox="0 0 24 24">
+      <circle cx="12" cy="5" r="2.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M12 7v5l-3 3 5 4-2 2H4l4-4 1-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M4 21h16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-rej-halo" viewBox="0 0 24 24">
+      <circle cx="12" cy="6" r="3.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <ellipse cx="12" cy="3.5" rx="4.5" ry="1" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M5 21c1-5 4-7 7-7s6 2 7 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="ic-rej-stain" viewBox="0 0 24 24">
+      <path d="M4 4h16v16H4z" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <path d="M10 4v16M14 4v16M4 10h16M4 14h16" fill="none" stroke="currentColor" stroke-width="1.4"/>
+      <path d="M11 6h2v4h4v4h-4v4h-2v-4H7v-4h4z" fill="currentColor" opacity="0.4"/>
+    </symbol>
+    <symbol id="ic-rej-emoji" viewBox="0 0 24 24">
+      <text x="3" y="20" font-family="Apple Color Emoji, Segoe UI Emoji" font-size="20">🙏</text>
+    </symbol>
+
+  </defs>
+</svg>
+
+<!-- ════════════════════════════════════════════════════════════════
+     HEAD
+     ════════════════════════════════════════════════════════════════ -->
+<header class="lookbook__head">
+  <h1 class="lookbook__title">Prayer Circle · hi-fi v0.1</h1>
+  <p class="lookbook__meta">
+    BLE-107 · pastor-bound visual constraints applied · cobalt + cream + gold-100 only · no rose, no amber, no red ·
+    join/leave symmetric · consent always visible · empty state non-coercive
+  </p>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ROW 1 — MOBILE SURFACES
+     ════════════════════════════════════════════════════════════════ -->
+<section class="lookbook__row">
+
+  <!-- ─── Surface 1: HOME / FEED (member, 4 requests) ──────────── -->
+  <figure class="specimen">
+    <span class="specimen__label">01 · Circle home · member</span>
+    <div class="frame">
+      <div class="statusbar">
+        <span>9:41</span>
+        <span class="statusbar__icons">···</span>
+      </div>
+
+      <div class="appbar">
+        <div>
+          <span class="appbar__title-sub">Lingkaran</span>
+          <span class="appbar__title">Doa Komunitas</span>
+        </div>
+        <button class="appbar__action" aria-label="Filter"><svg><use href="#ic-sliders"/></svg></button>
+      </div>
+
+      <!-- Consent banner ALWAYS visible. Constraint #5. -->
+      <div class="consent-banner">
+        <span class="consent-banner__icon"><svg><use href="#ic-eye"/></svg></span>
+        <span class="consent-banner__text">
+          <strong>You're a member of GKI Bandung circle.</strong> 24 people see what you post here.
+          <span class="consent-banner__link">Adjust</span>
+        </span>
+      </div>
+
+      <!-- Hero / membership state with community-ring artwork -->
+      <div class="hero">
+        <svg class="hero__ring" viewBox="0 0 100 100" style="color: var(--color-cobalt-300)"><use href="#ic-ring-large"/></svg>
+        <div class="hero__count">24</div>
+        <div class="hero__label">in this circle · 6 prayed today</div>
+        <div class="hero__row">
+          <button class="hero__btn hero__btn--primary"><svg><use href="#ic-plus"/></svg> Bagikan doa</button>
+          <button class="hero__btn hero__btn--secondary"><svg><use href="#ic-leave"/></svg> Tinggalkan</button>
+        </div>
+      </div>
+
+      <!-- Filter chips -->
+      <div class="chips">
+        <button class="chip chip--active">Semua</button>
+        <button class="chip">Belum didoakan</button>
+        <button class="chip">Pribadi saya</button>
+        <button class="chip">Hari ini</button>
+      </div>
+
+      <!-- Feed -->
+      <div class="feed">
+
+        <!-- Request 1: visible to circle, with scripture -->
+        <article class="req">
+          <header class="req__head">
+            <div class="req__avatar">PR</div>
+            <div class="req__who">
+              <span class="req__who-name">Priscilla R.</span>
+              <span class="req__who-meta">26 · GKI Bandung · 2 jam lalu</span>
+            </div>
+            <span class="req__visibility"><svg><use href="#ic-eye"/></svg> Lingkaran</span>
+          </header>
+          <p class="req__body">Mama saya akan operasi katarak hari Sabtu. Mohon doakan kebijaksanaan tim dokter dan damai sejahtera mama saya menjelang operasi.</p>
+          <div class="req__scripture">
+            <span class="req__scripture-ref">Filipi 4:6 · TB2</span>
+            …nyatakanlah dalam segala hal keinginanmu kepada Allah dalam doa dan permohonan dengan ucapan syukur.
+          </div>
+          <footer class="req__foot">
+            <span class="req__count"><svg><use href="#ic-praydot"/></svg> 6 sudah berdoa</span>
+            <button class="req__pray"><svg><use href="#ic-praydot"/></svg> Saya doakan</button>
+          </footer>
+        </article>
+
+        <!-- Request 2: private. Lock icon. Already prayed for. -->
+        <article class="req">
+          <header class="req__head">
+            <div class="req__avatar">JL</div>
+            <div class="req__who">
+              <span class="req__who-name">Julian L.</span>
+              <span class="req__who-meta">Pribadi · hanya pendeta lihat · 5 jam lalu</span>
+            </div>
+            <span class="req__visibility" style="background:var(--color-cream-100); color:var(--color-stone-700)">
+              <svg><use href="#ic-lock"/></svg> Pribadi
+            </span>
+          </header>
+          <p class="req__body">Saya sedang bergumul dengan keputusan karier — apakah saya tetap di Jakarta atau pindah ke Bali.</p>
+          <footer class="req__foot">
+            <span class="req__count"><svg><use href="#ic-eye"/></svg> Pendeta saja</span>
+            <button class="req__pray req__pray--done"><svg><use href="#ic-check"/></svg> Saya sudah doakan</button>
+          </footer>
+        </article>
+
+        <!-- Request 3: short, no scripture -->
+        <article class="req">
+          <header class="req__head">
+            <div class="req__avatar">AK</div>
+            <div class="req__who">
+              <span class="req__who-name">Andre K.</span>
+              <span class="req__who-meta">31 · GKI Bandung · kemarin</span>
+            </div>
+            <span class="req__visibility"><svg><use href="#ic-eye"/></svg> Lingkaran</span>
+          </header>
+          <p class="req__body">Wisata rohani pemuda akhir pekan ini — supaya cuaca aman dan tidak ada peserta yang sakit.</p>
+          <footer class="req__foot">
+            <span class="req__count"><svg><use href="#ic-praydot"/></svg> 11 sudah berdoa</span>
+            <button class="req__pray"><svg><use href="#ic-praydot"/></svg> Saya doakan</button>
+          </footer>
+        </article>
+
+      </div>
+
+      <!-- Bottom nav -->
+      <nav class="bottomnav">
+        <div class="bottomnav__item"><svg><use href="#ic-home"/></svg>Beranda</div>
+        <div class="bottomnav__item"><svg><use href="#ic-heart"/></svg>Cocok</div>
+        <div class="bottomnav__item bottomnav__item--active"><svg><use href="#ic-ring"/></svg>Lingkaran</div>
+        <div class="bottomnav__item"><svg><use href="#ic-chat"/></svg>Pesan</div>
+        <div class="bottomnav__item"><svg><use href="#ic-user"/></svg>Saya</div>
+      </nav>
+    </div>
+  </figure>
+
+  <!-- ─── Surface 2: HOME / FEED (empty) ──────────────────────── -->
+  <figure class="specimen">
+    <span class="specimen__label">02 · Circle home · empty state</span>
+    <div class="frame">
+      <div class="statusbar"><span>9:41</span><span class="statusbar__icons">···</span></div>
+
+      <div class="appbar">
+        <div>
+          <span class="appbar__title-sub">Lingkaran</span>
+          <span class="appbar__title">Doa Komunitas</span>
+        </div>
+        <button class="appbar__action" aria-label="Filter"><svg><use href="#ic-sliders"/></svg></button>
+      </div>
+
+      <div class="consent-banner">
+        <span class="consent-banner__icon"><svg><use href="#ic-eye"/></svg></span>
+        <span class="consent-banner__text">
+          <strong>You're a member of GKI Bandung circle.</strong> 24 people see what you post here.
+          <span class="consent-banner__link">Adjust</span>
+        </span>
+      </div>
+
+      <div class="empty">
+        <div class="empty__art">
+          <svg width="96" height="96" viewBox="0 0 100 100" style="color: var(--color-cobalt-500); opacity: 0.7"><use href="#ic-ring-large"/></svg>
+        </div>
+        <h2 class="empty__h">Lingkaran masih sunyi</h2>
+        <p class="empty__p">…mulai dengan satu kalimat doa. Tidak ada tekanan untuk hadir setiap hari.</p>
+        <button class="empty__cta">Bagikan doa pertama</button>
+      </div>
+
+      <nav class="bottomnav">
+        <div class="bottomnav__item"><svg><use href="#ic-home"/></svg>Beranda</div>
+        <div class="bottomnav__item"><svg><use href="#ic-heart"/></svg>Cocok</div>
+        <div class="bottomnav__item bottomnav__item--active"><svg><use href="#ic-ring"/></svg>Lingkaran</div>
+        <div class="bottomnav__item"><svg><use href="#ic-chat"/></svg>Pesan</div>
+        <div class="bottomnav__item"><svg><use href="#ic-user"/></svg>Saya</div>
+      </nav>
+    </div>
+  </figure>
+
+  <!-- ─── Surface 3: REQUEST DETAIL ─────────────────────────────── -->
+  <figure class="specimen">
+    <span class="specimen__label">03 · Request detail</span>
+    <div class="frame">
+      <div class="statusbar"><span>9:41</span><span class="statusbar__icons">···</span></div>
+
+      <div class="consent-banner" style="margin-top: 0; border-radius: 0; border-left: 0; border-right: 0; border-top: 0;">
+        <span class="consent-banner__icon"><svg><use href="#ic-eye"/></svg></span>
+        <span class="consent-banner__text">
+          Visible to <strong>24 members of GKI Bandung circle</strong>. Author chose this.
+        </span>
+      </div>
+
+      <div class="detail">
+        <span class="detail__back"><svg style="width:14px; height:14px; stroke: var(--color-cobalt-700)"><use href="#ic-back"/></svg> Kembali</span>
+        <h1 class="detail__title">Mama operasi katarak hari Sabtu</h1>
+
+        <div class="detail__author">
+          <div class="req__avatar" style="width:40px; height:40px; font-size:15px">PR</div>
+          <div>
+            <div class="detail__author-name">Priscilla R.</div>
+            <div class="detail__author-meta">26 · GKI Bandung · 2 jam lalu</div>
+          </div>
+        </div>
+
+        <p class="detail__body">
+          Mama saya akan operasi katarak hari Sabtu pagi di RS Borromeus. Mohon doakan kebijaksanaan tim dokter,
+          damai sejahtera mama saya menjelang operasi, dan pemulihan yang lancar setelahnya.
+        </p>
+
+        <div class="req__scripture">
+          <span class="req__scripture-ref">Filipi 4:6–7 · TB2</span>
+          Janganlah hendaknya kamu kuatir tentang apa pun, tetapi nyatakanlah dalam segala hal keinginanmu kepada Allah dalam doa dan permohonan dengan ucapan syukur.
+        </div>
+
+        <div class="detail__divider"></div>
+
+        <h3 class="detail__section-h">6 anggota sudah berdoa</h3>
+        <div class="prayed-list">
+          <div class="prayed-list__row">
+            <div class="prayed-list__avatar">DR</div>
+            <div class="prayed-list__name">Daniel R.</div>
+            <div class="prayed-list__time">12 menit lalu</div>
+          </div>
+          <div class="prayed-list__row">
+            <div class="prayed-list__avatar">SH</div>
+            <div class="prayed-list__name">Sherly H.</div>
+            <div class="prayed-list__time">38 menit lalu</div>
+          </div>
+          <div class="prayed-list__row">
+            <div class="prayed-list__avatar">AK</div>
+            <div class="prayed-list__name">Andre K.</div>
+            <div class="prayed-list__time">1 jam lalu</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticky bottom bar. Pray-for-this is OPT-IN. Close is equally weighted. Constraint #9. -->
+      <div class="detail__sticky">
+        <button class="btn-ghost">Tutup</button>
+        <button class="btn-primary"><svg><use href="#ic-praydot"/></svg> Saya doakan</button>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ─── Surface 4: COMPOSE / POST FLOW ──────────────────────── -->
+  <figure class="specimen">
+    <span class="specimen__label">04 · Post a request · with visibility picker</span>
+    <div class="frame">
+      <div class="statusbar"><span>9:41</span><span class="statusbar__icons">···</span></div>
+
+      <div class="appbar" style="border-bottom: 0; padding-top: 8px;">
+        <button class="compose__close" aria-label="Close"><svg style="width:18px; height:18px; stroke: var(--text-secondary)"><use href="#ic-close"/></svg></button>
+        <span></span>
+        <span></span>
+      </div>
+
+      <div class="compose">
+        <h1 class="compose__h">Bagikan doa</h1>
+        <p class="compose__sub">Satu kalimat saja sudah cukup. Tidak harus panjang, tidak harus rohani.</p>
+
+        <textarea class="compose__textarea" placeholder="Mama saya akan operasi katarak hari Sabtu…">Mama saya akan operasi katarak hari Sabtu. Mohon doakan kebijaksanaan tim dokter dan damai sejahtera mama saya menjelang operasi.</textarea>
+        <div class="compose__count">187 / 280</div>
+
+        <h3 class="detail__section-h" style="margin-top: 8px;">Siapa yang boleh membaca?</h3>
+        <div class="visibility">
+          <label class="visibility__opt visibility__opt--active">
+            <span class="visibility__radio"></span>
+            <div class="visibility__copy">
+              <div class="visibility__title">Lingkaran GKI Bandung — 24 anggota</div>
+              <div class="visibility__desc">Hanya anggota lingkaran ini. Bukan publik. Bukan match feed.</div>
+            </div>
+          </label>
+          <label class="visibility__opt">
+            <span class="visibility__radio"></span>
+            <div class="visibility__copy">
+              <div class="visibility__title">Pribadi — hanya pendeta lihat</div>
+              <div class="visibility__desc">Untuk pergumulan yang Anda belum siap bagikan.</div>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <div class="compose__sticky">
+        <button class="compose__submit">Bagikan ke lingkaran</button>
+      </div>
+    </div>
+  </figure>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ROW 2 — MOBILE: OPT-IN / OPT-OUT + DESKTOP PREVIEW
+     ════════════════════════════════════════════════════════════════ -->
+<section class="lookbook__row">
+
+  <!-- ─── Surface 5: OPT-IN (settings card, not member yet) ──── -->
+  <figure class="specimen">
+    <span class="specimen__label">05 · Opt-in · not yet a member</span>
+    <div class="frame">
+      <div class="statusbar"><span>9:41</span><span class="statusbar__icons">···</span></div>
+
+      <div class="appbar">
+        <div>
+          <span class="appbar__title-sub">Pengaturan</span>
+          <span class="appbar__title">Lingkaran Doa</span>
+        </div>
+        <span></span>
+      </div>
+
+      <div class="optcard">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div style="width:48px; height:48px; border-radius:14px; background: var(--color-gold-100); display:grid; place-items:center; color: var(--color-cobalt-700)">
+            <svg style="width:26px; height:26px;"><use href="#ic-ring"/></svg>
+          </div>
+          <div>
+            <h2 class="optcard__h" style="margin:0">GKI Bandung</h2>
+            <div style="font-size:12px; color: var(--text-tertiary)">24 anggota · sejak 2024</div>
+          </div>
+        </div>
+        <p class="optcard__p">
+          Lingkaran doa adalah ruang konsensual. Anda boleh bergabung, keluar, atau tidak pernah bergabung —
+          ketiganya sama terhormat di sini.
+        </p>
+        <div class="optcard__row">
+          <button class="optcard__btn optcard__btn--in"><svg><use href="#ic-join"/></svg> Bergabung</button>
+          <button class="optcard__btn optcard__btn--out"><svg><use href="#ic-eye"/></svg> Lihat dulu</button>
+        </div>
+        <p class="optcard__note">
+          Bergabung tidak berarti Anda harus berdoa setiap hari. Anda bisa membaca tanpa memberi reaksi.
+        </p>
+      </div>
+
+      <div class="optcard">
+        <h2 class="optcard__h">Lingkaran lain di area Anda</h2>
+        <p class="optcard__p">3 lingkaran tersedia. Masing-masing dengan pendeta moderator yang Anda bisa cek dulu.</p>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+          <div style="display:flex; align-items:center; gap:10px; padding: 10px 12px; background: var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:10px;">
+            <div style="width:32px; height:32px; border-radius:10px; background: var(--color-cream-100); display:grid; place-items:center; color: var(--color-cobalt-700)">
+              <svg style="width:18px; height:18px;"><use href="#ic-ring"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600">GBI Dago</div>
+              <div style="font-size:11px; color: var(--text-tertiary)">36 anggota · charismatic</div>
+            </div>
+            <span style="font-size:12px; color: var(--color-cobalt-700); font-weight:600">Lihat →</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:10px; padding: 10px 12px; background: var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:10px;">
+            <div style="width:32px; height:32px; border-radius:10px; background: var(--color-cream-100); display:grid; place-items:center; color: var(--color-cobalt-700)">
+              <svg style="width:18px; height:18px;"><use href="#ic-ring"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600">Katolik Setiabudi</div>
+              <div style="font-size:11px; color: var(--text-tertiary)">52 anggota · mainline</div>
+            </div>
+            <span style="font-size:12px; color: var(--color-cobalt-700); font-weight:600">Lihat →</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+  <!-- ─── Surface 6: OPT-OUT (member, leaving — NO shame modal) ── -->
+  <figure class="specimen">
+    <span class="specimen__label">06 · Opt-out · symmetric · no shame modal</span>
+    <div class="frame">
+      <div class="statusbar"><span>9:41</span><span class="statusbar__icons">···</span></div>
+
+      <div class="appbar">
+        <div>
+          <span class="appbar__title-sub">Pengaturan</span>
+          <span class="appbar__title">Lingkaran Doa</span>
+        </div>
+        <span></span>
+      </div>
+
+      <div class="optcard">
+        <div style="display:flex; align-items:center; gap:12px; margin-bottom:14px;">
+          <div style="width:48px; height:48px; border-radius:14px; background: var(--color-gold-100); display:grid; place-items:center; color: var(--color-cobalt-700)">
+            <svg style="width:26px; height:26px;"><use href="#ic-ring"/></svg>
+          </div>
+          <div>
+            <h2 class="optcard__h" style="margin:0">GKI Bandung</h2>
+            <div style="font-size:12px; color: var(--state-success); font-weight:600">✓ Anda anggota sejak Agustus</div>
+          </div>
+        </div>
+        <p class="optcard__p">
+          Anda bisa keluar kapan saja. Tidak ada konfirmasi yang menahan Anda. Permintaan doa Anda yang
+          masih berjalan tetap aman — Anda yang putuskan apakah dihapus atau tetap dilihat pendeta saja.
+        </p>
+        <div class="optcard__row">
+          <button class="optcard__btn optcard__btn--in"><svg><use href="#ic-eye"/></svg> Tetap di sini</button>
+          <button class="optcard__btn optcard__btn--out"><svg><use href="#ic-leave"/></svg> Keluar</button>
+        </div>
+        <p class="optcard__note">
+          Setelah keluar: 1 doa aktif Anda akan dipindahkan ke "pribadi" otomatis. Tidak dihapus, tidak dipublikasikan.
+        </p>
+      </div>
+
+      <div class="optcard">
+        <h2 class="optcard__h">Pengaturan visibilitas Anda</h2>
+        <div style="display:flex; flex-direction:column; gap: 12px;">
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:12px">
+            <span style="width:32px; height:32px; border-radius:10px; background:var(--color-cobalt-50); color:var(--color-cobalt-700); display:grid; place-items:center"><svg style="width:18px; height:18px;"><use href="#ic-eye"/></svg></span>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600">24 anggota lingkaran lihat doa publik Anda</div>
+              <div style="font-size:11px; color:var(--text-tertiary)">Bukan match feed. Bukan publik.</div>
+            </div>
+          </div>
+          <div style="display:flex; align-items:center; gap:12px; padding:12px; background:var(--bg-canvas); border:1px solid var(--border-subtle); border-radius:12px">
+            <span style="width:32px; height:32px; border-radius:10px; background:var(--color-cobalt-50); color:var(--color-cobalt-700); display:grid; place-items:center"><svg style="width:18px; height:18px;"><use href="#ic-lock"/></svg></span>
+            <div style="flex:1;">
+              <div style="font-size:13px; font-weight:600">1 pendeta lihat doa pribadi Anda</div>
+              <div style="font-size:11px; color:var(--text-tertiary)">Pdt. Yohanes (moderator GKI Bandung)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </figure>
+
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ROW 3 — DESKTOP PREVIEW
+     ════════════════════════════════════════════════════════════════ -->
+<section class="lookbook__row">
+  <figure class="specimen">
+    <span class="specimen__label">07 · Desktop · circle home (1080×720)</span>
+    <div class="frame frame--desktop">
+      <div class="desktop">
+
+        <!-- Rail -->
+        <aside class="desktop__rail">
+          <div class="desktop__brand">BlessCupid</div>
+          <div class="desktop__nav-item"><svg><use href="#ic-home"/></svg> Beranda</div>
+          <div class="desktop__nav-item"><svg><use href="#ic-heart"/></svg> Cocok</div>
+          <div class="desktop__nav-item desktop__nav-item--active"><svg><use href="#ic-ring"/></svg> Lingkaran</div>
+          <div class="desktop__nav-item"><svg><use href="#ic-chat"/></svg> Pesan</div>
+          <div class="desktop__nav-item"><svg><use href="#ic-user"/></svg> Saya</div>
+
+          <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid rgba(214,224,244,0.2);">
+            <div style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color: var(--color-cobalt-100); margin-bottom: 8px; font-weight:600">Lingkaran Anda</div>
+            <div style="display:flex; align-items:center; gap:10px; padding: 8px 12px; background: var(--color-cobalt-700); border-radius:10px; font-size:13px;">
+              <div style="width:20px; height:20px; border-radius:6px; background: var(--color-gold-300); display:grid; place-items:center; color: var(--color-cobalt-900)">
+                <svg style="width:12px; height:12px;"><use href="#ic-ring"/></svg>
+              </div>
+              <span>GKI Bandung</span>
+            </div>
+          </div>
+        </aside>
+
+        <!-- Main -->
+        <main class="desktop__main">
+          <!-- Consent banner -->
+          <div class="consent-banner" style="margin: 0 0 16px;">
+            <span class="consent-banner__icon"><svg><use href="#ic-eye"/></svg></span>
+            <span class="consent-banner__text">
+              <strong>Visible to 24 members of GKI Bandung.</strong>
+              Lingkaran is consent-bound — never crossposted to match feed or public.
+              <span class="consent-banner__link">Adjust visibility</span>
+            </span>
+          </div>
+
+          <div class="desktop__main-h">
+            <div>
+              <span class="desktop__title-sub">Lingkaran</span>
+              <h1 class="desktop__title">Doa Komunitas · GKI Bandung</h1>
+            </div>
+            <button class="hero__btn hero__btn--primary" style="flex:0 0 auto; padding: 0 18px; height: 40px;"><svg><use href="#ic-plus"/></svg> Bagikan doa</button>
+          </div>
+
+          <div class="desktop__list">
+            <article class="req">
+              <header class="req__head">
+                <div class="req__avatar">PR</div>
+                <div class="req__who">
+                  <span class="req__who-name">Priscilla R.</span>
+                  <span class="req__who-meta">26 · GKI Bandung · 2 jam lalu</span>
+                </div>
+                <span class="req__visibility"><svg><use href="#ic-eye"/></svg> Lingkaran</span>
+              </header>
+              <p class="req__body">Mama saya akan operasi katarak hari Sabtu. Mohon doakan kebijaksanaan tim dokter dan damai sejahtera mama saya menjelang operasi.</p>
+              <div class="req__scripture">
+                <span class="req__scripture-ref">Filipi 4:6 · TB2</span>
+                …nyatakanlah dalam segala hal keinginanmu kepada Allah dalam doa dan permohonan dengan ucapan syukur.
+              </div>
+              <footer class="req__foot">
+                <span class="req__count"><svg><use href="#ic-praydot"/></svg> 6 sudah berdoa</span>
+                <button class="req__pray"><svg><use href="#ic-praydot"/></svg> Saya doakan</button>
+              </footer>
+            </article>
+
+            <article class="req">
+              <header class="req__head">
+                <div class="req__avatar">AK</div>
+                <div class="req__who">
+                  <span class="req__who-name">Andre K.</span>
+                  <span class="req__who-meta">31 · GKI Bandung · kemarin</span>
+                </div>
+                <span class="req__visibility"><svg><use href="#ic-eye"/></svg> Lingkaran</span>
+              </header>
+              <p class="req__body">Wisata rohani pemuda akhir pekan ini — supaya cuaca aman dan tidak ada peserta yang sakit.</p>
+              <footer class="req__foot">
+                <span class="req__count"><svg><use href="#ic-praydot"/></svg> 11 sudah berdoa</span>
+                <button class="req__pray req__pray--done"><svg><use href="#ic-check"/></svg> Saya sudah doakan</button>
+              </footer>
+            </article>
+          </div>
+        </main>
+
+        <!-- Aside -->
+        <aside class="desktop__aside">
+          <h3 class="desktop__aside-h">Tentang lingkaran ini</h3>
+          <div style="background: var(--bg-surface); border:1px solid var(--border-subtle); border-radius: 14px; padding: 18px; margin-bottom: 14px;">
+            <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;">
+              <div style="width:36px; height:36px; border-radius:10px; background: var(--color-gold-100); display:grid; place-items:center; color: var(--color-cobalt-700)">
+                <svg style="width:20px; height:20px;"><use href="#ic-ring"/></svg>
+              </div>
+              <div>
+                <div style="font-size:14px; font-weight:600">GKI Bandung</div>
+                <div style="font-size:12px; color: var(--text-tertiary)">24 anggota · mainline</div>
+              </div>
+            </div>
+            <div style="font-size:13px; line-height: 19px; color: var(--text-secondary)">
+              Moderator: Pdt. Yohanes Wijaya. Posting publik dilihat 24 anggota. Doa pribadi hanya pendeta yang lihat.
+            </div>
+          </div>
+
+          <h3 class="desktop__aside-h">Kebijakan</h3>
+          <ul style="font-size:13px; line-height:20px; color: var(--text-secondary); padding-left: 18px; margin:0;">
+            <li>Tidak crosspost ke match feed.</li>
+            <li>Konsensus: keluar setara dengan masuk.</li>
+            <li>Tidak diharuskan berdoa untuk membaca.</li>
+          </ul>
+        </aside>
+
+      </div>
+    </div>
+  </figure>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     ICONOGRAPHY SHEET
+     ════════════════════════════════════════════════════════════════ -->
+<section class="icon-sheet" id="iconography">
+  <h2 class="icon-sheet__h">Iconography sheet</h2>
+  <p class="icon-sheet__sub">
+    All glyphs are 24×24, stroke-based (1.6), tradition-neutral, and pass the doctrinal red lines.
+    Rejected alternatives are documented at the bottom for the pastoral record so future designers don't reach for them.
+  </p>
+
+  <h3 class="desktop__aside-h" style="margin-bottom:12px;">Approved · primary identity</h3>
+  <div class="icon-grid" style="margin-bottom: 24px;">
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:56px; height:56px; color: var(--color-cobalt-700)"><use href="#ic-ring"/></svg></div>
+      <div class="icon-card__name">community-ring</div>
+      <div class="icon-card__use">PRIMARY IDENTITY · feature glyph for Prayer Circle. Three abstract members on a dotted ring. No human silhouette.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:56px; height:56px; color: var(--color-cobalt-700)"><use href="#ic-clasp"/></svg></div>
+      <div class="icon-card__name">clasped-hands · abstract</div>
+      <div class="icon-card__use">SECONDARY · two interlocking arcs. Reads "joined" without invoking Dürer praying-hands cliché.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:56px; height:56px; color: var(--color-cobalt-700)"><use href="#ic-palms"/></svg></div>
+      <div class="icon-card__name">open-palms</div>
+      <div class="icon-card__use">SECONDARY · upward arcs cradling a dot. Universal "receive" gesture, charismatic-friendly without privileging.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:56px; height:56px; color: var(--color-cobalt-700)"><use href="#ic-praydot"/></svg></div>
+      <div class="icon-card__name">pray-dot</div>
+      <div class="icon-card__use">"Saya doakan" affordance · single lit dot on the dotted ring. Tap = you join the circle of pray-ers for this request.</div>
+    </div>
+
+  </div>
+
+  <h3 class="desktop__aside-h" style="margin-bottom:12px;">Approved · functional</h3>
+  <div class="icon-grid" style="margin-bottom: 24px;">
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-join"/></svg></div>
+      <div class="icon-card__name">join · door-in</div>
+      <div class="icon-card__use">"Bergabung" — door opens inward. 1.6 stroke. Same stroke weight as `leave`.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-leave"/></svg></div>
+      <div class="icon-card__name">leave · door-out</div>
+      <div class="icon-card__use">"Keluar" — same door, mirrored. Identical stroke weight. Constraint #7 — symmetric.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-eye"/></svg></div>
+      <div class="icon-card__name">visible-eye</div>
+      <div class="icon-card__use">Consent state · "who can see this". Always paired with a count.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-lock"/></svg></div>
+      <div class="icon-card__name">lock · private</div>
+      <div class="icon-card__use">"Pribadi · pendeta saja". Used when only moderator can see the request.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-word"/></svg></div>
+      <div class="icon-card__name">scripture · word-on-page</div>
+      <div class="icon-card__use">Marks attached scripture quote. Generic page, not a Bible silhouette.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-plus"/></svg></div>
+      <div class="icon-card__name">plus · compose</div>
+      <div class="icon-card__use">Universal compose / share. Same as elsewhere in app.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-check"/></svg></div>
+      <div class="icon-card__name">check · prayed-state</div>
+      <div class="icon-card__use">"Saya sudah doakan". Soft confirmation — user-initiated, never automated.</div>
+    </div>
+
+    <div class="icon-card">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-cobalt-700)"><use href="#ic-sliders"/></svg></div>
+      <div class="icon-card__name">sliders · filter</div>
+      <div class="icon-card__use">Filter chips · standard.</div>
+    </div>
+
+  </div>
+
+  <h3 class="desktop__aside-h" style="margin-bottom:12px;">Rejected · for pastoral record</h3>
+  <div class="icon-grid">
+
+    <div class="icon-card icon-card--rejected">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-stone-700)"><use href="#ic-rej-durer"/></svg></div>
+      <div class="icon-card__name">praying-hands · Dürer</div>
+      <div class="icon-card__use icon-card__use--rejected">Constraint #1 — evangelical kitsch. Dated to Indonesian young adults. Stock cliché.</div>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-stone-700)"><use href="#ic-rej-kneel"/></svg></div>
+      <div class="icon-card__name">kneeling figure</div>
+      <div class="icon-card__use icon-card__use--rejected">Constraint #2 — privileges one prayer posture (kneeling) over standing/hands-up/prostration. Excludes denominations.</div>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-stone-700)"><use href="#ic-rej-halo"/></svg></div>
+      <div class="icon-card__name">halo + figure</div>
+      <div class="icon-card__use icon-card__use--rejected">Constraint #4 — halos / rays / iconographic glyphs break the gold-token discipline of the system.</div>
+    </div>
+
+    <div class="icon-card icon-card--rejected">
+      <div class="icon-card__art"><svg style="width:48px; height:48px; color: var(--color-stone-700)"><use href="#ic-rej-stain"/></svg></div>
+      <div class="icon-card__name">stained-glass cross</div>
+      <div class="icon-card__use icon-card__use--rejected">Constraint #4 — denominationally over-specific (Catholic/mainline). Excludes Indonesian charismatic.</div>
+    </div>
+
+    <div class="icon-card icon-card--rejected" style="grid-column: span 2;">
+      <div class="icon-card__art"><svg style="width:48px; height:48px;"><use href="#ic-rej-emoji"/></svg></div>
+      <div class="icon-card__name">🙏 as primary chrome</div>
+      <div class="icon-card__use icon-card__use--rejected">Constraint #3 — in Indonesian context this glyph reads Buddhist/Hindu *sembah* before Christian prayer. Decoration in chat fine; identity glyph not.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════
+     CONSTRAINTS CHECKLIST · pastor sign-off
+     ════════════════════════════════════════════════════════════════ -->
+<section class="checklist" id="checklist">
+  <h2 class="checklist__h">Constraints checklist · pastor sign-off</h2>
+  <p class="checklist__sub">Each binding visual constraint from the issue traced to the surface where it is enforced.</p>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">1. No "praying hands" stock cliché.</span>
+      <span class="checklist__detail">No Dürer silhouette appears on any surface. Identity glyph is `community-ring`. `clasped-hands` glyph is two abstract interlocking arcs, not folded hands.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">2. No kneeling-figure silhouettes.</span>
+      <span class="checklist__detail">All glyphs are abstract / geometric. No human posture is drawn. Tradition-neutral across charismatic (GBI, COOL) and mainline (GKI, Catholic).</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">3. No 🙏 emoji as primary chrome.</span>
+      <span class="checklist__detail">🙏 does not appear in any surface as identity, button, or section header. Documented as rejected on the iconography sheet.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">4. No halos, no rays, no stained-glass.</span>
+      <span class="checklist__detail">Hero artwork is a dotted ring of three nodes. No radiating rays. Gold use is restricted to `gold-100` background tile + `gold-300` left rule on scripture quote, matching token discipline from BLE-22.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">5. Consent state visually persistent.</span>
+      <span class="checklist__detail">Cobalt consent banner pinned at the top of every Prayer Circle surface (home, detail, compose, opt-in/out). Banner names the circle, the audience count, and an `Adjust` link. On the Detail surface the banner identifies the author's chosen visibility, not the viewer's.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">6. Cobalt + cream + gold-100 only.</span>
+      <span class="checklist__detail">No rose anywhere. Rose token reserved for match contexts per BLE-22 / `accent-match`. No amber. No red. State-critical token also avoided on this surface — leaving uses cobalt-300 outline button, not amber.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">7. Join / leave iconography symmetric.</span>
+      <span class="checklist__detail">`door-in` and `door-out` are mirror images at 1.6 stroke. Both surfaced at equal weight on the opt card (44px buttons, side-by-side). Leaving is one tap. No confirmation modal that shames.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">8. Empty-state copy non-coercive.</span>
+      <span class="checklist__detail">"Lingkaran masih sunyi — mulai dengan satu kalimat doa" (verbatim from issue). Sub-line: "Tidak ada tekanan untuk hadir setiap hari." No pressure language ("Bergabunglah!", "Doakan sekarang!") anywhere on the surface.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row">
+    <span class="checklist__check"><svg><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">9. Pray-for-this is opt-in, not required to leave.</span>
+      <span class="checklist__detail">Detail surface shows two equal-weight buttons: `Tutup` (close) and `Saya doakan` (pray). User may exit without praying. No interstitial. No nag.</span>
+    </div>
+  </div>
+
+  <div class="checklist__row" style="border-top: 1px solid rgba(214,224,244,0.4); margin-top: 8px; padding-top: 16px;">
+    <span class="checklist__check" style="background: var(--color-cream-100)"><svg style="stroke: var(--color-cobalt-900)"><use href="#ic-check"/></svg></span>
+    <div>
+      <span class="checklist__rule">Hand-off · pastor re-review on closure.</span>
+      <span class="checklist__detail">Surfaces 01–07 + iconography sheet + this checklist constitute the full v0.1 deliverable. Awaiting pastor sign-off before merge to BLE-22 design system.</span>
+    </div>
+  </div>
+
+</section>
+
+</body>
+</html>
