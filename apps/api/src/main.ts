@@ -4,7 +4,17 @@ import { AppModule } from './app.module.js';
 import { initSentry, flushSentry } from './observability/sentry.js';
 import { SentryExceptionFilter } from './observability/sentry.exception-filter.js';
 
+function assertProdEnv(): void {
+  if (process.env.NODE_ENV !== 'production') return;
+  const required = ['JWT_ACCESS_SECRET', 'XENDIT_CALLBACK_TOKEN', 'DATABASE_URL'];
+  const missing = required.filter((k) => !process.env[k]);
+  if (missing.length > 0) {
+    throw new Error(`[api] refusing to boot in production: missing required env: ${missing.join(', ')}`);
+  }
+}
+
 async function bootstrap(): Promise<void> {
+  assertProdEnv();
   await initSentry();
 
   const app = await NestFactory.create(AppModule, { bufferLogs: false });

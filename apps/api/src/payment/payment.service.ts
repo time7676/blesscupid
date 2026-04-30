@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
 @Injectable()
@@ -7,8 +7,11 @@ export class PaymentService {
 
   async handleWebhook(body: unknown, callbackToken: string): Promise<{ received: boolean }> {
     const token = process.env['XENDIT_CALLBACK_TOKEN'];
-    if (token && callbackToken !== token) {
-      throw new BadRequestException('Invalid callback token');
+    if (!token) {
+      throw new InternalServerErrorException({ code: 'webhook_misconfigured' });
+    }
+    if (callbackToken !== token) {
+      throw new UnauthorizedException({ code: 'invalid_callback_token' });
     }
 
     const event = body as Record<string, unknown>;
