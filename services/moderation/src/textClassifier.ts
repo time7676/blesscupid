@@ -4,7 +4,9 @@ import { lettersOnly, normalizeForMatch } from "./textNormalize.js";
 import { scoreText } from "./ruleEngine.js";
 
 /**
- * Thresholds. Conservative defaults until Pastor signs off (PASTOR_COPY_REQUIRED).
+ * Thresholds. Pastor-approved 2026-04-30 (blanket approval). Hate + self-harm
+ * intentionally HARD-block: under HOLY-by-design positioning, surfaced
+ * harm-signal content does not enter human queue — it never reaches recipient.
  *
  * - score >= BLOCK → block immediately, no human review.
  * - BLOCK > score >= QUEUE → human moderator review before delivery.

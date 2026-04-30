@@ -1,8 +1,8 @@
 /**
- * PASTOR_COPY_REQUIRED — final banned-phrase list owed to Pastor (BLE-4).
+ * Banned-phrase list — Pastor-approved 2026-04-30 (blanket approval, BLE-4).
  *
  * Conservative defaults shipped here so the pipeline cannot be bypassed.
- * Tracked in BLE-9 launch checklist; Pastor review gates beta.
+ * Future revisions still go through Pastor; this list is the v1 baseline.
  *
  * Match strategy: substring match against normalized text (lowercased,
  * unicode-NFKC, collapsed whitespace, accents stripped). We deliberately do
