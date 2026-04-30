@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ObservabilityModule } from './observability/observability.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { AuthModule } from './auth/auth.module.js';
@@ -28,6 +30,9 @@ import { EntitlementModule } from './entitlement/entitlement.module.js';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot([
+      { name: 'default', ttl: 60_000, limit: 60 },
+    ]),
     ObservabilityModule,
     HealthModule,
     PrismaModule,
@@ -52,6 +57,9 @@ import { EntitlementModule } from './entitlement/entitlement.module.js';
     PaymentModule,
     CoinModule,
     EntitlementModule,
+  ],
+  providers: [
+    { provide: APP_GUARD, useClass: ThrottlerGuard },
   ],
 })
 export class AppModule {}
