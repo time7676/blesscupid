@@ -58,7 +58,13 @@ function AuthNavigator() {
 
 function OnboardingNavigator() {
   return (
-    <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
+    <OnboardingStack.Navigator
+      // Real onboarding starts at the age gate; V0* screens are kept registered
+      // for the design-system playground but should never be the entry point
+      // when a user lands here from a successful auth.
+      initialRouteName="OnboardingAgeGate"
+      screenOptions={{ headerShown: false }}
+    >
       <OnboardingStack.Screen name="V0Welcome" component={V0WelcomeScreen} />
       <OnboardingStack.Screen name="V0Tradition" component={V0FaithTraditionScreen} />
       <OnboardingStack.Screen name="V0Statement" component={V0FaithStatementScreen} />

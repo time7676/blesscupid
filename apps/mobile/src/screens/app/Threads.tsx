@@ -4,16 +4,15 @@
  * Phase 7 visual placeholder. Empty state until thread data lands.
  */
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import {
   BottomNav,
   EmptyState,
   ScreenHeader,
   color,
-  fontFamily,
-  fontSize,
   type NavTabKey,
 } from '../../lib/design-system/index.js';
+import { emptyStateArt } from '../../lib/brand/assets.js';
 
 export type ThreadsScreenProps = {
   onNavigate?: (tab: NavTabKey) => void;
@@ -28,11 +27,7 @@ export function ThreadsScreen({ onNavigate }: ThreadsScreenProps) {
           eyebrow="Nothing waiting"
           title="No conversations yet"
           body="Once you accept someone from Today, the chat opens here. Stay slow. Stay kind."
-          illustration={
-            <View style={styles.placeholder}>
-              <Text style={styles.placeholderText}>illustration</Text>
-            </View>
-          }
+          illustration={<Image source={emptyStateArt.threads} style={styles.illustration} resizeMode="cover" />}
         />
       </View>
       <BottomNav active="threads" onSelect={onNavigate ?? (() => {})} />
@@ -43,18 +38,9 @@ export function ThreadsScreen({ onNavigate }: ThreadsScreenProps) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: color.parchment.default },
   body: { flex: 1 },
-  placeholder: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: color.warning[100],
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  placeholderText: {
-    fontFamily: fontFamily.sans,
-    fontSize: fontSize.caption,
-    color: color.ink.soft,
-    opacity: 0.5,
+  illustration: {
+    width: 220,
+    height: 220,
+    borderRadius: 32,
   },
 });

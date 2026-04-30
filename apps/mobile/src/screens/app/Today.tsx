@@ -13,7 +13,7 @@
  */
 
 import { useState } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import {
   BottomNav,
   GoldRule,
@@ -28,20 +28,9 @@ import {
   tracking,
   type NavTabKey,
 } from '../../lib/design-system/index.js';
+import { BrandGlyph } from '../../lib/brand/BrandGlyph.js';
+import { portraitSource, verseCardBackgrounds } from '../../lib/brand/assets.js';
 import { GatedFeatureSheet } from './modals/GatedFeatureSheet.js';
-
-// Procedural painterly portrait gradients — placeholder for moderated photos.
-// Mirrors --portrait-1..6 in docs/design/system-v1/tokens.css. RN doesn't
-// render CSS gradients natively, so we approximate with backgroundColor + a
-// subtle inner shadow until we wire `expo-linear-gradient`.
-const PORTRAIT_BG = [
-  '#E5C97D', // portrait-1 — sandstone-warm + gold
-  '#D6E0F4', // portrait-2 — cobalt mist
-  '#C7E0CC', // portrait-3 — sage + sandstone
-  '#FCEBD2', // portrait-4 — amber tint + parchment
-  '#EFE4D2', // portrait-5 — sandstone deep
-  '#E5EFE6', // portrait-6 — success + parchment
-];
 
 // Mock matches — replaced by API on integration.
 const TODAY_MATCHES = [
@@ -68,6 +57,13 @@ function dateString(): { eyebrow: string; greeting: string } {
     // Time-of-day greeting; copy proposed for Pastor review.
     greeting: d.getHours() < 12 ? 'Good morning' : d.getHours() < 18 ? 'Good afternoon' : 'Good evening',
   };
+}
+
+function verseArtworkForNow() {
+  const hour = new Date().getHours();
+  if (hour < 11) return verseCardBackgrounds.morning;
+  if (hour < 17) return verseCardBackgrounds.midday;
+  return verseCardBackgrounds.evening;
 }
 
 export type TodayScreenProps = {
@@ -113,7 +109,7 @@ export function TodayScreen({
               hitSlop={12}
               style={styles.bellBtn}
             >
-              <Text style={styles.bellGlyph}>{'\u2661'}</Text>
+              <BrandGlyph name="bell" size={18} />
             </Pressable>
           }
         />
@@ -121,6 +117,9 @@ export function TodayScreen({
         <View style={styles.versePad}>
           <VerseCard
             variant="compact"
+            illustration={
+              <Image source={verseArtworkForNow()} style={styles.verseArtwork} resizeMode="cover" />
+            }
             text={TODAY_VERSE.text}
             reference={TODAY_VERSE.reference}
           />
@@ -140,12 +139,7 @@ export function TodayScreen({
               accessibilityRole="button"
               accessibilityLabel={`${m.name}, ${m.age}, ${m.place}`}
             >
-              <View
-                style={[
-                  styles.portrait,
-                  { backgroundColor: PORTRAIT_BG[m.portrait] },
-                ]}
-              />
+              <Image source={portraitSource(m.portrait)} style={styles.portrait} resizeMode="cover" />
               <View style={styles.matchBody}>
                 <Text style={styles.matchName}>
                   {m.name},{' '}
@@ -174,15 +168,16 @@ export function TodayScreen({
         >
           <View style={styles.viewsAvatars}>
             {[0, 2, 4].map((i, idx) => (
-              <View
+              <Image
                 key={i}
+                source={portraitSource(i)}
                 style={[
                   styles.viewsAvatar,
                   {
-                    backgroundColor: PORTRAIT_BG[i],
                     left: idx * 16,
                   },
                 ]}
+                resizeMode="cover"
               />
             ))}
           </View>
@@ -224,15 +219,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  bellGlyph: {
-    fontFamily: fontFamily.sans,
-    fontSize: 14,
-    color: color.ink.soft,
-  },
 
   versePad: {
     paddingHorizontal: space.s6,
     marginTop: space.s4,
+  },
+  verseArtwork: {
+    width: '100%',
+    height: 88,
+    borderRadius: radius.md,
   },
 
   section: {
@@ -268,6 +263,8 @@ const styles = StyleSheet.create({
   portrait: {
     width: 88,
     alignSelf: 'stretch',
+    borderRightWidth: 1,
+    borderColor: color.hairline.soft,
   },
   matchBody: {
     flex: 1,
@@ -346,6 +343,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: color.parchment.raised,
     opacity: 0.6, // RN can't blur — opacity stand-in.
+    overflow: 'hidden',
   },
   viewsBody: { flex: 1, minWidth: 0 },
   viewsEyebrow: {

@@ -3,6 +3,14 @@
 declare const process: { env: Record<string, string | undefined> };
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL ?? 'http://localhost:3000';
 
+// Mock activates only when explicitly opted in via EXPO_PUBLIC_USE_API_MOCK=1
+// AND we're in __DEV__. In every other case (release build OR dev pointed at
+// any non-localhost URL) we hit the real backend. This avoids the failure
+// mode where a developer sets EXPO_PUBLIC_API_BASE_URL=<prod url> but still
+// silently gets mocked responses, making auth + onboarding feel "broken."
+const MOCK_ACTIVE =
+  __DEV__ && process.env.EXPO_PUBLIC_USE_API_MOCK === '1';
+
 export class ApiError extends Error {
   constructor(
     public status: number,
@@ -82,7 +90,7 @@ export async function apiFetch<T>(
   const { token, headers, ...rest } = init;
   // Dev-only short-circuit. Lets the whole onboarding flow be walked end-to-end
   // without a running NestJS API.
-  if (__DEV__ && process.env.EXPO_PUBLIC_DISABLE_API_MOCK !== '1') {
+  if (MOCK_ACTIVE) {
     const method = (rest.method ?? 'GET').toUpperCase();
     // eslint-disable-next-line no-console
     console.log(`[api-mock] ${method} ${path}`);

@@ -7,7 +7,7 @@
  */
 
 import { useEffect, useRef } from 'react';
-import { Animated, Dimensions, Easing, StyleSheet, Text, View } from 'react-native';
+import { Animated, Dimensions, Easing, Image, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { AuthStackParamList } from '../../navigation/types.js';
@@ -21,6 +21,7 @@ import {
   space,
   tracking,
 } from '../../lib/design-system/index.js';
+import { brandLogos, heroArt } from '../../lib/brand/assets.js';
 
 const HERO_HEIGHT = 240;
 
@@ -64,6 +65,7 @@ export function WelcomeScreen({ navigation }: Props) {
   return (
     <View style={styles.root}>
       <View style={styles.hero}>
+        <Image source={heroArt.welcome} style={styles.heroArtwork} resizeMode="cover" />
         <Animated.View
           style={[
             styles.heroHighlight,
@@ -81,6 +83,7 @@ export function WelcomeScreen({ navigation }: Props) {
           ]}
         />
         <View style={styles.heroRule}>
+          <Image source={brandLogos.wordmarkPrimary} style={styles.wordmark} resizeMode="contain" />
           <GoldRule width={56} />
         </View>
       </View>
@@ -133,6 +136,10 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
+  heroArtwork: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.9,
+  },
   heroHighlight: {
     position: 'absolute',
     top: 0,
@@ -148,6 +155,11 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     alignItems: 'center',
+    gap: space.s3,
+  },
+  wordmark: {
+    width: 206,
+    height: 48,
   },
 
   body: {

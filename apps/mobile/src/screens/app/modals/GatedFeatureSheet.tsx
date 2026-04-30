@@ -6,7 +6,7 @@
  * filters, read-receipts.
  */
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import {
   Button,
   Sheet,
@@ -17,8 +17,7 @@ import {
   radius,
   space,
 } from '../../../lib/design-system/index.js';
-
-const BLURRED_PORTRAITS = ['#E5C97D', '#C7E0CC', '#EFE4D2', '#D6E0F4', '#E5EFE6'];
+import { portraitSource } from '../../../lib/brand/assets.js';
 
 export type GatedFeatureSheetProps = {
   visible: boolean;
@@ -47,8 +46,8 @@ export function GatedFeatureSheet({
       <Text style={styles.headline}>{headline}</Text>
 
       <View style={styles.avatarRow}>
-        {BLURRED_PORTRAITS.map((bg, i) => (
-          <View key={i} style={[styles.avatar, { backgroundColor: bg }]} />
+        {[0, 2, 4, 1, 5].map((idx) => (
+          <Image key={idx} source={portraitSource(idx)} style={styles.avatar} resizeMode="cover" />
         ))}
         <View style={styles.avatarMore}>
           <Text style={styles.avatarMoreText}>+1</Text>
@@ -93,6 +92,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: color.hairline.default,
     opacity: 0.5,
+    overflow: 'hidden',
   },
   avatarMore: {
     width: 52,

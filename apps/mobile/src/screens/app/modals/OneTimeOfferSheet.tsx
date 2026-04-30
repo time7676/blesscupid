@@ -5,7 +5,7 @@
  * No countdown timer, no shame copy — per v1.1 monetization posture.
  */
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import {
   Button,
   GoldRule,
@@ -18,6 +18,7 @@ import {
   space,
   tracking,
 } from '../../../lib/design-system/index.js';
+import { brandLogos, heroArt } from '../../../lib/brand/assets.js';
 
 const DEFAULT_BENEFITS = [
   'See who is drawn to you',
@@ -51,6 +52,7 @@ export function OneTimeOfferSheet({
   return (
     <Sheet visible={visible} onDismiss={onDismiss} variant="full">
       <View style={styles.hero}>
+        <Image source={heroArt.oneTimeOfferBand} style={styles.heroArtwork} resizeMode="cover" />
         <View style={styles.ribbon}>
           <Text style={styles.ribbonText}>{ribbon}</Text>
         </View>
@@ -94,6 +96,7 @@ export function OneTimeOfferSheet({
       />
       <View style={{ height: space.s2 }} />
       <Button variant="ghost" label="Maybe later" onPress={onDismiss} />
+      <Image source={brandLogos.blessPlusWordmark} style={styles.wordmark} resizeMode="contain" />
       <Text style={styles.fineprint}>{fineprint}</Text>
     </Sheet>
   );
@@ -111,6 +114,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: space.s5,
     paddingBottom: space.s4,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  heroArtwork: {
+    ...StyleSheet.absoluteFillObject,
+    opacity: 0.95,
   },
   ribbon: {
     paddingHorizontal: space.s4,
@@ -168,6 +177,12 @@ const styles = StyleSheet.create({
     color: color.ink.default,
   },
   spacer: { flex: 1 },
+  wordmark: {
+    width: 146,
+    height: 36,
+    alignSelf: 'center',
+    marginTop: space.s3,
+  },
   fineprint: {
     marginTop: space.s2,
     textAlign: 'center',

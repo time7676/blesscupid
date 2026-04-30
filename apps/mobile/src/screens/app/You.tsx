@@ -11,7 +11,7 @@
  * Per system-v1 prototypes §B2.
  */
 
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import {
   BottomNav,
   ListItem,
@@ -25,6 +25,8 @@ import {
   tracking,
   type NavTabKey,
 } from '../../lib/design-system/index.js';
+import { BrandGlyph } from '../../lib/brand/BrandGlyph.js';
+import { brandLogos, portraitSource } from '../../lib/brand/assets.js';
 
 export type Tier = 'free' | 'plusTrial' | 'plus';
 
@@ -88,7 +90,7 @@ export function YouScreen({
         <ScreenHeader eyebrow="You" />
 
         <View style={styles.identity}>
-          <View style={styles.avatar} />
+          <Image source={portraitSource(1)} style={styles.avatar} resizeMode="cover" />
           <View style={{ flex: 1, minWidth: 0 }}>
             <Text style={styles.name}>
               {name}
@@ -106,9 +108,7 @@ export function YouScreen({
         {/* Plan-tier row — single source of truth */}
         <View style={styles.tierWrap}>
           <View style={styles.tierRow}>
-            <View style={styles.tierIcon}>
-              <Text style={styles.tierIconGlyph}>+</Text>
-            </View>
+            <Image source={brandLogos.logoMark} style={styles.tierIcon} resizeMode="contain" />
             <View style={{ flex: 1, minWidth: 0 }}>
               <Text style={styles.tierEyebrow}>Account</Text>
               <Text style={styles.tierLabel}>
@@ -128,37 +128,37 @@ export function YouScreen({
           <ListItem
             label="Edit profile"
             helper="Photo, name, city, intent"
-            glyph={<Text style={styles.glyph}>{'\u270E'}</Text>}
+            glyph={<BrandGlyph name="editPencil" size={18} />}
             onPress={onEditProfile}
           />
           <ListItem
             label="Faith replies"
             helper="Re-take the questionnaire"
-            glyph={<Text style={styles.glyph}>{'\u25C7'}</Text>}
+            glyph={<BrandGlyph name="heartOutline" size={18} />}
             onPress={onFaithReplies}
           />
           <ListItem
             label="Notifications"
             helper="Daily delivery time"
-            glyph={<Text style={styles.glyph}>{'\u2315'}</Text>}
+            glyph={<BrandGlyph name="bell" size={18} />}
             onPress={onNotifications}
           />
           <ListItem
             label="Privacy"
             helper="Who sees what"
-            glyph={<Text style={styles.glyph}>{'\u2318'}</Text>}
+            glyph={<BrandGlyph name="shield" size={18} />}
             onPress={onPrivacy}
           />
           <ListItem
             label="Blocked accounts"
             helper="Empty"
-            glyph={<Text style={styles.glyph}>{'\u25CB'}</Text>}
+            glyph={<BrandGlyph name="block" size={18} />}
             onPress={onBlocked}
           />
           <ListItem
             label="Sign out"
             destructive
-            glyph={<Text style={styles.glyph}>{'\u2303'}</Text>}
+            glyph={<BrandGlyph name="signOut" size={18} />}
             onPress={onSignOut}
           />
         </View>
@@ -187,9 +187,9 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: radius.pill,
-    backgroundColor: color.sandstone.warm,
     borderWidth: 1,
     borderColor: color.hairline.default,
+    overflow: 'hidden',
   },
   name: {
     fontFamily: fontFamily.serifMedium,
@@ -217,17 +217,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
   },
   tierIcon: {
-    width: 32,
-    height: 32,
-    borderRadius: radius.sm,
-    backgroundColor: color.sandstone.warm,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  tierIconGlyph: {
-    fontFamily: fontFamily.serifMediumItalic,
-    fontSize: 16,
-    color: color.ink.default,
+    width: 36,
+    height: 36,
   },
   tierEyebrow: {
     fontFamily: fontFamily.sansSemibold,
@@ -262,10 +253,5 @@ const styles = StyleSheet.create({
   list: {
     paddingHorizontal: space.s2,
     marginTop: space.s5,
-  },
-  glyph: {
-    fontFamily: fontFamily.sans,
-    fontSize: 16,
-    color: color.ink.soft,
   },
 });
