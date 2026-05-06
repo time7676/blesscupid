@@ -4,11 +4,13 @@
 
 ## Direction
 
-**Cathedral Light.** Dawn light through a chapel window. Warm parchment surfaces, ink for text, communion gold as the singular accent, deep cobalt as the only chromatic counterweight. No reds, no pinks, no neon.
+**Garden Hours.** The production form of Cathedral Light: dawn light through a chapel window, then tea after church. Warm parchment surfaces, ink for text, sandstone-warm section fills, communion gold for sacred emphasis, and amber-ink for selected or warning states. No reds, no pinks, no neon.
 
 ## Color strategy
 
-**Restrained**, with one committed move: cobalt is allowed to carry a hero CTA or selected state, but never more than ~10% of any screen. Gold is reserved for sacred moments (verse-of-day, match confirmation, brand wordmark) and never used as a UI control fill.
+**Restrained**, with one committed move: primary controls are ink-black. Amber carries selected states, focus accents, and warning language. Gold is reserved for sacred moments (verse-of-day, match confirmation, brand wordmark) and never used as a UI control fill.
+
+Cobalt remains defined in tokens for legacy prototypes and future secondary surfaces, but it is retired from user-facing v1.1 app chrome. Do not use cobalt for primary CTAs, active tabs, selected chips, or headline emphasis in new screens.
 
 ### Palette (OKLCH-equivalent, mirrored from `tokens.ts`)
 
@@ -23,9 +25,9 @@
 | Sandstone warm | `color.sandstone.warm` | `#FBF3E2` | Verse-of-day card fill |
 | Gold | `color.gold.default` | `#C8A24B` | Wordmark, gold rule, sacred accent only |
 | Gold halo | `color.gold.halo` | `rgba(200,162,75,0.18)` | Behind hero typography, never on controls |
-| Cobalt 700 | `color.cobalt[700]` | `#243F7A` | Headline emphasis (italic span), match badge |
-| Cobalt 500 | `color.cobalt[500]` | `#3D67B8` | Active tab, links, focus ring, primary CTA |
-| Cobalt 100 | `color.cobalt[100]` | `#D6E0F4` | Selected chip, soft brand surface |
+| Cobalt 700 | `color.cobalt[700]` | `#243F7A` | Reserved for legacy prototypes and future secondary surfaces |
+| Cobalt 500 | `color.cobalt[500]` | `#3D67B8` | Reserved. Do not use for v1.1 primary CTA or active tab |
+| Cobalt 100 | `color.cobalt[100]` | `#D6E0F4` | Reserved. Do not use for v1.1 selected chips |
 | Success 500 | `color.success[500]` | `#5C8A6A` | Send-confirmed, verified pass, positive moderation |
 | Warning 500 | `color.warning[500]` | `#D08A2C` | Amber for caution. **Never red.** Holy Code §HCoC |
 | Hairline | `color.hairline.default` | `rgba(26,26,36,0.12)` | Default 1px divider |
@@ -36,7 +38,7 @@
 
 Two families. No third.
 
-- **Serif identity.** Cormorant Garamond (variable). Use for: hero copy, screen titles, verse text, profile name, headline emphasis. Always pair italic span + cobalt-700 for the editorial em (e.g. *the faith.*).
+- **Serif identity.** Cormorant Garamond (variable). Use for: hero copy, screen titles, verse text, profile name, headline emphasis. Pair italic emphasis with amber-ink (`color.warning[700]`) in v1.1.
 - **Sans body + UI.** Inter (variable). Use for: body, helper, labels, eyebrow caps, buttons, tabs, every input.
 
 ### Type scale (live tokens)
@@ -112,12 +114,12 @@ Tradition badges (cross / fish / dove) only as user self-identification on profi
 
 Components live in `apps/mobile/src/lib/design-system/components/`. Every screen reaches for these before authoring inline styles.
 
-- `Button` — variants: `primary` (cobalt-500 fill), `secondary` (parchment-raised + hairline), `ghost` (text-only with gold underline). Press = 1px translateY + slightly darker fill.
-- `FormInput` — labels above, helper below, error pill underneath. Border `hairline` resting → `cobalt.500` focus → `warning.500` error.
-- `RadioCard` — pill chip style for single-select (faith tradition, orientation). Selected = cobalt-100 fill + cobalt-700 border.
+- `Button` — variants: `primary` (ink fill), `secondary` (parchment-raised + hairline), `ghost` (text-only with gold underline). Press = 1px translateY + slightly darker fill.
+- `FormInput` — labels above, helper below, error pill underneath. Border `hairline` resting → `warning.700` focus → `warning.500` error.
+- `RadioCard` — pill chip style for single-select (faith tradition, orientation). Selected = warning-100 fill + warning-700 border.
 - `VerseCard` — sandstone-warm fill, `xl` radius, gold rule + serif italic for the verse line.
 - `ScreenHeader` — eyebrow caps + serif title + optional back chevron, no center alignment.
-- `BottomNav` — four tabs max. Cobalt-500 for active icon + 9px caps label. No badge dots that re-engage compulsively.
+- `BottomNav` — four tabs max. Ink for active icon + 9px caps label. No badge dots that re-engage compulsively.
 - `Sheet` — bottom sheet with `xxl` radius, `modal` shadow, drag handle 36×4 hairline.
 - `GoldRule` — 56px × 1.5px gold line. Reserved for sacred moments. Never decorative chrome.
 

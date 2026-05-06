@@ -28,27 +28,31 @@ ASSETS = ROOT / "assets" / "brand"
 IOS = ROOT / "ios" / "BlessCupid" / "Images.xcassets"
 ANDROID = ROOT / "android" / "app" / "src" / "main" / "res"
 
+# Must mirror apps/mobile/src/lib/design-system/tokens.ts. Do not tune brand
+# asset colors here without first changing runtime tokens and tokens.css.
 PALETTE = {
     "ink": "#1A1A24",
-    "ink_soft": "#625C57",
+    "ink_soft": "#3F3F4A",
     "ink_charcoal": "#14181F",
     "parchment": "#FAF7F0",
     "parchment_raised": "#FFFDF7",
-    "sandstone": "#E9DDC9",
-    "sandstone_warm": "#F4ECDF",
-    "sandstone_deep": "#D9C8AE",
-    "gold": "#C59A35",
+    "parchment_off": "#F8F8F4",
+    "sandstone": "#F4ECDF",
+    "sandstone_warm": "#FBF3E2",
+    "sandstone_deep": "#EFE4D2",
+    "gold": "#C8A24B",
     "gold_soft": "#E5C97D",
-    "amber": "#B46E26",
-    "amber_light": "#F7DFC0",
-    "cobalt_50": "#EEF3FB",
+    "amber": "#D08A2C",
+    "amber_light": "#FCEBD2",
+    "amber_dark": "#8C5912",
+    "cobalt_50": "#EEF2FB",
     "cobalt_100": "#D6E0F4",
-    "cobalt_300": "#8EA7D7",
-    "cobalt_700": "#2D4F84",
-    "sage_100": "#DDE8DC",
-    "sage_300": "#9DBA9A",
-    "sage_700": "#4A6951",
-    "white": "#FFFFFF",
+    "cobalt_300": "#7FA1DD",
+    "cobalt_700": "#243F7A",
+    "sage_100": "#E5EFE6",
+    "sage_300": "#AFC7B5",
+    "sage_700": "#3F6149",
+    "white": "#FFFDF7",
 }
 
 FONT_DIR = ROOT / "node_modules" / "@expo-google-fonts" / "cormorant-garamond"
@@ -244,13 +248,85 @@ def wordmark_svg(text: str, fill: str, width: int = 1024, height: int = 320) -> 
 """
 
 
-def logo_mark_svg(stroke: str) -> str:
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect x="92" y="92" width="328" height="328" rx="112" fill="none" stroke="{stroke}" stroke-width="10" opacity="0.9"/>
+def logo_mark_svg_body(stroke: str) -> str:
+    return f"""<rect x="92" y="92" width="328" height="328" rx="112" fill="none" stroke="{stroke}" stroke-width="10" opacity="0.9"/>
   <text x="196" y="286" font-family="Cormorant Garamond, serif" font-size="214" font-weight="500" fill="{stroke}">B</text>
   <text x="258" y="292" font-family="Cormorant Garamond, serif" font-size="214" font-weight="500" fill="{stroke}" opacity="0.92">C</text>
   <path d="M170 370 Q256 430 342 370" fill="none" stroke="{stroke}" stroke-width="8" stroke-linecap="round" opacity="0.82"/>
-  <path d="M198 368 H314" fill="none" stroke="{stroke}" stroke-width="5" stroke-linecap="round" opacity="0.76"/>
+  <path d="M198 368 H314" fill="none" stroke="{stroke}" stroke-width="5" stroke-linecap="round" opacity="0.76"/>"""
+
+
+def logo_mark_svg(stroke: str) -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  {logo_mark_svg_body(stroke)}
+</svg>
+"""
+
+
+def abstract_svg(width: int, height: int, *, top: str, bottom: str, accent: str, radius: int = 32) -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="{width}" y2="{height}" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="{top}"/>
+      <stop offset="0.58" stop-color="{PALETTE['parchment']}"/>
+      <stop offset="1" stop-color="{bottom}"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate({width * 0.32:.1f} {height * 0.24:.1f}) rotate(45) scale({width * 0.42:.1f} {height * 0.42:.1f})">
+      <stop stop-color="{accent}" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="{accent}" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="{width}" height="{height}" rx="{radius}" fill="url(#bg)"/>
+  <rect width="{width}" height="{height}" rx="{radius}" fill="url(#glow)"/>
+  <circle cx="{width * 0.78:.1f}" cy="{height * 0.22:.1f}" r="{min(width, height) * 0.16:.1f}" fill="{PALETTE['gold_soft']}" opacity="0.18"/>
+  <path d="M {width * 0.18:.1f} {height * 0.70:.1f} C {width * 0.34:.1f} {height * 0.54:.1f}, {width * 0.58:.1f} {height * 0.54:.1f}, {width * 0.78:.1f} {height * 0.70:.1f}" stroke="{PALETTE['gold']}" stroke-width="{max(2, round(min(width, height) / 160))}" stroke-linecap="round" opacity="0.58"/>
+  <path d="M {width * 0.24:.1f} {height * 0.78:.1f} H {width * 0.76:.1f}" stroke="{PALETTE['ink_soft']}" stroke-width="{max(2, round(min(width, height) / 180))}" stroke-linecap="round" opacity="0.22"/>
+</svg>
+"""
+
+
+def app_icon_svg() -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <rect width="1024" height="1024" rx="220" fill="{PALETTE['parchment_raised']}"/>
+  <circle cx="512" cy="330" r="260" fill="{PALETTE['gold_soft']}" opacity="0.18"/>
+  <circle cx="710" cy="760" r="300" fill="{PALETTE['sandstone']}" opacity="0.45"/>
+  <g transform="translate(256 238)">{logo_mark_svg_body(PALETTE['ink'])}</g>
+</svg>
+"""
+
+
+def splash_svg() -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="2732" height="2732" viewBox="0 0 2732 2732" fill="none">
+  <rect width="2732" height="2732" fill="{PALETTE['parchment']}"/>
+  <circle cx="1366" cy="930" r="760" fill="{PALETTE['gold_soft']}" opacity="0.16"/>
+  <circle cx="1860" cy="1920" r="880" fill="{PALETTE['sandstone']}" opacity="0.32"/>
+  <g transform="translate(1110 760) scale(1.0)">{logo_mark_svg_body(PALETTE['ink'])}</g>
+  <text x="1366" y="1620" text-anchor="middle" dominant-baseline="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="210" font-weight="500" fill="{PALETTE['ink']}">BlessCupid</text>
+  <path d="M1206 1834H1526" stroke="{PALETTE['gold']}" stroke-width="6" stroke-linecap="round"/>
+</svg>
+"""
+
+
+def simple_glyph_svg(name: str) -> str:
+    stroke = PALETTE["ink"]
+    gold = PALETTE["gold"]
+    if name == "loading-spinner":
+        body = f'<circle cx="12" cy="12" r="8" stroke="{PALETTE["hairline"] if "hairline" in PALETTE else PALETTE["sandstone_deep"]}" stroke-width="1.6"/><path d="M20 12a8 8 0 0 0-8-8" stroke="{gold}" stroke-width="1.8" stroke-linecap="round"/>'
+    elif name == "bless-plus-crown":
+        body = f'<path d="M5 18h14l-1.2-8-3.8 3.2L12 7l-2 6.2L6.2 10 5 18Z" stroke="{gold}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 21h10" stroke="{stroke}" stroke-width="1.6" stroke-linecap="round"/>'
+    elif name == "verse-of-day-header":
+        body = f'<path d="M6 4h9a3 3 0 0 1 3 3v13H9a3 3 0 0 1-3-3V4Z" stroke="{gold}" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 9h6M9 13h5" stroke="{stroke}" stroke-width="1.6" stroke-linecap="round"/>'
+    else:
+        body = f'<circle cx="12" cy="12" r="8" stroke="{stroke}" stroke-width="1.6"/><path d="M8 12h8M12 8v8" stroke="{gold}" stroke-width="1.6" stroke-linecap="round"/>'
+    return f'<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">{body}</svg>\n'
+
+
+def badge_svg() -> str:
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="32" fill="{PALETTE['sandstone_warm']}"/>
+  <circle cx="32" cy="32" r="18" fill="{PALETTE['gold_soft']}" opacity="0.35"/>
+  <path d="M22 35c5-7 15-7 20 0" stroke="{PALETTE['amber_dark']}" stroke-width="3" stroke-linecap="round"/>
+  <path d="M24 42h16" stroke="{PALETTE['gold']}" stroke-width="3" stroke-linecap="round"/>
 </svg>
 """
 
@@ -627,6 +703,16 @@ def render_line_icon(name: str, active: bool = False, size: int = 96) -> Image.I
         elif g == "lock":
             draw.arc((s * 0.3, s * 0.18, s * 0.7, s * 0.54), 200, 340, fill=stroke, width=w)
             draw.rounded_rectangle((s * 0.24, s * 0.46, s * 0.76, s * 0.8), radius=s * 0.08, outline=stroke, width=w)
+        elif g == "bless-plus-crown":
+            draw.line((s * 0.18, s * 0.76, s * 0.82, s * 0.76), fill=stroke, width=w)
+            draw.line((s * 0.22, s * 0.68, s * 0.3, s * 0.34, s * 0.43, s * 0.55, s * 0.5, s * 0.22, s * 0.57, s * 0.55, s * 0.7, s * 0.34, s * 0.78, s * 0.68), fill=rgba(PALETTE["gold"], 255), width=w, joint="curve")
+        elif g == "loading-spinner":
+            draw.ellipse((s * 0.22, s * 0.22, s * 0.78, s * 0.78), outline=rgba(PALETTE["sandstone_deep"], 255), width=w)
+            draw.arc((s * 0.22, s * 0.22, s * 0.78, s * 0.78), 270, 20, fill=rgba(PALETTE["gold"], 255), width=w)
+        elif g == "verse-of-day-header":
+            draw.rounded_rectangle((s * 0.26, s * 0.18, s * 0.74, s * 0.82), radius=s * 0.06, outline=rgba(PALETTE["gold"], 255), width=w)
+            draw.line((s * 0.36, s * 0.38, s * 0.64, s * 0.38), fill=stroke, width=w)
+            draw.line((s * 0.36, s * 0.52, s * 0.58, s * 0.52), fill=stroke, width=w)
     else:
         raise ValueError(f"unknown icon {name}")
 
@@ -676,22 +762,33 @@ def export_platform_assets() -> None:
     ensure_dir(ASSETS / "app-icon")
     app_icon = draw_app_icon()
     save_png("app-icon-ios-master", app_icon, ASSETS / "app-icon" / "app-icon-ios-1024.png")
+    save_svg("app-icon-ios-master", app_icon_svg(), ASSETS / "app-icon" / "app-icon-ios-1024.svg", 1024, 1024)
     save_png("ios-app-icon", app_icon, IOS / "AppIcon.appiconset" / "App-Icon-1024x1024@1x.png")
 
     splash = make_splash()
     save_png("splash-master", splash, ASSETS / "splash" / "splash.png")
+    save_svg("splash-master", splash_svg(), ASSETS / "splash" / "splash.svg", 2732, 2732)
     save_png("ios-splash", splash, IOS / "SplashScreenBackground.imageset" / "image.png")
 
     foreground = draw_logo_mark(432)
     save_png("android-adaptive-foreground", foreground, ASSETS / "app-icon" / "android-adaptive-foreground.png")
+    save_svg("android-adaptive-foreground", logo_mark_svg(PALETTE["ink"]), ASSETS / "app-icon" / "android-adaptive-foreground.svg", 512, 512)
     bg = Image.new("RGBA", (432, 432), rgba(PALETTE["sandstone_warm"]))
     save_png("android-adaptive-background", bg, ASSETS / "app-icon" / "android-adaptive-background.png")
+    save_svg(
+        "android-adaptive-background",
+        f"""<svg xmlns="http://www.w3.org/2000/svg" width="432" height="432" viewBox="0 0 432 432"><rect width="432" height="432" fill="{PALETTE['sandstone_warm']}"/></svg>\n""",
+        ASSETS / "app-icon" / "android-adaptive-background.svg",
+        432,
+        432,
+    )
 
     notif = render_line_icon("glyph-bell", size=96)
     alpha_mask = notif.getchannel("A")
     white_icon = Image.new("RGBA", notif.size, (255, 255, 255, 0))
     white_icon.putalpha(alpha_mask)
     save_png("notification-icon-android", white_icon, ASSETS / "app-icon" / "notification-icon-android.png")
+    save_svg("notification-icon-android", simple_glyph_svg("bell"), ASSETS / "app-icon" / "notification-icon-android.svg", 24, 24)
 
     android_sizes = {
         "mipmap-mdpi": 48,
@@ -741,10 +838,14 @@ def export_glyph_assets() -> None:
         "language-globe",
         "info-circle",
         "lock",
+        "bless-plus-crown",
+        "loading-spinner",
+        "verse-of-day-header",
     ]
     for glyph in glyphs:
         image = render_line_icon(f"glyph-{glyph}", size=96)
         save_png(f"glyph-{glyph}", image, ASSETS / "glyphs" / f"{glyph}.png")
+        save_svg(f"glyph-{glyph}", simple_glyph_svg(glyph), ASSETS / "glyphs" / f"{glyph}.svg", 24, 24)
 
 
 def export_portraits() -> None:
@@ -759,6 +860,13 @@ def export_portraits() -> None:
     for idx, scheme in enumerate(schemes, start=1):
         image = portrait_placeholder(300 + idx, (750, 1000), scheme)
         save_png(f"portrait-placeholder-{idx}", image, ASSETS / "portraits" / f"portrait-placeholder-{idx}.png")
+        save_svg(
+            f"portrait-placeholder-{idx}",
+            abstract_svg(750, 1000, top=scheme[0], bottom=scheme[1], accent=scheme[2], radius=56),
+            ASSETS / "portraits" / f"portrait-placeholder-{idx}.svg",
+            750,
+            1000,
+        )
 
 
 def export_hero_assets() -> None:
@@ -770,6 +878,13 @@ def export_hero_assets() -> None:
     }
     for key, (kind, size) in hero_map.items():
         save_png(key, hero_scene(kind, size), ASSETS / "heroes" / f"{key}.png")
+        save_svg(
+            key,
+            abstract_svg(size[0], size[1], top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accent=PALETTE["gold_soft"], radius=64),
+            ASSETS / "heroes" / f"{key}.svg",
+            size[0],
+            size[1],
+        )
 
 
 def export_empty_assets() -> None:
@@ -784,6 +899,7 @@ def export_empty_assets() -> None:
     for idx, kind in enumerate(kinds, start=1):
         image = empty_or_error(kind, (480, 480), 400 + idx)
         save_png(kind, image, ASSETS / "empty" / f"{kind}.png")
+        save_svg(kind, abstract_svg(480, 480, top=PALETTE["parchment"], bottom=PALETTE["sandstone"], accent=PALETTE["gold_soft"], radius=40), ASSETS / "empty" / f"{kind}.svg", 480, 480)
 
 
 def export_error_assets() -> None:
@@ -797,12 +913,14 @@ def export_error_assets() -> None:
     for idx, kind in enumerate(kinds, start=1):
         image = empty_or_error(kind, (360, 360), 500 + idx)
         save_png(kind, image, ASSETS / "error" / f"{kind}.png")
+        save_svg(kind, abstract_svg(360, 360, top=PALETTE["parchment"], bottom=PALETTE["amber_light"], accent=PALETTE["amber"], radius=36), ASSETS / "error" / f"{kind}.svg", 360, 360)
 
 
 def export_verse_assets() -> None:
     for idx, mode in enumerate(("morning", "midday", "evening"), start=1):
         image = verse_bg((1080, 1350), mode, 600 + idx)
         save_png(f"verse-card-bg-{mode}", image, ASSETS / "verse" / f"verse-card-bg-{mode}.png")
+        save_svg(f"verse-card-bg-{mode}", abstract_svg(1080, 1350, top=PALETTE["parchment_raised"], bottom=PALETTE["sandstone_warm"], accent=PALETTE["gold_soft"], radius=56), ASSETS / "verse" / f"verse-card-bg-{mode}.svg", 1080, 1350)
 
 
 def export_texture_assets() -> None:
@@ -843,35 +961,65 @@ def export_simple_badge_assets(folder: str, names: Iterable[str]) -> None:
             }[name]
         image = render_line_icon(glyph, size=64)
         save_png(f"{folder}-{name}", image, ASSETS / folder / f"{name}.png")
+        save_svg(f"{folder}-{name}", badge_svg(), ASSETS / folder / f"{name}.svg", 64, 64)
+
+
+def export_marketing_assets() -> None:
+    ensure_dir(ASSETS / "marketing")
+    mark = draw_logo_mark(512)
+    for size in (16, 32, 180, 192, 512):
+        save_png(f"favicon-{size}", mark.resize((size, size), Image.LANCZOS), ASSETS / "marketing" / f"favicon-{size}.png")
+        save_svg(f"favicon-{size}", logo_mark_svg(PALETTE["ink"]), ASSETS / "marketing" / f"favicon-{size}.svg", 512, 512)
+
+    email = painterly_canvas((600, 200), top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accents=[PALETTE["gold_soft"], PALETTE["amber_light"]], seed=801)
+    email.alpha_composite(draw_wordmark("BlessCupid").resize((360, 92), Image.LANCZOS), (120, 54))
+    save_png("email-header-600x200", email, ASSETS / "marketing" / "email-header-600x200.png")
+    save_svg("email-header-600x200", abstract_svg(600, 200, top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accent=PALETTE["gold_soft"], radius=0), ASSETS / "marketing" / "email-header-600x200.svg", 600, 200)
+
+    og = painterly_canvas((1200, 630), top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accents=[PALETTE["gold_soft"], PALETTE["amber_light"]], seed=802)
+    og.alpha_composite(draw_wordmark("BlessCupid").resize((720, 185), Image.LANCZOS), (240, 250))
+    save_png("og-card-1200x630", og, ASSETS / "marketing" / "og-card-1200x630.png")
+    save_svg("og-card-1200x630", abstract_svg(1200, 630, top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accent=PALETTE["gold_soft"], radius=0), ASSETS / "marketing" / "og-card-1200x630.svg", 1200, 630)
+
+    landing = painterly_canvas((2880, 1620), top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accents=[PALETTE["gold_soft"], PALETTE["amber_light"], PALETTE["sage_100"]], seed=803)
+    landing.alpha_composite(draw_wordmark("BlessCupid").resize((1200, 308), Image.LANCZOS), (840, 620))
+    save_png("landing-hero-2880x1620", landing, ASSETS / "marketing" / "landing-hero-2880x1620.png")
+    save_svg("landing-hero-2880x1620", abstract_svg(2880, 1620, top=PALETTE["parchment"], bottom=PALETTE["sandstone_warm"], accent=PALETTE["gold_soft"], radius=0), ASSETS / "marketing" / "landing-hero-2880x1620.svg", 2880, 1620)
 
 
 def write_readme() -> None:
     lines = [
         "# BlessCupid Brand Assets",
         "",
-        "Generated by `scripts/generate_brand_assets.py`.",
+        "Generated by `apps/mobile/scripts/generate_brand_assets.py`.",
         "",
-        "This pack is runtime-focused for the current Expo / React Native app:",
-        "- PNG exports for immediate `<Image>` usage",
-        "- SVG source files where the app or design spec benefits from vector masters",
+        "Direction: Garden Hours v1.1, the production form of Cathedral Light.",
+        "Source of truth: `apps/mobile/src/lib/design-system/tokens.ts`, mirrored by `docs/design/system-v1/tokens.css`.",
+        "",
+        "Runtime contract:",
+        "- PNG exports are the app assets for React Native `<Image>` usage.",
+        "- SVG files are vector masters for handoff, review, and future `react-native-svg` adoption.",
+        "- No screen may hard-code asset colors. Regenerate this pack after token changes.",
         "",
         "Top-level categories:",
-        "- `logo/` wordmarks, Bless+ marks, monogram",
-        "- `app-icon/` iOS master, Android adaptive layers, notification icon",
-        "- `splash/` launch artwork",
-        "- `nav/` BottomNav active/inactive icons",
-        "- `glyphs/` monochrome UI glyph PNGs",
-        "- `heroes/` painterly onboarding / monetization art",
-        "- `empty/`, `error/`, `portraits/`, `verse/`, `textures/`",
+        "- `logo/` wordmarks, Bless+ mark, monogram.",
+        "- `app-icon/` iOS master, Android adaptive layers, notification icon.",
+        "- `splash/` launch artwork.",
+        "- `nav/` BottomNav active/inactive icons.",
+        "- `glyphs/` monochrome UI glyph PNGs.",
+        "- `heroes/` onboarding, success, redirect, and offer art.",
+        "- `empty/`, `error/`, `portraits/`, `verse/`, `textures/` app surfaces.",
+        "- `tradition/` and `practice/` badge glyphs.",
         "",
-        "Manifest: `manifest.json`",
+        "Manifest: `manifest.json`.",
+        "Full asset spec: `docs/design/system-v1/brand-assets.md`.",
     ]
     (ASSETS / "README.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def write_manifest() -> None:
     payload = {
-        "generatedBy": "scripts/generate_brand_assets.py",
+        "generatedBy": "apps/mobile/scripts/generate_brand_assets.py",
         "assets": [record.__dict__ for record in MANIFEST],
     }
     (ASSETS / "manifest.json").write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
@@ -888,6 +1036,7 @@ def main() -> None:
     export_error_assets()
     export_verse_assets()
     export_texture_assets()
+    export_marketing_assets()
     export_simple_badge_assets(
         "tradition",
         [

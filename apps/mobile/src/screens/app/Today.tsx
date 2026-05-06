@@ -1,49 +1,30 @@
 /**
- * Today — single-profile decision screen, v1.3.
+ * Today — swipe deck v2.0 (Cathedral Light, locked 2026-05-06).
  *
- * Per founder direction 2026-05-06: the user lands on Today and sees ONE
- * profile. They cannot scroll past it — they must decide. Three actions:
+ * User lands on Today and sees a stack of profile cards. Three actions:
+ *   • Pass     ← left swipe / left button (small)
+ *   • Bless    → right swipe / mid button (large, hand icon, ceremony)
+ *   • Super    ↑ up swipe / right button (small, gold star)
  *
- *   • Pass quietly  (left)   — silent skip, no notification to the other side
- *   • Begin (Like)  (right)  — sends Begin intent (verse-anchor enforced
- *                              at chat start)
- *   • Favorite      (center) — scarce 1/day priority signal
+ * Tap a card to open ProfileDetailSheet. Long-press to peek deliberately.
+ * Verse interlude every 5 commits (pacing brake, Cathedral Light §HCoC).
  *
- * After any decision, the next card slides in. After the day's stack is
- * exhausted, the empty state shows + the user is told to come back
- * tomorrow at sunrise.
+ * API mapping:
+ *   pass → 'pass' · bless → 'like' · super → 'favorite'
  *
- * Composition:
- *   ScreenHeader (date eyebrow + greeting)
- *   VerseCard (Pastor-locked daily verse, the conversation anchor)
- *   IntroductionCard (current candidate)
- *   ActionRow (Pass | Favorite | Begin)
- *   BottomNav
- *
- * No horizontal swipe pager between candidates. Swipe-as-navigation
- * conflicts with swipe-as-judgment in user expectation; we collapse to
- * explicit buttons. v1.1 may add gesture support once Reanimated 4
- * worklets are validated on physical devices.
+ * Source-of-truth visual: docs/design/system-v1/swipe-flow.html
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Svg, { Path } from 'react-native-svg';
 import {
-  ActivityIndicator,
-  Dimensions,
-  Image,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
-import {
+  ActionDeck,
   BottomNav,
-  Button,
-  EmptyState,
-  GoldRule,
-  IntroductionCard,
   ScreenHeader,
-  VerseCard,
+  SwipeDeck,
+  ProfileDetailSheet,
   color,
   fontFamily,
   fontSize,
@@ -51,10 +32,14 @@ import {
   radius,
   space,
   tracking,
+  type DeckProfileCard,
   type NavTabKey,
+  type SwipeAction,
+  type SwipeDeckHandle,
 } from '../../lib/design-system/index.js';
+import { MatchSheet } from './modals/MatchSheet.js';
+import { notifyMatch } from '../../lib/notifications.js';
 import { BrandGlyph } from '../../lib/brand/BrandGlyph.js';
-import { portraitSource, verseCardBackgrounds } from '../../lib/brand/assets.js';
 import {
   ApiError,
   getMatchesToday,
@@ -67,11 +52,6 @@ import {
 import { useAuth } from '../../lib/auth-store.js';
 import { Events } from '../../lib/observability/analytics.js';
 
-const TODAY_VERSE = {
-  text: '"Be anxious for nothing, but in everything by prayer…"',
-  reference: 'Phil 4:6',
-};
-
 function dateString(): { eyebrow: string; greeting: string } {
   const d = new Date();
   const weekday = d.toLocaleDateString(undefined, { weekday: 'long' });
@@ -82,34 +62,62 @@ function dateString(): { eyebrow: string; greeting: string } {
   };
 }
 
-function verseArtworkForNow() {
-  const hour = new Date().getHours();
-  if (hour < 11) return verseCardBackgrounds.morning;
-  if (hour < 17) return verseCardBackgrounds.midday;
-  return verseCardBackgrounds.evening;
+function toDeckProfile(c: MatchTodayCard): DeckProfileCard {
+  return {
+    kind: 'profile',
+    id: c.userId,
+    displayName: c.displayName,
+    age: c.age,
+    city: c.city,
+    tradition: c.tradition,
+    walkStage: c.walkStage,
+    bio: c.bio,
+    photoStorageKey: c.photoStorageKey,
+  };
+}
+
+function actionToDecision(action: SwipeAction): MatchDecision {
+  if (action === 'pass') return 'pass';
+  if (action === 'bless') return 'like';
+  return 'favorite';
 }
 
 export type TodayScreenProps = {
   name?: string;
   onNavigate?: (tab: NavTabKey) => void;
-  onMatchPress?: (matchId: string) => void;
 };
 
-export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: TodayScreenProps) {
+export function TodayScreen({ name = 'Friend', onNavigate }: TodayScreenProps) {
   const accessToken = useAuth((s) => s.accessToken);
   const { eyebrow, greeting } = dateString();
-  const [stack, setStack] = useState<MatchTodayCard[] | null>(null);
+  const [profiles, setProfiles] = useState<DeckProfileCard[] | null>(null);
   const [quota, setQuota] = useState<MatchQuotaResponse | null>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [busy, setBusy] = useState<MatchDecision | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [paywallReason, setPaywallReason] = useState<'decisions' | 'favorites' | null>(null);
-  const screenWidth = Dimensions.get('window').width;
+  const [peeking, setPeeking] = useState<DeckProfileCard | null>(null);
+  const [matched, setMatched] = useState<DeckProfileCard | null>(null);
+  const [undosUsedToday, setUndosUsedToday] = useState(0);
+  const deckRef = useRef<SwipeDeckHandle>(null);
 
-  // Helpers derived from quota — favorite quota is server-side enforced
-  // but mirrored here so the button can disable optimistically.
-  const favoriteSpent = quota?.favoritesRemaining === 0;
-  const decisionsExhausted = quota?.decisionsRemaining === 0 && !quota?.isUnlimited;
+  const FREE_UNDO_LIMIT = 1;
+  const todayKey = new Date().toISOString().slice(0, 10);
+  const UNDO_STORAGE_KEY = `today-undos-${todayKey}`;
+
+  useEffect(() => {
+    AsyncStorage.getItem(UNDO_STORAGE_KEY)
+      .then((raw) => setUndosUsedToday(raw ? parseInt(raw, 10) || 0 : 0))
+      .catch(() => undefined);
+  }, [UNDO_STORAGE_KEY]);
+
+  function handleUndo() {
+    if (undosUsedToday >= FREE_UNDO_LIMIT) return;
+    if (!deckRef.current?.canUndo()) return;
+    const restored = deckRef.current.undo();
+    if (!restored) return;
+    const newCount = undosUsedToday + 1;
+    setUndosUsedToday(newCount);
+    void AsyncStorage.setItem(UNDO_STORAGE_KEY, String(newCount));
+    // TODO v1.1: backend DELETE /matches/decision/:candidateId to roll back.
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -121,14 +129,14 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
           getMatchQuota(accessToken),
         ]);
         if (!cancelled) {
-          setStack(stackRes.stack);
+          setProfiles(stackRes.stack.map(toDeckProfile));
           setQuota(quotaRes);
           Events.dailyStackViewed({ stackSize: stackRes.stack.length, activeIndex: 0 });
         }
       } catch (err) {
         if (!cancelled) {
           setError(err instanceof ApiError ? err.code : 'matches_load_failed');
-          setStack([]);
+          setProfiles([]);
         }
       }
     }
@@ -138,42 +146,52 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
     };
   }, [accessToken]);
 
-  const current = stack && activeIndex < stack.length ? stack[activeIndex] : null;
-  const exhausted = stack !== null && activeIndex >= stack.length;
-
-  async function decide(decision: MatchDecision) {
-    if (!accessToken || !current || busy) return;
-    setBusy(decision);
-    setError(null);
+  async function recordDecision(card: DeckProfileCard, action: SwipeAction) {
+    const decision = actionToDecision(action);
+    if (!accessToken) return;
     try {
-      await sendMatchDecision(accessToken, current.userId, decision);
+      const res = await sendMatchDecision(accessToken, card.id, decision);
       Events.matchDecision({ decision });
-      // Refresh quota so the badge + button states stay in sync. Cheap
-      // round-trip; in v1.1 the decision response itself can return
-      // updated quota and we drop this extra call.
+      // If server returns a match flag, fire the ceremony modal + push.
+      if (res.match && (action === 'bless' || action === 'super')) {
+        setMatched(card);
+        void notifyMatch(card.id, card.displayName);
+      }
       try {
         const fresh = await getMatchQuota(accessToken);
         setQuota(fresh);
       } catch {
         // non-fatal
       }
-      setActiveIndex((i) => i + 1);
     } catch (err) {
       if (err instanceof ApiError) {
-        if (err.code === 'quota_decisions_exhausted') {
-          setPaywallReason('decisions');
-        } else if (err.code === 'quota_favorites_exhausted') {
-          setPaywallReason('favorites');
-        } else {
-          setError(err.code);
-        }
+        setError(err.code);
       } else {
         setError('decision_failed');
       }
-    } finally {
-      setBusy(null);
     }
   }
+
+  function handlePeek(card: DeckProfileCard) {
+    setPeeking(card);
+  }
+
+  function handleSheetAction(action: 'pass' | 'bless') {
+    setPeeking(null);
+    // Defer to allow sheet dismiss animation to complete (~240ms).
+    setTimeout(() => {
+      deckRef.current?.commit(action);
+    }, 240);
+  }
+
+  // Only surface the quota when the user is approaching their limit. Free
+  // tier = show pill at ≤3 left OR ≤30%. Above that, the count is noise that
+  // breaks the contemplative tone.
+  const quotaApproachingLimit =
+    !!quota &&
+    !quota.isUnlimited &&
+    (quota.decisionsRemaining <= 3 ||
+      quota.decisionsRemaining / Math.max(quota.decisionsLimit, 1) <= 0.3);
 
   return (
     <View style={styles.root}>
@@ -182,78 +200,45 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
         title={`${greeting}, ${name}`}
         variant="display"
         trailing={
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Notifications"
-            hitSlop={12}
-            style={styles.bellBtn}
-          >
-            <BrandGlyph name="bell" size={18} />
-          </Pressable>
+          <View style={styles.trailing}>
+            {quotaApproachingLimit && quota ? (
+              <View style={styles.quotaChip} accessibilityLabel={`${quota.decisionsRemaining} swipes left today`}>
+                <Text style={styles.quotaChipText}>{quota.decisionsRemaining} left</Text>
+              </View>
+            ) : null}
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Notifications"
+              hitSlop={12}
+              style={styles.bellBtn}
+            >
+              <BrandGlyph name="bell" size={18} />
+            </Pressable>
+          </View>
         }
       />
 
-      <View style={styles.versePad}>
-        <VerseCard
-          variant="compact"
-          illustration={
-            <Image source={verseArtworkForNow()} style={styles.verseArtwork} resizeMode="cover" />
-          }
-          text={TODAY_VERSE.text}
-          reference={TODAY_VERSE.reference}
-        />
+      <View style={styles.deckWrap}>
+        {profiles === null ? (
+          <View style={styles.center}>
+            <ActivityIndicator color={color.cobalt[500]} />
+          </View>
+        ) : profiles.length === 0 ? (
+          <View style={styles.center}>
+            <Text style={styles.emptyTitle}>No new people for today.</Text>
+            <View style={styles.goldRule} />
+            <Text style={styles.emptyBody}>Come back tomorrow at 9:00 am.</Text>
+          </View>
+        ) : (
+          <SwipeDeck
+            ref={deckRef}
+            profiles={profiles}
+            onCommit={recordDecision}
+            onPeek={handlePeek}
+            onEmpty={() => Events.matchDecision({ decision: 'pass' })}
+          />
+        )}
       </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionEyebrow}>One at a time</Text>
-        <GoldRule width={28} style={styles.goldRule} />
-        {quota ? (
-          <Text style={styles.pageIndex}>
-            {quota.isUnlimited
-              ? 'Unlimited'
-              : `${quota.decisionsUsed} / ${quota.decisionsLimit} today`}
-          </Text>
-        ) : null}
-      </View>
-
-      {stack === null ? (
-        <View style={styles.center}>
-          <ActivityIndicator color={color.cobalt[500]} />
-        </View>
-      ) : decisionsExhausted ? (
-        <View style={styles.emptyWrap}>
-          <EmptyState
-            eyebrow="Quota reached"
-            title="You've used today's decisions"
-            body="Free tier resets at midnight UTC. Upgrade to Bless+ for more decisions."
-          />
-        </View>
-      ) : exhausted ? (
-        <View style={styles.emptyWrap}>
-          <EmptyState
-            eyebrow="No more for now"
-            title="You've reviewed every match in the queue"
-            body="New introductions arrive overnight. Come back tomorrow."
-          />
-        </View>
-      ) : current ? (
-        <View style={styles.cardWrap}>
-          <IntroductionCard
-            width={screenWidth}
-            name={current.displayName}
-            age={current.age}
-            place={current.city}
-            tradition={current.tradition ?? '—'}
-            stage={current.walkStage ?? '—'}
-            echo={current.bio ?? undefined}
-            // Photos are returned as opaque storage keys; until the
-            // signed-URL CDN flow lands we fall back to the deterministic
-            // brand portrait gradient set so each card feels distinct.
-            portrait={portraitSource(activeIndex)}
-            onPress={() => onMatchPress?.(current.userId)}
-          />
-        </View>
-      ) : null}
 
       {error ? (
         <View style={styles.errorPill}>
@@ -261,54 +246,53 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
         </View>
       ) : null}
 
-      {current && !exhausted ? (
-        <View style={styles.actions}>
+      {profiles && profiles.length > 0 ? (
+        <View style={styles.deckActions}>
           <Pressable
+            onPress={handleUndo}
+            disabled={undosUsedToday >= FREE_UNDO_LIMIT}
             accessibilityRole="button"
-            accessibilityLabel="Pass quietly"
-            disabled={Boolean(busy)}
-            onPress={() => decide('pass')}
+            accessibilityLabel="Undo last swipe"
+            hitSlop={12}
             style={({ pressed }) => [
-              styles.actionBtn,
-              styles.actionPass,
-              pressed && styles.actionPressed,
-              busy === 'pass' && styles.actionBusy,
+              styles.undoBtn,
+              undosUsedToday >= FREE_UNDO_LIMIT && { opacity: 0.3 },
+              pressed && { opacity: 0.6 },
             ]}
           >
-            <Text style={styles.actionPassText}>Pass quietly</Text>
-          </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Favorite"
-            disabled={Boolean(busy) || favoriteSpent}
-            onPress={() => decide('favorite')}
-            style={({ pressed }) => [
-              styles.actionBtn,
-              styles.actionFavorite,
-              pressed && styles.actionPressed,
-              (favoriteSpent || busy === 'favorite') && styles.actionBusy,
-            ]}
-          >
-            <Text style={styles.actionFavoriteText}>
-              {favoriteSpent ? 'Favorite used' : '★ Favorite'}
+            <Svg width={20} height={20} viewBox="0 0 24 24" fill="none">
+              <Path
+                d="M9 14l-5-5 5-5M4 9h11a5 5 0 0 1 5 5v0a5 5 0 0 1-5 5H10"
+                stroke={color.ink.soft}
+                strokeWidth={1.5}
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </Svg>
+            <Text style={styles.undoLabel}>
+              {undosUsedToday >= FREE_UNDO_LIMIT ? 'Used' : 'Undo'}
             </Text>
           </Pressable>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel="Begin a conversation"
-            disabled={Boolean(busy)}
-            onPress={() => decide('like')}
-            style={({ pressed }) => [
-              styles.actionBtn,
-              styles.actionLike,
-              pressed && styles.actionPressed,
-              busy === 'like' && styles.actionBusy,
-            ]}
-          >
-            <Text style={styles.actionLikeText}>Begin</Text>
-          </Pressable>
+          <ActionDeck
+            onPass={() => deckRef.current?.commit('pass')}
+            onBless={() => deckRef.current?.commit('bless')}
+            onSuper={() => deckRef.current?.commit('super')}
+          />
         </View>
       ) : null}
+
+      <ProfileDetailSheet
+        card={peeking}
+        onDismiss={() => setPeeking(null)}
+        onAction={handleSheetAction}
+      />
+
+      <MatchSheet
+        visible={matched !== null}
+        matchName={matched?.displayName ?? ''}
+        onSendFirstVerse={() => setMatched(null)}
+        onWalkAway={() => setMatched(null)}
+      />
 
       <BottomNav active="today" onSelect={onNavigate ?? (() => {})} />
     </View>
@@ -326,105 +310,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  versePad: {
-    paddingHorizontal: space.s6,
-    marginTop: space.s4,
-  },
-  verseArtwork: {
-    width: '100%',
-    height: 80,
-    borderRadius: radius.md,
-  },
-
-  section: {
-    paddingHorizontal: space.s6,
-    marginTop: space.s6,
-    marginBottom: space.s3,
+  trailing: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: space.s3,
+    gap: space.s2,
   },
-  sectionEyebrow: {
-    fontFamily: fontFamily.sansSemibold,
-    fontSize: fontSize.eyebrow,
-    letterSpacing: letterSpacingFor(tracking.eyebrow, fontSize.eyebrow),
-    textTransform: 'uppercase',
-    color: color.ink.soft,
-  },
-  goldRule: { marginLeft: 0 },
-  pageIndex: {
-    marginLeft: 'auto',
-    fontFamily: fontFamily.sans,
-    fontSize: fontSize.caption,
-    color: color.ink.soft,
-    fontVariant: ['tabular-nums'],
-  },
-
-  center: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  cardWrap: {
-    flex: 1,
-  },
-  emptyWrap: {
-    flex: 1,
-    paddingHorizontal: space.s6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  actions: {
-    flexDirection: 'row',
-    paddingHorizontal: space.s5,
-    paddingTop: space.s3,
-    paddingBottom: space.s3,
-    gap: space.s3,
-    backgroundColor: color.parchment.raised,
-    borderTopWidth: 1,
-    borderTopColor: color.hairline.default,
-  },
-  actionBtn: {
-    flex: 1,
-    paddingVertical: space.s4,
-    borderRadius: radius.lg,
-    alignItems: 'center',
-    justifyContent: 'center',
-    minHeight: 52,
-  },
-  actionPass: {
-    backgroundColor: color.parchment.default,
-    borderWidth: 1,
-    borderColor: color.hairline.default,
-  },
-  actionFavorite: {
+  quotaChip: {
+    paddingHorizontal: space.s3,
+    paddingVertical: space.s1,
     backgroundColor: color.warning[100],
+    borderRadius: radius.pill,
   },
-  actionLike: {
-    backgroundColor: color.cobalt[500],
-  },
-  actionPressed: { opacity: 0.85 },
-  actionBusy: { opacity: 0.6 },
-  actionPassText: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: fontSize.label,
-    color: color.ink.soft,
-  },
-  actionFavoriteText: {
+  quotaChipText: {
     fontFamily: fontFamily.sansSemibold,
-    fontSize: fontSize.label,
+    fontSize: 10,
+    letterSpacing: letterSpacingFor(tracking.eyebrow, 10),
+    textTransform: 'uppercase',
     color: color.warning[700],
-    letterSpacing: 0.4,
   },
-  actionLikeText: {
-    fontFamily: fontFamily.sansSemibold,
-    fontSize: fontSize.label,
-    color: color.parchment.default,
-    letterSpacing: 0.4,
+  deckWrap: { flex: 1 },
+  center: { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: space.s7 },
+  emptyTitle: {
+    fontFamily: fontFamily.serif,
+    fontSize: fontSize.h2,
+    color: color.ink.default,
+    textAlign: 'center',
+    letterSpacing: letterSpacingFor(tracking.tight, fontSize.h2),
   },
-
+  emptyBody: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.bodyLg,
+    color: color.ink.soft,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  goldRule: {
+    width: 56,
+    height: 1.5,
+    backgroundColor: color.gold.default,
+    marginVertical: space.s5,
+  },
   errorPill: {
     marginHorizontal: space.s5,
     marginBottom: space.s3,
@@ -437,5 +362,28 @@ const styles = StyleSheet.create({
     fontFamily: fontFamily.sans,
     fontSize: fontSize.caption,
     color: color.warning[700],
+  },
+  deckActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: space.s5,
+  },
+  undoBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: radius.pill,
+    borderWidth: 1.5,
+    borderColor: color.hairline.default,
+    backgroundColor: color.parchment.raised,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 2,
+  },
+  undoLabel: {
+    fontFamily: fontFamily.sansSemibold,
+    fontSize: 9,
+    color: color.ink.soft,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
   },
 });

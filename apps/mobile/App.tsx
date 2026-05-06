@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { OnboardingAgeGateScreen } from './src/screens/onboarding/AgeGate.js';
 import { OnboardingCovenantScreen } from './src/screens/onboarding/Covenant.js';
@@ -14,6 +15,9 @@ import { DatingOutOfScopeScreen } from './src/screens/onboarding/DatingOutOfScop
 import { LoginScreen } from './src/screens/auth/Login.js';
 import { SignupScreen } from './src/screens/auth/Signup.js';
 import { WelcomeScreen } from './src/screens/auth/Welcome.js';
+import { ForgotPasswordScreen } from './src/screens/auth/ForgotPassword.js';
+import { EmailVerifyScreen } from './src/screens/auth/EmailVerify.js';
+import { OnboardingDoneScreen } from './src/screens/onboarding/Done.js';
 import { V0WelcomeScreen } from './src/screens/onboarding-v0/Welcome.js';
 import { V0FaithTraditionScreen } from './src/screens/onboarding-v0/FaithTradition.js';
 import { V0FaithStatementScreen } from './src/screens/onboarding-v0/FaithStatement.js';
@@ -24,6 +28,11 @@ import { useAuth } from './src/lib/auth-store.js';
 import { useLocale } from './src/i18n/locale-store.js';
 import { initObservability } from './src/lib/observability/index.js';
 import { getFirebaseApp } from './src/lib/firebase.js';
+import {
+  registerForPushNotifications,
+  onForegroundNotification,
+  onNotificationTap,
+} from './src/lib/notifications.js';
 import { color, useDesignSystemFonts } from './src/lib/design-system/index.js';
 import { CatechismNavigator } from './src/navigation/CatechismNavigator.js';
 import { AppShell } from './src/navigation/AppShell.js';
@@ -52,6 +61,23 @@ function AuthNavigator() {
       <AuthStack.Screen name="Welcome" component={WelcomeScreen} />
       <AuthStack.Screen name="Login" component={LoginScreen} />
       <AuthStack.Screen name="Signup" component={SignupScreen} />
+      <AuthStack.Screen name="ForgotPassword">
+        {({ navigation }) => (
+          <ForgotPasswordScreen
+            onBack={() => navigation.goBack()}
+            onDone={() => navigation.navigate('Login')}
+          />
+        )}
+      </AuthStack.Screen>
+      <AuthStack.Screen name="EmailVerify">
+        {({ navigation, route }) => (
+          <EmailVerifyScreen
+            email={route.params?.email ?? ''}
+            onVerified={() => navigation.navigate('Welcome')}
+            onCancel={() => navigation.goBack()}
+          />
+        )}
+      </AuthStack.Screen>
     </AuthStack.Navigator>
   );
 }
@@ -80,13 +106,18 @@ function OnboardingNavigator() {
       <OnboardingStack.Screen name="OnboardingFirstPhoto" component={OnboardingFirstPhotoScreen} />
       <OnboardingStack.Screen name="OnboardingBio" component={OnboardingBioScreen} />
       <OnboardingStack.Screen name="OnboardingDatingOutOfScope" component={DatingOutOfScopeScreen} />
+      <OnboardingStack.Screen name="OnboardingDone">
+        {({ navigation }) => (
+          <OnboardingDoneScreen onContinue={() => navigation.getParent()?.navigate('AppShell')} />
+        )}
+      </OnboardingStack.Screen>
       <OnboardingStack.Screen name="Catechism" component={CatechismNavigator} />
     </OnboardingStack.Navigator>
   );
 }
 
 function RootApp() {
-  const { hydrated, userId, hydrate, onboardingComplete } = useAuth();
+  const { hydrated, userId, hydrate, onboardingComplete, accessToken } = useAuth();
   const { status: fontStatus } = useDesignSystemFonts();
   const hydrateLocale = useLocale((s) => s.hydrate);
 
@@ -97,6 +128,32 @@ function RootApp() {
     // Best-effort Firebase boot — null when EXPO_PUBLIC_FIREBASE_* not set.
     getFirebaseApp();
   }, [hydrate, hydrateLocale]);
+
+  // Register push token once user is authenticated. Fail silently — pre-alpha
+  // testers can opt in later via Notifications settings. Real-time push lands
+  // in v1.1; today this just stores the token server-side.
+  useEffect(() => {
+    if (!accessToken) return;
+    void registerForPushNotifications(accessToken, '0.1.1');
+  }, [accessToken]);
+
+  // Foreground listener — iOS banner is shown automatically by the
+  // notification handler config (shouldShowBanner=true). The listener
+  // is here so future deep-link handling can route taps correctly.
+  useEffect(() => {
+    const offFg = onForegroundNotification((payload) => {
+      // Future: route to Match / Thread / IncomingBlesses based on payload.type
+      // For pre-alpha, OS handles banner display.
+      if (__DEV__) console.log('[notif fg]', payload.type);
+    });
+    const offTap = onNotificationTap((payload) => {
+      if (__DEV__) console.log('[notif tap]', payload.type);
+    });
+    return () => {
+      offFg();
+      offTap();
+    };
+  }, []);
 
   const fontsBlocking = fontStatus === 'loading';
 
@@ -123,21 +180,23 @@ function RootApp() {
   const hasCompletedOnboarding = onboardingComplete;
 
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <RootStack.Navigator screenOptions={{ headerShown: false }}>
-          {userId ? (
-            hasCompletedOnboarding ? (
-              <RootStack.Screen name="AppShell" component={AppShell} />
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <RootStack.Navigator screenOptions={{ headerShown: false }}>
+            {userId ? (
+              hasCompletedOnboarding ? (
+                <RootStack.Screen name="AppShell" component={AppShell} />
+              ) : (
+                <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
+              )
             ) : (
-              <RootStack.Screen name="Onboarding" component={OnboardingNavigator} />
-            )
-          ) : (
-            <RootStack.Screen name="Auth" component={AuthNavigator} />
-          )}
-        </RootStack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+              <RootStack.Screen name="Auth" component={AuthNavigator} />
+            )}
+          </RootStack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
 

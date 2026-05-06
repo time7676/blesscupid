@@ -39,6 +39,17 @@ import {
   space,
   tracking,
 } from '../../lib/design-system/index.js';
+import { ReportSheet, type ReportCategory } from './modals/ReportSheet.js';
+import { ConfirmSheet } from './modals/ConfirmSheet.js';
+import {
+  apiFetch,
+  getThreadMessages,
+  sendThreadMessage,
+  type ThreadMessageRow,
+} from '../../lib/api.js';
+import { notifyMessage } from '../../lib/notifications.js';
+import { useAuth } from '../../lib/auth-store.js';
+import { useEffect } from 'react';
 
 export type ThreadMessage = {
   id: string;
@@ -92,9 +103,10 @@ export type ThreadScreenProps = {
 };
 
 export function ThreadScreen({
-  name = 'Naomi',
-  anchor = MOCK_ANCHOR,
-  messages = MOCK_MESSAGES,
+  threadId,
+  name: nameProp = 'Naomi',
+  anchor: anchorProp,
+  messages: messagesProp,
   onClose,
   onSend,
 }: ThreadScreenProps) {
@@ -102,12 +114,123 @@ export function ThreadScreen({
   const [draft, setDraft] = useState('');
   const [anchorOpen, setAnchorOpen] = useState(true);
   const [revealedAt, setRevealedAt] = useState<string | null>(null);
+  const [reportVisible, setReportVisible] = useState(false);
+  const [blockVisible, setBlockVisible] = useState(false);
+  const accessToken = useAuth((s) => s.accessToken);
 
-  function handleSend() {
+  // Server data — overrides props when threadId is present.
+  const [serverName, setServerName] = useState<string | null>(null);
+  const [serverAnchor, setServerAnchor] = useState<ThreadAnchor | null>(null);
+  const [serverMessages, setServerMessages] = useState<ThreadMessage[] | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!threadId || !accessToken) return;
+      try {
+        const res = await getThreadMessages(accessToken, threadId);
+        if (cancelled) return;
+        setServerName(res.partnerDisplayName);
+        setServerAnchor({ verseText: res.anchor.verseText, verseRef: res.anchor.verseRef });
+        setServerMessages((prev) => {
+          // Preserve any optimistic messages (tmp- prefix) the user added but
+          // server hasn't returned yet. Real-time socket lands in v1.1 — for
+          // now we poll + reconcile by id.
+          const optimistic = (prev ?? []).filter((m) => m.id.startsWith('tmp-'));
+          const fromServer = res.messages.map((m: ThreadMessageRow) => ({
+            id: m.id,
+            from: m.from,
+            text: m.text,
+            at: m.at,
+          }));
+          // Detect new inbound messages since last poll → fire local notification.
+          const prevIds = new Set((prev ?? []).map((m) => m.id));
+          const fresh = fromServer.filter((m) => m.from === 'them' && !prevIds.has(m.id));
+          // Skip notifying on initial load (prev is null/undefined).
+          if (prev && fresh.length > 0) {
+            const last = fresh[fresh.length - 1]!;
+            void notifyMessage(threadId, res.partnerDisplayName, last.text.slice(0, 100));
+          }
+          return [...fromServer, ...optimistic];
+        });
+      } catch {
+        // fall back to prop / mock data
+      }
+    }
+    void load();
+    // Poll every 5s while screen is open. Real-time socket.io lands in v1.1.
+    const interval = setInterval(() => {
+      if (!cancelled) void load();
+    }, 5000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [threadId, accessToken]);
+
+  const name = serverName ?? nameProp;
+  const anchor = serverAnchor ?? anchorProp ?? MOCK_ANCHOR;
+  const messages = serverMessages ?? messagesProp ?? MOCK_MESSAGES;
+
+  async function submitReport(category: ReportCategory, alsoBlock: boolean) {
+    setReportVisible(false);
+    try {
+      await apiFetch('/reports', {
+        method: 'POST',
+        token: accessToken ?? undefined,
+        body: JSON.stringify({ subjectName: name, category, threadId: undefined }),
+      });
+      if (alsoBlock) {
+        await apiFetch('/blocks', {
+          method: 'POST',
+          token: accessToken ?? undefined,
+          body: JSON.stringify({ subjectName: name }),
+        });
+      }
+    } catch {
+      // pre-alpha: non-fatal
+    }
+    onClose?.();
+  }
+
+  async function submitBlock() {
+    setBlockVisible(false);
+    try {
+      await apiFetch('/blocks', {
+        method: 'POST',
+        token: accessToken ?? undefined,
+        body: JSON.stringify({ subjectName: name }),
+      });
+    } catch {
+      // non-fatal
+    }
+    onClose?.();
+  }
+
+  async function handleSend() {
     const text = draft.trim();
     if (!text) return;
-    onSend?.(text);
     setDraft('');
+    // Optimistic append. Replace tempId with server id once response arrives.
+    const tempId = `tmp-${Date.now()}`;
+    const optimistic: ThreadMessage = {
+      id: tempId,
+      from: 'me',
+      text,
+      at: new Date().toISOString(),
+    };
+    setServerMessages((prev) => [...(prev ?? messages), optimistic]);
+    onSend?.(text);
+    if (!threadId || !accessToken) return;
+    try {
+      const res = await sendThreadMessage(accessToken, threadId, text);
+      const realId = res.message.id;
+      setServerMessages((prev) =>
+        (prev ?? messages).map((m) => (m.id === tempId ? { ...m, id: realId } : m)),
+      );
+    } catch {
+      // mark failed message — for pre-alpha leave optimistic in place
+    }
   }
 
   return (
@@ -119,11 +242,19 @@ export function ThreadScreen({
       <ScreenHeader eyebrow="Conversation" title={name} onBack={onClose} />
 
       <View style={styles.safetyRow}>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Report ${name}`}>
+        <Pressable
+          onPress={() => setReportVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel={`Report ${name}`}
+        >
           <Text style={styles.safetyText}>Report</Text>
         </Pressable>
         <Text style={styles.safetyDivider}>·</Text>
-        <Pressable accessibilityRole="button" accessibilityLabel={`Block ${name}`}>
+        <Pressable
+          onPress={() => setBlockVisible(true)}
+          accessibilityRole="button"
+          accessibilityLabel={`Block ${name}`}
+        >
           <Text style={styles.safetyText}>Block</Text>
         </Pressable>
       </View>
@@ -206,6 +337,23 @@ export function ThreadScreen({
           <Text style={styles.sendBtnText}>Send</Text>
         </Pressable>
       </View>
+      <ReportSheet
+        visible={reportVisible}
+        subjectName={name}
+        onCancel={() => setReportVisible(false)}
+        onSubmit={submitReport}
+      />
+      <ConfirmSheet
+        visible={blockVisible}
+        eyebrow={`Block ${name}`}
+        title={`Block ${name}?`}
+        body={`${name} won't see your profile and you won't see theirs. We'll keep this between us.`}
+        cancelLabel="Cancel"
+        confirmLabel="Block"
+        destructive
+        onCancel={() => setBlockVisible(false)}
+        onConfirm={submitBlock}
+      />
     </KeyboardAvoidingView>
   );
 }
@@ -298,8 +446,10 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: radius.sm,
   },
   bubbleText: {
-    fontFamily: fontFamily.serif,
-    fontSize: fontSize.bodyLg,
+    // Sans (Inter) for legibility — serif Cormorant tested poorly for
+    // sustained chat reading. Verse anchor still uses serif italic.
+    fontFamily: fontFamily.sans,
+    fontSize: 16,
     lineHeight: 24,
   },
   bubbleTextMe: { color: color.ink.default },

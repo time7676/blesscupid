@@ -6,6 +6,15 @@
     "scheme": "blesscupid",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
+    "icon": "./assets/brand/app-icon/app-icon-ios-1024.png",
+    "splash": {
+      "image": "./assets/brand/splash/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#FAF7F0"
+    },
+    "notification": {
+      "icon": "./assets/brand/app-icon/notification-icon-android.png"
+    },
     "ios": {
       "bundleIdentifier": "com.blesscupid.app",
       "supportsTablet": false,
@@ -18,6 +27,10 @@
     },
     "android": {
       "package": "com.blesscupid.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/brand/app-icon/android-adaptive-foreground.png",
+        "backgroundImage": "./assets/brand/app-icon/android-adaptive-background.png"
+      },
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.READ_EXTERNAL_STORAGE",

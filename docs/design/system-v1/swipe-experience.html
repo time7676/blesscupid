@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BlessCupid — Swipe Experience System</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink:#1A1A24; --ink-soft:#3F3F4A; --ink-charcoal:#14181F; --ink-pressed:#0F0F15;
+  --parchment:#FAF7F0; --parchment-raised:#FFFDF7; --parchment-off:#F8F8F4;
+  --sandstone:#F4ECDF; --sandstone-deep:#EFE4D2; --sandstone-warm:#FBF3E2;
+  --gold:#C8A24B; --gold-soft:#E5C97D; --gold-halo:rgba(200,162,75,.18);
+  --cobalt-100:#D6E0F4; --cobalt-500:#3D67B8; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --warning-100:#FCEBD2; --warning-500:#D08A2C; --warning-700:#8C5912;
+  --success-500:#5C8A6A; --success-700:#3F6149;
+  --hairline:rgba(26,26,36,.12); --hairline-soft:rgba(26,26,36,.06);
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --sans:'Inter', -apple-system, system-ui, sans-serif;
+  --raise: 0 1px 0 rgba(26,26,36,.04);
+  --card: 0 1px 2px rgba(20,24,31,.06);
+  --modal: 0 12px 32px rgba(20,24,31,.18);
+  --easing-emphatic: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--parchment); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 56px 32px 120px; }
+header { padding-bottom: 40px; border-bottom: 1px solid var(--hairline); margin-bottom: 48px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+h1 { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; margin: 12px 0 8px; font-weight: 500; }
+h1 em { color: var(--cobalt-700); font-style: italic; }
+h2 { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; margin-bottom: 20px; }
+h3 { font-family: var(--serif); font-size: 22px; line-height: 1.35; font-weight: 500; margin-bottom: 12px; }
+.lede { font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 64ch; }
+section { padding: 48px 0; border-bottom: 1px solid var(--hairline-soft); }
+section:last-of-type { border-bottom: 0; }
+.section-eyebrow { display: block; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--hairline-soft); vertical-align: top; }
+th { background: var(--sandstone); font-weight: 600; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt-700); }
+code { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--sandstone-warm); padding: 1px 6px; border-radius: 3px; color: var(--cobalt-700); }
+pre { background: var(--ink-charcoal); color: var(--parchment); padding: 24px; border-radius: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.7; overflow-x: auto; margin-top: 16px; }
+.spec-grid { display: grid; grid-template-columns: 200px 1fr; gap: 8px 24px; font-size: 13px; padding: 12px 0; }
+.spec-grid dt { color: var(--ink-soft); font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+
+/* ========== STAGE ========== */
+.stage-wrap { display: grid; grid-template-columns: 380px 1fr; gap: 48px; align-items: start; margin-top: 24px; }
+@media (max-width: 920px) { .stage-wrap { grid-template-columns: 1fr; } }
+
+.phone { width: 360px; height: 720px; background: var(--parchment); border-radius: 36px; box-shadow: var(--modal); position: relative; overflow: hidden; border: 1px solid var(--hairline); }
+.phone-status { position: absolute; top: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 12px; font-weight: 600; color: var(--ink); z-index: 5; }
+.phone-eyebrow { position: absolute; top: 56px; left: 0; right: 0; text-align: center; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; z-index: 4; }
+
+.deck { position: absolute; top: 92px; bottom: 200px; left: 24px; right: 24px; }
+.swipe-card { position: absolute; inset: 0; background: var(--parchment-raised); border-radius: 28px; box-shadow: var(--card); overflow: hidden; transform-origin: center bottom; cursor: grab; user-select: none; touch-action: none; }
+.swipe-card.dragging { cursor: grabbing; transition: none; }
+.swipe-card:not(.dragging) { transition: transform 320ms var(--easing-emphatic), opacity 320ms var(--easing-emphatic); }
+
+.card-photo { height: 60%; background: linear-gradient(135deg, var(--sandstone-warm), var(--sandstone-deep)); position: relative; }
+.card-photo::after { content: 'M'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 96px; color: var(--cobalt-700); opacity: 0.4; }
+.card-body { padding: 20px 22px; }
+.card-name { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; }
+.card-meta { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+.card-tag { display: inline-block; padding: 4px 12px; background: var(--cobalt-100); color: var(--cobalt-700); border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 12px; }
+
+/* overlay tags — fade in during drag */
+.swipe-overlay { position: absolute; top: 24px; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0; transition: opacity 120ms linear; pointer-events: none; }
+.overlay-pass { right: 24px; color: var(--ink-soft); border: 1.5px solid var(--ink-soft); }
+.overlay-bless { left: 24px; color: var(--cobalt-700); border: 1.5px solid var(--cobalt-700); background: rgba(200,162,75,.18); }
+.overlay-super { top: 60%; left: 50%; transform: translate(-50%,-50%) rotate(-8deg); color: var(--gold); border: 1.5px solid var(--gold); }
+
+/* card behind */
+.card-stack-2 { transform: scale(0.94) translateY(12px); opacity: 0.7; z-index: -1; }
+.card-stack-3 { transform: scale(0.88) translateY(24px); opacity: 0.4; z-index: -2; }
+
+/* ========== ACTION DECK ========== */
+.deck-actions { position: absolute; bottom: 64px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 24px; z-index: 3; }
+.action-btn { width: 64px; height: 64px; border-radius: 999px; border: 1.5px solid var(--hairline); background: var(--parchment-raised); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 80ms var(--easing-standard); box-shadow: var(--card); }
+.action-btn:active { transform: scale(0.94); }
+.action-btn.pass { color: var(--ink-soft); }
+.action-btn.bless { width: 72px; height: 72px; background: var(--cobalt-500); border-color: var(--cobalt-500); color: var(--parchment-raised); position: relative; }
+.action-btn.bless::before { content: ''; position: absolute; inset: -8px; border-radius: 999px; animation: halo 2.4s ease-out infinite; }
+@keyframes halo { 0% { box-shadow: 0 0 0 0 rgba(200,162,75,.4); } 70% { box-shadow: 0 0 0 16px rgba(200,162,75,0); } 100% { box-shadow: 0 0 0 0 rgba(200,162,75,0); } }
+.action-btn.super { border-color: var(--gold); color: var(--gold); }
+.action-btn svg { width: 26px; height: 26px; }
+.action-btn.bless svg { width: 30px; height: 30px; }
+
+/* ========== TELEMETRY PANEL ========== */
+.telemetry { background: var(--ink-charcoal); color: var(--parchment); padding: 20px 24px; border-radius: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.8; }
+.telemetry-row { display: grid; grid-template-columns: 120px 1fr; gap: 12px; }
+.telemetry-row .key { color: var(--gold-soft); }
+.telemetry-row .val { color: var(--parchment); }
+.telemetry-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 999px; overflow: hidden; margin-top: 6px; }
+.telemetry-bar .fill { height: 100%; background: var(--cobalt-500); transition: width 80ms linear; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 10px; font-family: var(--sans); font-weight: 500; font-size: 13px; cursor: pointer; border: 0; }
+.btn-cta { background: var(--cobalt-500); color: var(--parchment-raised); }
+.btn-secondary { background: var(--parchment-raised); color: var(--ink); border: 1px solid var(--hairline); }
+
+.legend { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 16px; font-size: 12.5px; }
+.legend-item { padding: 12px; background: var(--parchment-raised); border-radius: 10px; border: 1px solid var(--hairline-soft); }
+.legend-item strong { display: block; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cobalt-700); margin-bottom: 4px; }
+
+.toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 24px; }
+.toc a { color: var(--cobalt-700); text-decoration: none; font-size: 13px; border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+
+.curve-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: 16px; }
+.curve-card { background: var(--parchment-raised); padding: 16px; border-radius: 12px; box-shadow: var(--card); }
+.curve-card svg { width: 100%; height: 80px; }
+.curve-card .label { font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-top: 8px; }
+.curve-card .meta { font-size: 12px; color: var(--ink-soft); margin-top: 4px; }
+
+.zone-svg { width: 100%; max-width: 360px; height: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">BlessCupid · Swipe Experience System</span>
+  <h1>Swipe with <em>intention.</em></h1>
+  <p class="lede">A standardized swipe deck — gesture, animation, button — that feels reverent, not addictive. No spring-bounce. No infinite restock. Try the live demo on the right.</p>
+  <nav class="toc">
+    <a href="#semantics">Direction semantics</a>
+    <a href="#thresholds">Thresholds</a>
+    <a href="#demo">Live demo</a>
+    <a href="#animation">Animation</a>
+    <a href="#buttons">Button ↔ gesture parity</a>
+    <a href="#haptics">Haptics</a>
+    <a href="#a11y">A11y / reduced motion</a>
+    <a href="#api">RN API</a>
+  </nav>
+</header>
+
+<section id="semantics">
+  <span class="eyebrow section-eyebrow">01 · Direction semantics</span>
+  <h2>Three actions, one direction each</h2>
+  <table>
+    <tr><th>Direction</th><th>Action</th><th>Overlay</th><th>Card exit</th><th>Why</th></tr>
+    <tr><td>← Left</td><td><strong>Pass</strong></td><td>Outline pill, ink-soft, top-right</td><td>x: -120%, rotate: -18°</td><td>Mirrors universal "no" gesture; right-handed thumb pushes left.</td></tr>
+    <tr><td>→ Right</td><td><strong>Bless</strong></td><td>Cobalt pill + gold halo, top-left</td><td>x: +120%, rotate: +18°</td><td>Primary positive action. Cobalt = sacred CTA.</td></tr>
+    <tr><td>↑ Up</td><td><strong>Super-Bless</strong></td><td>Gold pill, center, -8° tilt</td><td>y: -120%, no rotate</td><td>Rare, intentional. Up is harder than left/right — friction is the point.</td></tr>
+    <tr><td>↓ Down</td><td><em>noop</em></td><td>none</td><td>snap back</td><td>Reserved. Down = report/expand profile (separate gesture, long-press).</td></tr>
+  </table>
+</section>
+
+<section id="thresholds">
+  <span class="eyebrow section-eyebrow">02 · Thresholds</span>
+  <h2>Distance × velocity</h2>
+  <p class="lede">Card commits when <em>either</em> distance OR velocity threshold met. Gives forgiving long-drag and crisp flick both.</p>
+  <table>
+    <tr><th>Param</th><th>Pass / Bless</th><th>Super-Bless</th><th>Notes</th></tr>
+    <tr><td>Distance threshold</td><td>32% of card width (≈115px)</td><td>22% of card height (≈110px)</td><td>Lower than Tinder (40%) — kinder to thumbs.</td></tr>
+    <tr><td>Velocity threshold</td><td>800 px/s</td><td>600 px/s</td><td>Flick path. Even short distance commits.</td></tr>
+    <tr><td>Overlay opacity start</td><td>distance ≥ 8% (~30px)</td><td>distance ≥ 8% (~40px)</td><td>Earlier feedback than commit threshold.</td></tr>
+    <tr><td>Overlay opacity full</td><td>distance ≥ 28%</td><td>distance ≥ 18%</td><td>Pre-commit affordance.</td></tr>
+    <tr><td>Rotation</td><td>±18° max @ 100% drag</td><td>0° (translate only)</td><td>Lateral cards rotate; up doesn't (reads as flying away, not toppling).</td></tr>
+    <tr><td>Snap-back duration</td><td colspan="2">320ms · ease-emphatic</td><td>Same for cancel + below-threshold release.</td></tr>
+    <tr><td>Commit duration</td><td colspan="2">320ms · ease-emphatic</td><td>Card slides off-screen, next card rises.</td></tr>
+    <tr><td>Conflict zone (diagonal)</td><td colspan="2">Lock to dominant axis at 45°</td><td>Once locked, ignore other axis until release.</td></tr>
+  </table>
+</section>
+
+<section id="demo">
+  <span class="eyebrow section-eyebrow">03 · Live demo</span>
+  <h2>Drag the card or tap a button</h2>
+
+  <div class="stage-wrap">
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+      <div class="phone-eyebrow">People · Wednesday 6</div>
+
+      <div class="deck">
+        <div class="swipe-card card-stack-3"></div>
+        <div class="swipe-card card-stack-2"></div>
+        <div class="swipe-card" id="card">
+          <div class="swipe-overlay overlay-pass" id="ov-pass">Pass</div>
+          <div class="swipe-overlay overlay-bless" id="ov-bless">Bless</div>
+          <div class="swipe-overlay overlay-super" id="ov-super">Super-Bless</div>
+          <div class="card-photo"></div>
+          <div class="card-body">
+            <div class="card-name">Mariana, 28</div>
+            <div class="card-meta">Manila · Catholic · Daily Mass</div>
+            <span class="card-tag">Walking with one another</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="deck-actions">
+        <button class="action-btn pass" id="btn-pass" aria-label="Pass">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </button>
+        <button class="action-btn super" id="btn-super" aria-label="Super-Bless">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14 3 9.5 9.5 9z" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="action-btn bless" id="btn-bless" aria-label="Send Bless">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 11V4.5a1.5 1.5 0 0 1 3 0V11M15 11V5.5a1.5 1.5 0 0 1 3 0V13M9 11V8.5a1.5 1.5 0 0 0-3 0v6.5c0 3.5 2.5 6 6 6h1.5c3 0 5.5-2 5.5-5.5V13"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div>
+      <div class="telemetry" id="telemetry">
+        <div class="telemetry-row"><span class="key">dx</span><span class="val" id="t-dx">0</span></div>
+        <div class="telemetry-row"><span class="key">dy</span><span class="val" id="t-dy">0</span></div>
+        <div class="telemetry-row"><span class="key">rotate</span><span class="val" id="t-rot">0°</span></div>
+        <div class="telemetry-row"><span class="key">progress</span><span class="val" id="t-prog">0%</span></div>
+        <div class="telemetry-bar"><div class="fill" id="t-fill" style="width:0%"></div></div>
+        <div class="telemetry-row" style="margin-top:12px"><span class="key">axis</span><span class="val" id="t-axis">—</span></div>
+        <div class="telemetry-row"><span class="key">overlay</span><span class="val" id="t-overlay">none</span></div>
+        <div class="telemetry-row"><span class="key">commit</span><span class="val" id="t-commit">—</span></div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="reset-btn">Reset card</button>
+        <button class="btn btn-cta" id="undo-btn">Undo last</button>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item"><strong>Drag</strong>Press &amp; hold the card. Drag left / right / up. Release.</div>
+        <div class="legend-item"><strong>Buttons</strong>Tap → fire same animation as gesture commit.</div>
+        <div class="legend-item"><strong>Threshold</strong>32% horizontal, 22% vertical, OR flick velocity.</div>
+        <div class="legend-item"><strong>Snap back</strong>Release below threshold = 320ms ease-emphatic return.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="animation">
+  <span class="eyebrow section-eyebrow">04 · Animation</span>
+  <h2>Calm, never snappy</h2>
+  <p class="lede">All swipe motion uses ease-emphatic. No spring overshoot. No bounce. Card exit is decisive but unhurried.</p>
+
+  <div class="curve-grid">
+    <div class="curve-card">
+      <svg viewBox="0 0 100 50"><path d="M 0 50 C 20 50, 20 0, 100 0" stroke="var(--cobalt-500)" stroke-width="2" fill="none"/></svg>
+      <div class="label">ease-emphatic</div>
+      <div class="meta">cubic-bezier(0.2, 0.7, 0.2, 1) · 320ms</div>
+    </div>
+    <div class="curve-card">
+      <svg viewBox="0 0 100 50"><path d="M 0 50 C 40 50, 60 0, 100 0" stroke="var(--cobalt-500)" stroke-width="2" fill="none"/></svg>
+      <div class="label">ease-standard</div>
+      <div class="meta">cubic-bezier(0.4, 0, 0.2, 1) · 80–200ms · presses</div>
+    </div>
+    <div class="curve-card">
+      <svg viewBox="0 0 100 50"><path d="M 0 50 L 100 0" stroke="var(--cobalt-500)" stroke-width="2" fill="none"/></svg>
+      <div class="label">linear</div>
+      <div class="meta">overlay opacity tracking drag</div>
+    </div>
+  </div>
+
+  <h3 style="margin-top:32px">Timing map</h3>
+  <table>
+    <tr><th>Phase</th><th>Duration</th><th>Curve</th><th>What animates</th></tr>
+    <tr><td>Press-down</td><td>80ms</td><td>standard</td><td>scale 1 → 0.98 · shadow card → raise</td></tr>
+    <tr><td>Drag</td><td>—</td><td>linear (1:1 finger)</td><td>x, y, rotate, overlay opacity</td></tr>
+    <tr><td>Release · snap back</td><td>320ms</td><td>emphatic</td><td>x/y/rotate → 0 · overlay → 0</td></tr>
+    <tr><td>Release · commit</td><td>320ms</td><td>emphatic</td><td>x → ±120% · rotate ±18° · opacity 1 → 0.8</td></tr>
+    <tr><td>Next card rise</td><td>200ms (delay 80ms)</td><td>emphatic</td><td>scale 0.94 → 1 · y 12 → 0 · opacity 0.7 → 1</td></tr>
+    <tr><td>Bless halo pulse</td><td>2.4s loop</td><td>ease-out</td><td>idle Bless button only · disabled @ reduced motion</td></tr>
+    <tr><td>Match ceremony</td><td>560ms reveal</td><td>emphatic</td><td>covered in components-matching.html</td></tr>
+  </table>
+
+  <h3 style="margin-top:32px">Banned</h3>
+  <ul style="margin-left: 20px; line-height: 1.8;">
+    <li><strong>Spring overshoot</strong> on snap-back. Reads flirty.</li>
+    <li><strong>Confetti, hearts-fly, scale-pop</strong> on Bless commit. Cathedral Light §HCoC.</li>
+    <li><strong>Infinite restock.</strong> Empty deck shows "That's everyone for today" — never auto-fetch more.</li>
+    <li><strong>Card flip</strong> for profile expand. Use bottom sheet (sheet variant=full).</li>
+    <li><strong>Velocity-based rotation overshoot.</strong> Rotation caps at 18° regardless of flick speed.</li>
+  </ul>
+</section>
+
+<section id="buttons">
+  <span class="eyebrow section-eyebrow">05 · Button ↔ gesture parity</span>
+  <h2>Tap fires same animation</h2>
+  <p class="lede">Pass / Bless / Super-Bless buttons trigger the exact card-exit animation a gesture would. No second visual language. Single source of truth.</p>
+
+  <dl class="spec-grid">
+    <dt>onPress flow</dt><dd>1. Haptic fires · 2. Button scales 0.94 (80ms) · 3. Card exits in direction (320ms emphatic) · 4. Next card rises (200ms, 80ms delay) · 5. Telemetry event committed.</dd>
+    <dt>Direction map</dt><dd>Pass → left exit. Bless → right exit. Super → up exit.</dd>
+    <dt>Disabled while animating</dt><dd>All three buttons + drag locked from press-down through next-card-rise complete (~600ms total). Prevents double-fire.</dd>
+    <dt>Tap target</dt><dd>Visual 64/72pt. <code>hitSlop</code> extends to 80pt for thumb-zone forgiveness.</dd>
+    <dt>Position</dt><dd>Anchored bottom · 64pt above safe-area inset · 24pt gutter · 24pt between.</dd>
+  </dl>
+</section>
+
+<section id="haptics">
+  <span class="eyebrow section-eyebrow">06 · Haptics map</span>
+  <h2>Touch the body of the action</h2>
+  <p class="lede">Every swipe + button press fires haptic. <code>expo-haptics</code> on iOS + Android. Disabled if user opts out (system setting respected).</p>
+
+  <table>
+    <tr><th>Moment</th><th>Haptic</th><th>iOS</th><th>Android</th></tr>
+    <tr><td>Card press-down</td><td>light impact</td><td><code>impactAsync(Light)</code></td><td>HapticFeedbackConstants.KEYBOARD_TAP</td></tr>
+    <tr><td>Cross commit threshold (during drag)</td><td>medium impact</td><td><code>impactAsync(Medium)</code></td><td>VIRTUAL_KEY_RELEASE</td></tr>
+    <tr><td>Release · commit (Pass / Bless)</td><td>success notification</td><td><code>notificationAsync(Success)</code></td><td>CONFIRM</td></tr>
+    <tr><td>Release · Super-Bless commit</td><td>heavy impact + success</td><td><code>impactAsync(Heavy)</code> then <code>Success</code></td><td>LONG_PRESS</td></tr>
+    <tr><td>Release · snap back</td><td><em>none</em></td><td>—</td><td>—</td></tr>
+    <tr><td>Match found (post-Bless)</td><td>success notification (chained, 200ms after commit)</td><td><code>notificationAsync(Success)</code></td><td>CONFIRM</td></tr>
+    <tr><td>Empty deck reached</td><td>warning notification (gentle)</td><td><code>notificationAsync(Warning)</code></td><td>REJECT</td></tr>
+  </table>
+</section>
+
+<section id="a11y">
+  <span class="eyebrow section-eyebrow">07 · Accessibility / reduced motion</span>
+  <h2>Every gesture has a button equivalent</h2>
+  <ul style="margin-left: 20px; line-height: 1.9;">
+    <li><strong>Buttons are first-class.</strong> Whole swipe deck operable without gestures. VoiceOver / TalkBack reads card content + Pass / Bless / Super-Bless actions.</li>
+    <li><strong>Reduced motion.</strong> System flag respected. Card exit becomes 200ms cross-fade — no rotate, no translate. Bless halo pulse disabled. Match ceremony skips 560ms reveal, fades in.</li>
+    <li><strong>VoiceOver labels.</strong> Card = "<code>{name}, {age}, {location}, {tradition}. Double-tap to view profile.</code>" Actions = "Pass on {name}", "Send Bless to {name}", "Super-Bless {name}".</li>
+    <li><strong>Focus order.</strong> Card → Pass → Super → Bless. Bless last because it's primary (closest to dominant thumb).</li>
+    <li><strong>Tap target floor.</strong> 48pt min on all controls (covered by 64/72pt visual). <code>hitSlop</code> on small icon affordances.</li>
+    <li><strong>Color-blind safety.</strong> Action distinguished by shape + position + label, not color alone. Cobalt Bless vs gold Super-Bless reinforced by larger size + halo + position.</li>
+    <li><strong>Undo.</strong> Last action reversible within 5s via Undo banner (sheet variant=top). Required — accidental Pass on right person is the worst-feeling bug.</li>
+  </ul>
+</section>
+
+<section id="api">
+  <span class="eyebrow section-eyebrow">08 · RN API (proposed)</span>
+  <h2>Component contracts</h2>
+<pre>&lt;SwipeDeck
+  cards={Card[]}            // {id, name, age, location, tradition, photoUri}
+  onCommit={(id, action) =&gt; void}     // action: 'pass' | 'bless' | 'super'
+  onEmpty={() =&gt; void}                 // last card committed
+  onPeek={(id) =&gt; void}                // long-press → open profile sheet
+  thresholds?={                        // override defaults
+    horizontalDistance: 0.32,          // fraction of card width
+    verticalDistance: 0.22,
+    velocity: 800,
+  }
+  reducedMotion?={boolean}             // override system flag
+/&gt;
+
+// internal:
+&lt;SwipeCard
+  card
+  isTop                                // top of stack receives gesture
+  stackIndex                           // 0,1,2 → scale + translateY behind
+  onCommit                             // animates exit
+/&gt;
+
+&lt;ActionDeck
+  onPass onBless onSuper
+  disabled                             // true during card animation
+/&gt;</pre>
+
+  <h3 style="margin-top:32px">Files to create / touch</h3>
+  <ul style="margin-left: 20px; line-height: 1.8; font-size: 14px;">
+    <li><code>apps/mobile/src/lib/design-system/components/SwipeDeck.tsx</code> — NEW · stack manager + gesture root</li>
+    <li><code>apps/mobile/src/lib/design-system/components/SwipeCard.tsx</code> — NEW · single card · Reanimated SharedValues for x, y, rotate</li>
+    <li><code>apps/mobile/src/lib/design-system/components/ActionDeck.tsx</code> — NEW · 3-button row, exposes refs to call commit imperatively</li>
+    <li><code>apps/mobile/src/lib/design-system/motion.ts</code> — NEW · centralised easing + duration constants for swipe</li>
+    <li><code>apps/mobile/src/lib/design-system/haptics.ts</code> — NEW · expo-haptics wrapper, respects system + user settings</li>
+    <li><code>DESIGN.md</code> — add §Swipe section with this spec</li>
+  </ul>
+
+  <h3 style="margin-top:32px">Deps</h3>
+  <ul style="margin-left: 20px; line-height: 1.8; font-size: 14px;">
+    <li><code>react-native-gesture-handler</code> · PanGestureHandler · already installed</li>
+    <li><code>react-native-reanimated</code> · useSharedValue / useAnimatedStyle / withTiming · already installed</li>
+    <li><code>expo-haptics</code> · NEW dep · <code>pnpm -F @blesscupid/mobile add expo-haptics</code></li>
+  </ul>
+</section>
+
+</div>
+
+<script>
+const card = document.getElementById('card');
+const ovPass = document.getElementById('ov-pass');
+const ovBless = document.getElementById('ov-bless');
+const ovSuper = document.getElementById('ov-super');
+const tDx = document.getElementById('t-dx');
+const tDy = document.getElementById('t-dy');
+const tRot = document.getElementById('t-rot');
+const tProg = document.getElementById('t-prog');
+const tFill = document.getElementById('t-fill');
+const tAxis = document.getElementById('t-axis');
+const tOverlay = document.getElementById('t-overlay');
+const tCommit = document.getElementById('t-commit');
+
+let dragging = false;
+let startX = 0, startY = 0, dx = 0, dy = 0;
+let axis = null;
+let lastT = 0, lastDx = 0, lastDy = 0, vx = 0, vy = 0;
+let history = [];
+
+const W = 312, H = 428;
+const HORIZ_THRESH = 0.32, VERT_THRESH = 0.22, VEL_THRESH = 0.8; // px/ms
+
+function update() {
+  let rot = 0;
+  if (axis === 'x') rot = (dx / W) * 18;
+  card.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+  tDx.textContent = Math.round(dx);
+  tDy.textContent = Math.round(dy);
+  tRot.textContent = rot.toFixed(1) + '°';
+
+  const px = Math.abs(dx) / W;
+  const py = Math.abs(dy) / H;
+  const prog = axis === 'x' ? px / HORIZ_THRESH : axis === 'y' ? py / VERT_THRESH : 0;
+  tProg.textContent = Math.round(prog * 100) + '%';
+  tFill.style.width = Math.min(100, prog * 100) + '%';
+  tAxis.textContent = axis || '—';
+
+  // overlay opacity
+  let oPass = 0, oBless = 0, oSuper = 0;
+  if (axis === 'x' && dx < 0) oPass = Math.min(1, Math.max(0, (Math.abs(dx) - 30) / (W * 0.28 - 30)));
+  if (axis === 'x' && dx > 0) oBless = Math.min(1, Math.max(0, (dx - 30) / (W * 0.28 - 30)));
+  if (axis === 'y' && dy < 0) oSuper = Math.min(1, Math.max(0, (Math.abs(dy) - 40) / (H * 0.18 - 40)));
+  ovPass.style.opacity = oPass;
+  ovBless.style.opacity = oBless;
+  ovSuper.style.opacity = oSuper;
+  tOverlay.textContent = oBless > 0.3 ? 'bless' : oPass > 0.3 ? 'pass' : oSuper > 0.3 ? 'super' : 'none';
+}
+
+function start(x, y) {
+  dragging = true;
+  card.classList.add('dragging');
+  startX = x; startY = y;
+  dx = 0; dy = 0; axis = null;
+  lastT = performance.now(); lastDx = 0; lastDy = 0; vx = 0; vy = 0;
+  tCommit.textContent = '—';
+}
+
+function move(x, y) {
+  if (!dragging) return;
+  dx = x - startX;
+  dy = y - startY;
+  if (!axis && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+    axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+    if (axis === 'y' && dy > 0) axis = null; // down = noop
+  }
+  if (axis === 'x') dy = 0;
+  if (axis === 'y') dx = 0;
+
+  const now = performance.now();
+  const dt = now - lastT;
+  if (dt > 0) { vx = (dx - lastDx) / dt; vy = (dy - lastDy) / dt; }
+  lastT = now; lastDx = dx; lastDy = dy;
+
+  update();
+}
+
+function end() {
+  if (!dragging) return;
+  dragging = false;
+  card.classList.remove('dragging');
+
+  const px = Math.abs(dx) / W;
+  const py = Math.abs(dy) / H;
+  const flickX = Math.abs(vx) > VEL_THRESH;
+  const flickY = Math.abs(vy) > VEL_THRESH;
+
+  if (axis === 'x' && (px >= HORIZ_THRESH || flickX)) {
+    commit(dx > 0 ? 'bless' : 'pass');
+  } else if (axis === 'y' && dy < 0 && (py >= VERT_THRESH || flickY)) {
+    commit('super');
+  } else {
+    snapBack();
+  }
+}
+
+function snapBack() {
+  dx = 0; dy = 0; axis = null;
+  card.style.transform = '';
+  ovPass.style.opacity = 0; ovBless.style.opacity = 0; ovSuper.style.opacity = 0;
+  tCommit.textContent = 'snap-back';
+  tFill.style.width = '0%'; tProg.textContent = '0%'; tDx.textContent = 0; tDy.textContent = 0; tRot.textContent = '0°'; tOverlay.textContent = 'none'; tAxis.textContent = '—';
+}
+
+function commit(action) {
+  history.push(action);
+  tCommit.textContent = action.toUpperCase() + ' · ' + new Date().toLocaleTimeString();
+  if (action === 'pass') card.style.transform = 'translate(-120%, 0) rotate(-18deg)';
+  else if (action === 'bless') card.style.transform = 'translate(120%, 0) rotate(18deg)';
+  else card.style.transform = 'translate(0, -120%)';
+  card.style.opacity = '0.8';
+  setTimeout(() => {
+    card.style.transition = 'none';
+    card.style.transform = '';
+    card.style.opacity = '0';
+    setTimeout(() => {
+      card.style.transition = '';
+      card.style.opacity = '1';
+      ovPass.style.opacity = 0; ovBless.style.opacity = 0; ovSuper.style.opacity = 0;
+      dx = 0; dy = 0; axis = null;
+      tFill.style.width = '0%'; tProg.textContent = '0%'; tDx.textContent = 0; tDy.textContent = 0; tRot.textContent = '0°'; tOverlay.textContent = 'none'; tAxis.textContent = '—';
+    }, 50);
+  }, 320);
+}
+
+card.addEventListener('mousedown', e => start(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+window.addEventListener('mouseup', end);
+card.addEventListener('touchstart', e => { const t = e.touches[0]; start(t.clientX, t.clientY); }, {passive:true});
+window.addEventListener('touchmove', e => { const t = e.touches[0]; move(t.clientX, t.clientY); }, {passive:true});
+window.addEventListener('touchend', end);
+
+document.getElementById('btn-pass').addEventListener('click', () => commit('pass'));
+document.getElementById('btn-bless').addEventListener('click', () => commit('bless'));
+document.getElementById('btn-super').addEventListener('click', () => commit('super'));
+document.getElementById('reset-btn').addEventListener('click', snapBack);
+document.getElementById('undo-btn').addEventListener('click', () => {
+  const last = history.pop();
+  tCommit.textContent = last ? 'undo ' + last : '— nothing to undo';
+});
+</script>
+</body>
+</html>

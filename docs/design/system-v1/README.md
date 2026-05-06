@@ -53,19 +53,8 @@ system-v1/
 
 ## Asset hand-off
 
-The exhaustive list of brand assets you (the user) need to produce is in the plan, **§12 Brand asset spec**:
+The current exhaustive brand asset spec lives in `docs/design/system-v1/brand-assets.md`.
 
-- §12.1 Logo & wordmark
-- §12.2 Splash & launch
-- §12.3 Hero illustrations (Welcome, Done, DatingOutOfScope, Beat 1–8)
-- §12.4 Empty-state illustrations (×6)
-- §12.5 Error-state illustrations (×5)
-- §12.6 BottomNav tab icons (4 tabs × 2 states)
-- §12.7 UI glyph set (~20 icons)
-- §12.8 Tradition badges (×8)
-- §12.9 Practice tag icons (×7)
-- §12.10 Profile portrait placeholders (×6)
-- §12.11 Texture & background
-- §12.12 Verse-of-Day card art (×3)
+Assets are generated into `apps/mobile/assets/brand/` by `apps/mobile/scripts/generate_brand_assets.py`. The app consumes the PNG exports through `apps/mobile/src/lib/brand/assets.ts`; SVG files are source masters for review and future vector adoption.
 
-Each asset has format / dimensions / usage / visual direction in the plan. Drop produced files into `apps/mobile/assets/brand/` mirroring those category names, and I'll wire each one in.
+Catechism Beat 2-8 hero art is dropped from v1.1 because catechism left onboarding. The current pack covers logo, app icon, splash, hero art, empty and error states, BottomNav, UI glyphs, tradition badges, practice badges, portrait placeholders, texture, verse art, and marketing exports.

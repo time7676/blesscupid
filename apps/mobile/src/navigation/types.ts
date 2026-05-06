@@ -15,6 +15,8 @@ export type AuthStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Signup: undefined;
+  ForgotPassword: undefined;
+  EmailVerify: { email: string };
 };
 
 export type OnboardingStackParamList = {
@@ -27,8 +29,7 @@ export type OnboardingStackParamList = {
   OnboardingFirstPhoto: undefined;
   OnboardingBio: undefined;
   OnboardingDatingOutOfScope: undefined;
-  // Legacy completion sink — stack-resets to ProfileLegacy at root.
-  Profile: undefined;
+  OnboardingDone: undefined;
   // v0 design-system onboarding (BLE-155). Demonstrates the BLE-92 token +
   // component layer end-to-end. No backend wire-up — the v0 flow's "Begin"
   // button hands off to the live Signup screen.

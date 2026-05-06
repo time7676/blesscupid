@@ -1,5 +1,19 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { PhotoModerationService } from './photo-moderation.service.js';
+
+// Face-detection is feature-flagged off by default per 2026-05-06 launch
+// decision. These tests cover the face-evaluation logic, so they need the
+// flag flipped on. Production prod env stays unflipped unless a future
+// re-enable lands.
+let prevFlag: string | undefined;
+beforeAll(() => {
+  prevFlag = process.env.PHOTO_FACE_DETECT_ENABLED;
+  process.env.PHOTO_FACE_DETECT_ENABLED = '1';
+});
+afterAll(() => {
+  if (prevFlag === undefined) delete process.env.PHOTO_FACE_DETECT_ENABLED;
+  else process.env.PHOTO_FACE_DETECT_ENABLED = prevFlag;
+});
 
 const stubProvider = {
   detectFaces: async (_: string) => ({ faces: [] }),

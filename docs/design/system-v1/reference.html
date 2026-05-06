@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BlessCupid Design System v1.1 — Reference</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink-default:#1A1A24; --ink-soft:#3F3F4A; --ink-charcoal:#14181F;
+  --parchment:#FAF7F0; --parchment-raised:#FFFDF7; --parchment-off:#F8F8F4;
+  --sandstone:#F4ECDF; --sandstone-deep:#EFE4D2; --sandstone-warm:#FBF3E2;
+  --gold:#C8A24B; --gold-soft:#E5C97D; --gold-halo:rgba(200,162,75,.18);
+  --cobalt-50:#EEF2FB; --cobalt-100:#D6E0F4; --cobalt-300:#7FA1DD;
+  --cobalt-500:#3D67B8; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --warning-100:#FCEBD2; --warning-500:#D08A2C; --warning-700:#8C5912;
+  --success-100:#E5EFE6; --success-500:#5C8A6A; --success-700:#3F6149;
+  --hairline:rgba(26,26,36,.12); --hairline-soft:rgba(26,26,36,.06); --hairline-strong:rgba(20,24,31,.16);
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --sans:'Inter', -apple-system, system-ui, sans-serif;
+  --raise: 0 1px 0 rgba(26,26,36,.04);
+  --card: 0 1px 2px rgba(20,24,31,.06);
+  --modal: 0 12px 32px rgba(20,24,31,.18);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--parchment); color: var(--ink-default); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1180px; margin: 0 auto; padding: 64px 32px 120px; }
+header { padding-bottom: 48px; border-bottom: 1px solid var(--hairline); margin-bottom: 56px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+h1 { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; margin: 16px 0 12px; font-weight: 500; }
+h1 em { color: var(--cobalt-700); font-style: italic; }
+h2 { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; margin-bottom: 20px; }
+h3 { font-family: var(--serif); font-size: 22px; line-height: 1.35; font-weight: 500; margin-bottom: 16px; }
+.lede { font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 64ch; }
+section { padding: 56px 0; border-bottom: 1px solid var(--hairline-soft); }
+section:last-of-type { border-bottom: 0; }
+.section-eyebrow { display: block; margin-bottom: 12px; }
+.row { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.swatch { background: var(--parchment-raised); border-radius: 12px; padding: 0; box-shadow: var(--card); overflow: hidden; }
+.swatch .chip { height: 88px; }
+.swatch .meta { padding: 12px 14px 14px; }
+.swatch .name { font-size: 13px; font-weight: 500; }
+.swatch .token { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.swatch .hex { font-family: ui-monospace, Menlo, monospace; font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.type-row { display: flex; align-items: baseline; gap: 24px; padding: 18px 0; border-bottom: 1px dashed var(--hairline-soft); }
+.type-row .label { width: 140px; font-size: 12.5px; color: var(--ink-soft); font-family: ui-monospace, Menlo, monospace; flex-shrink: 0; }
+.type-row .sample { flex: 1; }
+.t-hero { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; }
+.t-h2   { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; }
+.t-h3   { font-family: var(--serif); font-size: 22px; line-height: 1.35; }
+.t-bodyLg{ font-size: 16px; line-height: 1.55; }
+.t-body { font-size: 14px; line-height: 1.55; }
+.t-label{ font-size: 13px; line-height: 1.25; letter-spacing: 0.02em; font-weight: 500; }
+.t-caption { font-size: 12.5px; line-height: 1.55; color: var(--ink-soft); }
+.t-eyebrow { font-size: 11px; line-height: 1.25; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 600; }
+.space-row { display: flex; align-items: center; gap: 16px; padding: 8px 0; }
+.space-row .label { width: 100px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; color: var(--ink-soft); }
+.space-row .bar { background: var(--cobalt-500); height: 14px; border-radius: 2px; }
+.space-row .px { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--ink-soft); }
+.radius-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.radius-card { background: var(--sandstone); padding: 22px; text-align: center; }
+.radius-card .box { width: 88px; height: 88px; background: var(--cobalt-500); margin: 0 auto 12px; }
+.elev-grid { display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); }
+.elev-card { background: var(--parchment-raised); padding: 28px; border-radius: 12px; text-align: center; }
+.elev-card.raise { box-shadow: var(--raise); }
+.elev-card.card  { box-shadow: var(--card); }
+.elev-card.modal { box-shadow: var(--modal); }
+.motion-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+.motion-card { background: var(--parchment-raised); padding: 20px; border-radius: 12px; box-shadow: var(--card); }
+.motion-card .dot { width: 14px; height: 14px; background: var(--cobalt-500); border-radius: 999px; margin-top: 12px; animation: slide 2s infinite; }
+.motion-card.gentle .dot   { animation-duration: 1.0s; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+.motion-card.intent .dot   { animation-duration: 1.2s; animation-timing-function: cubic-bezier(0.2,0.7,0.2,1); }
+.motion-card.ceremony .dot { animation-duration: 2.0s; animation-timing-function: cubic-bezier(0.2,0.7,0.2,1); }
+.motion-card.instant .dot  { animation-duration: 0.4s; animation-timing-function: cubic-bezier(0.4,0,0.2,1); }
+@keyframes slide { 0% { transform: translateX(0); } 50% { transform: translateX(140px); } 100% { transform: translateX(0); } }
+.btn { display: inline-flex; align-items: center; justify-content: center; padding: 14px 24px; border-radius: 12px; font-size: 13px; font-weight: 500; letter-spacing: 0.02em; cursor: pointer; border: 0; font-family: var(--sans); }
+.btn-primary { background: var(--cobalt-500); color: var(--parchment-raised); }
+.btn-secondary { background: var(--parchment-raised); color: var(--ink-default); border: 1px solid var(--hairline); }
+.btn-ghost { background: transparent; color: var(--ink-default); border-bottom: 1.5px solid var(--gold); border-radius: 0; padding: 8px 0; }
+.gold-rule { width: 56px; height: 1.5px; background: var(--gold); margin: 24px 0; }
+.verse-card { background: var(--sandstone-warm); border-radius: 20px; padding: 32px; max-width: 480px; box-shadow: var(--card); }
+.verse-card .verse { font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.35; color: var(--ink-charcoal); }
+.verse-card .ref { margin-top: 16px; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+.banned { display: inline-block; padding: 4px 10px; background: var(--warning-100); color: var(--warning-700); border-radius: 999px; font-size: 12px; margin: 4px 6px 4px 0; text-decoration: line-through; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 32px; }
+.toc a { color: var(--cobalt-700); text-decoration: none; font-size: 13px; border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+.toc a:hover { border-color: var(--cobalt-500); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">BlessCupid · Design System v1.1</span>
+  <h1>Cathedral <em>Light.</em></h1>
+  <p class="lede">Dawn light through a chapel window. Warm parchment surfaces, ink for text, communion gold as the singular sacred accent, deep cobalt as the only chromatic counterweight. Light only at v1.</p>
+  <nav class="toc">
+    <a href="#color">Color</a>
+    <a href="#type">Typography</a>
+    <a href="#space">Spacing</a>
+    <a href="#radius">Radius</a>
+    <a href="#elevation">Elevation</a>
+    <a href="#motion">Motion</a>
+    <a href="#components">Components</a>
+    <a href="#banned">Banned</a>
+  </nav>
+</header>
+
+<section id="color">
+  <span class="eyebrow section-eyebrow">01 · Color</span>
+  <h2>Palette</h2>
+
+  <h3 style="margin-top:32px">Ink + surfaces</h3>
+  <div class="row">
+    <div class="swatch"><div class="chip" style="background:#1A1A24"></div><div class="meta"><div class="name" style="color:#FAF7F0;background:#1A1A24;padding:8px;border-radius:4px;display:inline-block">Ink</div><div class="token">color.ink.default</div><div class="hex">#1A1A24</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#3F3F4A"></div><div class="meta"><div class="name">Ink soft</div><div class="token">color.ink.soft</div><div class="hex">#3F3F4A</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#14181F"></div><div class="meta"><div class="name">Ink charcoal</div><div class="token">color.ink.charcoal</div><div class="hex">#14181F</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#FAF7F0"></div><div class="meta"><div class="name">Parchment (canvas)</div><div class="token">color.parchment.default</div><div class="hex">#FAF7F0</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#FFFDF7"></div><div class="meta"><div class="name">Parchment raised</div><div class="token">color.parchment.raised</div><div class="hex">#FFFDF7</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#F8F8F4"></div><div class="meta"><div class="name">Parchment off</div><div class="token">color.parchment.off</div><div class="hex">#F8F8F4</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#F4ECDF"></div><div class="meta"><div class="name">Sandstone</div><div class="token">color.sandstone.default</div><div class="hex">#F4ECDF</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#EFE4D2"></div><div class="meta"><div class="name">Sandstone deep</div><div class="token">color.sandstone.deep</div><div class="hex">#EFE4D2</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#FBF3E2"></div><div class="meta"><div class="name">Sandstone warm</div><div class="token">color.sandstone.warm</div><div class="hex">#FBF3E2</div></div></div>
+  </div>
+
+  <h3 style="margin-top:40px">Gold (sacred accent)</h3>
+  <div class="row">
+    <div class="swatch"><div class="chip" style="background:#C8A24B"></div><div class="meta"><div class="name">Gold</div><div class="token">color.gold.default</div><div class="hex">#C8A24B</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#E5C97D"></div><div class="meta"><div class="name">Gold soft</div><div class="token">color.gold.soft</div><div class="hex">#E5C97D</div></div></div>
+    <div class="swatch"><div class="chip" style="background:linear-gradient(#FAF7F0,#FAF7F0),rgba(200,162,75,.18);background-blend-mode:overlay"></div><div class="meta"><div class="name">Gold halo</div><div class="token">color.gold.halo</div><div class="hex">rgba(200,162,75,.18)</div></div></div>
+  </div>
+
+  <h3 style="margin-top:40px">Cobalt ramp</h3>
+  <div class="row">
+    <div class="swatch"><div class="chip" style="background:#EEF2FB"></div><div class="meta"><div class="name">Cobalt 50</div><div class="hex">#EEF2FB</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#D6E0F4"></div><div class="meta"><div class="name">Cobalt 100</div><div class="hex">#D6E0F4</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#7FA1DD"></div><div class="meta"><div class="name">Cobalt 300</div><div class="hex">#7FA1DD</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#3D67B8"></div><div class="meta"><div class="name" style="color:#FFF;background:#3D67B8;padding:8px;border-radius:4px;display:inline-block">Cobalt 500 · CTA</div><div class="hex">#3D67B8</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#243F7A"></div><div class="meta"><div class="name" style="color:#FFF;background:#243F7A;padding:8px;border-radius:4px;display:inline-block">Cobalt 700 · headline em</div><div class="hex">#243F7A</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#142447"></div><div class="meta"><div class="name">Cobalt 900</div><div class="hex">#142447</div></div></div>
+  </div>
+
+  <h3 style="margin-top:40px">Feedback — amber & sage (never red)</h3>
+  <div class="row">
+    <div class="swatch"><div class="chip" style="background:#FCEBD2"></div><div class="meta"><div class="name">Warning 100</div><div class="hex">#FCEBD2</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#D08A2C"></div><div class="meta"><div class="name">Warning 500</div><div class="hex">#D08A2C</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#8C5912"></div><div class="meta"><div class="name">Warning 700</div><div class="hex">#8C5912</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#E5EFE6"></div><div class="meta"><div class="name">Success 100</div><div class="hex">#E5EFE6</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#5C8A6A"></div><div class="meta"><div class="name">Success 500</div><div class="hex">#5C8A6A</div></div></div>
+    <div class="swatch"><div class="chip" style="background:#3F6149"></div><div class="meta"><div class="name">Success 700</div><div class="hex">#3F6149</div></div></div>
+  </div>
+</section>
+
+<section id="type">
+  <span class="eyebrow section-eyebrow">02 · Typography</span>
+  <h2>Cormorant Garamond + Inter</h2>
+  <p class="lede" style="margin-bottom:32px">Two families. No third. Serif carries identity, sans carries UI.</p>
+
+  <div class="type-row"><div class="label">hero · 38/40</div><div class="sample t-hero">Find someone <em>holy.</em></div></div>
+  <div class="type-row"><div class="label">h2 · 26/31</div><div class="sample t-h2">Today, Wednesday the sixth.</div></div>
+  <div class="type-row"><div class="label">h3 · 22/30</div><div class="sample t-h3">Three for today</div></div>
+  <div class="type-row"><div class="label">bodyLg · 16/25</div><div class="sample t-bodyLg">Walk with one another in faith. Send a verse, then a question.</div></div>
+  <div class="type-row"><div class="label">body · 14/22</div><div class="sample t-body">Default app body. Caps text column at 32em on phone.</div></div>
+  <div class="type-row"><div class="label">label · 13/16 · 0.02em</div><div class="sample t-label">Continue with email</div></div>
+  <div class="type-row"><div class="label">caption · 12.5/19</div><div class="sample t-caption">Helper, legal, metadata.</div></div>
+  <div class="type-row"><div class="label">eyebrow · 11/14 · 0.2em</div><div class="sample t-eyebrow">Today · Wednesday 6</div></div>
+</section>
+
+<section id="space">
+  <span class="eyebrow section-eyebrow">03 · Spacing</span>
+  <h2>Strict 4px grid</h2>
+  <p class="lede" style="margin-bottom:24px">Use named tokens, never raw px. Vary spacing intentionally.</p>
+  <div class="space-row"><div class="label">space.s0</div><div class="bar" style="width:0px"></div><div class="px">0</div></div>
+  <div class="space-row"><div class="label">space.s1</div><div class="bar" style="width:4px"></div><div class="px">4</div></div>
+  <div class="space-row"><div class="label">space.s2</div><div class="bar" style="width:8px"></div><div class="px">8</div></div>
+  <div class="space-row"><div class="label">space.s3</div><div class="bar" style="width:12px"></div><div class="px">12</div></div>
+  <div class="space-row"><div class="label">space.s4</div><div class="bar" style="width:16px"></div><div class="px">16</div></div>
+  <div class="space-row"><div class="label">space.s5</div><div class="bar" style="width:20px"></div><div class="px">20</div></div>
+  <div class="space-row"><div class="label">space.s6</div><div class="bar" style="width:24px"></div><div class="px">24</div></div>
+  <div class="space-row"><div class="label">space.s7</div><div class="bar" style="width:32px"></div><div class="px">32</div></div>
+  <div class="space-row"><div class="label">space.s8</div><div class="bar" style="width:40px"></div><div class="px">40</div></div>
+  <div class="space-row"><div class="label">space.s9</div><div class="bar" style="width:56px"></div><div class="px">56</div></div>
+  <div class="space-row"><div class="label">space.s10</div><div class="bar" style="width:72px"></div><div class="px">72</div></div>
+</section>
+
+<section id="radius">
+  <span class="eyebrow section-eyebrow">04 · Radius</span>
+  <h2>Seven steps</h2>
+  <div class="radius-grid" style="margin-top:24px">
+    <div class="radius-card"><div class="box" style="border-radius:2px"></div><div class="t-label">xs · 2</div><div class="t-caption">Inline tags</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:4px"></div><div class="t-label">sm · 4</div><div class="t-caption">Inputs, segmented</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:6px"></div><div class="t-label">md · 6</div><div class="t-caption">Toast</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:12px"></div><div class="t-label">lg · 12</div><div class="t-caption">Default card, button</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:20px"></div><div class="t-label">xl · 20</div><div class="t-caption">Verse card, sheets</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:28px"></div><div class="t-label">xxl · 28</div><div class="t-caption">Match hero</div></div>
+    <div class="radius-card"><div class="box" style="border-radius:999px"></div><div class="t-label">pill · 999</div><div class="t-caption">Chips, badges</div></div>
+  </div>
+</section>
+
+<section id="elevation">
+  <span class="eyebrow section-eyebrow">05 · Elevation</span>
+  <h2>Three steps</h2>
+  <p class="lede" style="margin-bottom:24px">No glows, no neumorphism, no inset shadows.</p>
+  <div class="elev-grid">
+    <div class="elev-card raise"><div class="t-label">raise</div><div class="t-caption">0 1px 0 rgba(26,26,36,.04)</div><div class="t-caption" style="margin-top:4px">Inactive resting cards</div></div>
+    <div class="elev-card card"><div class="t-label">card</div><div class="t-caption">0 1px 2px rgba(20,24,31,.06)</div><div class="t-caption" style="margin-top:4px">Default card lift</div></div>
+    <div class="elev-card modal"><div class="t-label">modal</div><div class="t-caption">0 12px 32px rgba(20,24,31,.18)</div><div class="t-caption" style="margin-top:4px">Sheets, modals</div></div>
+  </div>
+</section>
+
+<section id="motion">
+  <span class="eyebrow section-eyebrow">06 · Motion</span>
+  <h2>Calm, never snappy</h2>
+  <p class="lede" style="margin-bottom:24px">Easing emphatic = cubic-bezier(0.2, 0.7, 0.2, 1). Reduced motion = fade only.</p>
+  <div class="motion-grid">
+    <div class="motion-card instant"><div class="t-label">instant · 80ms</div><div class="t-caption">Press states</div><div class="dot"></div></div>
+    <div class="motion-card gentle"><div class="t-label">gentle · 200ms</div><div class="t-caption">Tab swap, chip select</div><div class="dot"></div></div>
+    <div class="motion-card intent"><div class="t-label">intent · 320ms</div><div class="t-caption">Card swipe, sheet</div><div class="dot"></div></div>
+    <div class="motion-card ceremony"><div class="t-label">ceremony · 560ms</div><div class="t-caption">Match confirm, verse reveal</div><div class="dot"></div></div>
+  </div>
+</section>
+
+<section id="components">
+  <span class="eyebrow section-eyebrow">07 · Components — sample</span>
+  <h2>Buttons + verse card + gold rule</h2>
+  <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin: 24px 0 40px">
+    <button class="btn btn-primary">Continue</button>
+    <button class="btn btn-secondary">Maybe later</button>
+    <button class="btn btn-ghost">Skip for today</button>
+  </div>
+  <div class="gold-rule"></div>
+  <div class="verse-card">
+    <div class="verse">"Above all, love each other deeply, because love covers over a multitude of sins."</div>
+    <div class="ref">1 Peter 4:8 · NIV</div>
+  </div>
+</section>
+
+<section id="banned">
+  <span class="eyebrow section-eyebrow">08 · Banned</span>
+  <h2>Refuse + rewrite</h2>
+  <p class="lede" style="margin-bottom:20px">Holy Code §HCoC. Cathedral Light is restrained.</p>
+  <div>
+    <span class="banned">red (any hex)</span>
+    <span class="banned">neon pink</span>
+    <span class="banned">Tinder gradient</span>
+    <span class="banned">pure #000 / #fff</span>
+    <span class="banned">gradient text</span>
+    <span class="banned">glassmorphism default</span>
+    <span class="banned">spring-bounce</span>
+    <span class="banned">confetti / hearts-fly</span>
+    <span class="banned">em dashes in copy</span>
+    <span class="banned">AI-generated faces</span>
+    <span class="banned">filled emoji icons</span>
+    <span class="banned">side-stripe accents</span>
+    <span class="banned">hero-metric SaaS template</span>
+    <span class="banned">nested cards</span>
+    <span class="banned">infinite loops</span>
+  </div>
+</section>
+
+</div>
+</body>
+</html>

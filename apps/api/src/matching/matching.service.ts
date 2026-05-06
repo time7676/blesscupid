@@ -111,6 +111,13 @@ export class MatchingService {
    * `like` triggers a Begin intent (verse-anchor enforcement at chat
    * boundary, see chat module). `favorite` is the scarce 1/day priority
    * signal — the controller enforces the 1/day cap before calling here.
+   *
+   * Alpha-launch reviewer auto-match: when ALPHA_AUTO_LIKE=1 and the
+   * candidate is a reviewer-decoy account (email starts with `reviewer-`
+   * @ seed.blesscupid.test), this method also writes the reverse
+   * MatchDecision so chat unlocks immediately. Reviewers are passive
+   * (no real human reply) but the match + thread create work end-to-end.
+   * Disable: unset ALPHA_AUTO_LIKE in container env.
    */
   async recordDecision(
     viewerId: string,
@@ -125,7 +132,69 @@ export class MatchingService {
       create: { userId: viewerId, candidateUserId, decision, day },
       update: { decision, day },
     });
-    return { ok: true, decision, day };
+
+    if (
+      (decision === 'like' || decision === 'favorite') &&
+      process.env.ALPHA_AUTO_LIKE === '1'
+    ) {
+      await this.maybeAutoLikeReviewer(viewerId, candidateUserId, day);
+    }
+
+    // Mutual-match detection: if BOTH directions are like/favorite, this is
+    // a match. Mobile listens for `match: true` to fire the MatchSheet
+    // ceremony. `pass` decisions never produce a match.
+    let match = false;
+    if (decision === 'like' || decision === 'favorite') {
+      const reverse = await this.prisma.matchDecision.findUnique({
+        where: {
+          userId_candidateUserId: {
+            userId: candidateUserId,
+            candidateUserId: viewerId,
+          },
+        },
+        select: { decision: true },
+      });
+      match =
+        reverse !== null &&
+        (reverse.decision === 'like' || reverse.decision === 'favorite');
+    }
+
+    return { ok: true, decision, day, match };
+  }
+
+  /**
+   * If `candidateUserId` belongs to a reviewer-decoy account, write the
+   * reverse MatchDecision (reviewer → viewer = 'like'). Idempotent via
+   * unique constraint on (userId, candidateUserId).
+   */
+  private async maybeAutoLikeReviewer(
+    viewerId: string,
+    candidateUserId: string,
+    day: string,
+  ): Promise<void> {
+    const candidate = await this.prisma.user.findUnique({
+      where: { id: candidateUserId },
+      select: { email: true },
+    });
+    if (!candidate) return;
+    if (!candidate.email.startsWith('reviewer-')) return;
+    if (!candidate.email.endsWith('@seed.blesscupid.test')) return;
+
+    await this.prisma.matchDecision.upsert({
+      where: {
+        userId_candidateUserId: {
+          userId: candidateUserId,
+          candidateUserId: viewerId,
+        },
+      },
+      create: {
+        userId: candidateUserId,
+        candidateUserId: viewerId,
+        decision: 'like',
+        day,
+      },
+      update: {},
+    });
   }
 
   /** True when the viewer has spent their 1/day favorite on `day`. */

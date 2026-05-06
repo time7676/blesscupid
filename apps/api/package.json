@@ -14,6 +14,9 @@
     "test:watch": "vitest",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
+    "seed": "node --import tsx/esm prisma/seed.ts",
+    "seed:clean": "node --import tsx/esm prisma/seed-clean.ts",
+    "seed:reviewers": "node --import tsx/esm prisma/seed-reviewers.ts",
     "worker:hard-delete": "node --import tsx/esm src/scripts/run-hard-delete-worker.ts"
   },
   "dependencies": {

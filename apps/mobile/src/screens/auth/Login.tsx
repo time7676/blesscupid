@@ -158,6 +158,10 @@ export function LoginScreen({ navigation }: Props) {
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Signup')}>
           <Text style={styles.linkText}>New here? Create an account</Text>
         </Pressable>
+
+        <Pressable style={styles.linkRow} onPress={() => navigation.navigate('ForgotPassword')}>
+          <Text style={styles.linkText}>Forgot password?</Text>
+        </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
   );

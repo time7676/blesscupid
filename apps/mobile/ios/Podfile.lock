@@ -53,6 +53,8 @@ PODS:
     - ExpoModulesCore
   - ExpoFont (14.0.11):
     - ExpoModulesCore
+  - ExpoHaptics (15.0.8):
+    - ExpoModulesCore
   - ExpoImagePicker (17.0.11):
     - ExpoModulesCore
   - ExpoKeepAwake (15.0.8):
@@ -88,6 +90,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - ExpoNotifications (55.0.22):
+    - ExpoModulesCore
   - ExpoSecureStore (15.0.8):
     - ExpoModulesCore
   - ExpoWebBrowser (15.0.11):
@@ -2461,6 +2465,34 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
+  - RNGestureHandler (2.28.0):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
   - RNReanimated (4.1.7):
     - boost
     - DoubleConversion
@@ -2642,7 +2674,64 @@ PODS:
     - Sentry/HybridSDK (= 8.56.1)
     - SocketRocket
     - Yoga
-  - RNWorklets (0.8.3):
+  - RNSVG (15.12.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - RNSVG/common (= 15.12.1)
+    - SocketRocket
+    - Yoga
+  - RNSVG/common (15.12.1):
+    - boost
+    - DoubleConversion
+    - fast_float
+    - fmt
+    - glog
+    - hermes-engine
+    - RCT-Folly
+    - RCT-Folly/Fabric
+    - RCTRequired
+    - RCTTypeSafety
+    - React-Core
+    - React-debug
+    - React-Fabric
+    - React-featureflags
+    - React-graphics
+    - React-ImageManager
+    - React-jsi
+    - React-NativeModulesApple
+    - React-RCTFabric
+    - React-renderercss
+    - React-rendererdebug
+    - React-utils
+    - ReactCodegen
+    - ReactCommon/turbomodule/bridging
+    - ReactCommon/turbomodule/core
+    - SocketRocket
+    - Yoga
+  - RNWorklets (0.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2669,11 +2758,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
-    - RNWorklets/apple (= 0.8.3)
-    - RNWorklets/common (= 0.8.3)
+    - RNWorklets/worklets (= 0.5.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/apple (0.8.3):
+  - RNWorklets/worklets (0.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2700,9 +2788,10 @@ PODS:
     - ReactCodegen
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
+    - RNWorklets/worklets/apple (= 0.5.2)
     - SocketRocket
     - Yoga
-  - RNWorklets/common (0.8.3):
+  - RNWorklets/worklets/apple (0.5.2):
     - boost
     - DoubleConversion
     - fast_float
@@ -2753,10 +2842,12 @@ DEPENDENCIES:
   - "ExpoCrypto (from `../../../node_modules/.pnpm/expo-crypto@15.0.9_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel+_su2kj7o65oogdavtwydsqh7wf4/node_modules/expo-crypto/ios`)"
   - "ExpoFileSystem (from `../../../node_modules/.pnpm/expo-file-system@19.0.22_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@_jxyczdlgvhnnivitpyjqrn5ae4/node_modules/expo-file-system/ios`)"
   - "ExpoFont (from `../../../node_modules/.pnpm/expo-font@14.0.11_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel+c_ee5lvn3kpqahdzgnehzn2lxthq/node_modules/expo-font/ios`)"
+  - "ExpoHaptics (from `../../../node_modules/.pnpm/expo-haptics@15.0.8_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel_7iubm5q7budrmx4jk4ubgzpfja/node_modules/expo-haptics/ios`)"
   - "ExpoImagePicker (from `../../../node_modules/.pnpm/expo-image-picker@17.0.11_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5__nc43dnjla47e5kxcfmdyft7gd4/node_modules/expo-image-picker/ios`)"
   - "ExpoKeepAwake (from `../../../node_modules/.pnpm/expo-keep-awake@15.0.8_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@ba_7awmorzzgefeiuucqrmesttwqu/node_modules/expo-keep-awake/ios`)"
   - "ExpoLinking (from `../../../node_modules/.pnpm/expo-linking@8.0.12_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel_qx2zu3nxwvkbe64mh4o5zqc2wa/node_modules/expo-linking/ios`)"
   - "ExpoModulesCore (from `../../../node_modules/.pnpm/expo-modules-core@3.0.30_react-native@0.81.5_@babel+core@7.29.0_@react-native-community+cli@1_vwl66vuzespbld3gcpzmjcukla/node_modules/expo-modules-core`)"
+  - "ExpoNotifications (from `../../../node_modules/.pnpm/expo-notifications@55.0.22_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_rgifnwx5brct35sjwxxb6pk5f4/node_modules/expo-notifications/ios`)"
   - "ExpoSecureStore (from `../../../node_modules/.pnpm/expo-secure-store@15.0.8_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@_xyyrph44465yv6wwq6nlma5sky/node_modules/expo-secure-store/ios`)"
   - "ExpoWebBrowser (from `../../../node_modules/.pnpm/expo-web-browser@15.0.11_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@_etbwxujcu5jmonqavdeqynlcq4/node_modules/expo-web-browser/ios`)"
   - fast_float (from `../node_modules/react-native/third-party-podspecs/fast_float.podspec`)
@@ -2831,9 +2922,11 @@ DEPENDENCIES:
   - ReactCodegen (from `build/generated/ios`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - "RNCAsyncStorage (from `../node_modules/@react-native-async-storage/async-storage`)"
+  - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
+  - RNSVG (from `../node_modules/react-native-svg`)
   - RNWorklets (from `../node_modules/react-native-worklets`)
   - SocketRocket (~> 0.7.1)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -2869,6 +2962,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/.pnpm/expo-file-system@19.0.22_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@_jxyczdlgvhnnivitpyjqrn5ae4/node_modules/expo-file-system/ios"
   ExpoFont:
     :path: "../../../node_modules/.pnpm/expo-font@14.0.11_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel+c_ee5lvn3kpqahdzgnehzn2lxthq/node_modules/expo-font/ios"
+  ExpoHaptics:
+    :path: "../../../node_modules/.pnpm/expo-haptics@15.0.8_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel_7iubm5q7budrmx4jk4ubgzpfja/node_modules/expo-haptics/ios"
   ExpoImagePicker:
     :path: "../../../node_modules/.pnpm/expo-image-picker@17.0.11_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5__nc43dnjla47e5kxcfmdyft7gd4/node_modules/expo-image-picker/ios"
   ExpoKeepAwake:
@@ -2877,6 +2972,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/.pnpm/expo-linking@8.0.12_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@babel_qx2zu3nxwvkbe64mh4o5zqc2wa/node_modules/expo-linking/ios"
   ExpoModulesCore:
     :path: "../../../node_modules/.pnpm/expo-modules-core@3.0.30_react-native@0.81.5_@babel+core@7.29.0_@react-native-community+cli@1_vwl66vuzespbld3gcpzmjcukla/node_modules/expo-modules-core"
+  ExpoNotifications:
+    :path: "../../../node_modules/.pnpm/expo-notifications@55.0.22_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_rgifnwx5brct35sjwxxb6pk5f4/node_modules/expo-notifications/ios"
   ExpoSecureStore:
     :path: "../../../node_modules/.pnpm/expo-secure-store@15.0.8_expo@54.0.34_@babel+core@7.29.0_graphql@15.8.0_react-native@0.81.5_@_xyyrph44465yv6wwq6nlma5sky/node_modules/expo-secure-store/ios"
   ExpoWebBrowser:
@@ -3024,12 +3121,16 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   RNCAsyncStorage:
     :path: "../node_modules/@react-native-async-storage/async-storage"
+  RNGestureHandler:
+    :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
     :path: "../node_modules/@sentry/react-native"
+  RNSVG:
+    :path: "../node_modules/react-native-svg"
   RNWorklets:
     :path: "../node_modules/react-native-worklets"
   Yoga:
@@ -3048,10 +3149,12 @@ SPEC CHECKSUMS:
   ExpoCrypto: e2a2c4c748aac8485e5675f027b7901f511d43ff
   ExpoFileSystem: ad991457efaa14253723f1dda997eac6024c700d
   ExpoFont: f543ce20a228dd702813668b1a07b46f51878d47
+  ExpoHaptics: d3a6375d8dcc3a1083d003bc2298ff654fafb536
   ExpoImagePicker: ade85e148f735fc7e6f27dfe3eef28eb3887e90a
   ExpoKeepAwake: 55f75eca6499bb9e4231ebad6f3e9cb8f99c0296
   ExpoLinking: 2ef632ad5013e3f1568fae9408d56ab9af5efc55
   ExpoModulesCore: 20899b4dd703e10a543ff4c50ee1543e47d90082
+  ExpoNotifications: f5c15fdabb5cc3168c20cf49b6551a9d46304657
   ExpoSecureStore: d32f751874a2ceb5aaeebeb3578e165c1ba2b24a
   ExpoWebBrowser: 970dd4c64c29c955c3af664c8058ba768a4c9187
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
@@ -3125,10 +3228,12 @@ SPEC CHECKSUMS:
   ReactCodegen: 3403b7bb811ccfbd7360c525e3163088901d37a5
   ReactCommon: 5f0e5c09a64a2717215dd84380e1a747810406f2
   RNCAsyncStorage: 29f0230e1a25f36c20b05f65e2eb8958d6526e82
-  RNReanimated: 8346c484cdf6f4ea2e593bc50d719844dec1631a
+  RNGestureHandler: 3a73f098d74712952870e948b3d9cf7b6cae9961
+  RNReanimated: a65c1ab4208c8bd3c203cb219b96339298a32b9a
   RNScreens: 0bbf16c074ae6bb1058a7bf2d1ae017f4306797c
   RNSentry: bca90d41b7e8423262c5fcfccfb12328a3aa6701
-  RNWorklets: d6fde84ce5319058a0bd40214c1d7fb00ad69051
+  RNSVG: 6f39605a4c4d200b11435c35bd077553c6b5963a
+  RNWorklets: 4d7a51d897ce49d5e012d86248e4cf9010d117b7
   Sentry: b3ec44d01708fce73f99b544beb57e890eca4406
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: 728df40394d49f3f471688747cf558158b3a3bd1

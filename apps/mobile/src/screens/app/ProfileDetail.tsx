@@ -18,8 +18,11 @@
  * affordance: no notification to the other side, no streak break, no shame.
  */
 
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getMatchDetail, type MatchDetailResponse } from '../../lib/api.js';
+import { useAuth } from '../../lib/auth-store.js';
 import {
   Button,
   GoldRule,
@@ -87,13 +90,61 @@ export type ProfileDetailScreenProps = {
   onBegin?: () => void;
 };
 
+function detailToProfile(d: MatchDetailResponse): ProfileDetailData {
+  return {
+    id: d.userId,
+    name: d.displayName,
+    age: d.age,
+    place: d.city,
+    tradition: d.tradition ?? 'Faith',
+    walk: d.walkStage ?? '—',
+    verseEcho: d.bio ?? undefined,
+    prompts: (d.prompts ?? []).map((p) => ({ prompt: p.question, answer: p.answer })),
+    photoIndices: d.photos.map((_, i) => i),
+  };
+}
+
 export function ProfileDetailScreen({
-  data = MOCK_PROFILE,
+  matchId,
+  data: dataProp,
   onClose,
   onPass,
   onBegin,
 }: ProfileDetailScreenProps) {
   const insets = useSafeAreaInsets();
+  const accessToken = useAuth((s) => s.accessToken);
+  const [server, setServer] = useState<ProfileDetailData | null>(null);
+  const [loading, setLoading] = useState<boolean>(!!matchId && !dataProp);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!matchId || !accessToken) return;
+      setLoading(true);
+      try {
+        const res = await getMatchDetail(accessToken, matchId);
+        if (!cancelled) setServer(detailToProfile(res));
+      } catch {
+        // fall back to mock
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [matchId, accessToken]);
+
+  const data = dataProp ?? server ?? MOCK_PROFILE;
+
+  if (loading) {
+    return (
+      <View style={[styles.root, { alignItems: 'center', justifyContent: 'center' }]}>
+        <ActivityIndicator color={color.cobalt[500]} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.root}>

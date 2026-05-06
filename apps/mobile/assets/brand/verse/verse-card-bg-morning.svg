@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="360" viewBox="0 0 720 360" fill="none">
-<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#FFF7E9"/><stop offset="55%" stop-color="#E8D29A"/><stop offset="100%" stop-color="#D7B98E"/></linearGradient></defs>
-<rect width="720" height="360" rx="40" fill="url(#g)"/><circle cx="620" cy="50" r="130" fill="#FFFFFF" opacity=".15"/><path d="M80 230 C190 160 310 160 420 230" stroke="#E8D29A" stroke-width="5" opacity=".55"/><text x="70" y="110" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="4" fill="#1A1820" opacity=".75">VERSE OF THE DAY</text><text x="70" y="180" font-family="Cormorant Garamond, Georgia, serif" font-size="44" font-style="italic" fill="#1A1820">Be anxious for nothing...</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1080" y2="1350" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFDF7"/>
+      <stop offset="0.58" stop-color="#FAF7F0"/>
+      <stop offset="1" stop-color="#FBF3E2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(345.6 324.0) rotate(45) scale(453.6 567.0)">
+      <stop stop-color="#E5C97D" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#E5C97D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1080" height="1350" rx="56" fill="url(#bg)"/>
+  <rect width="1080" height="1350" rx="56" fill="url(#glow)"/>
+  <circle cx="842.4" cy="297.0" r="172.8" fill="#E5C97D" opacity="0.18"/>
+  <path d="M 194.4 945.0 C 367.2 729.0, 626.4 729.0, 842.4 945.0" stroke="#C8A24B" stroke-width="7" stroke-linecap="round" opacity="0.58"/>
+  <path d="M 259.2 1053.0 H 820.8" stroke="#3F3F4A" stroke-width="6" stroke-linecap="round" opacity="0.22"/>
 </svg>

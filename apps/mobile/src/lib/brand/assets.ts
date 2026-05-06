@@ -5,7 +5,16 @@ export const brandLogos = {
   wordmarkPrimary: require('../../../assets/brand/logo/wordmark-primary.png'),
   wordmarkInverse: require('../../../assets/brand/logo/wordmark-inverse.png'),
   logoMark: require('../../../assets/brand/logo/logo-mark.png'),
+  logoMarkInverse: require('../../../assets/brand/logo/logo-mark-inverse.png'),
   blessPlusWordmark: require('../../../assets/brand/logo/bless-plus-wordmark.png'),
+};
+
+export const appBrandAssets = {
+  iconIos1024: require('../../../assets/brand/app-icon/app-icon-ios-1024.png'),
+  androidAdaptiveForeground: require('../../../assets/brand/app-icon/android-adaptive-foreground.png'),
+  androidAdaptiveBackground: require('../../../assets/brand/app-icon/android-adaptive-background.png'),
+  notificationIconAndroid: require('../../../assets/brand/app-icon/notification-icon-android.png'),
+  splash: require('../../../assets/brand/splash/splash.png'),
 };
 
 export const heroArt = {
@@ -47,6 +56,43 @@ export const verseCardBackgrounds = {
   evening: require('../../../assets/brand/verse/verse-card-bg-evening.png'),
 };
 
+export const textureAssets = {
+  parchmentGrain: require('../../../assets/brand/textures/parchment-grain.png'),
+  goldRule: require('../../../assets/brand/textures/gold-rule.png'),
+};
+
+export const traditionBadgeIcons = {
+  catholic: require('../../../assets/brand/tradition/catholic.png'),
+  orthodox: require('../../../assets/brand/tradition/orthodox.png'),
+  otherChristian: require('../../../assets/brand/tradition/other-christian.png'),
+  protestantEvangelical: require('../../../assets/brand/tradition/protestant-evangelical.png'),
+  protestantMainline: require('../../../assets/brand/tradition/protestant-mainline.png'),
+  protestantPentecostal: require('../../../assets/brand/tradition/protestant-pentecostal.png'),
+  protestantReformed: require('../../../assets/brand/tradition/protestant-reformed.png'),
+  stillFiguring: require('../../../assets/brand/tradition/still-figuring.png'),
+};
+
+export const practiceBadgeIcons = {
+  catholicMass: require('../../../assets/brand/practice/catholic-mass.png'),
+  dailyPrayer: require('../../../assets/brand/practice/daily-prayer.png'),
+  smallGroup: require('../../../assets/brand/practice/small-group.png'),
+  stillFindingACommunity: require('../../../assets/brand/practice/still-finding-a-community.png'),
+  sundayInPerson: require('../../../assets/brand/practice/sunday-in-person.png'),
+  sundayOnline: require('../../../assets/brand/practice/sunday-online.png'),
+  worshipAtHome: require('../../../assets/brand/practice/worship-at-home.png'),
+};
+
+export const marketingAssets = {
+  emailHeader600x200: require('../../../assets/brand/marketing/email-header-600x200.png'),
+  favicon16: require('../../../assets/brand/marketing/favicon-16.png'),
+  favicon32: require('../../../assets/brand/marketing/favicon-32.png'),
+  favicon180: require('../../../assets/brand/marketing/favicon-180.png'),
+  favicon192: require('../../../assets/brand/marketing/favicon-192.png'),
+  favicon512: require('../../../assets/brand/marketing/favicon-512.png'),
+  landingHero2880x1620: require('../../../assets/brand/marketing/landing-hero-2880x1620.png'),
+  ogCard1200x630: require('../../../assets/brand/marketing/og-card-1200x630.png'),
+};
+
 export const bottomNavIcons = {
   today: {
     active: require('../../../assets/brand/nav/tab-today-active.png'),
@@ -74,21 +120,30 @@ export const bottomNavIcons = {
 
 export const glyphs = {
   bell: require('../../../assets/brand/glyphs/bell.png'),
+  blessPlusCrown: require('../../../assets/brand/glyphs/bless-plus-crown.png'),
   block: require('../../../assets/brand/glyphs/block.png'),
   camera: require('../../../assets/brand/glyphs/camera.png'),
+  check: require('../../../assets/brand/glyphs/check.png'),
+  checkCircle: require('../../../assets/brand/glyphs/check-circle.png'),
   chevronBack: require('../../../assets/brand/glyphs/chevron-back.png'),
   chevronDown: require('../../../assets/brand/glyphs/chevron-down.png'),
   chevronForward: require('../../../assets/brand/glyphs/chevron-forward.png'),
+  chevronUp: require('../../../assets/brand/glyphs/chevron-up.png'),
   close: require('../../../assets/brand/glyphs/close.png'),
   editPencil: require('../../../assets/brand/glyphs/edit-pencil.png'),
   gear: require('../../../assets/brand/glyphs/gear.png'),
   heartOutline: require('../../../assets/brand/glyphs/heart-outline.png'),
   infoCircle: require('../../../assets/brand/glyphs/info-circle.png'),
+  languageGlobe: require('../../../assets/brand/glyphs/language-globe.png'),
+  loadingSpinner: require('../../../assets/brand/glyphs/loading-spinner.png'),
   lock: require('../../../assets/brand/glyphs/lock.png'),
+  minus: require('../../../assets/brand/glyphs/minus.png'),
+  plus: require('../../../assets/brand/glyphs/plus.png'),
   reportFlag: require('../../../assets/brand/glyphs/report-flag.png'),
   search: require('../../../assets/brand/glyphs/search.png'),
   shield: require('../../../assets/brand/glyphs/shield.png'),
   signOut: require('../../../assets/brand/glyphs/sign-out.png'),
+  verseOfDayHeader: require('../../../assets/brand/glyphs/verse-of-day-header.png'),
 } as const;
 
 export type BrandGlyphName = keyof typeof glyphs;

@@ -124,4 +124,61 @@ export class PhotosService {
       face: result.face,
     };
   }
+
+  /**
+   * Lists current user's photos. Used by EditPhotos to hydrate slots on
+   * mount so photos persist across app reinstalls / device switches.
+   * Returns approved + processing + uploaded; excludes rejected (clients
+   * shouldn't surface a rejected photo as if it were live).
+   */
+  async listMine(userId: string) {
+    const rows = await this.prisma.photo.findMany({
+      where: {
+        userId,
+        status: { in: ['approved', 'processing', 'uploaded'] },
+      },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+      select: {
+        id: true,
+        storageKey: true,
+        position: true,
+        status: true,
+        createdAt: true,
+      },
+    });
+    // Sign each photo's GET URL so the mobile client can render it without
+    // needing a public R2 host. Cheap (no S3 round-trip — pure HMAC).
+    const urls = await Promise.all(
+      rows.map((r) =>
+        r.storageKey.startsWith('seed/')
+          ? Promise.resolve({ url: '', expiresIn: 0 })
+          : this.storage.createPresignedGet(r.storageKey),
+      ),
+    );
+    return rows.map((r, i) => ({
+      photoId: r.id,
+      storageKey: r.storageKey,
+      position: r.position,
+      status: r.status,
+      url: urls[i]!.url,
+      urlExpiresIn: urls[i]!.expiresIn,
+      createdAt: r.createdAt.toISOString(),
+    }));
+  }
+
+  /**
+   * Deletes a photo owned by the user. Soft-style — removes the DB row +
+   * deletes the R2 object so storage doesn't accumulate. Idempotent on
+   * already-deleted photo.
+   */
+  async deleteMine(userId: string, photoId: string) {
+    const photo = await this.prisma.photo.findUnique({ where: { id: photoId } });
+    if (!photo || photo.userId !== userId) {
+      // Idempotent: not present = treat as deleted.
+      return { ok: true };
+    }
+    await this.storage.delete(photo.storageKey).catch(() => undefined);
+    await this.prisma.photo.delete({ where: { id: photoId } });
+    return { ok: true };
+  }
 }

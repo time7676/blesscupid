@@ -62,6 +62,9 @@ export type YouScreenProps = {
   onNotifications?: () => void;
   onPrivacy?: () => void;
   onBlocked?: () => void;
+  onIncomingBlesses?: () => void;
+  /** Number of people who have Blessed you. Drives badge on the row. */
+  incomingBlessCount?: number;
   onNavigate?: (tab: NavTabKey) => void;
 };
 
@@ -79,6 +82,8 @@ export function YouScreen({
   onNotifications,
   onPrivacy,
   onBlocked,
+  onIncomingBlesses,
+  incomingBlessCount = 0,
   onNavigate,
 }: YouScreenProps) {
   const tierCopy = TIER_COPY[tier];
@@ -125,6 +130,14 @@ export function YouScreen({
         </View>
 
         <View style={styles.list}>
+          {incomingBlessCount > 0 ? (
+            <ListItem
+              label={`${incomingBlessCount} ${incomingBlessCount === 1 ? 'person has' : 'people have'} Blessed you`}
+              helper={tier === 'free' ? 'Bless+ to see who' : 'Tap to view'}
+              glyph={<BrandGlyph name="blessPlusCrown" size={18} />}
+              onPress={onIncomingBlesses}
+            />
+          ) : null}
           <ListItem
             label="Edit profile"
             helper="Photo, name, city, intent"
@@ -134,7 +147,7 @@ export function YouScreen({
           <ListItem
             label="Faith replies"
             helper="Re-take the questionnaire"
-            glyph={<BrandGlyph name="heartOutline" size={18} />}
+            glyph={<BrandGlyph name="verseOfDayHeader" size={18} />}
             onPress={onFaithReplies}
           />
           <ListItem

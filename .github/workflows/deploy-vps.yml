@@ -2,7 +2,7 @@ name: Deploy to XSERVER VPS
 
 on:
   push:
-    branches: [main]
+    branches: [main, development]
   workflow_dispatch:
 
 concurrency:
@@ -22,16 +22,22 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          envs: GIT_REF
           script: |
             set -euo pipefail
-            REPO_DIR="/srv/blesscupid"
+            REPO_DIR="/srv/blesscupid/repo"
+            BRANCH="${GIT_REF}"
             cd "$REPO_DIR"
             git fetch origin
-            git reset --hard "origin/main"
+            git reset --hard "origin/${BRANCH}"
             docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
             docker network inspect internal >/dev/null 2>&1 || docker network create internal
             cd /srv/_shared
             docker-compose -f docker-compose.shared.yml up -d
-            cd "$REPO_DIR"
-            docker-compose up -d --build
+            cd "$REPO_DIR/infrastructure/vps/blesscupid"
+            ln -sf /srv/blesscupid/.env ./.env
+            docker compose up -d --build
+            docker exec blesscupid-api pnpm -F @blesscupid/api prisma migrate deploy || true
             docker image prune -af --filter "until=168h" || true
+        env:
+          GIT_REF: ${{ github.ref_name }}

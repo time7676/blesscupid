@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BlessCupid — Buttons + Modals (iOS HIG + Material 3)</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink:#1A1A24; --ink-soft:#3F3F4A; --ink-charcoal:#14181F; --ink-pressed:#0F0F15;
+  --parchment:#FAF7F0; --parchment-raised:#FFFDF7; --parchment-off:#F8F8F4;
+  --sandstone:#F4ECDF; --sandstone-deep:#EFE4D2; --sandstone-warm:#FBF3E2;
+  --gold:#C8A24B; --gold-soft:#E5C97D; --gold-halo:rgba(200,162,75,.18);
+  --cobalt-100:#D6E0F4; --cobalt-500:#3D67B8; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --warning-100:#FCEBD2; --warning-500:#D08A2C; --warning-700:#8C5912;
+  --success-500:#5C8A6A; --success-700:#3F6149;
+  --hairline:rgba(26,26,36,.12); --hairline-soft:rgba(26,26,36,.06); --hairline-strong:rgba(20,24,31,.16);
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --sans:'Inter', -apple-system, system-ui, sans-serif;
+  --raise: 0 1px 0 rgba(26,26,36,.04);
+  --card: 0 1px 2px rgba(20,24,31,.06);
+  --modal: 0 12px 32px rgba(20,24,31,.18);
+  --easing: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--parchment); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 56px 32px 120px; }
+header { padding-bottom: 40px; border-bottom: 1px solid var(--hairline); margin-bottom: 48px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+h1 { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; margin: 12px 0 8px; font-weight: 500; }
+h1 em { color: var(--cobalt-700); font-style: italic; }
+h2 { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; margin-bottom: 20px; }
+h3 { font-family: var(--serif); font-size: 22px; line-height: 1.35; font-weight: 500; margin-bottom: 12px; }
+h4 { font-size: 13px; line-height: 1.25; letter-spacing: 0.02em; font-weight: 500; color: var(--ink-soft); margin-bottom: 8px; text-transform: uppercase; }
+.lede { font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 64ch; }
+section { padding: 48px 0; border-bottom: 1px solid var(--hairline-soft); }
+section:last-of-type { border-bottom: 0; }
+.section-eyebrow { display: block; margin-bottom: 12px; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--hairline-soft); vertical-align: top; }
+th { background: var(--sandstone); font-weight: 600; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt-700); }
+code { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--sandstone-warm); padding: 1px 6px; border-radius: 3px; color: var(--cobalt-700); }
+
+/* ========== BUTTON SYSTEM ========== */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: var(--sans); font-weight: 500; letter-spacing: 0.02em; cursor: pointer; border: 0; transition: transform 80ms var(--easing), background-color 80ms var(--easing); user-select: none; }
+.btn:active { transform: translateY(1px); }
+.btn:disabled { cursor: not-allowed; opacity: 1; }
+
+/* sizes — heights satisfy both iOS 44 + Android 48 */
+.btn-sm { height: 36px; padding: 0 16px; font-size: 13px; border-radius: 8px; }
+.btn-md { height: 48px; padding: 0 24px; font-size: 14px; border-radius: 12px; }
+.btn-lg { height: 52px; padding: 0 28px; font-size: 15px; border-radius: 12px; }
+
+/* variants */
+.btn-cta { background: var(--cobalt-500); color: var(--parchment-raised); }
+.btn-cta:hover { background: #345AA5; }
+.btn-cta:disabled { background: var(--hairline); color: var(--ink-soft); }
+.btn-primary { background: var(--ink); color: var(--parchment); }
+.btn-primary:hover { background: var(--ink-pressed); }
+.btn-primary:disabled { background: var(--hairline); color: var(--ink-soft); }
+.btn-secondary { background: var(--parchment-raised); color: var(--ink); border: 1px solid var(--hairline); }
+.btn-secondary:hover { background: var(--sandstone); }
+.btn-ghost { background: transparent; color: var(--ink); border-radius: 0; border-bottom: 1.5px solid var(--gold); padding: 8px 0; height: auto; font-family: var(--sans); }
+.btn-destructive { background: var(--parchment-raised); color: var(--warning-700); border: 1px solid var(--warning-500); }
+.btn-destructive:hover { background: var(--warning-100); }
+
+/* loading state — spinner */
+.btn-loading::before { content: ''; display: inline-block; width: 14px; height: 14px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 800ms linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* tap target hit area visualization */
+.tap-vis { position: relative; display: inline-block; }
+.tap-vis::after { content: ''; position: absolute; top: 50%; left: 50%; width: 48px; height: 48px; transform: translate(-50%,-50%); border: 1px dashed var(--cobalt-500); border-radius: 8px; pointer-events: none; opacity: 0.4; }
+
+/* ========== ACTION BUTTONS — swipe deck ========== */
+.action-deck { display: flex; gap: 24px; align-items: center; justify-content: center; padding: 32px; background: var(--parchment-raised); border-radius: 20px; margin: 16px 0; box-shadow: var(--card); }
+.action-btn { width: 64px; height: 64px; border-radius: 999px; border: 1.5px solid var(--hairline); background: var(--parchment-raised); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 80ms var(--easing); position: relative; }
+.action-btn:active { transform: scale(0.94); }
+.action-btn.pass { color: var(--ink-soft); }
+.action-btn.bless { width: 72px; height: 72px; background: var(--cobalt-500); border-color: var(--cobalt-500); color: var(--parchment-raised); }
+.action-btn.bless::before { content: ''; position: absolute; inset: -8px; border-radius: 999px; box-shadow: 0 0 0 0 var(--gold-halo); animation: halo 2.4s ease-out infinite; }
+@keyframes halo { 0% { box-shadow: 0 0 0 0 rgba(200,162,75,.4); } 70% { box-shadow: 0 0 0 16px rgba(200,162,75,0); } 100% { box-shadow: 0 0 0 0 rgba(200,162,75,0); } }
+.action-btn.super { background: var(--parchment-raised); border-color: var(--gold); color: var(--gold); }
+.action-btn.super:hover { background: var(--gold-halo); }
+.action-btn svg { width: 26px; height: 26px; }
+.action-btn.bless svg { width: 30px; height: 30px; }
+.action-label { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.action-label span { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+
+/* ========== MODAL / SHEET PREVIEW ========== */
+.phone { width: 360px; height: 640px; background: var(--parchment); border-radius: 32px; box-shadow: var(--modal); position: relative; overflow: hidden; border: 1px solid var(--hairline); }
+.phone-bg { position: absolute; inset: 0; background: linear-gradient(180deg, var(--parchment) 0%, var(--sandstone) 100%); }
+.phone-bg::after { content: ''; position: absolute; inset: 0; background: rgba(20,24,31,0.42); }
+.phone-status { position: absolute; top: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; font-weight: 600; color: var(--ink); z-index: 1; }
+
+/* drag handle — 36×4 (compromise iOS 36×5 + MD3 32×4) */
+.drag-handle { width: 36px; height: 4px; background: var(--hairline-strong); border-radius: 999px; margin: 8px auto 0; }
+
+/* sheet variants */
+.sheet { position: absolute; left: 0; right: 0; background: var(--parchment-raised); box-shadow: var(--modal); }
+
+/* bottom-sheet half — 50% detent */
+.sheet-half { bottom: 0; height: 50%; border-top-left-radius: 28px; border-top-right-radius: 28px; padding-top: 8px; }
+
+/* bottom-sheet full — 92% detent (matches MD3 expanded) */
+.sheet-full { bottom: 0; top: 8%; border-top-left-radius: 28px; border-top-right-radius: 28px; padding-top: 8px; }
+
+/* center confirm — 20px radius */
+.sheet-confirm { left: 24px; right: 24px; top: 50%; transform: translateY(-50%); border-radius: 20px; padding: 28px 20px; }
+
+/* match ceremony — full screen, gold rule */
+.sheet-match { inset: 0; background: var(--parchment-raised); border-radius: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px 32px; text-align: center; }
+
+.sheet-body { padding: 16px 20px 24px; }
+.sheet-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-bottom: 8px; }
+.sheet-title { font-family: var(--serif); font-size: 22px; line-height: 1.35; font-weight: 500; margin-bottom: 8px; }
+.sheet-text { font-size: 14px; line-height: 1.55; color: var(--ink-soft); margin-bottom: 20px; }
+.sheet-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.sheet-actions .btn { flex: 1; }
+
+.gold-rule { width: 56px; height: 1.5px; background: var(--gold); margin: 16px auto; }
+.match-name { font-family: var(--serif); font-style: italic; font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; color: var(--cobalt-700); margin: 8px 0; }
+.match-verse { font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.4; color: var(--ink-charcoal); max-width: 280px; margin: 24px auto 16px; }
+.match-ref { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+.match-actions { display: flex; flex-direction: column; gap: 12px; align-self: stretch; margin-top: 32px; }
+
+/* phone grid */
+.phone-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 32px; margin-top: 24px; }
+.phone-block { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.phone-block .label { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; }
+
+/* button row */
+.btn-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; padding: 16px 0; }
+.spec-grid { display: grid; grid-template-columns: 160px 1fr; gap: 8px 24px; font-size: 13px; padding: 12px 0; }
+.spec-grid dt { color: var(--ink-soft); font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+.spec-grid dd { color: var(--ink); }
+
+.toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 24px; }
+.toc a { color: var(--cobalt-700); text-decoration: none; font-size: 13px; border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">BlessCupid · Matching App Components</span>
+  <h1>Button + Modal <em>system.</em></h1>
+  <p class="lede">Cathedral Light visual identity, iOS HIG + Material 3 interaction floor. 48pt min tap targets. Drag handle 36×4. Bottom-sheet detents 50% / 92%. Haptics on every action.</p>
+  <nav class="toc">
+    <a href="#spec">Platform spec</a>
+    <a href="#buttons">Buttons</a>
+    <a href="#actions">Action buttons</a>
+    <a href="#sheets">Sheets / modals</a>
+    <a href="#match">Match ceremony</a>
+    <a href="#api">RN API</a>
+  </nav>
+</header>
+
+<section id="spec">
+  <span class="eyebrow section-eyebrow">01 · Platform spec</span>
+  <h2>iOS HIG + Material 3, reconciled</h2>
+  <table>
+    <tr><th>Concern</th><th>iOS HIG</th><th>Material 3</th><th>BlessCupid pick</th></tr>
+    <tr><td>Tap target floor</td><td>44×44pt</td><td>48×48dp</td><td><code>48</code> (covers both)</td></tr>
+    <tr><td>Button height (md)</td><td>44pt</td><td>40dp</td><td><code>48</code></td></tr>
+    <tr><td>Button height (lg CTA)</td><td>50pt</td><td>56dp (FAB)</td><td><code>52</code></td></tr>
+    <tr><td>Sheet drag handle</td><td>36×5pt</td><td>32×4dp</td><td><code>36×4</code></td></tr>
+    <tr><td>Sheet top corner</td><td>14pt</td><td>28dp</td><td><code>radius.xxl = 28</code></td></tr>
+    <tr><td>Sheet detents</td><td>medium / large</td><td>half / expanded</td><td><code>half=50% · full=92%</code></td></tr>
+    <tr><td>Center modal corner</td><td>14pt</td><td>28dp</td><td><code>radius.xl = 20</code></td></tr>
+    <tr><td>Press feedback</td><td>opacity / translateY</td><td>state layer 12% + ripple</td><td>both: <code>translateY(1)</code> + Haptics light</td></tr>
+    <tr><td>Dismiss gesture</td><td>swipe down</td><td>drag down</td><td>both via <code>react-native-gesture-handler</code></td></tr>
+    <tr><td>Action sheet (swipe deck)</td><td>n/a (custom)</td><td>n/a (custom)</td><td>3 circular, 64–72pt, thumb-zone</td></tr>
+    <tr><td>Haptics on match</td><td>UINotificationFeedback success</td><td>HapticFeedback heavy</td><td><code>expo-haptics</code> notificationAsync(Success)</td></tr>
+  </table>
+</section>
+
+<section id="buttons">
+  <span class="eyebrow section-eyebrow">02 · Button</span>
+  <h2>5 variants × 3 sizes × states</h2>
+
+  <h3 style="margin-top:24px">Variants @ md (default)</h3>
+  <div class="btn-row">
+    <button class="btn btn-md btn-cta">Send Bless</button>
+    <button class="btn btn-md btn-primary">Continue</button>
+    <button class="btn btn-md btn-secondary">Maybe later</button>
+    <button class="btn btn-ghost">Skip for today</button>
+    <button class="btn btn-md btn-destructive">Block + Report</button>
+  </div>
+  <dl class="spec-grid">
+    <dt>cta</dt><dd>cobalt-500 · primary swipe / chat send / ceremony confirm. ≤1 per screen.</dd>
+    <dt>primary</dt><dd>ink default · neutral primary (continue, save, submit). Cathedral Light default.</dd>
+    <dt>secondary</dt><dd>parchment-raised + hairline · paired w/ primary. Cancel / dismiss.</dd>
+    <dt>ghost</dt><dd>gold underline · low-stakes secondary. Skip, learn more.</dd>
+    <dt>destructive</dt><dd>warning-amber outline · block, report, delete. Never red.</dd>
+  </dl>
+
+  <h3 style="margin-top:32px">Sizes</h3>
+  <div class="btn-row">
+    <button class="btn btn-sm btn-cta">Small · 36</button>
+    <button class="btn btn-md btn-cta">Medium · 48</button>
+    <button class="btn btn-lg btn-cta">Large · 52</button>
+  </div>
+
+  <h3 style="margin-top:32px">States</h3>
+  <div class="btn-row">
+    <button class="btn btn-md btn-cta">Default</button>
+    <button class="btn btn-md btn-cta btn-loading">Sending</button>
+    <button class="btn btn-md btn-cta" disabled>Disabled</button>
+  </div>
+
+  <h3 style="margin-top:32px">Tap target visualization (48pt floor)</h3>
+  <div class="btn-row">
+    <span class="tap-vis"><button class="btn btn-sm btn-secondary">Small button</button></span>
+    <span class="tap-vis"><button class="btn btn-md btn-secondary">Medium</button></span>
+  </div>
+  <p class="lede" style="font-size:13px;margin-top:8px">Dashed box = 48pt min hit area. <code>hitSlop</code> on small variants enforces it.</p>
+</section>
+
+<section id="actions">
+  <span class="eyebrow section-eyebrow">03 · Action buttons (swipe deck)</span>
+  <h2>Pass · Bless · Super-Bless</h2>
+  <p class="lede">Three actions max. Bless = primary, larger (72pt), cobalt fill, gold halo pulse. Pass + Super flank at 64pt. Thumb-zone (bottom third).</p>
+
+  <div class="action-deck">
+    <div class="action-label">
+      <button class="action-btn pass" aria-label="Pass">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+      </button>
+      <span>Pass</span>
+    </div>
+    <div class="action-label">
+      <button class="action-btn bless" aria-label="Send Bless">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 11V4.5a1.5 1.5 0 0 1 3 0V11M15 11V5.5a1.5 1.5 0 0 1 3 0V13M9 11V8.5a1.5 1.5 0 0 0-3 0v6.5c0 3.5 2.5 6 6 6h1.5c3 0 5.5-2 5.5-5.5V13"/></svg>
+      </button>
+      <span>Bless</span>
+    </div>
+    <div class="action-label">
+      <button class="action-btn super" aria-label="Super-Bless">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14 3 9.5 9.5 9z" stroke-linejoin="round"/></svg>
+      </button>
+      <span>Super-Bless</span>
+    </div>
+  </div>
+  <dl class="spec-grid">
+    <dt>Diameter</dt><dd>Pass / Super: 64pt · Bless: 72pt (primary)</dd>
+    <dt>Spacing</dt><dd>24pt between, edge gutter 32pt (s7)</dd>
+    <dt>Position</dt><dd>Fixed at thumb-zone (bottom 1/3, above safe-area inset s8)</dd>
+    <dt>Press</dt><dd>scale(0.94) · 80ms · Haptics.medium on press, success on release</dd>
+    <dt>Bless halo</dt><dd>Gold-halo pulse 2.4s loop. Disabled when reduced-motion.</dd>
+    <dt>Icons</dt><dd>1.5px stroke · 26pt (Bless 30pt). Custom set, not SF Symbols / Material Icons.</dd>
+  </dl>
+</section>
+
+<section id="sheets">
+  <span class="eyebrow section-eyebrow">04 · Sheet / modal variants</span>
+  <h2>Four canonical patterns</h2>
+
+  <div class="phone-grid">
+
+    <div class="phone-block">
+      <span class="label">half · 50% detent</span>
+      <div class="phone">
+        <div class="phone-bg"></div>
+        <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="sheet sheet-half">
+          <div class="drag-handle"></div>
+          <div class="sheet-body">
+            <div class="sheet-eyebrow">Filter · Faith</div>
+            <div class="sheet-title">Tradition</div>
+            <div class="sheet-text">Pick traditions you want to see.</div>
+            <div class="sheet-actions">
+              <button class="btn btn-md btn-secondary">Reset</button>
+              <button class="btn btn-md btn-cta">Apply</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="lede" style="font-size:12.5px;text-align:center;max-width:300px">Filter, share, sort. Drag to expand → full. Tap scrim or swipe down to dismiss.</p>
+    </div>
+
+    <div class="phone-block">
+      <span class="label">full · 92% detent</span>
+      <div class="phone">
+        <div class="phone-bg"></div>
+        <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+        <div class="sheet sheet-full">
+          <div class="drag-handle"></div>
+          <div class="sheet-body">
+            <div class="sheet-eyebrow">Profile</div>
+            <div class="sheet-title">Mariana, 28</div>
+            <div class="sheet-text">Manila · Catholic · Daily Mass goer. Loves quiet kitchens, Bach, and morning psalms.</div>
+            <div style="margin: 16px 0; height: 180px; background: var(--sandstone-warm); border-radius: 20px;"></div>
+            <div class="sheet-actions">
+              <button class="btn btn-md btn-secondary" style="flex:0 0 auto">Pass</button>
+              <button class="btn btn-md btn-cta">Send Bless</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="lede" style="font-size:12.5px;text-align:center;max-width:300px">Profile preview, long content. Scroll-locked at top until drag-down past threshold.</p>
+    </div>
+
+    <div class="phone-block">
+      <span class="label">confirm · center</span>
+      <div class="phone">
+        <div class="phone-bg"></div>
+        <div class="phone-status" style="color:var(--parchment)"><span>9:41</span><span>●●●</span></div>
+        <div class="sheet sheet-confirm">
+          <div class="sheet-eyebrow">Block</div>
+          <div class="sheet-title">Block Mariana?</div>
+          <div class="sheet-text">She won't see your profile and you won't see hers. We'll keep this between us.</div>
+          <div class="sheet-actions">
+            <button class="btn btn-md btn-secondary">Cancel</button>
+            <button class="btn btn-md btn-destructive">Block</button>
+          </div>
+        </div>
+      </div>
+      <p class="lede" style="font-size:12.5px;text-align:center;max-width:300px">Confirm destructive / consequential. Dismissible by scrim tap. Two actions max, destructive on right.</p>
+    </div>
+
+    <div class="phone-block">
+      <span class="label">pastor · non-dismissible</span>
+      <div class="phone">
+        <div class="phone-bg"></div>
+        <div class="phone-status" style="color:var(--parchment)"><span>9:41</span><span>●●●</span></div>
+        <div class="sheet sheet-confirm" style="border:1.5px solid var(--gold)">
+          <div class="sheet-eyebrow" style="color:var(--warning-700)">A note from us</div>
+          <div class="sheet-title">Pause for prayer.</div>
+          <div class="sheet-text">We've flagged a pattern in your messages. A pastor will reach out within 24 hours.</div>
+          <div class="sheet-actions">
+            <button class="btn btn-md btn-cta" style="flex:1">I understand</button>
+          </div>
+        </div>
+      </div>
+      <p class="lede" style="font-size:12.5px;text-align:center;max-width:300px">Pastor escalation. Single action, no scrim dismiss, no swipe. Ceremony moment, gold border.</p>
+    </div>
+  </div>
+</section>
+
+<section id="match">
+  <span class="eyebrow section-eyebrow">05 · Match ceremony</span>
+  <h2>Cathedral Light, no confetti</h2>
+  <p class="lede">Full-screen, 560ms ceremony reveal. Gold rule + serif italic name + verse. No hearts-fly, no spring-bounce, no scale-pop. Haptics: notification success.</p>
+
+  <div class="phone-grid">
+    <div class="phone-block">
+      <span class="label">match · ceremony</span>
+      <div class="phone">
+        <div class="sheet sheet-match">
+          <div class="sheet-eyebrow">A connection</div>
+          <h3 style="font-size:26px;margin:12px 0 0">You and</h3>
+          <div class="match-name">Mariana</div>
+          <div class="gold-rule"></div>
+          <div class="match-verse">"Above all, love each other deeply, because love covers over a multitude of sins."</div>
+          <div class="match-ref">1 Peter 4:8 · NIV</div>
+          <div class="match-actions">
+            <button class="btn btn-lg btn-cta">Send the first verse</button>
+            <button class="btn btn-ghost">Walk away</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <span class="eyebrow section-eyebrow">06 · RN API (proposed)</span>
+  <h2>Component contracts</h2>
+  <pre style="background:var(--ink-charcoal);color:var(--parchment);padding:24px;border-radius:12px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;line-height:1.7;overflow-x:auto;margin-top:16px">
+&lt;Button
+  variant="cta" | "primary" | "secondary" | "ghost" | "destructive"
+  size="sm" | "md" | "lg"        // 36 / 48 / 52
+  state="default" | "loading" | "disabled"
+  iconLeft? icon? iconRight?     // optional 18pt icons
+  haptic="light" | "medium" | "success" | "none"  // default light
+  full?                          // stretch to container
+  onPress
+/&gt;
+
+&lt;ActionButton
+  action="pass" | "bless" | "super"
+  onPress
+  // size + halo + haptic preset by action
+/&gt;
+
+&lt;Sheet
+  variant="half" | "full" | "confirm" | "match" | "pastor"
+  visible
+  onDismiss
+  detents?: ['half', 'full']     // half/full only
+  dismissible? = variant !== "pastor" && variant !== "match"
+  eyebrow? title? children
+  primaryAction?: ButtonProps
+  secondaryAction?: ButtonProps
+/&gt;</pre>
+
+  <h3 style="margin-top:32px">Files to touch</h3>
+  <ul style="margin-left:20px; line-height:1.8; font-size:14px;">
+    <li><code>apps/mobile/src/lib/design-system/components/Button.tsx</code> — add cta + destructive variants, sizes, loading, icons, haptics</li>
+    <li><code>apps/mobile/src/lib/design-system/components/ActionButton.tsx</code> — NEW</li>
+    <li><code>apps/mobile/src/lib/design-system/components/Sheet.tsx</code> — add half / full detents (gesture-handler), match variant</li>
+    <li><code>apps/mobile/src/lib/design-system/components/MatchCeremony.tsx</code> — NEW (composes Sheet variant=match)</li>
+    <li><code>apps/mobile/src/lib/design-system/index.ts</code> — re-exports</li>
+    <li><code>DESIGN.md</code> — sync component canon</li>
+    <li><code>docs/design/system-v1/components-matching.html</code> — this file (preview)</li>
+  </ul>
+
+  <h3 style="margin-top:32px">Deps</h3>
+  <ul style="margin-left:20px; line-height:1.8; font-size:14px;">
+    <li><code>expo-haptics</code> — Haptics.impactAsync, notificationAsync</li>
+    <li><code>react-native-gesture-handler</code> — drag-down dismiss + detent snap</li>
+    <li><code>react-native-reanimated</code> — sheet spring + match ceremony 560ms reveal</li>
+  </ul>
+</section>
+
+</div>
+</body>
+</html>

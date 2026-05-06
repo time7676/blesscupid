@@ -3,6 +3,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { ModerationModule } from '../moderation/moderation.module.js';
 import { ChatController } from './chat.controller.js';
+import { ChatExtensionController } from './chat-extension.controller.js';
 import { ChatService } from './chat.service.js';
 import { ChatModerationPipeline } from './moderation-pipeline.provider.js';
 import { PrismaModerationStore } from './prisma-moderation-store.js';
@@ -10,7 +11,7 @@ import { EvidenceFreezeGuard } from './evidence-freeze.guard.js';
 
 @Module({
   imports: [PrismaModule, ModerationModule, JwtModule.register({})],
-  controllers: [ChatController],
+  controllers: [ChatController, ChatExtensionController],
   providers: [
     ChatService,
     ChatModerationPipeline,

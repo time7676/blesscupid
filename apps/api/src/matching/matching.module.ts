@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaModule } from '../prisma/prisma.module.js';
 import { DailyStackCronService } from './daily-stack-cron.service.js';
 import { MatchingController } from './matching.controller.js';
+import { MatchingExtensionController } from './matching-extension.controller.js';
 import { MatchingPriorityService } from './matching-priority.service.js';
 import { MatchingService } from './matching.service.js';
 import { QuotaService } from './quota.service.js';
@@ -19,7 +20,7 @@ import { QuotaService } from './quota.service.js';
  */
 @Module({
   imports: [PrismaModule],
-  controllers: [MatchingController],
+  controllers: [MatchingController, MatchingExtensionController],
   providers: [MatchingService, MatchingPriorityService, DailyStackCronService, QuotaService],
   exports: [MatchingService, MatchingPriorityService, QuotaService],
 })

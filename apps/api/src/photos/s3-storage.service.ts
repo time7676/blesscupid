@@ -1,5 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { S3Client, PutObjectCommand, type S3ClientConfig } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  type S3ClientConfig,
+} from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 const PRESIGN_TTL_S = 300;
@@ -39,6 +45,8 @@ function getBucket(): string {
   return bucket;
 }
 
+const DOWNLOAD_TTL_S = 3600;
+
 @Injectable()
 export class S3StorageService {
   async createPresignedPut(
@@ -52,5 +60,21 @@ export class S3StorageService {
     });
     const uploadUrl = await getSignedUrl(getClient(), cmd, { expiresIn: PRESIGN_TTL_S });
     return { uploadUrl, expiresIn: PRESIGN_TTL_S };
+  }
+
+  /**
+   * Returns a short-lived signed GET URL for a stored object. Used by the
+   * mobile client to render photos that haven't yet been published via the
+   * R2 public-host CDN. v1: 1-hour TTL; rotate when the client re-fetches.
+   */
+  async createPresignedGet(storageKey: string): Promise<{ url: string; expiresIn: number }> {
+    const cmd = new GetObjectCommand({ Bucket: getBucket(), Key: storageKey });
+    const url = await getSignedUrl(getClient(), cmd, { expiresIn: DOWNLOAD_TTL_S });
+    return { url, expiresIn: DOWNLOAD_TTL_S };
+  }
+
+  async delete(storageKey: string): Promise<void> {
+    const cmd = new DeleteObjectCommand({ Bucket: getBucket(), Key: storageKey });
+    await getClient().send(cmd);
   }
 }

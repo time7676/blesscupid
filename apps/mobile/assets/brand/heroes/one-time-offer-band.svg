@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="180" viewBox="0 0 720 180" fill="none">
-<defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#D7B98E"/><stop offset="55%" stop-color="#E8D29A"/><stop offset="100%" stop-color="#B68A2E"/></linearGradient></defs>
-<rect width="720" height="180" rx="36" fill="url(#g)"/><path d="M0 92h720" stroke="#C8A24B" stroke-width="2" opacity=".55"/><text x="360" y="82" text-anchor="middle" font-family="Inter, Arial, sans-serif" font-size="18" font-weight="700" letter-spacing="5" fill="#1A1820">FOUNDING MEMBER</text><text x="360" y="125" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="38" fill="#1A1820">Three months of <tspan fill="#B68A2E" font-style="italic">Bless+</tspan></text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="600" viewBox="0 0 1500 600" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1500" y2="600" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FAF7F0"/>
+      <stop offset="0.58" stop-color="#FAF7F0"/>
+      <stop offset="1" stop-color="#FBF3E2"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(480.0 144.0) rotate(45) scale(630.0 252.0)">
+      <stop stop-color="#E5C97D" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#E5C97D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1500" height="600" rx="64" fill="url(#bg)"/>
+  <rect width="1500" height="600" rx="64" fill="url(#glow)"/>
+  <circle cx="1170.0" cy="132.0" r="96.0" fill="#E5C97D" opacity="0.18"/>
+  <path d="M 270.0 420.0 C 510.0 324.0, 870.0 324.0, 1170.0 420.0" stroke="#C8A24B" stroke-width="4" stroke-linecap="round" opacity="0.58"/>
+  <path d="M 360.0 468.0 H 1140.0" stroke="#3F3F4A" stroke-width="3" stroke-linecap="round" opacity="0.22"/>
 </svg>

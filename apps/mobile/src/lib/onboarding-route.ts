@@ -18,6 +18,8 @@ export function routeForNextStep(step: OnboardingStep): OnboardingRouteName {
     case OnboardingStep.bio:
       return 'OnboardingBio';
     case OnboardingStep.done:
-      return 'Profile';
+      // Done lands on celebratory final screen; root nav swaps to AppShell
+      // automatically once onboardingComplete = true in auth-store.
+      return 'OnboardingDone';
   }
 }

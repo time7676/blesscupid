@@ -1,16 +1,25 @@
-:root{
+:root {
+  --color-ink: #1A1A24;
+  --color-ink-soft: #3F3F4A;
+  --color-ink-charcoal: #14181F;
   --color-parchment: #FAF7F0;
-  --color-parchment2: #F3EADD;
-  --color-ink: #1A1820;
-  --color-inksoft: #5F5A63;
+  --color-parchment-raised: #FFFDF7;
+  --color-parchment-off: #F8F8F4;
+  --color-sandstone: #F4ECDF;
+  --color-sandstone-deep: #EFE4D2;
+  --color-sandstone-warm: #FBF3E2;
   --color-gold: #C8A24B;
-  --color-goldsoft: #E8D29A;
-  --color-amber: #B68A2E;
-  --color-sand: #D7B98E;
-  --color-charcoal: #201D25;
-  --color-white: #FFFFFF;
-  --color-line: #D9CDBD;
-  --color-muted: #EEE4D4;
+  --color-gold-soft: #E5C97D;
+  --color-warning-100: #FCEBD2;
+  --color-warning-500: #D08A2C;
+  --color-warning-700: #8C5912;
+  --color-success-100: #E5EFE6;
+  --color-success-500: #5C8A6A;
+  --color-success-700: #3F6149;
+  --color-cobalt-50: #EEF2FB;
+  --color-cobalt-100: #D6E0F4;
+  --color-cobalt-300: #7FA1DD;
+  --color-cobalt-700: #243F7A;
   --font-serif: "Cormorant Garamond", Georgia, serif;
   --font-sans: Inter, Arial, sans-serif;
 }

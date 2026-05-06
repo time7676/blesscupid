@@ -72,3 +72,22 @@ export { OfflineBanner } from './components/OfflineBanner.js';
 export type { OfflineBannerProps } from './components/OfflineBanner.js';
 export { ToastProvider, useToast } from './components/ToastProvider.js';
 export type { ToastInput } from './components/ToastProvider.js';
+
+// v2.0 — swipe deck (Cathedral Light, locked 2026-05-06)
+export { SwipeCard, CARD_DIMENSIONS } from './components/SwipeCard.js';
+export type { SwipeCardProps, SwipeAction } from './components/SwipeCard.js';
+export { SwipeDeck } from './components/SwipeDeck.js';
+export type {
+  SwipeDeckProps,
+  SwipeDeckHandle,
+  DeckCard,
+  DeckProfileCard,
+  DeckVerseCard,
+} from './components/SwipeDeck.js';
+export { ActionDeck } from './components/ActionDeck.js';
+export type { ActionDeckProps } from './components/ActionDeck.js';
+export { ProfileDetailSheet } from './components/ProfileDetailSheet.js';
+export type { ProfileDetailSheetProps } from './components/ProfileDetailSheet.js';
+export * from './motion.js';
+export { haptic } from './haptics.js';
+export type { HapticKind } from './haptics.js';

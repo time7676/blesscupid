@@ -1,4 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="360" height="280" viewBox="0 0 360 280" fill="none">
-<defs></defs>
-<rect width="360" height="280" rx="32" fill="#FAF7F0"/><circle cx="180" cy="104" r="64" fill="#E8D29A" opacity=".25"/><g transform="translate(156 80) scale(2)"><circle cx="10.5" cy="10.5" r="5.5" stroke="#B68A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M15 15l4 4" stroke="#B68A2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></g><text x="180" y="200" text-anchor="middle" font-family="Cormorant Garamond, Georgia, serif" font-size="28" fill="#1A1820">No results</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="480" viewBox="0 0 480 480" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="480" y2="480" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FAF7F0"/>
+      <stop offset="0.58" stop-color="#FAF7F0"/>
+      <stop offset="1" stop-color="#F4ECDF"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(153.6 115.2) rotate(45) scale(201.6 201.6)">
+      <stop stop-color="#E5C97D" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#E5C97D" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="480" height="480" rx="40" fill="url(#bg)"/>
+  <rect width="480" height="480" rx="40" fill="url(#glow)"/>
+  <circle cx="374.4" cy="105.6" r="76.8" fill="#E5C97D" opacity="0.18"/>
+  <path d="M 86.4 336.0 C 163.2 259.2, 278.4 259.2, 374.4 336.0" stroke="#C8A24B" stroke-width="3" stroke-linecap="round" opacity="0.58"/>
+  <path d="M 115.2 374.4 H 364.8" stroke="#3F3F4A" stroke-width="3" stroke-linecap="round" opacity="0.22"/>
 </svg>

@@ -31,10 +31,11 @@ export function ScreenHeader({
   trailing,
   variant = 'compact',
 }: ScreenHeaderProps) {
-  // Consume top safe-area inset so the eyebrow doesn't sit under the notch /
-  // status bar. Falls back to space.s5 (20pt) on devices without a top inset.
+  // Consume top safe-area inset PLUS a breathing gap so the eyebrow clears
+  // the notch / Dynamic Island on iPhone. The +s4 (16) keeps a comfortable
+  // gap on every device class — pure inset hugs the cutout too tight.
   const insets = useSafeAreaInsets();
-  const topPad = Math.max(insets.top, space.s5);
+  const topPad = Math.max(insets.top, space.s5) + space.s4;
   return (
     <View style={[styles.row, { paddingTop: topPad }]}>
       {onBack ? (

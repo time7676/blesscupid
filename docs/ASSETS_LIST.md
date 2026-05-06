@@ -1,5 +1,9 @@
 # BlessCupid App Assets & Branding
 
+Canonical spec: `docs/design/system-v1/brand-assets.md`.
+Runtime folder: `apps/mobile/assets/brand/`.
+Generator: `apps/mobile/scripts/generate_brand_assets.py`.
+
 ## App Store (before TestFlight)
 - App icon 1024x1024 PNG
 - Screenshots 1170x2532 (iPhone) x5 min
@@ -7,16 +11,19 @@
 - Preview video 15-30s MP4 (optional)
 
 ## In-App (replace prototype CSS gradients)
-- Welcome hero illustration
-- 3 profile portrait placeholders + 1 default avatar
-- KYC liveness overlay (gold oval)
-- 5 error-state illustrations (warm palette)
-- Bottom nav glyphs (Today, People, Threads, You)
+- Welcome, Done, DatingOutOfScope, and OneTimeOffer hero art
+- 6 profile portrait placeholders
+- KYC liveness overlay / camera glyph
+- 6 empty-state illustrations
+- 5 error-state illustrations
+- Bottom nav glyphs (Today, People, Threads, You), active + inactive
 - Splash screen + app logo mark
-- Settings icon set (12+)
-- Bless+ crown icon
-- Verse-of-day header glyph
-- Loading spinner
+- UI glyph set (22)
+- 8 tradition badge glyphs
+- 7 practice badge glyphs
+- Bless+ wordmark and crown glyph
+- Verse-of-day card art (morning, midday, evening)
+- Parchment grain + gold rule texture
 
 ## Marketing / Web
 - Landing hero 2880x1620 WebP

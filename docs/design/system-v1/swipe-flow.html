@@ -1,0 +1,847 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>BlessCupid — Swipe Flow: Restock + Profile Detail</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --ink:#1A1A24; --ink-soft:#3F3F4A; --ink-charcoal:#14181F; --ink-pressed:#0F0F15;
+  --parchment:#FAF7F0; --parchment-raised:#FFFDF7; --parchment-off:#F8F8F4;
+  --sandstone:#F4ECDF; --sandstone-deep:#EFE4D2; --sandstone-warm:#FBF3E2;
+  --gold:#C8A24B; --gold-soft:#E5C97D; --gold-halo:rgba(200,162,75,.18);
+  --cobalt-100:#D6E0F4; --cobalt-500:#3D67B8; --cobalt-700:#243F7A; --cobalt-900:#142447;
+  --warning-100:#FCEBD2; --warning-500:#D08A2C; --warning-700:#8C5912;
+  --success-500:#5C8A6A;
+  --hairline:rgba(26,26,36,.12); --hairline-soft:rgba(26,26,36,.06); --hairline-strong:rgba(20,24,31,.16);
+  --serif:'Cormorant Garamond', Georgia, serif;
+  --sans:'Inter', -apple-system, system-ui, sans-serif;
+  --raise: 0 1px 0 rgba(26,26,36,.04);
+  --card: 0 1px 2px rgba(20,24,31,.06);
+  --modal: 0 12px 32px rgba(20,24,31,.18);
+  --easing-emphatic: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --easing-standard: cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--parchment); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.55; }
+.wrap { max-width: 1280px; margin: 0 auto; padding: 56px 32px 120px; }
+header { padding-bottom: 40px; border-bottom: 1px solid var(--hairline); margin-bottom: 48px; }
+.eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; }
+h1 { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; margin: 12px 0 8px; font-weight: 500; }
+h1 em { color: var(--cobalt-700); font-style: italic; }
+h2 { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; margin-bottom: 20px; }
+h3 { font-family: var(--serif); font-size: 22px; line-height: 1.35; font-weight: 500; margin-bottom: 12px; }
+.lede { font-size: 16px; line-height: 1.55; color: var(--ink-soft); max-width: 64ch; }
+section { padding: 48px 0; border-bottom: 1px solid var(--hairline-soft); }
+section:last-of-type { border-bottom: 0; }
+table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13px; }
+th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--hairline-soft); vertical-align: top; }
+th { background: var(--sandstone); font-weight: 600; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--cobalt-700); }
+code { font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; background: var(--sandstone-warm); padding: 1px 6px; border-radius: 3px; color: var(--cobalt-700); }
+pre { background: var(--ink-charcoal); color: var(--parchment); padding: 24px; border-radius: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12.5px; line-height: 1.7; overflow-x: auto; margin-top: 16px; }
+.toc { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 24px; }
+.toc a { color: var(--cobalt-700); text-decoration: none; font-size: 13px; border-bottom: 1px solid var(--hairline); padding-bottom: 2px; }
+
+/* phone */
+.stage { display: flex; gap: 56px; align-items: flex-start; flex-wrap: wrap; margin-top: 24px; }
+.phone { width: 360px; height: 720px; background: var(--parchment); border-radius: 36px; box-shadow: var(--modal); position: relative; overflow: hidden; border: 1px solid var(--hairline); flex-shrink: 0; }
+.phone-status { position: absolute; top: 0; left: 0; right: 0; height: 44px; display: flex; align-items: center; justify-content: space-between; padding: 0 24px; font-size: 12px; font-weight: 600; color: var(--ink); z-index: 5; }
+.phone-eyebrow { position: absolute; top: 56px; left: 0; right: 0; text-align: center; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; z-index: 4; }
+
+.deck { position: absolute; top: 92px; bottom: 200px; left: 24px; right: 24px; }
+.swipe-card { position: absolute; inset: 0; background: var(--parchment-raised); border-radius: 28px; box-shadow: var(--card); overflow: hidden; cursor: pointer; user-select: none; touch-action: none; transform-origin: center bottom; }
+.swipe-card.dragging { transition: none !important; cursor: grabbing; }
+.swipe-card:not(.dragging) { transition: transform 320ms var(--easing-emphatic), opacity 320ms var(--easing-emphatic); }
+
+/* stack levels */
+.swipe-card[data-stack="0"] { z-index: 3; }
+.swipe-card[data-stack="1"] { z-index: 2; transform: scale(0.94) translateY(12px); opacity: 0.7; }
+.swipe-card[data-stack="2"] { z-index: 1; transform: scale(0.88) translateY(24px); opacity: 0.4; }
+.swipe-card[data-stack="3"] { z-index: 0; transform: scale(0.82) translateY(36px); opacity: 0; }
+
+.card-photo { height: 60%; position: relative; }
+.card-photo[data-tone="warm"] { background: linear-gradient(135deg, var(--sandstone-warm), var(--sandstone-deep)); }
+.card-photo[data-tone="cool"] { background: linear-gradient(135deg, var(--cobalt-100), var(--sandstone)); }
+.card-photo[data-tone="gold"] { background: linear-gradient(135deg, var(--gold-halo), var(--sandstone-warm)); }
+.card-photo[data-tone="stone"] { background: linear-gradient(135deg, var(--sandstone), var(--ink-soft)); }
+.card-photo::after { content: attr(data-initial); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 96px; color: var(--cobalt-700); opacity: 0.4; }
+.card-body { padding: 20px 22px; }
+.card-name { font-family: var(--serif); font-size: 26px; line-height: 1.18; letter-spacing: -0.012em; font-weight: 500; }
+.card-meta { font-size: 13px; color: var(--ink-soft); margin-top: 4px; }
+.card-tag { display: inline-block; padding: 4px 12px; background: var(--cobalt-100); color: var(--cobalt-700); border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; margin-top: 12px; }
+.card-tap-hint { position: absolute; bottom: 12px; right: 16px; font-size: 11px; color: var(--ink-soft); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.5; }
+
+/* overlays */
+.swipe-overlay { position: absolute; top: 24px; padding: 8px 16px; border-radius: 999px; font-size: 13px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0; transition: opacity 120ms linear; pointer-events: none; }
+.overlay-pass { right: 24px; color: var(--ink-soft); border: 1.5px solid var(--ink-soft); }
+.overlay-bless { left: 24px; color: var(--cobalt-700); border: 1.5px solid var(--cobalt-700); background: rgba(200,162,75,.18); }
+.overlay-super { top: 60%; left: 50%; transform: translate(-50%,-50%) rotate(-8deg); color: var(--gold); border: 1.5px solid var(--gold); }
+
+/* deck actions — revised hierarchy: mid Bless dramatic 80pt, sides 56pt */
+.deck-actions { position: absolute; bottom: 56px; left: 0; right: 0; display: flex; justify-content: center; align-items: center; gap: 28px; z-index: 4; }
+.action-btn { border-radius: 999px; border: 1.5px solid var(--hairline); background: var(--parchment-raised); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 80ms var(--easing-standard); box-shadow: var(--card); }
+.action-btn:active { transform: scale(0.94); }
+.action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+/* sides — small, recessive */
+.action-btn.pass, .action-btn.super { width: 56px; height: 56px; }
+.action-btn.pass { color: var(--ink-soft); border-color: var(--hairline); }
+.action-btn.super { border-color: var(--gold); color: var(--gold); }
+.action-btn.pass svg, .action-btn.super svg { width: 22px; height: 22px; }
+/* mid Bless — dramatic, ceremonial */
+.action-btn.bless {
+  width: 80px; height: 80px;
+  background: var(--cobalt-500);
+  border: 2px solid var(--cobalt-500);
+  color: var(--parchment-raised);
+  position: relative;
+  box-shadow: 0 4px 16px rgba(36,63,122,0.32), 0 1px 2px rgba(20,24,31,0.12);
+  z-index: 1;
+}
+.action-btn.bless svg { width: 34px; height: 34px; }
+/* gold halo pulse — outer */
+.action-btn.bless::before {
+  content: ''; position: absolute; inset: -10px; border-radius: 999px;
+  animation: halo 2.4s ease-out infinite;
+}
+@keyframes halo {
+  0% { box-shadow: 0 0 0 0 rgba(200,162,75,.5); }
+  70% { box-shadow: 0 0 0 22px rgba(200,162,75,0); }
+  100% { box-shadow: 0 0 0 0 rgba(200,162,75,0); }
+}
+/* breathing inner glow — slow scale */
+.action-btn.bless::after {
+  content: ''; position: absolute; inset: 0; border-radius: 999px;
+  background: radial-gradient(circle, rgba(229,201,125,0.32) 0%, rgba(229,201,125,0) 70%);
+  animation: breathe 3.6s ease-in-out infinite;
+  pointer-events: none;
+}
+@keyframes breathe {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.9; transform: scale(1.06); }
+}
+/* gold rule under Bless */
+.bless-rule { position: absolute; bottom: 38px; left: 50%; transform: translateX(-50%); width: 56px; height: 1.5px; background: var(--gold); opacity: 0.5; z-index: 3; }
+
+/* verse interlude card */
+.swipe-card.interlude .card-photo { display: none; }
+.swipe-card.interlude { background: var(--sandstone-warm); display: flex; flex-direction: column; justify-content: center; padding: 40px 32px; text-align: center; }
+.swipe-card.interlude .card-body { padding: 0; }
+.interlude-eyebrow { font-size: 11px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-bottom: 16px; }
+.interlude-rule { width: 56px; height: 1.5px; background: var(--gold); margin: 0 auto 24px; }
+.interlude-verse { font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.4; color: var(--ink-charcoal); margin-bottom: 24px; }
+.interlude-ref { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-bottom: 32px; }
+.interlude-rule-bottom { width: 56px; height: 1.5px; background: var(--gold); margin: 0 auto 24px; }
+.interlude-hint { font-size: 12px; color: var(--ink-soft); letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.7; }
+
+/* interlude counter dots */
+.swipe-counter { position: absolute; top: 80px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; z-index: 4; }
+.swipe-counter .dot { width: 5px; height: 5px; border-radius: 999px; background: var(--hairline); transition: background 200ms var(--easing-emphatic); }
+.swipe-counter .dot.filled { background: var(--gold); }
+
+/* profile detail sheet */
+.detail-sheet { position: absolute; left: 0; right: 0; bottom: 0; top: 8%; background: var(--parchment-raised); box-shadow: var(--modal); border-top-left-radius: 28px; border-top-right-radius: 28px; transform: translateY(100%); transition: transform 320ms var(--easing-emphatic); z-index: 10; display: flex; flex-direction: column; }
+.detail-sheet.open { transform: translateY(0); }
+.scrim { position: absolute; inset: 0; background: rgba(20,24,31,.42); opacity: 0; transition: opacity 320ms var(--easing-emphatic); pointer-events: none; z-index: 9; }
+.scrim.open { opacity: 1; pointer-events: auto; }
+.drag-handle { width: 36px; height: 4px; background: var(--hairline-strong); border-radius: 999px; margin: 8px auto 0; flex-shrink: 0; }
+.detail-scroll { flex: 1; overflow-y: auto; padding: 16px 24px 24px; }
+.detail-photo { height: 280px; border-radius: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
+.detail-photo[data-tone="warm"] { background: linear-gradient(135deg, var(--sandstone-warm), var(--sandstone-deep)); }
+.detail-photo::after { content: attr(data-initial); position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 140px; color: var(--cobalt-700); opacity: 0.4; }
+.detail-eyebrow { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-bottom: 4px; }
+.detail-name { font-family: var(--serif); font-size: 38px; line-height: 1.04; letter-spacing: -0.012em; font-weight: 500; }
+.detail-meta { font-size: 14px; color: var(--ink-soft); margin: 6px 0 16px; }
+.detail-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 24px; }
+.detail-tag { padding: 6px 12px; background: var(--cobalt-100); color: var(--cobalt-700); border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+.detail-prompt { background: var(--sandstone-warm); border-radius: 20px; padding: 20px; margin-bottom: 16px; }
+.detail-prompt .q { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--cobalt-700); font-weight: 600; margin-bottom: 8px; }
+.detail-prompt .a { font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.45; color: var(--ink-charcoal); }
+.detail-section { margin-bottom: 20px; }
+.detail-section h4 { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-soft); font-weight: 600; margin-bottom: 8px; }
+.detail-section p { font-size: 14px; line-height: 1.55; }
+.gold-rule { width: 56px; height: 1.5px; background: var(--gold); margin: 24px 0; }
+
+/* sticky footer w/ Pass + Bless */
+.detail-footer { padding: 16px 24px calc(16px + env(safe-area-inset-bottom)); background: var(--parchment-raised); border-top: 1px solid var(--hairline-soft); display: flex; justify-content: center; gap: 24px; flex-shrink: 0; }
+.detail-footer .action-btn.pass { width: 56px; height: 56px; }
+.detail-footer .action-btn.bless { width: 64px; height: 64px; }
+.detail-footer .action-btn.bless::before { display: none; }
+.detail-footer .action-btn svg { width: 24px; height: 24px; }
+.detail-footer .action-btn.bless svg { width: 26px; height: 26px; }
+
+/* timeline diagram */
+.timeline { display: grid; grid-template-columns: 120px 1fr; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--hairline-soft); font-size: 13px; }
+.timeline .tk { color: var(--ink-soft); font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+.timeline .bar { height: 12px; background: var(--cobalt-500); border-radius: 999px; position: relative; }
+.timeline .bar.exit { background: var(--ink); }
+.timeline .bar.rise { background: var(--cobalt-500); }
+.timeline .bar.haptic { background: var(--gold); width: 4px !important; }
+.timeline .bar .label { position: absolute; left: 12px; top: -2px; color: var(--parchment); font-size: 11px; line-height: 16px; white-space: nowrap; font-weight: 600; }
+
+.spec-grid { display: grid; grid-template-columns: 200px 1fr; gap: 8px 24px; font-size: 13px; padding: 12px 0; }
+.spec-grid dt { color: var(--ink-soft); font-family: ui-monospace, Menlo, monospace; font-size: 12px; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 40px; padding: 0 16px; border-radius: 10px; font-family: var(--sans); font-weight: 500; font-size: 13px; cursor: pointer; border: 0; }
+.btn-cta { background: var(--cobalt-500); color: var(--parchment-raised); }
+.btn-secondary { background: var(--parchment-raised); color: var(--ink); border: 1px solid var(--hairline); }
+.legend { background: var(--ink-charcoal); color: var(--parchment); padding: 16px 20px; border-radius: 12px; font-size: 13px; line-height: 1.7; max-width: 460px; }
+.legend strong { color: var(--gold-soft); }
+.events { background: var(--ink-charcoal); color: var(--parchment); padding: 16px 20px; border-radius: 12px; font-family: ui-monospace, Menlo, monospace; font-size: 12px; max-width: 460px; max-height: 200px; overflow-y: auto; }
+.events .row { display: grid; grid-template-columns: 80px 1fr; gap: 12px; padding: 2px 0; }
+.events .row .t { color: var(--gold-soft); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <span class="eyebrow">BlessCupid · Swipe Flow System</span>
+  <h1>Restock + tap-to-<em>detail.</em></h1>
+  <p class="lede">After every commit, the next profile rises into place — no empty pause. Tap (or long-press) the top card to open a full profile detail sheet with Pass / Bless action buttons pinned to the bottom.</p>
+  <nav class="toc">
+    <a href="#hierarchy">Action hierarchy</a>
+    <a href="#restock">Deck restock</a>
+    <a href="#detail">Profile detail</a>
+    <a href="#tap">Tap vs drag vs long-press</a>
+    <a href="#interlude">Verse interlude</a>
+    <a href="#demo">Live demo</a>
+    <a href="#timeline">Timing</a>
+    <a href="#empty">Empty state</a>
+    <a href="#api">RN API</a>
+  </nav>
+</header>
+
+<section id="hierarchy">
+  <span class="eyebrow">00 · Action button hierarchy (revised)</span>
+  <h2>Mid is the ceremony</h2>
+  <p class="lede">Bless lives in the middle. It is the holy primary action — bigger, brighter, breathing. Pass and Super-Bless flank as smaller, recessive shapes. Visual weight teaches: the affirmative is the point.</p>
+  <table>
+    <tr><th>Position</th><th>Action</th><th>Size</th><th>Treatment</th><th>Why</th></tr>
+    <tr><td>Left</td><td><strong>Pass</strong></td><td>56pt</td><td>Parchment-raised fill · 1.5px hairline border · ink-soft icon · 22pt stroke</td><td>Passing is fine. Not celebrated, not punished. Recessive.</td></tr>
+    <tr><td><strong>Mid</strong></td><td><strong>Bless</strong></td><td><strong>80pt</strong></td><td>Cobalt-500 fill · 2px cobalt border · 34pt icon · 4px ambient shadow · gold-halo pulse 2.4s · gold breathing inner glow 3.6s · gold-rule under</td><td>The sacred CTA. 1.4× side icons. Eyes go here first.</td></tr>
+    <tr><td>Right</td><td><strong>Super-Bless</strong></td><td>56pt</td><td>Parchment-raised fill · 1.5px gold border · gold icon · 22pt stroke · NO halo on idle</td><td>Rare, intentional. Distinguished by gold (not size).</td></tr>
+  </table>
+  <p class="lede"><strong>Banned.</strong> All three buttons same size (we are not Tinder). Animated Pass icon. Red on Pass. Bigger Pass than Bless. Super-Bless with halo (would compete with Bless).</p>
+</section>
+
+<section id="restock">
+  <span class="eyebrow">01 · Deck restock</span>
+  <h2>Three cards always visible</h2>
+  <p class="lede">Top card + 2 behind. After commit, each card promotes one slot. New stack-3 enters from below.</p>
+  <table>
+    <tr><th>Stack</th><th>Resting transform</th><th>Opacity</th><th>z-index</th><th>On commit</th></tr>
+    <tr><td>0 (top)</td><td><code>scale(1) translateY(0)</code></td><td>1.0</td><td>3</td><td>Exits in commit direction · 320ms emphatic</td></tr>
+    <tr><td>1</td><td><code>scale(0.94) translateY(12)</code></td><td>0.7</td><td>2</td><td>Promotes to top · 200ms emphatic, 80ms delay</td></tr>
+    <tr><td>2</td><td><code>scale(0.88) translateY(24)</code></td><td>0.4</td><td>1</td><td>Promotes to stack-1</td></tr>
+    <tr><td>3 (off-deck)</td><td><code>scale(0.82) translateY(36)</code></td><td>0</td><td>0</td><td>Fades in to stack-2 over 200ms</td></tr>
+  </table>
+  <p class="lede"><strong>Overlap.</strong> Rise begins 80ms before exit completes (delay 80ms, exit 320ms total) — eyes track new card before old one's gone. Net deck-empty frames = zero.</p>
+</section>
+
+<section id="detail">
+  <span class="eyebrow">02 · Profile detail sheet</span>
+  <h2>Tap card · sheet rises · decide from inside</h2>
+  <p class="lede">Sheet variant=<code>full</code> (92% detent). Drag-handle 36×4. Scrollable bio + photos + prompts + faith details. Sticky footer pinned with Pass + Bless action buttons (smaller — 56pt / 64pt — to match sheet scale).</p>
+  <dl class="spec-grid">
+    <dt>Open trigger</dt><dd>Tap on top card (no drag detected within 120ms), OR long-press 240ms (haptic Medium fires at hold). Tap-anywhere on card except action buttons.</dd>
+    <dt>Sheet animation</dt><dd>Slide up from bottom · 320ms ease-emphatic · scrim fades 0 → 0.42</dd>
+    <dt>Dismiss</dt><dd>Drag handle down · OR tap scrim · OR back gesture · OR commit via footer button (auto-dismiss + commit).</dd>
+    <dt>Footer actions</dt><dd>Pass (left, 56pt) · Bless (right, 64pt). NO Super-Bless in detail (intentional friction — Super only via gesture or main deck button).</dd>
+    <dt>Footer commit flow</dt><dd>1. Haptic fires · 2. Sheet slides down 240ms · 3. Card commits in chosen direction (320ms exit, 200ms next-card rise) · 4. Total: ~560ms tap-to-next.</dd>
+    <dt>Photo carousel</dt><dd>Horizontal swipe within sheet content area. Page indicators (gold dots) at top of photo. Swipe down still dismisses sheet — gesture handler distinguishes.</dd>
+    <dt>Scroll lock</dt><dd>Sheet content scrollable. Drag-down ONLY dismisses when scroll position is at top + drag exceeds 60pt. Otherwise scrolls list.</dd>
+  </dl>
+</section>
+
+<section id="tap">
+  <span class="eyebrow">03 · Tap vs drag vs long-press — single card</span>
+  <h2>One card, three intents</h2>
+  <table>
+    <tr><th>Gesture</th><th>Trigger</th><th>Outcome</th><th>Haptic</th></tr>
+    <tr><td>Tap</td><td>Press + release within 120ms · drag &lt; 8pt</td><td>Open profile detail sheet</td><td>Light on press-down</td></tr>
+    <tr><td>Long-press</td><td>Hold 240ms · drag &lt; 8pt</td><td>Open profile detail sheet (same as tap, but deliberate)</td><td>Light on press-down · Medium @ 240ms</td></tr>
+    <tr><td>Drag</td><td>Press + move &gt; 8pt within 120ms</td><td>Swipe gesture (Pass / Bless / Super depending on direction + threshold)</td><td>Light on press-down · Medium on threshold cross</td></tr>
+    <tr><td>Action button tap</td><td>Tap on Pass / Bless / Super button below deck</td><td>Fire matching commit animation, identical to gesture commit</td><td>Light on press-down · Success on commit</td></tr>
+  </table>
+  <p class="lede"><strong>Conflict resolution.</strong> Gesture handler decides at first 8pt of movement OR 120ms of hold. Once decided, locks until release. No double-fire. While sheet is open, deck gestures locked.</p>
+</section>
+
+<section id="interlude">
+  <span class="eyebrow">03b · Verse interlude</span>
+  <h2>Every five swipes, a breath</h2>
+  <p class="lede">A verse card slides into the deck after every 5 consecutive profile commits. Same physical slot, different intent. Breaks the swipe-loop, anchors faith identity. Try it in the demo — the gold dots above the deck count up; on the 5th, an interlude is queued.</p>
+
+  <table>
+    <tr><th>Property</th><th>Spec</th></tr>
+    <tr><td>Trigger</td><td>Every <code>INTERLUDE_EVERY = 5</code> profile-card commits (pass / bless / super all count). Counter resets after each interlude. Counter shown as 5 dots above deck (gold = filled).</td></tr>
+    <tr><td>Visual</td><td>Sandstone-warm fill (no photo) · gold rule above + below verse · serif italic h3 verse text · uppercase eyebrow ("A breath") · uppercase reference (cobalt-700)</td></tr>
+    <tr><td>Dragging</td><td>NO Pass/Bless/Super overlay tags. Card opacity fades 1.0 → 0.5 with drag distance only. Tells user: "this isn't a decision."</td></tr>
+    <tr><td>Dismissal</td><td>Swipe any direction (same thresholds). Tap also dismisses. NO commit recorded — just a breath. Streak counter is NOT incremented.</td></tr>
+    <tr><td>Long-press</td><td>noop. No detail sheet for verse cards.</td></tr>
+    <tr><td>Haptics</td><td>On dismiss: light impact only (no Success notification — interlude is not an affirmative action).</td></tr>
+    <tr><td>Reduced motion</td><td>Verse cross-fades in/out 200ms instead of slide.</td></tr>
+    <tr><td>Verse source</td><td>Curated server-side list (faith-aligned, pastor-reviewed). v1 ships ~30 verses; rotate by deterministic hash of (userId, day) to avoid repeats.</td></tr>
+    <tr><td>Frequency tuning</td><td>Per-user override possible (admin / experiment). Default 5. Min 3, max 10.</td></tr>
+  </table>
+
+  <p class="lede" style="margin-top:16px"><strong>Why.</strong> Most dating apps reward continuous swiping with dopamine variable-ratio reinforcement. Cathedral Light explicitly refuses that loop. The interlude is a pacing brake, a reminder of why this app exists. Faith first, swipe second.</p>
+</section>
+
+<section id="demo">
+  <span class="eyebrow">04 · Live demo</span>
+  <h2>Try it</h2>
+  <p class="lede">Drag, tap card to open detail, use buttons inside or outside. Watch the deck restock. Event log on the right.</p>
+
+  <div class="stage">
+    <div class="phone">
+      <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+      <div class="phone-eyebrow">People · Wednesday 6</div>
+
+      <div class="swipe-counter" id="counter" aria-label="Swipes until next verse">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+
+      <div class="deck" id="deck">
+        <!-- cards injected by JS -->
+      </div>
+
+      <div class="deck-actions">
+        <button class="action-btn pass" id="btn-pass" aria-label="Pass">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+        </button>
+        <button class="action-btn bless" id="btn-bless" aria-label="Send Bless">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 11V4.5a1.5 1.5 0 0 1 3 0V11M15 11V5.5a1.5 1.5 0 0 1 3 0V13M9 11V8.5a1.5 1.5 0 0 0-3 0v6.5c0 3.5 2.5 6 6 6h1.5c3 0 5.5-2 5.5-5.5V13"/></svg>
+        </button>
+        <button class="action-btn super" id="btn-super" aria-label="Super-Bless">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l2.5 6 6.5.5-5 4.5 1.5 6.5L12 17l-5.5 3.5L8 14 3 9.5 9.5 9z" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+      <div class="bless-rule"></div>
+
+      <div class="scrim" id="scrim"></div>
+      <div class="detail-sheet" id="sheet">
+        <div class="drag-handle"></div>
+        <div class="detail-scroll" id="sheet-content">
+          <!-- detail injected by JS -->
+        </div>
+        <div class="detail-footer">
+          <button class="action-btn pass" id="sheet-pass" aria-label="Pass">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 6l12 12M18 6L6 18" stroke-linecap="round"/></svg>
+          </button>
+          <button class="action-btn bless" id="sheet-bless" aria-label="Send Bless">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11M12 11V4.5a1.5 1.5 0 0 1 3 0V11M15 11V5.5a1.5 1.5 0 0 1 3 0V13M9 11V8.5a1.5 1.5 0 0 0-3 0v6.5c0 3.5 2.5 6 6 6h1.5c3 0 5.5-2 5.5-5.5V13"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 16px; flex: 1; min-width: 320px;">
+      <div class="legend">
+        <strong>Try:</strong><br/>
+        · Drag card left = Pass · right = Bless · up = Super<br/>
+        · Tap card body = open profile detail<br/>
+        · Inside detail, scroll then tap Pass / Bless<br/>
+        · Watch deck restock — next card always ready<br/>
+        · Buttons below deck = same animation as gesture
+      </div>
+
+      <h3>Event log</h3>
+      <div class="events" id="events"></div>
+
+      <div class="controls">
+        <button class="btn btn-secondary" id="reset-btn">Reset deck</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="timeline">
+  <span class="eyebrow">05 · Timing — commit + restock</span>
+  <h2>0 → 600ms breakdown</h2>
+  <div class="timeline"><div class="tk">0ms</div><div class="bar haptic"><span class="label" style="left:8px">Haptic Success</span></div></div>
+  <div class="timeline"><div class="tk">0–320ms</div><div class="bar exit" style="width:53%"><span class="label">Card 0 exits · ease-emphatic · 320ms</span></div></div>
+  <div class="timeline"><div class="tk">80ms</div><div class="bar haptic"><span class="label" style="left:8px">(reduced motion: skip exit)</span></div></div>
+  <div class="timeline"><div class="tk">80–280ms</div><div class="bar rise" style="width:33%; margin-left:13%"><span class="label">Card 1 rises to top · 200ms</span></div></div>
+  <div class="timeline"><div class="tk">120–320ms</div><div class="bar rise" style="width:33%; margin-left:20%; background:var(--gold)"><span class="label" style="color:var(--ink)">Card 2 promotes</span></div></div>
+  <div class="timeline"><div class="tk">160–360ms</div><div class="bar rise" style="width:33%; margin-left:27%; background:var(--success-500)"><span class="label">New card 3 fades in</span></div></div>
+  <div class="timeline"><div class="tk">320ms</div><div class="bar" style="width:1%; background:var(--ink)"><span class="label" style="left:8px">Gestures unlocked</span></div></div>
+  <div class="timeline"><div class="tk">400ms</div><div class="bar haptic"><span class="label" style="left:8px">If match: Success haptic chained</span></div></div>
+  <p class="lede" style="margin-top:16px">Net: deck never shows fewer than 3 cards. User can start next gesture at 320ms. Match notification chains naturally.</p>
+</section>
+
+<section id="empty">
+  <span class="eyebrow">06 · Empty state</span>
+  <h2>"That's everyone for today."</h2>
+  <p class="lede">No infinite restock. No "swipe to refresh." When deck empties, parchment canvas with serif statement + gold rule + return time.</p>
+  <pre>┌─────────────────────────────────┐
+│           [parchment]           │
+│                                 │
+│         That's everyone         │
+│           for today.            │
+│                                 │
+│         ── gold rule ──         │
+│                                 │
+│      We'll have new people      │
+│      tomorrow at 9:00 am.       │
+│                                 │
+│        [ Set reminder ]         │
+│        [ Read a verse ]         │
+│                                 │
+└─────────────────────────────────┘</pre>
+  <p class="lede" style="margin-top:16px">Two CTAs: set reminder (notifications) or read a verse (verse-of-day deeplink). NEVER show "Boost" / "See you soon" / "Try premium." Cathedral Light §HCoC.</p>
+</section>
+
+<section id="api">
+  <span class="eyebrow">07 · RN API additions</span>
+  <h2>SwipeDeck + ProfileDetailSheet</h2>
+<pre>type DeckItem = ProfileCard | VerseInterlude;
+type ProfileCard = { kind: 'profile', id, name, age, ... };
+type VerseInterlude = { kind: 'verse', id, verse, reference };
+
+&lt;SwipeDeck
+  items={DeckItem[]}                       // mixed profile + interlude
+  onCommit={(item, action: 'pass' | 'bless' | 'super' | 'dismiss') =&gt; void}
+  onPeek={(profileId) =&gt; void}             // only fires on profile cards
+  onEmpty={() =&gt; void}
+  interludeEvery?={5}                      // streak threshold; default 5
+  reducedMotion?={boolean}
+/&gt;
+
+&lt;ActionDeck
+  onPass onBless onSuper
+  disabled                                 // true during animation OR on interlude top
+  // sizing locked: pass 56pt · bless 80pt · super 56pt
+  // gap 28pt · bless gold-rule below
+/&gt;
+
+&lt;ProfileDetailSheet
+  card={Card | null}                       // null = closed
+  onDismiss={() =&gt; void}
+  onAction={(action: 'pass' | 'bless') =&gt; void}  // sheet auto-dismisses, parent fires deck commit
+/&gt;
+
+// composition in screen:
+function PeopleScreen() {
+  const [peeking, setPeeking] = useState&lt;Card | null&gt;(null);
+  const deckRef = useRef&lt;SwipeDeckHandle&gt;(null);
+
+  return (
+    &lt;&gt;
+      &lt;SwipeDeck
+        ref={deckRef}
+        cards={cards}
+        onCommit={recordSwipe}
+        onPeek={setPeeking}
+        onEmpty={showEmptyState}
+      /&gt;
+      &lt;ProfileDetailSheet
+        card={peeking}
+        onDismiss={() =&gt; setPeeking(null)}
+        onAction={(action) =&gt; {
+          setPeeking(null);
+          deckRef.current?.commit(action);   // imperative — fires same animation
+        }}
+      /&gt;
+    &lt;/&gt;
+  );
+}</pre>
+
+  <h3 style="margin-top:32px">Deck restock orchestration</h3>
+<pre>// SwipeDeck internal state
+const stack = useSharedValue(cards.slice(0, 4));   // top + 2 behind + 1 prefetch
+
+function handleCommit(action) {
+  // 1. Top card exits (320ms)
+  topCardX.value = withTiming(action === 'pass' ? -W*1.2 : W*1.2, EXIT);
+  topCardRotate.value = withTiming(action === 'pass' ? -18 : 18, EXIT);
+
+  // 2. After 80ms delay, behind cards promote (200ms)
+  setTimeout(() =&gt; {
+    stack1Scale.value = withTiming(1, RISE);
+    stack1Y.value = withTiming(0, RISE);
+    stack1Opacity.value = withTiming(1, RISE);
+    stack2Scale.value = withTiming(0.94, RISE);
+    // ... etc
+  }, 80);
+
+  // 3. After exit completes, mutate stack array, reset shared values
+  setTimeout(() =&gt; {
+    stack.value = [...stack.value.slice(1), nextCard()];
+    resetSharedValues();
+    onCommit(committed.id, action);
+  }, EXIT.duration);
+}</pre>
+</section>
+
+</div>
+
+<script>
+const VERSES = [
+  { v: '"Above all, love each other deeply, because love covers over a multitude of sins."', r: '1 Peter 4:8 · NIV' },
+  { v: '"Let all that you do be done in love."', r: '1 Corinthians 16:14 · ESV' },
+  { v: '"Be still, and know that I am God."', r: 'Psalm 46:10 · NIV' },
+  { v: '"The Lord your God is with you, the Mighty Warrior who saves."', r: 'Zephaniah 3:17 · NIV' },
+  { v: '"Two are better than one, because they have a good return for their labor."', r: 'Ecclesiastes 4:9 · NIV' },
+];
+
+const PEOPLE = [
+  { id: 1, name: 'Mariana', age: 28, location: 'Manila', tradition: 'Catholic', meta: 'Daily Mass · weekend retreats', tone: 'warm', initial: 'M',
+    tags: ['Daily Mass', 'Bach lover', 'Quiet kitchens'],
+    prompt: { q: 'A verse that holds me', a: '"Above all, love each other deeply, because love covers over a multitude of sins." — 1 Peter 4:8' },
+    bio: "Catechist at St. Anthony's. Walks every morning, reads the saints, makes too much coffee. Looking for someone who'd come to Vespers with me, then dinner."
+  },
+  { id: 2, name: 'David', age: 31, location: 'Singapore', tradition: 'Anglican', meta: 'Choir · Tim Keller reader', tone: 'cool', initial: 'D',
+    tags: ['Choir tenor', 'Apologetics', 'Cycling'],
+    prompt: { q: 'My slow Sunday', a: 'Service at 9, brunch with friends, long walk by the reservoir, evening psalm.' },
+    bio: "Software lead by week, choir by Sunday. Curious about everything, talks about Lewis too much. Looking for a partner who likes both wonder and structure."
+  },
+  { id: 3, name: 'Hannah', age: 26, location: 'Cebu', tradition: 'Catholic', meta: 'Nurse · prays the Rosary', tone: 'gold', initial: 'H',
+    tags: ['Rosary daily', 'Nurse', 'Beach mornings'],
+    prompt: { q: 'How I keep faith on the night shift', a: 'A small wooden cross in my pocket. I touch it every two hours.' },
+    bio: 'ICU nurse, runs every Sunday morning before Mass. Honest, steady, looking for steady.'
+  },
+  { id: 4, name: 'Nathan', age: 30, location: 'Jakarta', tradition: 'Reformed', meta: 'Pastor-in-training · jazz piano', tone: 'stone', initial: 'N',
+    tags: ['Seminary', 'Jazz', 'Bahasa + English'],
+    prompt: { q: 'A book that shaped me', a: 'Bonhoeffer. The Cost of Discipleship — read it three times now.' },
+    bio: "MDiv year 2, plays piano at a small church in South Jakarta. Wants someone who reads, prays, and laughs at bad puns."
+  },
+  { id: 5, name: 'Sophia', age: 27, location: 'Manila', tradition: 'Catholic', meta: 'Architect · Carmelite oblate', tone: 'warm', initial: 'S',
+    tags: ['Architecture', 'Oblate', 'Mountains'],
+    prompt: { q: 'What stillness means to me', a: 'A studio at 6am, no music, the smell of paper. That\'s prayer too.' },
+    bio: 'Architect, oblate of the Carmelites, climbs every long weekend. Looking for someone who values silence and good design.'
+  },
+  { id: 6, name: 'Joel', age: 33, location: 'Cebu', tradition: 'Evangelical', meta: 'Coach · long-distance runner', tone: 'cool', initial: 'J',
+    tags: ['Runs marathons', 'Youth coach', 'Luke 15'],
+    prompt: { q: 'The verse that brought me back', a: 'Luke 15:20. The father runs.' },
+    bio: 'Coach and runner. Came back to faith at 28. Looking for someone to grow old slowly with.'
+  },
+];
+
+const W = 312, H = 428;
+const HORIZ_THRESH = 0.32, VERT_THRESH = 0.22, VEL_THRESH = 0.8;
+
+const deck = document.getElementById('deck');
+const events = document.getElementById('events');
+const sheet = document.getElementById('sheet');
+const sheetContent = document.getElementById('sheet-content');
+const scrim = document.getElementById('scrim');
+
+let stack = []; // ids; negative ids = verse interludes (-1, -2, ...)
+let queue = [];
+let animating = false;
+let openCardId = null;
+let swipeStreak = 0;       // consecutive profile-card commits
+let verseIndex = 0;
+const INTERLUDE_EVERY = 5;
+const counterEl = document.getElementById('counter');
+
+function isInterlude(id) { return id < 0; }
+function findVerse(id) { return VERSES[(-id - 1) % VERSES.length]; }
+
+function updateCounter() {
+  counterEl.querySelectorAll('.dot').forEach((d, i) => {
+    d.classList.toggle('filled', i < swipeStreak);
+  });
+}
+
+function logEvent(msg) {
+  const t = new Date().toLocaleTimeString();
+  const row = document.createElement('div');
+  row.className = 'row';
+  row.innerHTML = `<span class="t">${t.slice(-8)}</span><span>${msg}</span>`;
+  events.prepend(row);
+  while (events.children.length > 30) events.removeChild(events.lastChild);
+}
+
+function reset() {
+  stack = [1, 2, 3];
+  queue = [4, 5, 6];
+  swipeStreak = 0;
+  verseIndex = 0;
+  animating = false;
+  openCardId = null;
+  scrim.classList.remove('open');
+  sheet.classList.remove('open');
+  renderDeck();
+  logEvent('deck reset · streak 0/5 · 3 cards loaded');
+}
+
+function findCard(id) { return PEOPLE.find(p => p.id === id); }
+
+function renderDeck() {
+  deck.innerHTML = '';
+  stack.forEach((id, idx) => {
+    const el = document.createElement('div');
+    el.className = 'swipe-card';
+    el.dataset.stack = idx;
+    el.dataset.id = id;
+    if (isInterlude(id)) {
+      const verse = findVerse(id);
+      el.classList.add('interlude');
+      el.innerHTML = `
+        <div class="card-body">
+          <div class="interlude-eyebrow">A breath</div>
+          <div class="interlude-rule"></div>
+          <div class="interlude-verse">${verse.v}</div>
+          <div class="interlude-ref">${verse.r}</div>
+          <div class="interlude-rule-bottom"></div>
+          <div class="interlude-hint">Swipe to continue</div>
+        </div>
+      `;
+    } else {
+      const card = findCard(id);
+      el.innerHTML = `
+        <div class="swipe-overlay overlay-pass">Pass</div>
+        <div class="swipe-overlay overlay-bless">Bless</div>
+        <div class="swipe-overlay overlay-super">Super-Bless</div>
+        <div class="card-photo" data-tone="${card.tone}" data-initial="${card.initial}"></div>
+        <div class="card-body">
+          <div class="card-name">${card.name}, ${card.age}</div>
+          <div class="card-meta">${card.location} · ${card.tradition} · ${card.meta.split(' · ')[0]}</div>
+          <span class="card-tag">${card.tags[0]}</span>
+          <div class="card-tap-hint">Tap for more</div>
+        </div>
+      `;
+    }
+    deck.appendChild(el);
+  });
+  attachGestures();
+  updateCounter();
+}
+
+function pullNext() {
+  // returns next id to push to stack tail; injects interlude after every INTERLUDE_EVERY profile commits
+  if (queue.length > 0) {
+    return queue.shift();
+  }
+  return null;
+}
+
+function attachGestures() {
+  const top = deck.querySelector('[data-stack="0"]');
+  if (!top) return;
+
+  let dragging = false, startX = 0, startY = 0, dx = 0, dy = 0, axis = null;
+  let pressTime = 0, longPressTimer = null, hasMoved = false;
+
+  const ovPass = top.querySelector('.overlay-pass');
+  const ovBless = top.querySelector('.overlay-bless');
+  const ovSuper = top.querySelector('.overlay-super');
+
+  function onDown(x, y) {
+    if (animating || openCardId) return;
+    dragging = true; hasMoved = false;
+    startX = x; startY = y; dx = 0; dy = 0; axis = null;
+    pressTime = performance.now();
+    top.classList.add('dragging');
+    longPressTimer = setTimeout(() => {
+      if (dragging && !hasMoved) {
+        if (isInterlude(stack[0])) {
+          logEvent(`long-press on interlude · noop`);
+          return;
+        }
+        logEvent(`long-press · open detail · ${findCard(stack[0]).name}`);
+        openDetail(stack[0]);
+        dragging = false;
+        top.classList.remove('dragging');
+      }
+    }, 240);
+  }
+
+  function onMove(x, y) {
+    if (!dragging) return;
+    dx = x - startX; dy = y - startY;
+    if (!hasMoved && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+      hasMoved = true;
+      clearTimeout(longPressTimer);
+    }
+    if (!hasMoved) return;
+    if (!axis && (Math.abs(dx) > 12 || Math.abs(dy) > 12)) {
+      axis = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y';
+      if (axis === 'y' && dy > 0) axis = null;
+    }
+    if (axis === 'x') dy = 0;
+    if (axis === 'y') dx = 0;
+
+    let rot = axis === 'x' ? (dx / W) * 18 : 0;
+    top.style.transform = `translate(${dx}px, ${dy}px) rotate(${rot}deg)`;
+
+    if (ovPass && ovBless && ovSuper) {
+      let oPass = 0, oBless = 0, oSuper = 0;
+      if (axis === 'x' && dx < 0) oPass = Math.min(1, Math.max(0, (Math.abs(dx) - 30) / (W * 0.28 - 30)));
+      if (axis === 'x' && dx > 0) oBless = Math.min(1, Math.max(0, (dx - 30) / (W * 0.28 - 30)));
+      if (axis === 'y' && dy < 0) oSuper = Math.min(1, Math.max(0, (Math.abs(dy) - 40) / (H * 0.18 - 40)));
+      ovPass.style.opacity = oPass;
+      ovBless.style.opacity = oBless;
+      ovSuper.style.opacity = oSuper;
+    } else {
+      // interlude: just fade card opacity slightly during drag
+      const dragDist = Math.max(Math.abs(dx), Math.abs(dy));
+      top.style.opacity = String(Math.max(0.5, 1 - dragDist / 400));
+    }
+  }
+
+  function onUp() {
+    if (!dragging) return;
+    clearTimeout(longPressTimer);
+    const elapsed = performance.now() - pressTime;
+    dragging = false;
+    top.classList.remove('dragging');
+
+    if (!hasMoved && elapsed < 240) {
+      if (isInterlude(stack[0])) {
+        logEvent(`tap on interlude · dismiss`);
+        commit('bless'); // any direction dismisses; bless used for visual continuity
+        return;
+      }
+      logEvent(`tap · open detail · ${findCard(stack[0]).name}`);
+      openDetail(stack[0]);
+      return;
+    }
+
+    const px = Math.abs(dx) / W;
+    const py = Math.abs(dy) / H;
+    if (axis === 'x' && px >= HORIZ_THRESH) {
+      commit(dx > 0 ? 'bless' : 'pass');
+    } else if (axis === 'y' && dy < 0 && py >= VERT_THRESH) {
+      commit('super');
+    } else {
+      // snap back
+      top.style.transform = '';
+      top.style.opacity = '';
+      if (ovPass) ovPass.style.opacity = 0;
+      if (ovBless) ovBless.style.opacity = 0;
+      if (ovSuper) ovSuper.style.opacity = 0;
+    }
+  }
+
+  top.addEventListener('mousedown', e => onDown(e.clientX, e.clientY));
+  window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+  window.addEventListener('mouseup', onUp);
+  top.addEventListener('touchstart', e => { const t = e.touches[0]; onDown(t.clientX, t.clientY); }, {passive:true});
+  window.addEventListener('touchmove', e => { if (!dragging) return; const t = e.touches[0]; onMove(t.clientX, t.clientY); }, {passive:true});
+  window.addEventListener('touchend', onUp);
+}
+
+function commit(action) {
+  if (animating || stack.length === 0) return;
+  animating = true;
+  const top = deck.querySelector('[data-stack="0"]');
+  const committedId = stack[0];
+  const wasInterlude = isInterlude(committedId);
+  const label = wasInterlude ? `verse interlude (${findVerse(committedId).r})` : `${findCard(committedId).name}`;
+
+  if (wasInterlude) {
+    logEvent(`interlude dismissed · ${label} · no commit recorded`);
+  } else {
+    swipeStreak += 1;
+    logEvent(`commit · ${action.toUpperCase()} · ${label} · streak ${swipeStreak}/${INTERLUDE_EVERY} · haptic Success`);
+  }
+
+  if (action === 'pass') top.style.transform = 'translate(-120%, 0) rotate(-18deg)';
+  else if (action === 'bless') top.style.transform = 'translate(120%, 0) rotate(18deg)';
+  else top.style.transform = 'translate(0, -120%)';
+  top.style.opacity = '0.8';
+
+  setTimeout(() => {
+    deck.querySelectorAll('[data-stack="1"]').forEach(c => { c.dataset.stack = '0'; });
+    deck.querySelectorAll('[data-stack="2"]').forEach(c => { c.dataset.stack = '1'; });
+  }, 80);
+
+  setTimeout(() => {
+    stack.shift();
+
+    // verse interlude trigger — every 5 profile commits, inject before next profile
+    if (!wasInterlude && swipeStreak >= INTERLUDE_EVERY) {
+      verseIndex += 1;
+      stack.push(-verseIndex);
+      logEvent(`✦ verse interlude scheduled · ${VERSES[(verseIndex - 1) % VERSES.length].r}`);
+      swipeStreak = 0;
+    } else {
+      const next = pullNext();
+      if (next !== null) {
+        stack.push(next);
+        const nm = isInterlude(next) ? 'interlude' : findCard(next).name;
+        logEvent(`new card enters · ${nm}`);
+      } else {
+        logEvent(`deck running low · ${stack.length} cards left`);
+      }
+    }
+
+    renderDeck();
+    animating = false;
+    if (stack.length === 0) {
+      logEvent(`deck empty · "That's everyone for today"`);
+    }
+  }, 320);
+}
+
+function openDetail(id) {
+  const card = findCard(id);
+  if (!card) return;
+  openCardId = id;
+  sheetContent.innerHTML = `
+    <div class="detail-photo" data-tone="${card.tone}" data-initial="${card.initial}"></div>
+    <div class="detail-eyebrow">${card.tradition} · ${card.location}</div>
+    <div class="detail-name">${card.name}, ${card.age}</div>
+    <div class="detail-meta">${card.meta}</div>
+    <div class="detail-tags">${card.tags.map(t => `<span class="detail-tag">${t}</span>`).join('')}</div>
+    <div class="detail-prompt">
+      <div class="q">${card.prompt.q}</div>
+      <div class="a">${card.prompt.a}</div>
+    </div>
+    <div class="detail-section">
+      <h4>About</h4>
+      <p>${card.bio}</p>
+    </div>
+    <div class="gold-rule"></div>
+    <div class="detail-section">
+      <h4>Faith snapshot</h4>
+      <p>Tradition: ${card.tradition} · Practice: ${card.meta}</p>
+    </div>
+  `;
+  scrim.classList.add('open');
+  sheet.classList.add('open');
+}
+
+function closeDetail() {
+  scrim.classList.remove('open');
+  sheet.classList.remove('open');
+  setTimeout(() => { openCardId = null; }, 320);
+}
+
+scrim.addEventListener('click', () => { logEvent(`detail dismissed via scrim`); closeDetail(); });
+
+document.getElementById('btn-pass').addEventListener('click', () => commit('pass'));
+document.getElementById('btn-bless').addEventListener('click', () => commit('bless'));
+document.getElementById('btn-super').addEventListener('click', () => commit('super'));
+
+document.getElementById('sheet-pass').addEventListener('click', () => {
+  if (openCardId !== stack[0]) {
+    logEvent(`sheet action ignored · card mismatch`);
+    closeDetail();
+    return;
+  }
+  closeDetail();
+  setTimeout(() => commit('pass'), 240);
+});
+document.getElementById('sheet-bless').addEventListener('click', () => {
+  if (openCardId !== stack[0]) {
+    logEvent(`sheet action ignored · card mismatch`);
+    closeDetail();
+    return;
+  }
+  closeDetail();
+  setTimeout(() => commit('bless'), 240);
+});
+
+document.getElementById('reset-btn').addEventListener('click', reset);
+
+reset();
+</script>
+</body>
+</html>

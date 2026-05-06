@@ -36,12 +36,13 @@
   --color-gold-soft:  #E5C97D;
   --color-gold-halo:  rgba(200, 162, 75, 0.18);
 
-  /* ─── color · cobalt (NEW v1) ─────────────────────
-     Replaces v0's single --color-indigo. Used for:
-       cobalt-700 → headlineEm accent
-       cobalt-500 → active tab icon, link, focus
-       cobalt-100 → selected-chip surface
-       cobalt-50  → quiet brand-tint background
+  /* ─── color · cobalt (reserved v1.1) ───────────────
+     Kept for legacy prototypes and future secondary states.
+     Garden Hours v1.1 retired cobalt from user-facing app chrome:
+       primary controls → ink
+       active tabs → ink
+       selected chips/radios → amber warning ramp
+       headline emphasis → amber-ink warning-700
   */
   --color-cobalt-50:  #EEF2FB;
   --color-cobalt-100: #D6E0F4;
