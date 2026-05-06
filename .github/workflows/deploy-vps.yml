@@ -38,7 +38,8 @@ jobs:
             # restarting would break cocon-lab, passukuru, kokorozashi.
             cd "$REPO_DIR/infrastructure/vps/blesscupid"
             ln -sf /srv/blesscupid/.env ./.env
-            docker compose up -d --build
+            # docker-compose v1 hyphenated CLI — VPS lacks compose v2 plugin.
+            docker-compose up -d --build
             docker exec blesscupid-api pnpm -F @blesscupid/api prisma migrate deploy || true
             docker image prune -af --filter "until=168h" || true
         env:
