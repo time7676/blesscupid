@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import {
   KeyboardAvoidingView,
+  Linking,
   Platform,
   Pressable,
   ScrollView,
@@ -26,8 +27,10 @@ import {
   color,
   fontFamily,
   fontSize,
+  radius,
   space,
 } from '../../lib/design-system/index.js';
+import { optOutAnalytics } from '../../lib/observability/analytics.js';
 
 type Props = NativeStackScreenProps<AuthStackParamList, 'Signup'>;
 
@@ -38,6 +41,11 @@ export function SignupScreen({ navigation }: Props) {
   const [dob, setDob] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // UU PDP Pasal 20 — explicit consent state, default false. Service
+  // consent is required (gates the Create account button); analytics
+  // consent is optional and can be withdrawn later in Settings.
+  const [consentService, setConsentService] = useState(false);
+  const [consentAnalytics, setConsentAnalytics] = useState(false);
   const google = useGoogleSignIn();
 
   function precheck(): boolean {
@@ -45,6 +53,14 @@ export function SignupScreen({ navigation }: Props) {
     if (!gate.ok) {
       setError(`You must be at least ${MINIMUM_AGE} to sign up.`);
       return false;
+    }
+    if (!consentService) {
+      setError('Please consent to the Privacy Policy and Terms to continue.');
+      return false;
+    }
+    if (!consentAnalytics) {
+      // Honor opt-out before any signup event fires.
+      optOutAnalytics();
     }
     return true;
   }
@@ -127,6 +143,54 @@ export function SignupScreen({ navigation }: Props) {
         <Text style={styles.hint}>
           On the next screen you'll review and accept the BlessCupid Holy Code of Conduct.
         </Text>
+
+        {/* UU PDP Pasal 20 ayat 2 — explicit consent. Must be unchecked
+            by default, never inferred from continued use. The two
+            consent toggles cover: (1) operational data processing
+            required to make the app work, and (2) optional analytics. */}
+        <Pressable
+          onPress={() => setConsentService(!consentService)}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: consentService }}
+          style={styles.consentRow}
+        >
+          <View style={[styles.checkbox, consentService && styles.checkboxChecked]}>
+            {consentService ? <Text style={styles.checkmark}>✓</Text> : null}
+          </View>
+          <Text style={styles.consentText}>
+            I consent to the processing of my data to provide the BlessCupid service
+            (matching, messaging, moderation), per the{' '}
+            <Text
+              style={styles.link}
+              onPress={() => Linking.openURL('https://blesscupid.com/privacy')}
+            >
+              Privacy Policy
+            </Text>
+            {' '}and{' '}
+            <Text
+              style={styles.link}
+              onPress={() => Linking.openURL('https://blesscupid.com/terms')}
+            >
+              Terms of Service
+            </Text>
+            . Required.
+          </Text>
+        </Pressable>
+
+        <Pressable
+          onPress={() => setConsentAnalytics(!consentAnalytics)}
+          accessibilityRole="checkbox"
+          accessibilityState={{ checked: consentAnalytics }}
+          style={styles.consentRow}
+        >
+          <View style={[styles.checkbox, consentAnalytics && styles.checkboxChecked]}>
+            {consentAnalytics ? <Text style={styles.checkmark}>✓</Text> : null}
+          </View>
+          <Text style={styles.consentText}>
+            I consent to product analytics to help BlessCupid improve. You can
+            withdraw this consent any time in Settings → Privacy. Optional.
+          </Text>
+        </Pressable>
 
         <Button
           variant="primary"
@@ -236,4 +300,43 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   devSkipText: { fontFamily: fontFamily.sansMedium, fontSize: fontSize.body, color: color.ink.default },
+  // UU PDP consent UI
+  consentRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: space.s3,
+    marginBottom: space.s3,
+  },
+  checkbox: {
+    width: 22,
+    height: 22,
+    borderRadius: radius.sm,
+    borderWidth: 1.5,
+    borderColor: color.hairline.strong,
+    backgroundColor: color.parchment.raised,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 2,
+  },
+  checkboxChecked: {
+    backgroundColor: color.cobalt[500],
+    borderColor: color.cobalt[500],
+  },
+  checkmark: {
+    color: color.parchment.default,
+    fontSize: 14,
+    fontFamily: fontFamily.sansSemibold,
+    lineHeight: 16,
+  },
+  consentText: {
+    flex: 1,
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.caption,
+    color: color.ink.soft,
+    lineHeight: 18,
+  },
+  link: {
+    color: color.cobalt[500],
+    textDecorationLine: 'underline',
+  },
 });

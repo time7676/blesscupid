@@ -460,6 +460,12 @@ model User {
   matchDecisions MatchDecision[] @relation("MatchDecisionViewer")
   matchedAgainst MatchDecision[] @relation("MatchDecisionCandidate")
 
+  // BLE eng-review 2026-05-06 — Lane D (push notifications).
+  // Array of FCM/APNs device tokens. Mobile registers on every cold
+  // boot via POST /me/push-token. Backend dedupes + drops invalid
+  // tokens reported by FCM on send failure. Empty array = no push.
+  pushTokens PushToken[] @relation("PushTokenUser")
+
   @@index([email])
   @@index([phoneNumber])
   @@index([deletedAt])
@@ -1193,4 +1199,35 @@ model MatchDecision {
   @@unique([userId, candidateUserId])
   @@index([userId, decision])
   @@index([candidateUserId, decision])
+}
+
+// BLE eng-review 2026-05-06 — Lane D (push notifications).
+// One row per registered device. The mobile app captures an FCM token
+// from `expo-notifications` on cold boot + after permission grant, and
+// POSTs to /me/push-token. Sends fan out across all tokens for a user
+// so a user with phone + tablet gets both. Stale tokens (FCM returns
+// `messaging/registration-token-not-registered`) are deleted by the
+// sender service on first failure.
+//
+// Platform is captured for marketing diagnostics + APNs vs FCM routing
+// (firebase-admin handles both behind one SDK call).
+
+enum PushPlatform {
+  ios
+  android
+  web
+}
+
+model PushToken {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @db.Uuid
+  user      User         @relation("PushTokenUser", fields: [userId], references: [id], onDelete: Cascade)
+  token     String
+  platform  PushPlatform
+  appVersion String?
+  createdAt DateTime     @default(now())
+  lastSeenAt DateTime    @default(now())
+
+  @@unique([userId, token])
+  @@index([userId])
 }

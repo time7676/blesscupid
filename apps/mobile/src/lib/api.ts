@@ -317,6 +317,30 @@ export function getMe(token: string): Promise<MeResponse> {
   return apiFetch<MeResponse>('/me', { method: 'GET', token });
 }
 
+// UU PDP Pasal 11 — right to data portability. Returns a JSON blob the
+// user can save to their device. Mobile UI exposes this via Settings →
+// Privacy → Export my data. The blob is opaque from the client's POV
+// (we don't promise a specific schema beyond best-effort completeness).
+export function exportMe(token: string): Promise<unknown> {
+  return apiFetch<unknown>('/me/export', { method: 'GET', token });
+}
+
+// Push notification token registration. Mobile calls this on cold boot
+// after expo-notifications grants permission. Backend dedupes by
+// (userId, token); re-registering same token bumps lastSeenAt.
+export type PushPlatform = 'ios' | 'android' | 'web';
+
+export function registerPushToken(
+  authToken: string,
+  input: { token: string; platform: PushPlatform; appVersion?: string },
+): Promise<{ ok: true }> {
+  return apiFetch('/me/push-token', {
+    method: 'POST',
+    token: authToken,
+    body: JSON.stringify(input),
+  });
+}
+
 // BLE eng-review 2026-05-06 — Lane B (matching).
 //
 // Today screen calls `getMatchesToday` once on mount. The server returns
