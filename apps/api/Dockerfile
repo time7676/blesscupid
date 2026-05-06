@@ -11,7 +11,11 @@ COPY packages/shared ./packages/shared
 COPY services/moderation ./services/moderation
 COPY services/matching ./services/matching
 COPY apps/api ./apps/api
-RUN pnpm install --filter @blesscupid/api... --filter @blesscupid/shared --filter @blesscupid/matching
+RUN pnpm install --filter @blesscupid/api... --filter @blesscupid/shared --filter @blesscupid/matching --filter @blesscupid/moderation
+# Build workspace deps first — api imports their compiled dist/.
+RUN pnpm --filter @blesscupid/shared run build \
+ && pnpm --filter @blesscupid/matching run build \
+ && pnpm --filter @blesscupid/moderation run build
 RUN pnpm --filter @blesscupid/api exec prisma generate \
  && pnpm --filter @blesscupid/api run build
 # Prisma v5.22 bug: default.d.ts is empty under pnpm; fix it so imports resolve.
