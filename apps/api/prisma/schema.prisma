@@ -1231,3 +1231,53 @@ model PushToken {
   @@unique([userId, token])
   @@index([userId])
 }
+
+// ─── Waitlist (BLE 2026-05-06 — pre-launch teaser) ────────────────────
+//
+// Pre-launch waitlist for the public teaser at blesscupid.com. Captures
+// email + intent + city + consent so the founding team can sequence
+// invite waves (Bali first cohort, then PH/SG expansion at v1.1).
+//
+// Privacy: this row is the SUBJECT DATA the user submits. It is the
+// only data we hold about them until they convert to a real account
+// at launch. UU PDP Pasal 4-15 rights apply: access via DPO email,
+// deletion on request, export on request. consentedAt is the explicit
+// consent timestamp required by Pasal 20.
+
+enum WaitlistIntent {
+  dating_marriage
+  christian_friends
+  christian_community
+  exploring
+}
+
+enum WaitlistStatus {
+  signed_up
+  invited
+  onboarded
+  churned
+  unsubscribed
+}
+
+model Waitlist {
+  id          String          @id @default(uuid()) @db.Uuid
+  email       String          @unique
+  intent      WaitlistIntent
+  city        String?
+  locale      String          @db.Char(2)
+  source      String?
+  consentedAt DateTime
+  ipAddress   String?
+  userAgent   String?
+  utmCampaign String?
+  utmSource   String?
+  utmMedium   String?
+  status      WaitlistStatus  @default(signed_up)
+  invitedAt   DateTime?
+  invitedCode String?
+  onboardedAt DateTime?
+  createdAt   DateTime        @default(now())
+
+  @@index([intent, city])
+  @@index([status])
+}

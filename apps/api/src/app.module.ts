@@ -8,6 +8,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { OnboardingModule } from './onboarding/onboarding.module.js';
 import { MatchingModule } from './matching/matching.module.js';
 import { NotificationsModule } from './notifications/notifications.module.js';
+import { WaitlistModule } from './waitlist/waitlist.module.js';
 import { ModerationModule } from './moderation/moderation.module.js';
 import { PhotosModule } from './photos/photos.module.js';
 import { HealthModule } from './health/health.module.js';
@@ -44,6 +45,7 @@ import { EntitlementModule } from './entitlement/entitlement.module.js';
     OnboardingModule,
     MatchingModule,
     NotificationsModule,
+    WaitlistModule,
     ModerationModule,
     PhotosModule,
     ChatModule,
