@@ -1,27 +1,31 @@
-import { Module } from '@nestjs/common';
-import { PrismaModule } from '../prisma/prisma.module.js';
-import { DailyStackCronService } from './daily-stack-cron.service.js';
-import { MatchingController } from './matching.controller.js';
-import { MatchingExtensionController } from './matching-extension.controller.js';
-import { MatchingPriorityService } from './matching-priority.service.js';
-import { MatchingService } from './matching.service.js';
-import { QuotaService } from './quota.service.js';
-
 /**
- * BLE eng-review 2026-05-06 — Lane B.
+ * MatchingModule — v1-restart wiring.
  *
- * Wires the pure-function matching engine in `services/matching` to:
- *   - GET /matches/today + POST /matches/decision (controller)
- *   - DailyStack + MatchDecision Prisma persistence (service)
- *   - Nightly @Cron('0 4 * * *') job (DailyStackCronService)
+ *   - MatchingController : /v1/matches/*
+ *   - MatchingService    : pure-engine glue + Prisma + Redis
+ *   - DailyStackProcessor: BullMQ cron + per-user worker
  *
- * MatchingPriorityService stays exported for the existing Bless+ tier
- * boost wiring elsewhere (subscription module).
+ * The legacy MatchingPriorityService / MatchingExtensionController /
+ * QuotaService / DailyStackCronService have been folded into MatchingService
+ * + DailyStackProcessor.
  */
+
+import { Module } from '@nestjs/common';
+import { BullModule } from '@nestjs/bullmq';
+import { PrismaModule } from '../prisma/prisma.module.js';
+import { RedisModule } from '../redis/redis.module.js';
+import { DailyStackProcessor, DAILY_STACK_QUEUE } from './daily-stack.processor.js';
+import { MatchingController } from './matching.controller.js';
+import { MatchingService } from './matching.service.js';
+
 @Module({
-  imports: [PrismaModule],
-  controllers: [MatchingController, MatchingExtensionController],
-  providers: [MatchingService, MatchingPriorityService, DailyStackCronService, QuotaService],
-  exports: [MatchingService, MatchingPriorityService, QuotaService],
+  imports: [
+    PrismaModule,
+    RedisModule,
+    BullModule.registerQueue({ name: DAILY_STACK_QUEUE }),
+  ],
+  controllers: [MatchingController],
+  providers: [MatchingService, DailyStackProcessor],
+  exports: [MatchingService],
 })
 export class MatchingModule {}

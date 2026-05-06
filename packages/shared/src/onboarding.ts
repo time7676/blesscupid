@@ -1,10 +1,18 @@
 import { z } from 'zod';
-import { FaithProfileSchema, GenderSchema } from './domain.js';
+
+// ---------------------------------------------------------------------------
+// Auth payloads (signup / login / OAuth) — kept across the v1-restart since
+// auth flow shape didn't change.
+// ---------------------------------------------------------------------------
+
+export const LocaleSchema = z.enum(['en', 'id']);
+export type LocaleCode = z.infer<typeof LocaleSchema>;
 
 export const SignupEmailSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(10).max(200),
+  password: z.string().min(8).max(200),
   dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
+  locale: LocaleSchema.optional(),
 });
 export type SignupEmailInput = z.infer<typeof SignupEmailSchema>;
 
@@ -21,13 +29,42 @@ export const OAuthSignupSchema = z.object({
   provider: OAuthProviderSchema,
   idToken: z.string().min(20),
   dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  locale: LocaleSchema.optional(),
 });
 export type OAuthSignupInput = z.infer<typeof OAuthSignupSchema>;
 
-// Bumped to v1 for BLE-124 — Pastor signed verbatim covenant body
-// (see /BLE/issues/BLE-41#document-user-covenant). Existing users with
-// `v0-placeholder` must re-accept before re-entering the surface.
-export const COVENANT_VERSION = 'v1';
+export const OAuthLoginSchema = z.object({
+  provider: OAuthProviderSchema,
+  idToken: z.string().min(20),
+});
+export type OAuthLoginInput = z.infer<typeof OAuthLoginSchema>;
+
+export const RefreshTokenSchema = z.object({
+  refreshToken: z.string().min(20),
+});
+export type RefreshTokenInput = z.infer<typeof RefreshTokenSchema>;
+
+export const PasswordResetRequestSchema = z.object({
+  email: z.string().email(),
+});
+export type PasswordResetRequestInput = z.infer<typeof PasswordResetRequestSchema>;
+
+export const PasswordResetConfirmSchema = z.object({
+  email: z.string().email(),
+  code: z.string().regex(/^\d{6}$/, '6-digit numeric'),
+  newPassword: z.string().min(8).max(200),
+});
+export type PasswordResetConfirmInput = z.infer<typeof PasswordResetConfirmSchema>;
+
+export const EmailVerifyConfirmSchema = z.object({
+  code: z.string().regex(/^\d{6}$/, '6-digit numeric'),
+});
+export type EmailVerifyConfirmInput = z.infer<typeof EmailVerifyConfirmSchema>;
+
+// Bumped to v1.0 for v1-restart per plan
+// (~/.claude/plans/i-think-we-need-misty-eclipse.md §"Holy Code version").
+// All re-signups must accept fresh.
+export const COVENANT_VERSION = 'v1.0';
 
 export const CovenantAcceptSchema = z.object({
   version: z.string().min(1),
@@ -36,226 +73,193 @@ export const CovenantAcceptSchema = z.object({
 export type CovenantAcceptInput = z.infer<typeof CovenantAcceptSchema>;
 
 // ---------------------------------------------------------------------------
-// Onboarding questionnaire v1 (BLE-41 / BLE-124)
+// 8-card onboarding (v1-restart)
 // ---------------------------------------------------------------------------
+//
+// See plan `~/.claude/plans/i-think-we-need-misty-eclipse.md` §"8-card
+// onboarding". Each card POSTs to `/onboarding/step/:n`. Whimsical answers
+// (q1, q3, q5, q7) collected on cards 1/3/5/7 land in
+// `Profile.whimsicalAnswers` JSON for soft tiebreaker scoring + chat hooks.
 
-export const IntentSchema = z.enum(['dating', 'friendship', 'community', 'unspecified']);
-export type Intent = z.infer<typeof IntentSchema>;
+// Domain enums — wire-format strings match the Prisma enums in
+// apps/api/prisma/schema.prisma (Gender, Tradition).
 
-export const SeekingSchema = z.enum(['woman', 'man', 'same_sex', 'unspecified']);
-export type Seeking = z.infer<typeof SeekingSchema>;
+export const OnboardingGenderSchema = z.enum(['male', 'female']);
+export type OnboardingGender = z.infer<typeof OnboardingGenderSchema>;
 
-export const TraditionSchema = z.enum([
+export const OnboardingTraditionSchema = z.enum([
   'catholic',
-  'protestant_evangelical',
-  'protestant_pentecostal',
-  'protestant_reformed',
-  'protestant_mainline',
+  'protestant',
   'orthodox',
-  'other_christian',
-  'still_figuring',
+  'nondenom',
 ]);
-export type Tradition = z.infer<typeof TraditionSchema>;
+export type OnboardingTradition = z.infer<typeof OnboardingTraditionSchema>;
 
-export const WalkStageSchema = z.enum([
-  'lifelong',
-  'came_later',
-  'recent_convert',
-  'returning',
-  'doubting_exploring',
-  'prefer_not_to_say',
+// Whimsical question option enums (cards 1, 3, 5, 7).
+
+export const WhimsicalQ1AnimalSchema = z.enum(['elephant', 'mouse', 'dolphin', 'owl']);
+export type WhimsicalQ1Animal = z.infer<typeof WhimsicalQ1AnimalSchema>;
+
+export const WhimsicalQ3SundaySchema = z.enum([
+  'full_pew',
+  'kitchen_prayer',
+  'mountain_trail',
+  'candle_alone',
 ]);
-export type WalkStage = z.infer<typeof WalkStageSchema>;
+export type WhimsicalQ3Sunday = z.infer<typeof WhimsicalQ3SundaySchema>;
 
-export const MarriageOpenSchema = z.enum(['yes', 'maybe', 'no']);
-export type MarriageOpen = z.infer<typeof MarriageOpenSchema>;
+export const WhimsicalQ5AfternoonSchema = z.enum(['rest', 'serve', 'create', 'study']);
+export type WhimsicalQ5Afternoon = z.infer<typeof WhimsicalQ5AfternoonSchema>;
 
-export const WelcomedTagSchema = z.enum([
-  'previously_married',
-  'single_parent',
-  'widowed',
-  'convert_from_non_christian',
-  'church_hurt',
-]);
-export type WelcomedTag = z.infer<typeof WelcomedTagSchema>;
+// Q7 = verse ref (e.g. "John 3:16"). Free-form ref string, capped to keep
+// the JSON column tidy. Validated against the curated 84-pool at the
+// service layer, not here.
+export const WhimsicalQ7VerseRefSchema = z.string().min(2).max(40);
 
-export const PracticeTagSchema = z.enum([
-  'sunday_in_person',
-  'sunday_online',
-  'catholic_mass',
-  'daily_prayer',
-  'small_group',
-  'worship_at_home',
-  'still_finding_a_community',
-]);
-export type PracticeTag = z.infer<typeof PracticeTagSchema>;
-
-export const Q3RedirectOutcomeSchema = z.enum(['accept_reroute', 'closed_by_user']);
-export type Q3RedirectOutcome = z.infer<typeof Q3RedirectOutcomeSchema>;
-
-const TRADITION_OTHER_MAX = 80;
-const BIO_SEED_MAX = 280;
+// Whimsical question identifier — exported so other modules
+// (e.g. matching cosine vector mapping) can key off the same names.
+export const WhimsicalQuestionSchema = z.enum(['q1', 'q3', 'q5', 'q7']);
+export type WhimsicalQuestion = z.infer<typeof WhimsicalQuestionSchema>;
 
 /**
- * Storage shape for the welcomed-tag visibility map. Default per-tag is
- * `false` per Holy Code §4.3 — never display without explicit user opt-in.
+ * Canonical shape of `Profile.whimsicalAnswers` JSON. Strict — no extra keys.
+ * Validated by `whimsical-validation.ts` on every Profile.update.
  */
-export const WelcomedTagVisibilitySchema = z.record(WelcomedTagSchema, z.boolean());
-export type WelcomedTagVisibility = z.infer<typeof WelcomedTagVisibilitySchema>;
-
-/**
- * Single payload for `POST /onboarding/questionnaire` — replaces the legacy
- * faith-only payload. All optional questions can be omitted; required gates
- * (Q1 age, Q3 v1 dating scope) are enforced at server-side, not here.
- */
-export const QuestionnaireSubmitSchema = z
+export const WhimsicalAnswersSchema = z
   .object({
-    // Q2 — required
-    intent: IntentSchema,
+    q1: WhimsicalQ1AnimalSchema,
+    q3: WhimsicalQ3SundaySchema,
+    q5: WhimsicalQ5AfternoonSchema,
+    q7: WhimsicalQ7VerseRefSchema,
+  })
+  .strict();
+export type WhimsicalAnswers = z.infer<typeof WhimsicalAnswersSchema>;
 
-    // Q3 — required only when intent === dating
-    seeking: SeekingSchema.optional(),
+// Per-step payload schemas. Each one is the body of POST /onboarding/step/:n.
 
-    // Q4 — required
-    tradition: TraditionSchema,
-    traditionOther: z.string().min(1).max(TRADITION_OTHER_MAX).optional(),
+export const OnboardingStep1BodySchema = z.object({
+  q1: WhimsicalQ1AnimalSchema,
+});
+export type OnboardingStep1Body = z.infer<typeof OnboardingStep1BodySchema>;
 
-    // Q5 — optional
-    walkStage: WalkStageSchema.optional(),
+export const OnboardingStep2BodySchema = z.object({
+  displayName: z.string().min(2).max(40),
+  // ISO-8601 date string — server enforces ≥18y at submit.
+  dob: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'YYYY-MM-DD'),
+});
+export type OnboardingStep2Body = z.infer<typeof OnboardingStep2BodySchema>;
 
-    // Q6 — required when intent === dating
-    marriageOpen: MarriageOpenSchema.optional(),
+export const OnboardingStep3BodySchema = z.object({
+  q3: WhimsicalQ3SundaySchema,
+});
+export type OnboardingStep3Body = z.infer<typeof OnboardingStep3BodySchema>;
 
-    // Q7 — optional, multi-select
-    welcomedTags: z.array(WelcomedTagSchema).max(5).default([]),
-    welcomedTagVisibility: WelcomedTagVisibilitySchema.default({}),
+export const OnboardingStep4BodySchema = z.object({
+  gender: OnboardingGenderSchema,
+  seeking: OnboardingGenderSchema,
+  tradition: OnboardingTraditionSchema,
+});
+export type OnboardingStep4Body = z.infer<typeof OnboardingStep4BodySchema>;
 
-    // Q8 — optional, multi-select
-    practiceTags: z.array(PracticeTagSchema).max(7).default([]),
+export const OnboardingStep5BodySchema = z.object({
+  q5: WhimsicalQ5AfternoonSchema,
+});
+export type OnboardingStep5Body = z.infer<typeof OnboardingStep5BodySchema>;
 
-    // Q9 — optional bio seed
-    bioSeed: z.string().max(BIO_SEED_MAX).optional(),
+// Card 6 — Location + home church.
+// Either GPS lat+lng OR a city dropdown selection is required. The
+// service-side `assertStepValid` enforces this; schema-level we allow both.
+export const OnboardingStep6BodySchema = z
+  .object({
+    lat: z.number().gte(-90).lte(90).optional(),
+    lng: z.number().gte(-180).lte(180).optional(),
+    city: z.string().min(1).max(80),
+    countryCode: z.string().length(2),
+    homeChurchName: z.string().min(1).max(120).optional(),
+    churchLat: z.number().gte(-90).lte(90).optional(),
+    churchLng: z.number().gte(-180).lte(180).optional(),
   })
   .superRefine((value, ctx) => {
-    if (value.intent === 'dating') {
-      if (!value.seeking) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['seeking'],
-          message: 'seeking_required_for_dating',
-        });
-      }
-      if (!value.marriageOpen) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['marriageOpen'],
-          message: 'marriage_open_required_for_dating',
-        });
-      }
-    }
-
-    if (value.tradition === 'other_christian' && !value.traditionOther) {
+    // lat+lng must be paired
+    if ((value.lat == null) !== (value.lng == null)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ['traditionOther'],
-        message: 'tradition_other_required',
+        path: ['lat'],
+        message: 'lat_lng_must_be_paired',
       });
     }
-
-    // Privacy-by-default: cannot mark a welcomed tag visible if it isn't
-    // also in the welcomedTags array. Prevents "ghost-public" flags from
-    // sneaking through when the client posts a stale visibility map.
-    const tags = new Set(value.welcomedTags);
-    for (const [tag, visible] of Object.entries(value.welcomedTagVisibility)) {
-      if (visible && !tags.has(tag as WelcomedTag)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: ['welcomedTagVisibility', tag],
-          message: 'visibility_for_unselected_tag',
-        });
-      }
+    if ((value.churchLat == null) !== (value.churchLng == null)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['churchLat'],
+        message: 'church_lat_lng_must_be_paired',
+      });
     }
   });
-export type QuestionnaireSubmitInput = z.infer<typeof QuestionnaireSubmitSchema>;
+export type OnboardingStep6Body = z.infer<typeof OnboardingStep6BodySchema>;
 
-/** Q3 same-sex redirect handler. Never writes a same-sex match preference. */
-export const Q3RedirectSchema = z.object({
-  outcome: Q3RedirectOutcomeSchema,
+export const OnboardingStep7BodySchema = z.object({
+  // Verse ref selected by user (e.g. "Psalm 23:1"). Stored as the user's
+  // first StatusVerse + as `whimsicalAnswers.q7` for affinity scoring.
+  verseRef: WhimsicalQ7VerseRefSchema,
+  q7: WhimsicalQ7VerseRefSchema,
 });
-export type Q3RedirectInput = z.infer<typeof Q3RedirectSchema>;
+export type OnboardingStep7Body = z.infer<typeof OnboardingStep7BodySchema>;
 
-/** Per-tag visibility patch used by settings UI post-onboarding. */
-export const WelcomedTagsUpdateSchema = z
-  .object({
-    welcomedTags: z.array(WelcomedTagSchema).max(5).optional(),
-    welcomedTagVisibility: WelcomedTagVisibilitySchema.optional(),
-  })
-  .superRefine((value, ctx) => {
-    if (value.welcomedTags && value.welcomedTagVisibility) {
-      const tags = new Set(value.welcomedTags);
-      for (const [tag, visible] of Object.entries(value.welcomedTagVisibility)) {
-        if (visible && !tags.has(tag as WelcomedTag)) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            path: ['welcomedTagVisibility', tag],
-            message: 'visibility_for_unselected_tag',
-          });
-        }
-      }
-    }
-  });
-export type WelcomedTagsUpdateInput = z.infer<typeof WelcomedTagsUpdateSchema>;
-
-// Legacy faith questionnaire payload (BLE-7) — kept until BLE-105 mobile
-// surfaces fully migrate to the v1 questionnaire route. New code MUST use
-// `QuestionnaireSubmitSchema`.
-export const FaithQuestionnaireSchema = FaithProfileSchema;
-export type FaithQuestionnaireInput = z.infer<typeof FaithQuestionnaireSchema>;
-
-// `displayName` is the public NICKNAME visible to other users.
-// `legalName` is PRIVATE — captured for safety/abuse-report routing,
-// surfaced only on /v1/admin and /v1/safety endpoints. Per BLE eng-review
-// 2026-05-06. Optional in the schema so legacy flows that already wrote
-// a profile without legalName don't break — required at the mobile UI
-// layer for v1 onboarding.
-export const ProfileBasicsSchema = z.object({
-  displayName: z.string().min(1).max(40),
-  legalName: z.string().min(1).max(80).optional(),
-  gender: GenderSchema,
-  city: z.string().min(1).max(80),
-  countryCode: z.string().length(2),
+export const OnboardingStep8BodySchema = z.object({
+  photoStorageKey: z.string().min(1).max(255),
+  bio: z.string().max(140).optional(),
+  // Literal `true` — onboarding cannot complete without explicit accept.
+  covenantAccepted: z.literal(true),
 });
-export type ProfileBasicsInput = z.infer<typeof ProfileBasicsSchema>;
+export type OnboardingStep8Body = z.infer<typeof OnboardingStep8BodySchema>;
 
-export const BioSchema = z.object({
-  bio: z.string().min(1).max(500),
-});
-export type BioInput = z.infer<typeof BioSchema>;
+/**
+ * Discriminated union of every step body, keyed by `step`. Convenient for
+ * client-side helpers that send a generic envelope. The HTTP route currently
+ * takes the body directly per `:n`, this union is for typing the bag.
+ */
+export type OnboardingStepBody =
+  | ({ step: 1 } & OnboardingStep1Body)
+  | ({ step: 2 } & OnboardingStep2Body)
+  | ({ step: 3 } & OnboardingStep3Body)
+  | ({ step: 4 } & OnboardingStep4Body)
+  | ({ step: 5 } & OnboardingStep5Body)
+  | ({ step: 6 } & OnboardingStep6Body)
+  | ({ step: 7 } & OnboardingStep7Body)
+  | ({ step: 8 } & OnboardingStep8Body);
 
-export const OnboardingStep = {
-  ageGate: 'age_gate',
-  covenant: 'covenant',
-  faithQuestionnaire: 'faith_questionnaire',
-  profileBasics: 'profile_basics',
-  firstPhoto: 'first_photo',
-  bio: 'bio',
-  done: 'done',
+// Step ordering — Profile.onboardingStep is an Int (0..8). 0 = nothing
+// captured yet; 8 = card 8 saved; complete flips User.onboardingCompleted.
+export const ONBOARDING_TOTAL_STEPS = 8 as const;
+
+export const ONBOARDING_LIMITS = {
+  displayNameMin: 2,
+  displayNameMax: 40,
+  bioMax: 140,
+  homeChurchNameMax: 120,
+  cityMax: 80,
+  minAgeYears: 18,
 } as const;
-export type OnboardingStep = (typeof OnboardingStep)[keyof typeof OnboardingStep];
 
-export const ONBOARDING_ORDER: OnboardingStep[] = [
-  OnboardingStep.ageGate,
-  OnboardingStep.covenant,
-  OnboardingStep.faithQuestionnaire,
-  OnboardingStep.profileBasics,
-  OnboardingStep.firstPhoto,
-  OnboardingStep.bio,
-  OnboardingStep.done,
-];
-
-export const QUESTIONNAIRE_LIMITS = {
-  traditionOtherMax: TRADITION_OTHER_MAX,
-  bioSeedMax: BIO_SEED_MAX,
-  welcomedTagsMax: 5,
-  practiceTagsMax: 7,
-} as const;
+/**
+ * Server-side response shape for `GET /onboarding/state`. Mobile reads
+ * `currentStep` to resume mid-flow.
+ */
+export interface OnboardingStateResponse {
+  currentStep: number; // 0..8
+  isComplete: boolean;
+  capturedFields: {
+    displayName?: string;
+    dob?: string;
+    gender?: OnboardingGender;
+    seeking?: OnboardingGender;
+    tradition?: OnboardingTradition;
+    city?: string;
+    countryCode?: string;
+    homeChurchName?: string;
+    photoCount: number;
+    covenantSigned: boolean;
+    whimsicalKeys: WhimsicalQuestion[];
+  };
+}

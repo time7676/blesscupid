@@ -1,86 +1,82 @@
-export type Denomination =
-  | "catholic"
-  | "protestant"
-  | "orthodox"
-  | "other";
+/**
+ * BlessCupid v1-restart matching types — pure data shapes only.
+ * Mirrors the new Prisma enums in `apps/api/prisma/schema.prisma`.
+ */
 
 export type Gender = "male" | "female";
 
-export type MarriageIntent =
-  | "within_1y"
-  | "within_2y"
-  | "within_5y"
-  | "open_timeline";
+export type Tradition =
+  | "catholic"
+  | "protestant"
+  | "orthodox"
+  | "nondenom"
+  | "other";
 
-export type ChurchAttendance =
-  | "weekly"
-  | "monthly"
-  | "occasional"
-  | "rarely";
+export type WalkStage = "seeking" | "growing" | "rooted";
 
-export type SpiritualGift =
-  | "teaching"
-  | "service"
-  | "mercy"
-  | "exhortation"
-  | "giving"
-  | "leadership"
-  | "evangelism"
-  | "hospitality";
+export type MarriageIntent = "yes" | "maybe" | "no";
+
+export type DecisionKind = "pass" | "like" | "super_like";
+
+export type SubscriptionTier = "free" | "blessplus";
+
+export type ProximityHint = "near" | "same_city" | "different_city";
+
+export type DistanceBucket = "<=5km" | "5-10km" | "10-20km" | "20+km";
+
+/** Whimsical answers — q1, q3, q5, q7. Each chip is one of 4 axis labels. */
+export interface WhimsicalAnswers {
+  q1?: string;
+  q3?: string;
+  q5?: string;
+  q7?: string;
+}
 
 export interface GeoPoint {
   lat: number;
   lng: number;
 }
 
-export interface AgePreference {
-  minAge: number;
-  maxAge: number;
-}
-
-export interface FaithProfile {
-  denomination: Denomination;
-  churchAttendance: ChurchAttendance;
-  baptized: boolean;
-  marriageIntent: MarriageIntent;
-  spiritualGifts: SpiritualGift[];
-}
-
 /**
- * Full candidate profile as held by the matching engine.
- * Note: this includes PII. Use {@link sanitizeForClient} before
- * returning over an API.
+ * Input shape consumed by `score(viewer, candidate)`. Never serialized to a
+ * client — strip via `apps/api/src/matching/candidate-card.dto.ts` first.
  */
-export interface CandidateProfile {
+export interface ScoringInput {
   userId: string;
-  displayName: string;
   age: number;
   gender: Gender;
-  seekingGender: Gender;
-  location: GeoPoint;
-  maxDistanceKm: number;
-  agePreference: AgePreference;
-  faith: FaithProfile;
-  photoUrl: string | null;
-  bioApproved: boolean;
-  photoApproved: boolean;
-  covenantSigned: boolean;
+  seeking: Gender;
+  lat: number;
+  lng: number;
+  city: string;
+  homeChurchName: string | null;
+  churchLat: number | null;
+  churchLng: number | null;
+  tradition: Tradition;
+  walkStage: WalkStage;
+  marriageIntent: MarriageIntent;
+  whimsicalAnswers: WhimsicalAnswers | null;
+  isVerified: boolean;
+  hideFromUnverified: boolean;
+  lastActiveAt: Date | null;
+  // Eligibility fields (mirrors User-row state):
   ageVerifiedAdult: boolean;
-  bannedOrSuspended: boolean;
-  // Anti-PII fields below MUST be stripped before client serialization.
-  email: string;
-  phone?: string;
-  exactCoordinates?: GeoPoint;
+  isSuspended: boolean;
+  isDeleted: boolean;
+  onboardingCompleted: boolean;
+  // Pair-state markers — set by caller after Block lookup:
+  blockedByViewer?: boolean;
+  blockedByCandidate?: boolean;
 }
 
 export interface ScoreBreakdown {
   total: number;
-  denomination: number;
-  marriageIntent: number;
-  geo: number;
-  age: number;
-  spiritualGifts: number;
-  attendance: number;
+  distance: number;
+  churchProximity: number;
+  tradition: number;
+  whimsical: number;
+  walkStage: number;
+  freshness: number;
 }
 
 export interface ScoredCandidate {

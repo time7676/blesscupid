@@ -1,17 +1,28 @@
-import { Body, Controller, Get, HttpCode, Patch, Post, Req, UseGuards } from '@nestjs/common';
 import {
-  CovenantAcceptSchema,
-  FaithQuestionnaireSchema,
-  ProfileBasicsSchema,
-  BioSchema,
-  Q3RedirectSchema,
-  QuestionnaireSubmitSchema,
-  WelcomedTagsUpdateSchema,
-} from '@blesscupid/shared';
+  BadRequestException,
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { OnboardingService } from './onboarding.service.js';
-import { ZodValidate } from '../common/zod.pipe.js';
+import { STEP_SCHEMAS, isValidStepNumber } from './onboarding.schemas.js';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 
+/**
+ * 8-card onboarding controller. All routes auth-required.
+ *
+ * Path layout (no NestJS global prefix is set — `/v1` is added by the
+ * front-door reverse proxy in production; mobile clients hit
+ * `/v1/onboarding/...`).
+ *
+ * Plan: `~/.claude/plans/i-think-we-need-misty-eclipse.md` §"8-card
+ * onboarding".
+ */
 @Controller('onboarding')
 @UseGuards(JwtAuthGuard)
 export class OnboardingController {
@@ -22,81 +33,61 @@ export class OnboardingController {
     return this.onboarding.getState(req.user.userId);
   }
 
-  @Post('covenant')
+  /**
+   * POST /onboarding/step/:n — save card N body, advance state machine.
+   *
+   * Validates the body against `STEP_SCHEMAS[n]`, then dispatches to the
+   * matching writer. Out-of-order step submissions return 409
+   * `onboarding_step_out_of_order`. Card 4 with same-sex selection
+   * returns 409 `q3_redirect_required`; client must follow up with
+   * POST /onboarding/q3-reject after the explanation sheet.
+   */
+  @Post('step/:n')
   @HttpCode(200)
-  async covenant(
+  async saveStep(
     @Req() req: AuthedRequest,
-    @Body(ZodValidate(CovenantAcceptSchema)) input: unknown,
+    @Param('n') nRaw: string,
+    @Body() body: unknown,
   ) {
-    return this.onboarding.acceptCovenant(req.user.userId, input as never, req);
+    const n = Number(nRaw);
+    if (!isValidStepNumber(n)) {
+      throw new BadRequestException({ code: 'invalid_step', step: nRaw });
+    }
+    const schema = STEP_SCHEMAS[n];
+    if (!schema) {
+      throw new BadRequestException({ code: 'invalid_step', step: n });
+    }
+    const parsed = schema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException({
+        code: 'validation_failed',
+        issues: parsed.error.issues.map((i) => ({ path: i.path, message: i.message })),
+      });
+    }
+    return this.onboarding.saveStep(req.user.userId, n, parsed.data, req);
   }
 
-  // Legacy faith questionnaire (BLE-7). Kept for back-compat.
-  @Post('faith')
+  /**
+   * POST /onboarding/q3-reject — client confirms the same-sex hard-exit
+   * sheet. Hard-deletes the User row + writes an OnboardingRejection
+   * audit row keyed by emailHash. Cascade drops Profile, Sessions,
+   * OAuthAccounts. After this returns, mobile must clear local auth
+   * state and route back to the signup landing.
+   */
+  @Post('q3-reject')
   @HttpCode(200)
-  async faith(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(FaithQuestionnaireSchema)) input: unknown,
-  ) {
-    return this.onboarding.saveFaith(req.user.userId, input as never);
+  async q3Reject(@Req() req: AuthedRequest) {
+    return this.onboarding.q3Reject(req.user.userId);
   }
 
-  // BLE-124 — v1 questionnaire submit (Q2-Q9). Privacy contract:
-  //   Q3 same-sex never persists a same-sex match preference (redirect-only).
-  //   Q7 welcomed-tag visibility defaults false; schema rejects visibility=true
-  //   for unselected tags.
-  //   Q9 bio seed runs full text moderation stack.
-  @Post('questionnaire')
-  @HttpCode(200)
-  async questionnaire(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(QuestionnaireSubmitSchema)) input: unknown,
-  ) {
-    return this.onboarding.saveQuestionnaire(req.user.userId, input as never);
-  }
-
-  // BLE-124 — Q3 redirect outcome.
-  @Post('q3-redirect')
-  @HttpCode(200)
-  async q3Redirect(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(Q3RedirectSchema)) input: unknown,
-  ) {
-    return this.onboarding.acceptQ3Redirect(req.user.userId, input as never);
-  }
-
-  // BLE-124 — settings UI per-tag visibility update.
-  @Patch('welcomed-tags')
-  @HttpCode(200)
-  async welcomedTags(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(WelcomedTagsUpdateSchema)) input: unknown,
-  ) {
-    return this.onboarding.updateWelcomedTags(req.user.userId, input as never);
-  }
-
-  @Post('profile')
-  @HttpCode(200)
-  async profile(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(ProfileBasicsSchema)) input: unknown,
-  ) {
-    return this.onboarding.saveProfileBasics(req.user.userId, input as never);
-  }
-
-  @Post('bio')
-  @HttpCode(200)
-  async bio(@Req() req: AuthedRequest, @Body(ZodValidate(BioSchema)) input: unknown) {
-    return this.onboarding.saveBio(req.user.userId, input as never);
-  }
-
-  // BLE eng-review 2026-05-06 — server-side onboarding completion.
-  // Replaces the prior client-only SecureStore flag (Bio.tsx flipped it
-  // locally, so reinstall would force a redo). Mobile calls this after
-  // the Bio step. Idempotent: replay returns the same response.
+  /**
+   * POST /onboarding/complete — mark User.onboardingCompleted = true.
+   * Asserts step 8 saved + photo[0] not in 'rejected' status + covenant
+   * signed. Idempotent.
+   */
   @Post('complete')
   @HttpCode(200)
   async complete(@Req() req: AuthedRequest) {
-    return this.onboarding.markOnboardingComplete(req.user.userId);
+    return this.onboarding.complete(req.user.userId);
   }
 }

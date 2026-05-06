@@ -1,67 +1,85 @@
 /**
- * MatchingController — public surface for Lane B.
+ * MatchingController — public surface for v1-restart.
  *
- *   GET  /matches/today       → today's 3 introductions
- *   POST /matches/decision    → record pass / like / favorite
+ *   GET    /v1/matches/today                      → today's deck (privacy-safe cards)
+ *   GET    /v1/matches/quota                      → quota status
+ *   GET    /v1/matches/incoming                   → users who liked viewer (Bless+)
+ *   POST   /v1/matches/decision                   → record swipe decision
+ *   DELETE /v1/matches/decision/:candidateUserId  → swipe-back (Bless+, 120s)
  *
- * All routes JWT-gated. Per BLE eng-review 2026-05-06, the response of
- * /matches/today never includes legalName, email, phone, exact coords —
- * matching.service.hydrateStack strips PII at the source.
+ * All routes JWT-gated. Decision endpoints throttled at 60/min.
  */
 
 import {
   Body,
   Controller,
+  Delete,
+  ForbiddenException,
   Get,
   HttpCode,
+  Param,
   Post,
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { z } from 'zod';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 import { ZodValidate } from '../common/zod.pipe.js';
 import { MatchingService } from './matching.service.js';
-import { QuotaService } from './quota.service.js';
 
 const DecisionSchema = z.object({
   candidateUserId: z.string().uuid(),
-  decision: z.enum(['pass', 'like', 'favorite']),
+  decision: z.enum(['pass', 'like', 'super_like']),
 });
 
-@Controller('matches')
+@Controller({ path: 'matches', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class MatchingController {
-  constructor(
-    private readonly matching: MatchingService,
-    private readonly quota: QuotaService,
-  ) {}
+  constructor(private readonly matching: MatchingService) {}
 
   @Get('today')
   async today(@Req() req: AuthedRequest) {
-    const stack = await this.matching.getOrComputeStack(req.user.userId);
+    const stack = await this.matching.getCandidates(req.user.userId);
     return { stack };
   }
 
   @Get('quota')
-  async getQuota(@Req() req: AuthedRequest) {
-    return this.quota.getSnapshot(req.user.userId);
+  async quota(@Req() req: AuthedRequest) {
+    return this.matching.getQuotaStatus(req.user.userId);
+  }
+
+  @Get('incoming')
+  async incoming(@Req() req: AuthedRequest) {
+    const tier = await this.matching.getTier(req.user.userId);
+    if (tier !== 'blessplus') {
+      throw new ForbiddenException({ code: 'requires_blessplus' });
+    }
+    const items = await this.matching.incomingLikes(req.user.userId);
+    return { items };
   }
 
   @Post('decision')
   @HttpCode(200)
+  @Throttle({ decision: { limit: 60, ttl: 60_000 } })
   async decide(
     @Req() req: AuthedRequest,
     @Body(ZodValidate(DecisionSchema)) body: z.infer<typeof DecisionSchema>,
   ) {
-    // Quota gate. Throws ForbiddenException with structured code
-    // (quota_decisions_exhausted | quota_favorites_exhausted) which
-    // mobile maps to a paywall sheet.
-    await this.quota.assertCanDecide(req.user.userId, body.decision);
-    return this.matching.recordDecision(
-      req.user.userId,
-      body.candidateUserId,
-      body.decision,
-    );
+    return this.matching.recordDecision({
+      userId: req.user.userId,
+      candidateUserId: body.candidateUserId,
+      decision: body.decision,
+    });
+  }
+
+  @Delete('decision/:candidateUserId')
+  @HttpCode(200)
+  @Throttle({ decision: { limit: 60, ttl: 60_000 } })
+  async undo(
+    @Req() req: AuthedRequest,
+    @Param('candidateUserId') candidateUserId: string,
+  ) {
+    return this.matching.undoDecision(req.user.userId, candidateUserId);
   }
 }

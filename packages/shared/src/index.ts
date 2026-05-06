@@ -3,7 +3,6 @@ export * from './age-gate.js';
 export * from './pastor-mode-gate.js';
 export * from './pastor-mode-relationship.js';
 export * from './onboarding.js';
-export * from './onboarding-flow.js';
 export * from './moderation.js';
 export * from './safety.js';
 export * from './liturgical/index.js';
