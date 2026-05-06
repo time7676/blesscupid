@@ -20,11 +20,13 @@
   --color-ink-charcoal:  #14181F;
   --color-ink-hover:     #2A2A36;
   --color-ink-pressed:   #0F0F15;
+  --color-ink-scrim:     rgba(20, 24, 31, 0.42);  /* v1: bottom-sheet backdrop */
 
   /* ─── color · parchment ─── */
-  --color-parchment:        #FAF7F0;
-  --color-parchment-raised: #FFFDF7;
-  --color-parchment-off:    #F8F8F4;
+  --color-parchment:           #FAF7F0;
+  --color-parchment-raised:    #FFFDF7;
+  --color-parchment-off:       #F8F8F4;
+  --color-parchment-viewfinder: #F7F3EA;  /* v1: CameraSheet frame neutral */
 
   /* ─── color · sandstone ─── */
   --color-sandstone:       #F4ECDF;
@@ -35,6 +37,7 @@
   --color-gold:       #C8A24B;
   --color-gold-soft:  #E5C97D;
   --color-gold-halo:  rgba(200, 162, 75, 0.18);
+  --color-gold-ring:  rgba(200, 162, 75, 0.35);  /* v1: status verse ring 4pt */
 
   /* ─── color · cobalt (reserved v1.1) ───────────────
      Kept for legacy prototypes and future secondary states.

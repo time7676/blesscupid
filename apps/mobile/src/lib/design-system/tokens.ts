@@ -24,11 +24,15 @@ export const color = {
     charcoal: '#14181F',
     hover: '#2A2A36',
     pressed: '#0F0F15',
+    // v1: bottom-sheet backdrop scrim. Matches charcoal opacity-tuned.
+    scrim: 'rgba(20, 24, 31, 0.42)',
   },
   parchment: {
     default: '#FAF7F0',
     raised: '#FFFDF7',
     off: '#F8F8F4',
+    // v1: CameraSheet viewfinder frame neutral, sandstone-adjacent.
+    viewfinder: '#F7F3EA',
   },
   sandstone: {
     default: '#F4ECDF',
@@ -39,6 +43,9 @@ export const color = {
     default: '#C8A24B',
     soft: '#E5C97D',
     halo: 'rgba(200, 162, 75, 0.18)',
+    // v1: status-verse ring around profile photos. 4pt outer ring + 2pt
+    // inset gap. Distinct from `halo` (behind-typography only).
+    ring: 'rgba(200, 162, 75, 0.35)',
   },
   // v1.1 — full cobalt ramp. Defined but RESERVED for future secondary states;
   // user-facing surfaces use the warning (amber) ramp instead. See README.
