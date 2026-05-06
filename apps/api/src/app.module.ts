@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { ObservabilityModule } from './observability/observability.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
+import { RedisModule } from './redis/redis.module.js';
 import { AuthModule } from './auth/auth.module.js';
 import { OnboardingModule } from './onboarding/onboarding.module.js';
 import { MatchingModule } from './matching/matching.module.js';
@@ -18,30 +19,23 @@ import { BlocksModule } from './blocks/blocks.module.js';
 import { AdminModule } from './admin/admin.module.js';
 import { AccountModule } from './account/account.module.js';
 import { VerseModule } from './verse/verse.module.js';
-import { QuietHoursModule } from './quiet-hours/quiet-hours.module.js';
-import { PastorModeGateModule } from './pastor-mode-gate/pastor-mode-gate.module.js';
-import { PastorModeRelationshipModule } from './pastor-mode-relationship/pastor-mode-relationship.module.js';
-import { ModerationActionsModule } from './moderation-actions/moderation-actions.module.js';
-import { WalkingWithModule } from './walking-with/walking-with.module.js';
-import { PhoneAuthModule } from './phone-auth/phone-auth.module.js';
-import { KycModule } from './kyc/kyc.module.js';
 import { SubscriptionModule } from './subscription/subscription.module.js';
 import { PaymentModule } from './payment/payment.module.js';
-import { CoinModule } from './coin/coin.module.js';
-import { EntitlementModule } from './entitlement/entitlement.module.js';
 
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot([
       { name: 'default', ttl: 60_000, limit: 60 },
+      { name: 'auth', ttl: 60_000, limit: 5 },
+      { name: 'message', ttl: 60_000, limit: 30 },
+      { name: 'decision', ttl: 60_000, limit: 60 },
     ]),
     ObservabilityModule,
     HealthModule,
     PrismaModule,
+    RedisModule,
     AuthModule,
-    PhoneAuthModule,
-    KycModule,
     OnboardingModule,
     MatchingModule,
     NotificationsModule,
@@ -54,15 +48,13 @@ import { EntitlementModule } from './entitlement/entitlement.module.js';
     AdminModule,
     AccountModule,
     VerseModule,
-    QuietHoursModule,
-    PastorModeGateModule,
-    PastorModeRelationshipModule,
-    ModerationActionsModule,
-    WalkingWithModule,
     SubscriptionModule,
     PaymentModule,
-    CoinModule,
-    EntitlementModule,
+    // v1-restart: NEW modules to be added by Lane 2 agents
+    // - StatusModule (sticky StatusVerse)
+    // - VerificationModule (selfie face-match)
+    // - I18nModule (extend existing)
+    // - QuotaModule (DailyQuota helpers)
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
