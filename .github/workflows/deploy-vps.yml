@@ -32,8 +32,10 @@ jobs:
             git reset --hard "origin/${BRANCH}"
             docker network inspect proxy >/dev/null 2>&1 || docker network create proxy
             docker network inspect internal >/dev/null 2>&1 || docker network create internal
-            cd /srv/_shared
-            docker-compose -f docker-compose.shared.yml up -d
+            # Shared services (postgres, caddy) are bootstrapped manually — see
+            # infrastructure/vps/blesscupid/README.md. Don't re-create them here:
+            # they're shared with other tenants on this multi-tenant VPS and
+            # restarting would break cocon-lab, passukuru, kokorozashi.
             cd "$REPO_DIR/infrastructure/vps/blesscupid"
             ln -sf /srv/blesscupid/.env ./.env
             docker compose up -d --build
