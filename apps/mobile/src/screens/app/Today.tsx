@@ -58,7 +58,9 @@ import { portraitSource, verseCardBackgrounds } from '../../lib/brand/assets.js'
 import {
   ApiError,
   getMatchesToday,
+  getMatchQuota,
   sendMatchDecision,
+  type MatchQuotaResponse,
   type MatchTodayCard,
   type MatchDecision,
 } from '../../lib/api.js';
@@ -97,21 +99,31 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
   const accessToken = useAuth((s) => s.accessToken);
   const { eyebrow, greeting } = dateString();
   const [stack, setStack] = useState<MatchTodayCard[] | null>(null);
+  const [quota, setQuota] = useState<MatchQuotaResponse | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [busy, setBusy] = useState<MatchDecision | null>(null);
-  const [favoriteSpent, setFavoriteSpent] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [paywallReason, setPaywallReason] = useState<'decisions' | 'favorites' | null>(null);
   const screenWidth = Dimensions.get('window').width;
+
+  // Helpers derived from quota — favorite quota is server-side enforced
+  // but mirrored here so the button can disable optimistically.
+  const favoriteSpent = quota?.favoritesRemaining === 0;
+  const decisionsExhausted = quota?.decisionsRemaining === 0 && !quota?.isUnlimited;
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       if (!accessToken) return;
       try {
-        const res = await getMatchesToday(accessToken);
+        const [stackRes, quotaRes] = await Promise.all([
+          getMatchesToday(accessToken),
+          getMatchQuota(accessToken),
+        ]);
         if (!cancelled) {
-          setStack(res.stack);
-          Events.dailyStackViewed({ stackSize: res.stack.length, activeIndex: 0 });
+          setStack(stackRes.stack);
+          setQuota(quotaRes);
+          Events.dailyStackViewed({ stackSize: stackRes.stack.length, activeIndex: 0 });
         }
       } catch (err) {
         if (!cancelled) {
@@ -136,14 +148,27 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
     try {
       await sendMatchDecision(accessToken, current.userId, decision);
       Events.matchDecision({ decision });
-      if (decision === 'favorite') setFavoriteSpent(true);
+      // Refresh quota so the badge + button states stay in sync. Cheap
+      // round-trip; in v1.1 the decision response itself can return
+      // updated quota and we drop this extra call.
+      try {
+        const fresh = await getMatchQuota(accessToken);
+        setQuota(fresh);
+      } catch {
+        // non-fatal
+      }
       setActiveIndex((i) => i + 1);
     } catch (err) {
-      if (err instanceof ApiError && err.code === 'favorite_quota_exhausted') {
-        setFavoriteSpent(true);
-        setError('You have already favorited someone today. Save the next one for tomorrow.');
+      if (err instanceof ApiError) {
+        if (err.code === 'quota_decisions_exhausted') {
+          setPaywallReason('decisions');
+        } else if (err.code === 'quota_favorites_exhausted') {
+          setPaywallReason('favorites');
+        } else {
+          setError(err.code);
+        }
       } else {
-        setError(err instanceof ApiError ? err.code : 'decision_failed');
+        setError('decision_failed');
       }
     } finally {
       setBusy(null);
@@ -182,9 +207,11 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
       <View style={styles.section}>
         <Text style={styles.sectionEyebrow}>One at a time</Text>
         <GoldRule width={28} style={styles.goldRule} />
-        {stack && stack.length > 0 && !exhausted ? (
+        {quota ? (
           <Text style={styles.pageIndex}>
-            {activeIndex + 1} / {stack.length}
+            {quota.isUnlimited
+              ? 'Unlimited'
+              : `${quota.decisionsUsed} / ${quota.decisionsLimit} today`}
           </Text>
         ) : null}
       </View>
@@ -193,12 +220,20 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
         <View style={styles.center}>
           <ActivityIndicator color={color.cobalt[500]} />
         </View>
+      ) : decisionsExhausted ? (
+        <View style={styles.emptyWrap}>
+          <EmptyState
+            eyebrow="Quota reached"
+            title="You've used today's decisions"
+            body="Free tier resets at midnight UTC. Upgrade to Bless+ for more decisions."
+          />
+        </View>
       ) : exhausted ? (
         <View style={styles.emptyWrap}>
           <EmptyState
-            eyebrow="Quiet morning"
-            title="You've met everyone for today"
-            body="Come back tomorrow at sunrise. We send three at a time on purpose."
+            eyebrow="No more for now"
+            title="You've reviewed every match in the queue"
+            body="New introductions arrive overnight. Come back tomorrow."
           />
         </View>
       ) : current ? (

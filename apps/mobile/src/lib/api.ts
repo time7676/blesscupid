@@ -389,6 +389,22 @@ export function sendMatchDecision(
   });
 }
 
+export interface MatchQuotaResponse {
+  tier: 'free' | 'light' | 'open' | 'deep';
+  decisionsLimit: number;
+  decisionsUsed: number;
+  decisionsRemaining: number;
+  favoritesLimit: number;
+  favoritesUsed: number;
+  favoritesRemaining: number;
+  isUnlimited: boolean;
+  resetAtIso: string;
+}
+
+export function getMatchQuota(token: string): Promise<MatchQuotaResponse> {
+  return apiFetch<MatchQuotaResponse>('/matches/quota', { method: 'GET', token });
+}
+
 
 export type PhotoContentType = 'image/jpeg' | 'image/png' | 'image/heic';
 

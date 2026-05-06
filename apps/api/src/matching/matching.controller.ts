@@ -10,7 +10,6 @@
  */
 
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -23,6 +22,7 @@ import { z } from 'zod';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 import { ZodValidate } from '../common/zod.pipe.js';
 import { MatchingService } from './matching.service.js';
+import { QuotaService } from './quota.service.js';
 
 const DecisionSchema = z.object({
   candidateUserId: z.string().uuid(),
@@ -32,12 +32,20 @@ const DecisionSchema = z.object({
 @Controller('matches')
 @UseGuards(JwtAuthGuard)
 export class MatchingController {
-  constructor(private readonly matching: MatchingService) {}
+  constructor(
+    private readonly matching: MatchingService,
+    private readonly quota: QuotaService,
+  ) {}
 
   @Get('today')
   async today(@Req() req: AuthedRequest) {
     const stack = await this.matching.getOrComputeStack(req.user.userId);
     return { stack };
+  }
+
+  @Get('quota')
+  async getQuota(@Req() req: AuthedRequest) {
+    return this.quota.getSnapshot(req.user.userId);
   }
 
   @Post('decision')
@@ -46,15 +54,10 @@ export class MatchingController {
     @Req() req: AuthedRequest,
     @Body(ZodValidate(DecisionSchema)) body: z.infer<typeof DecisionSchema>,
   ) {
-    if (body.decision === 'favorite') {
-      const already = await this.matching.hasFavoritedToday(req.user.userId);
-      if (already) {
-        throw new BadRequestException({
-          code: 'favorite_quota_exhausted',
-          message: 'You have already favorited someone today.',
-        });
-      }
-    }
+    // Quota gate. Throws ForbiddenException with structured code
+    // (quota_decisions_exhausted | quota_favorites_exhausted) which
+    // mobile maps to a paywall sheet.
+    await this.quota.assertCanDecide(req.user.userId, body.decision);
     return this.matching.recordDecision(
       req.user.userId,
       body.candidateUserId,

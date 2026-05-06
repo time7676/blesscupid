@@ -4,6 +4,7 @@ import { DailyStackCronService } from './daily-stack-cron.service.js';
 import { MatchingController } from './matching.controller.js';
 import { MatchingPriorityService } from './matching-priority.service.js';
 import { MatchingService } from './matching.service.js';
+import { QuotaService } from './quota.service.js';
 
 /**
  * BLE eng-review 2026-05-06 — Lane B.
@@ -19,7 +20,7 @@ import { MatchingService } from './matching.service.js';
 @Module({
   imports: [PrismaModule],
   controllers: [MatchingController],
-  providers: [MatchingService, MatchingPriorityService, DailyStackCronService],
-  exports: [MatchingService, MatchingPriorityService],
+  providers: [MatchingService, MatchingPriorityService, DailyStackCronService, QuotaService],
+  exports: [MatchingService, MatchingPriorityService, QuotaService],
 })
 export class MatchingModule {}

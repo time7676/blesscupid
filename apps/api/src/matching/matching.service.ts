@@ -76,30 +76,34 @@ export class MatchingService {
     const pool = await this.loadPool(viewerId);
     const excluded = await this.loadExcludedIds(viewerId);
 
+    // BLE 2026-05-06 — quota model. Stack size 50 (engine's STACK_MAX)
+    // covers free-tier 10 decisions/day with comfortable runway plus
+    // light-tier 50 cap exactly. Heavier tiers (open 150 / deep
+    // unlimited) re-fetch via the supply-replenish job (TODO v1.1) when
+    // they exhaust the seeded stack mid-day. For v1 launch this single
+    // batch is enough: even a deep-tier user rarely makes 50 decisions
+    // before the next day's recompute.
     const scored = buildDailyStack(viewer, pool, {
       day,
       excludeUserIds: excluded,
-      // v1 = 3 introductions per day. The matching engine's STACK_MIN is 10
-      // for clamp safety; we trim after at the persistence layer so the
-      // viewer always sees exactly 3.
-      size: 10,
+      size: 50,
     });
 
-    const top3 = scored.slice(0, 3).map((s) => s.candidateUserId);
+    const candidateIds = scored.map((s) => s.candidateUserId);
 
     await this.prisma.dailyStack.upsert({
       where: { userId_day: { userId: viewerId, day } },
       create: {
         userId: viewerId,
         day,
-        candidateUserIds: top3,
+        candidateUserIds: candidateIds,
       },
       update: {
-        candidateUserIds: top3,
+        candidateUserIds: candidateIds,
       },
     });
 
-    return top3;
+    return candidateIds;
   }
 
   /**
