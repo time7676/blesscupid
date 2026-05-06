@@ -25,6 +25,12 @@ services:
     container_name: blesscupid-api
     restart: unless-stopped
     env_file: .env
+    # Bind to 127.0.0.1:3100 so the host nginx can reverse-proxy
+    # api.blesscupid.com → here. nginx config at
+    # /etc/nginx/sites-enabled/blesscupid points to 127.0.0.1:3100.
+    # If the future Caddy migration lands, this `ports:` block can drop.
+    ports:
+      - "127.0.0.1:3100:3000"
     networks:
       - proxy           # so Caddy can hit blesscupid-api:3000
       - internal        # so api can reach postgres + redis
