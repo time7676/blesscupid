@@ -1,22 +1,40 @@
 /**
- * Today — app shell home screen.
+ * Today — app shell home screen, v1.2 swipe-pager redesign.
  *
- * Composition (top → bottom):
- *   ScreenHeader (eyebrow date + greeting + bell affordance)
+ * Composition (top → bottom, all above-fold or single page):
+ *   ScreenHeader (eyebrow date + greeting + bell)
  *   VerseCard.compact (Pastor-locked daily verse)
- *   "Three for today" section (3 profile cards, painterly portraits)
- *   Profile-views metric card (gated reveal — Bless+ paywall on tap)
+ *   "Three for today" eyebrow + page indicator (1/3)
+ *   IntroductionCard pager (horizontal, paging-enabled, snap-to-width)
  *   BottomNav (active=today)
  *
- * Per system-v1 prototypes §B1. Monetization pattern: show metric first,
- * ask for upgrade second. No banners, no shame copy.
+ * The prior version stacked all three matches vertically inside a single
+ * scroll, which produced an "infinite" feeling for users — see issue
+ * surfaced 2026-05-06. The redesign holds the slow-cinema brand promise:
+ * one face, one breath, swipe to the next, decide on detail.
+ *
+ * Horizontal swipe is NAVIGATION, not yes/no judgment. The decision
+ * (Begin a conversation / Pass quietly) lives on Profile detail. This
+ * is the core anti-Tinder posture documented in PRODUCT.md §Strategic.
  */
 
-import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useRef, useState } from 'react';
+import {
+  Dimensions,
+  FlatList,
+  Image,
+  type NativeScrollEvent,
+  type NativeSyntheticEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   BottomNav,
+  EmptyState,
   GoldRule,
+  IntroductionCard,
   ScreenHeader,
   VerseCard,
   color,
@@ -30,31 +48,63 @@ import {
 } from '../../lib/design-system/index.js';
 import { BrandGlyph } from '../../lib/brand/BrandGlyph.js';
 import { portraitSource, verseCardBackgrounds } from '../../lib/brand/assets.js';
-import { GatedFeatureSheet } from './modals/GatedFeatureSheet.js';
 
-// Mock matches — replaced by API on integration.
-const TODAY_MATCHES = [
-  { name: 'Naomi', age: 27, place: 'Manila', tradition: 'Catholic', stage: 'lifelong', portrait: 0 },
-  { name: 'Ruth', age: 30, place: 'Singapore', tradition: 'Pentecostal', stage: 'came later', portrait: 2 },
-  { name: 'Esther', age: 26, place: 'Jakarta', tradition: 'Reformed', stage: 'returning', portrait: 4 },
+// Mock matches — replaced by API on integration (BLE-7g matching service).
+type TodayMatch = {
+  id: string;
+  name: string;
+  age: number;
+  place: string;
+  tradition: string;
+  stage: string;
+  echo: string;
+  portrait: number;
+};
+
+const TODAY_MATCHES: TodayMatch[] = [
+  {
+    id: 'naomi',
+    name: 'Naomi',
+    age: 27,
+    place: 'Manila',
+    tradition: 'Catholic',
+    stage: 'lifelong',
+    echo: '“I keep coming back to slow Sundays and a long table.”',
+    portrait: 0,
+  },
+  {
+    id: 'ruth',
+    name: 'Ruth',
+    age: 30,
+    place: 'Singapore',
+    tradition: 'Pentecostal',
+    stage: 'came later',
+    echo: '“Faith found me in my late twenties. Still figuring out what that means at brunch.”',
+    portrait: 2,
+  },
+  {
+    id: 'esther',
+    name: 'Esther',
+    age: 26,
+    place: 'Jakarta',
+    tradition: 'Reformed',
+    stage: 'returning',
+    echo: '“Back in church after a long quiet. Looking for honest company.”',
+    portrait: 4,
+  },
 ];
 
-// Mock verse — replaced by /v1/verse on integration (BLE-22).
 const TODAY_VERSE = {
   text: '"Be anxious for nothing, but in everything by prayer…"',
   reference: 'Phil 4:6',
 };
-
-// Aggregate profile-views metric — gated by Bless+.
-const PROFILE_VIEWS_THIS_WEEK = 6;
 
 function dateString(): { eyebrow: string; greeting: string } {
   const d = new Date();
   const weekday = d.toLocaleDateString(undefined, { weekday: 'long' });
   const day = d.getDate();
   return {
-    eyebrow: `Today \u00b7 ${weekday} ${day}`,
-    // Time-of-day greeting; copy proposed for Pastor review.
+    eyebrow: `Today · ${weekday} ${day}`,
     greeting: d.getHours() < 12 ? 'Good morning' : d.getHours() < 18 ? 'Good afternoon' : 'Good evening',
   };
 }
@@ -67,138 +117,116 @@ function verseArtworkForNow() {
 }
 
 export type TodayScreenProps = {
-  /** Display name from session. */
   name?: string;
-  /** Plan tier — determines whether the profile-views card is gated. */
-  tier?: 'free' | 'plus';
-  /** BottomNav handler — wired to navigation in Phase 6. */
   onNavigate?: (tab: NavTabKey) => void;
-  /** Tap a profile card → ProfileDetail. */
-  onMatchPress?: (name: string) => void;
+  onMatchPress?: (matchId: string) => void;
 };
 
-export function TodayScreen({
-  name = 'Friend',
-  tier = 'free',
-  onNavigate,
-  onMatchPress,
-}: TodayScreenProps) {
-  const [paywallOpen, setPaywallOpen] = useState(false);
+export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: TodayScreenProps) {
   const { eyebrow, greeting } = dateString();
+  const [activeIndex, setActiveIndex] = useState(0);
+  const listRef = useRef<FlatList<TodayMatch>>(null);
+  const screenWidth = Dimensions.get('window').width;
 
-  function handleViewsPress() {
-    if (tier === 'free') setPaywallOpen(true);
-    // tier === 'plus' navigates to ProfileViews list (wired in Phase 7).
+  // FlatList paging fires on any scroll; we use offset / width to derive
+  // the snapped page rather than the gesture velocity, so a partial drag
+  // that springs back doesn't change the indicator.
+  function onScrollEnd(e: NativeSyntheticEvent<NativeScrollEvent>) {
+    const x = e.nativeEvent.contentOffset.x;
+    const next = Math.round(x / screenWidth);
+    if (next !== activeIndex) setActiveIndex(next);
   }
+
+  const matches = TODAY_MATCHES;
+  const empty = matches.length === 0;
 
   return (
     <View style={styles.root}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
-        <ScreenHeader
-          eyebrow={eyebrow}
-          title={`${greeting}, ${name}`}
-          variant="display"
-          trailing={
-            <Pressable
-              accessibilityRole="button"
-              accessibilityLabel="Notifications"
-              hitSlop={12}
-              style={styles.bellBtn}
-            >
-              <BrandGlyph name="bell" size={18} />
-            </Pressable>
-          }
-        />
+      <ScreenHeader
+        eyebrow={eyebrow}
+        title={`${greeting}, ${name}`}
+        variant="display"
+        trailing={
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Notifications"
+            hitSlop={12}
+            style={styles.bellBtn}
+          >
+            <BrandGlyph name="bell" size={18} />
+          </Pressable>
+        }
+      />
 
-        <View style={styles.versePad}>
-          <VerseCard
-            variant="compact"
-            illustration={
-              <Image source={verseArtworkForNow()} style={styles.verseArtwork} resizeMode="cover" />
-            }
-            text={TODAY_VERSE.text}
-            reference={TODAY_VERSE.reference}
+      <View style={styles.versePad}>
+        <VerseCard
+          variant="compact"
+          illustration={
+            <Image source={verseArtworkForNow()} style={styles.verseArtwork} resizeMode="cover" />
+          }
+          text={TODAY_VERSE.text}
+          reference={TODAY_VERSE.reference}
+        />
+      </View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionEyebrow}>Three for today</Text>
+        <GoldRule width={28} style={styles.goldRule} />
+        {!empty ? (
+          <Text style={styles.pageIndex}>
+            {activeIndex + 1} / {matches.length}
+          </Text>
+        ) : null}
+      </View>
+
+      {empty ? (
+        <View style={styles.emptyWrap}>
+          <EmptyState
+            eyebrow="Quiet morning"
+            title="You've met everyone for today"
+            body="Come back tomorrow at sunrise. We send three at a time on purpose."
           />
         </View>
+      ) : (
+        <View style={styles.pagerWrap}>
+          <FlatList
+            ref={listRef}
+            data={matches}
+            keyExtractor={(m) => m.id}
+            horizontal
+            pagingEnabled
+            snapToInterval={screenWidth}
+            snapToAlignment="start"
+            decelerationRate="fast"
+            showsHorizontalScrollIndicator={false}
+            onMomentumScrollEnd={onScrollEnd}
+            renderItem={({ item }) => (
+              <IntroductionCard
+                width={screenWidth}
+                name={item.name}
+                age={item.age}
+                place={item.place}
+                tradition={item.tradition}
+                stage={item.stage}
+                echo={item.echo}
+                portrait={portraitSource(item.portrait)}
+                onPress={() => onMatchPress?.(item.id)}
+              />
+            )}
+          />
 
-        <View style={styles.section}>
-          <Text style={styles.sectionEyebrow}>Three for today</Text>
-          <GoldRule width={28} style={styles.goldRule} />
-        </View>
-
-        <View style={styles.matches}>
-          {TODAY_MATCHES.map((m) => (
-            <Pressable
-              key={m.name}
-              onPress={() => onMatchPress?.(m.name)}
-              style={({ pressed }) => [styles.match, pressed && styles.matchPressed]}
-              accessibilityRole="button"
-              accessibilityLabel={`${m.name}, ${m.age}, ${m.place}`}
-            >
-              <Image source={portraitSource(m.portrait)} style={styles.portrait} resizeMode="cover" />
-              <View style={styles.matchBody}>
-                <Text style={styles.matchName}>
-                  {m.name},{' '}
-                  <Text style={styles.matchAge}>{m.age}</Text>
-                </Text>
-                <Text style={styles.matchPlace}>{m.place}</Text>
-                <View style={styles.chips}>
-                  <View style={styles.chipTradition}>
-                    <Text style={styles.chipTraditionText}>{m.tradition}</Text>
-                  </View>
-                  <View style={styles.chipStage}>
-                    <Text style={styles.chipStageText}>{m.stage}</Text>
-                  </View>
-                </View>
-              </View>
-            </Pressable>
-          ))}
-        </View>
-
-        {/* Profile-views metric card — gated reveal */}
-        <Pressable
-          onPress={handleViewsPress}
-          style={({ pressed }) => [styles.viewsCard, pressed && styles.matchPressed]}
-          accessibilityRole="button"
-          accessibilityLabel={`${PROFILE_VIEWS_THIS_WEEK} people viewed your profile this week. Tap to unlock.`}
-        >
-          <View style={styles.viewsAvatars}>
-            {[0, 2, 4].map((i, idx) => (
-              <Image
-                key={i}
-                source={portraitSource(i)}
-                style={[
-                  styles.viewsAvatar,
-                  {
-                    left: idx * 16,
-                  },
-                ]}
-                resizeMode="cover"
+          <View style={styles.dots}>
+            {matches.map((m, i) => (
+              <View
+                key={m.id}
+                style={[styles.dot, i === activeIndex ? styles.dotActive : null]}
               />
             ))}
           </View>
-          <View style={styles.viewsBody}>
-            <Text style={styles.viewsEyebrow}>This week</Text>
-            <Text style={styles.viewsTitle}>
-              <Text style={styles.viewsCount}>{PROFILE_VIEWS_THIS_WEEK}</Text>
-              {' people viewed your profile'}
-            </Text>
-          </View>
-          <View style={styles.viewsCta}>
-            <Text style={styles.viewsCtaText}>{tier === 'free' ? 'See who' : 'View'}</Text>
-          </View>
-        </Pressable>
-
-        <View style={styles.bottomSpacer} />
-      </ScrollView>
+        </View>
+      )}
 
       <BottomNav active="today" onSelect={onNavigate ?? (() => {})} />
-
-      <GatedFeatureSheet visible={paywallOpen} onDismiss={() => setPaywallOpen(false)} />
     </View>
   );
 }
@@ -208,8 +236,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: color.parchment.default,
   },
-  scroll: { flex: 1 },
-  content: { paddingBottom: space.s4 },
   bellBtn: {
     width: 36,
     height: 36,
@@ -226,13 +252,14 @@ const styles = StyleSheet.create({
   },
   verseArtwork: {
     width: '100%',
-    height: 88,
+    height: 80,
     borderRadius: radius.md,
   },
 
   section: {
     paddingHorizontal: space.s6,
-    marginTop: space.s7,
+    marginTop: space.s6,
+    marginBottom: space.s3,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.s3,
@@ -245,133 +272,40 @@ const styles = StyleSheet.create({
     color: color.ink.soft,
   },
   goldRule: { marginLeft: 0 },
-
-  matches: {
-    paddingHorizontal: space.s6,
-    marginTop: space.s4,
-    gap: space.s3,
-  },
-  match: {
-    flexDirection: 'row',
-    backgroundColor: color.parchment.raised,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: color.hairline.soft,
-    overflow: 'hidden',
-  },
-  matchPressed: { opacity: 0.7 },
-  portrait: {
-    width: 88,
-    alignSelf: 'stretch',
-    borderRightWidth: 1,
-    borderColor: color.hairline.soft,
-  },
-  matchBody: {
-    flex: 1,
-    paddingVertical: space.s4,
-    paddingRight: space.s4,
-    paddingLeft: space.s4,
-  },
-  matchName: {
-    fontFamily: fontFamily.serifMedium,
-    fontSize: 19,
-    color: color.ink.default,
-  },
-  matchAge: {
-    fontFamily: fontFamily.serifItalic,
-    fontWeight: '400',
-  },
-  matchPlace: {
-    marginTop: 2,
+  pageIndex: {
+    marginLeft: 'auto',
     fontFamily: fontFamily.sans,
     fontSize: fontSize.caption,
     color: color.ink.soft,
-  },
-  chips: {
-    marginTop: space.s2,
-    flexDirection: 'row',
-    gap: 6,
-  },
-  chipTradition: {
-    paddingHorizontal: space.s2,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-    backgroundColor: color.warning[100],
-  },
-  chipTraditionText: {
-    fontFamily: fontFamily.sansMedium,
-    fontSize: 10.5,
-    color: color.warning[700],
-  },
-  chipStage: {
-    paddingHorizontal: space.s2,
-    paddingVertical: 3,
-    borderRadius: radius.pill,
-    backgroundColor: color.sandstone.default,
-  },
-  chipStageText: {
-    fontFamily: fontFamily.sans,
-    fontSize: 10.5,
-    color: color.ink.soft,
+    fontVariant: ['tabular-nums'],
   },
 
-  viewsCard: {
-    marginHorizontal: space.s6,
-    marginTop: space.s5,
-    paddingHorizontal: space.s4,
-    paddingVertical: space.s3,
-    backgroundColor: color.parchment.raised,
-    borderWidth: 1,
-    borderColor: color.hairline.soft,
-    borderRadius: radius.lg,
+  pagerWrap: {
+    flex: 1,
+  },
+
+  dots: {
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: space.s3,
+    gap: 6,
+    paddingVertical: space.s3,
   },
-  viewsAvatars: {
-    width: 64,
-    height: 30,
-    flexShrink: 0,
-    position: 'relative',
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: color.hairline.default,
   },
-  viewsAvatar: {
-    position: 'absolute',
-    top: 0,
-    width: 30,
-    height: 30,
-    borderRadius: radius.pill,
-    borderWidth: 2,
-    borderColor: color.parchment.raised,
-    opacity: 0.6, // RN can't blur — opacity stand-in.
-    overflow: 'hidden',
-  },
-  viewsBody: { flex: 1, minWidth: 0 },
-  viewsEyebrow: {
-    fontFamily: fontFamily.sansSemibold,
-    fontSize: 10,
-    letterSpacing: letterSpacingFor(tracking.eyebrow, 10),
-    textTransform: 'uppercase',
-    color: color.warning[700],
-  },
-  viewsTitle: {
-    marginTop: 2,
-    fontFamily: fontFamily.serifMedium,
-    fontSize: 17,
-    color: color.ink.default,
-  },
-  viewsCount: { fontFamily: fontFamily.serifMediumItalic },
-  viewsCta: {
-    paddingHorizontal: space.s3,
-    paddingVertical: space.s1,
-    borderRadius: radius.pill,
-    backgroundColor: color.ink.default,
-  },
-  viewsCtaText: {
-    fontFamily: fontFamily.sansSemibold,
-    fontSize: 11,
-    color: color.parchment.default,
-    letterSpacing: 0.4,
+  dotActive: {
+    backgroundColor: color.cobalt[500],
+    width: 18,
   },
 
-  bottomSpacer: { height: space.s8 },
+  emptyWrap: {
+    flex: 1,
+    paddingHorizontal: space.s6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
 });

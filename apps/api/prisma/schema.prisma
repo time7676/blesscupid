@@ -378,18 +378,18 @@ enum CoinTransactionType {
 }
 
 model User {
-  id               String   @id @default(uuid()) @db.Uuid
-  email            String   @unique
+  id               String    @id @default(uuid()) @db.Uuid
+  email            String    @unique
   passwordHash     String? // null when only OAuth-linked
-  dob              DateTime @db.Date
-  ageVerifiedAdult Boolean  @default(false)
-  emailVerified    Boolean  @default(false)
-  phoneNumber      String?  @unique
+  dob              DateTime  @db.Date
+  ageVerifiedAdult Boolean   @default(false)
+  emailVerified    Boolean   @default(false)
+  phoneNumber      String?   @unique
   phoneVerifiedAt  DateTime?
   kycStatus        KycStatus @default(none)
-  isSuspended      Boolean  @default(false)
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  isSuspended      Boolean   @default(false)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
   role UserRole @default(member)
 
@@ -424,10 +424,10 @@ model User {
   kycSubmissions       KycSubmission[]      @relation("UserKyc")
 
   // ─── Monetization ─────────────────────────────────────────────────
-  subscriptions        UserSubscription[]
-  coinBalance          UserCoinBalance?
-  coinTransactions     CoinTransaction[]
-  paymentTransactions  PaymentTransaction[]
+  subscriptions       UserSubscription[]
+  coinBalance         UserCoinBalance?
+  coinTransactions    CoinTransaction[]
+  paymentTransactions PaymentTransaction[]
 
   // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
   // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
@@ -440,6 +440,20 @@ model User {
   // config as "never quiet".
   timezone   String?
   quietHours Json?
+
+  // BLE eng-review 2026-05-06 — PII separation. `legalName` is private,
+  // captured during onboarding for safety/abuse-report routing. NEVER
+  // returned by any public profile endpoint. Public profile shows
+  // `Profile.displayName` (user-chosen nickname). Only /v1/admin and
+  // /v1/safety endpoints may surface legalName.
+  legalName String?
+
+  // BLE eng-review 2026-05-06 — server-side onboarding completion flag.
+  // Replaces client-side SecureStore "bc.onboarding_complete" so reinstall
+  // does not force a redo. Mobile hydrates from /v1/me at app boot.
+  // Set true by `POST /v1/onboarding/complete` after the Bio step;
+  // immutable thereafter (account-deletion clears the row entirely).
+  onboardingCompleted Boolean @default(false)
 
   @@index([email])
   @@index([phoneNumber])
@@ -855,11 +869,11 @@ model PastorRelationship {
   auditedUser   User                    @relation("RelationshipAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
   state         PastorRelationshipState @default(invited)
 
-  invitedAt    DateTime  @default(now())
-  acceptedAt   DateTime?
-  walkingAt    DateTime?
-  revokedAt    DateTime?
-  sealedAt     DateTime?
+  invitedAt     DateTime  @default(now())
+  acceptedAt    DateTime?
+  walkingAt     DateTime?
+  revokedAt     DateTime?
+  sealedAt      DateTime?
   hardDeletedAt DateTime?
 
   // BLE-133 — internal-only discriminator. Pastor-facing serializers MUST
@@ -876,8 +890,8 @@ model PastorRelationship {
   // UTC seal timestamp). Set by the seal job at state=sealed.
   sealAuditId String?
 
-  notes        PastorNote[]
-  transcripts  TranscriptMessage[]
+  notes       PastorNote[]
+  transcripts TranscriptMessage[]
 
   @@unique([pastorUserId, auditedUserId])
   @@index([auditedUserId])
@@ -996,21 +1010,21 @@ model PastorModeRelationship {
 // KYC submission — Indonesian KTP + selfie for identity verification.
 // Manual admin review with AWS Rekognition face-match as assist.
 model KycSubmission {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @db.Uuid
-  user             User      @relation("UserKyc", fields: [userId], references: [id], onDelete: Cascade)
-  nik              String // 16-digit Indonesian NIK
-  fullName         String
-  dob              DateTime  @db.Date
-  ktpImageUrl      String
-  selfieImageUrl   String
-  status           KycStatus @default(pending)
-  faceMatchScore   Float?
-  reviewerId       String?   @db.Uuid
-  rejectionReason  String?
-  submittedAt      DateTime  @default(now())
-  reviewedAt       DateTime?
-  updatedAt        DateTime  @updatedAt
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @db.Uuid
+  user            User      @relation("UserKyc", fields: [userId], references: [id], onDelete: Cascade)
+  nik             String // 16-digit Indonesian NIK
+  fullName        String
+  dob             DateTime  @db.Date
+  ktpImageUrl     String
+  selfieImageUrl  String
+  status          KycStatus @default(pending)
+  faceMatchScore  Float?
+  reviewerId      String?   @db.Uuid
+  rejectionReason String?
+  submittedAt     DateTime  @default(now())
+  reviewedAt      DateTime?
+  updatedAt       DateTime  @updatedAt
 
   @@unique([userId])
   @@index([status, submittedAt])
@@ -1020,16 +1034,16 @@ model KycSubmission {
 // ─── Monetization models ──────────────────────────────────────────
 
 model SubscriptionPlan {
-  id          String          @id @default(uuid()) @db.Uuid
-  tier        SubscriptionTier
-  cycle       BillingCycle
-  priceIdr    Int             // stored in smallest currency unit (rupiah)
-  xenditPlanId String?        // external reference if Xendit supports plan objects
-  features    Json            // manifest of included features for mobile rendering
-  coinBonus   Int             @default(0) // bonus coins granted on subscribe
-  isActive    Boolean         @default(true)
-  createdAt   DateTime        @default(now())
-  updatedAt   DateTime        @updatedAt
+  id           String           @id @default(uuid()) @db.Uuid
+  tier         SubscriptionTier
+  cycle        BillingCycle
+  priceIdr     Int // stored in smallest currency unit (rupiah)
+  xenditPlanId String? // external reference if Xendit supports plan objects
+  features     Json // manifest of included features for mobile rendering
+  coinBonus    Int              @default(0) // bonus coins granted on subscribe
+  isActive     Boolean          @default(true)
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
 
   subscriptions UserSubscription[]
 
@@ -1047,8 +1061,8 @@ model UserSubscription {
   startedAt           DateTime           @default(now())
   expiresAt           DateTime
   autoRenew           Boolean            @default(true)
-  xenditRecurringId   String?            // Xendit recurring payment ID
-  xenditPaymentMethod String?            // tokenized payment method ID
+  xenditRecurringId   String? // Xendit recurring payment ID
+  xenditPaymentMethod String? // tokenized payment method ID
   cancelledAt         DateTime?
   cancellationReason  String?
   createdAt           DateTime           @default(now())
@@ -1059,13 +1073,13 @@ model UserSubscription {
 }
 
 model CoinPackage {
-  id            String   @id @default(uuid()) @db.Uuid
-  coinAmount    Int
-  bonusCoins    Int      @default(0)
-  priceIdr      Int
-  xenditProductId String?  // optional external SKU
-  isActive      Boolean  @default(true)
-  createdAt     DateTime @default(now())
+  id              String   @id @default(uuid()) @db.Uuid
+  coinAmount      Int
+  bonusCoins      Int      @default(0)
+  priceIdr        Int
+  xenditProductId String? // optional external SKU
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
 
   transactions PaymentTransaction[]
 }
@@ -1078,26 +1092,26 @@ model UserCoinBalance {
 }
 
 model CoinTransaction {
-  id          String              @id @default(uuid()) @db.Uuid
-  userId      String              @db.Uuid
-  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount      Int                 // positive = credit, negative = debit
-  type        CoinTransactionType
+  id           String              @id @default(uuid()) @db.Uuid
+  userId       String              @db.Uuid
+  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount       Int // positive = credit, negative = debit
+  type         CoinTransactionType
   balanceAfter Int
-  metadata    Json?               // { feature: "beacon", durationMin: 30 }
-  createdAt   DateTime            @default(now())
+  metadata     Json? // { feature: "beacon", durationMin: 30 }
+  createdAt    DateTime            @default(now())
 
   @@index([userId, createdAt])
 }
 
 model PaymentTransaction {
-  id                String        @id @default(uuid()) @db.Uuid
-  userId            String        @db.Uuid
-  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type              String        // "subscription" | "coin_package"
+  id                String         @id @default(uuid()) @db.Uuid
+  userId            String         @db.Uuid
+  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type              String // "subscription" | "coin_package"
   amountIdr         Int
-  currency          String        @default("IDR")
-  status            PaymentStatus @default(pending)
+  currency          String         @default("IDR")
+  status            PaymentStatus  @default(pending)
   method            PaymentMethod?
   xenditInvoiceId   String?
   xenditChargeId    String?
@@ -1106,12 +1120,12 @@ model PaymentTransaction {
   failedAt          DateTime?
   failureReason     String?
   refundedAt        DateTime?
-  metadata          Json?         // { planId, coinPackageId, coinsGranted }
-  createdAt         DateTime      @default(now())
-  updatedAt         DateTime      @updatedAt
+  metadata          Json? // { planId, coinPackageId, coinsGranted }
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
 
-  coinPackageId     String?       @db.Uuid
-  coinPackage       CoinPackage?    @relation(fields: [coinPackageId], references: [id])
+  coinPackageId String?      @db.Uuid
+  coinPackage   CoinPackage? @relation(fields: [coinPackageId], references: [id])
 
   @@index([userId, status, createdAt])
   @@index([xenditInvoiceId])

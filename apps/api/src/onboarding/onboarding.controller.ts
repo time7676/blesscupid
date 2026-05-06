@@ -89,4 +89,14 @@ export class OnboardingController {
   async bio(@Req() req: AuthedRequest, @Body(ZodValidate(BioSchema)) input: unknown) {
     return this.onboarding.saveBio(req.user.userId, input as never);
   }
+
+  // BLE eng-review 2026-05-06 — server-side onboarding completion.
+  // Replaces the prior client-only SecureStore flag (Bio.tsx flipped it
+  // locally, so reinstall would force a redo). Mobile calls this after
+  // the Bio step. Idempotent: replay returns the same response.
+  @Post('complete')
+  @HttpCode(200)
+  async complete(@Req() req: AuthedRequest) {
+    return this.onboarding.markOnboardingComplete(req.user.userId);
+  }
 }

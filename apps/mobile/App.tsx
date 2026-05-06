@@ -86,7 +86,7 @@ function OnboardingNavigator() {
 }
 
 function RootApp() {
-  const { hydrated, userId, hydrate } = useAuth();
+  const { hydrated, userId, hydrate, onboardingComplete } = useAuth();
   const { status: fontStatus } = useDesignSystemFonts();
   const hydrateLocale = useLocale((s) => s.hydrate);
 
@@ -118,8 +118,9 @@ function RootApp() {
   //   no userId          → Auth flow (animated Welcome)
   //   userId + !done     → Onboarding flow (kept intact)
   //   userId + done      → AppShell (Today / People / Threads / You)
-  // TODO: wire onboarding completion flag when backend step tracker lands.
-  const hasCompletedOnboarding = false;
+  // Sourced from auth-store; persisted client-side until BLE-7f wires the
+  // server completion endpoint (see auth-store.ts).
+  const hasCompletedOnboarding = onboardingComplete;
 
   return (
     <SafeAreaProvider>

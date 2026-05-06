@@ -29,6 +29,8 @@ export { Dropdown } from './components/Dropdown.js';
 export type { DropdownProps } from './components/Dropdown.js';
 export { VerseCard } from './components/VerseCard.js';
 export type { VerseCardProps } from './components/VerseCard.js';
+export { IntroductionCard } from './components/IntroductionCard.js';
+export type { IntroductionCardProps } from './components/IntroductionCard.js';
 export { Toast } from './components/Toast.js';
 export type { ToastProps, ToastVariant } from './components/Toast.js';
 export { CameraLivenessFrame } from './components/CameraLivenessFrame.js';

@@ -60,6 +60,12 @@ export const bottomNavIcons = {
     active: require('../../../assets/brand/nav/tab-threads-active.png'),
     inactive: require('../../../assets/brand/nav/tab-threads-inactive.png'),
   },
+  // Conversations tab (v1.2 collapse) reuses the threads asset until a
+  // dedicated icon ships. Threads icon best reads as "talking."
+  conversations: {
+    active: require('../../../assets/brand/nav/tab-threads-active.png'),
+    inactive: require('../../../assets/brand/nav/tab-threads-inactive.png'),
+  },
   you: {
     active: require('../../../assets/brand/nav/tab-you-active.png'),
     inactive: require('../../../assets/brand/nav/tab-you-inactive.png'),

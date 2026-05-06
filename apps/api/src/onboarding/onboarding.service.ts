@@ -252,13 +252,35 @@ export class OnboardingService {
   }
 
   async saveProfileBasics(userId: string, input: ProfileBasicsInput) {
+    // BLE eng-review 2026-05-06 — split legalName off into User table.
+    // legalName is PII, never returned by public profile endpoints.
+    // displayName stays on Profile and is the public nickname.
+    const { legalName, ...profileInput } = input;
+    if (legalName) {
+      await this.prisma.user.update({
+        where: { id: userId },
+        data: { legalName },
+      });
+    }
     await this.prisma.profile.upsert({
       where: { userId },
-      update: input,
-      create: { userId, ...input },
+      update: profileInput,
+      create: { userId, ...profileInput },
     });
     await this.advanceStep(userId, 'first_photo');
     return { ok: true };
+  }
+
+  // BLE eng-review 2026-05-06 — server-side onboarding completion flag.
+  // Replaces client-only SecureStore flag so reinstall does not force
+  // a redo. Idempotent: calling on an already-completed user is a no-op.
+  async markOnboardingComplete(userId: string) {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { onboardingCompleted: true },
+    });
+    await this.advanceStep(userId, 'done');
+    return { ok: true, onboardingCompleted: true };
   }
 
   async saveBio(userId: string, input: BioInput) {

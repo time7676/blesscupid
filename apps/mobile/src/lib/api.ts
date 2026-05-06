@@ -158,9 +158,11 @@ export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
 }
 
 import type {
+  BioInput,
   CovenantAcceptInput,
   FaithQuestionnaireInput,
   OnboardingStep,
+  ProfileBasicsInput,
   Q3RedirectInput,
   QuestionnaireSubmitInput,
   WelcomedTagsUpdateInput,
@@ -252,6 +254,67 @@ export function updateWelcomedTags(
     token,
     body: JSON.stringify(input),
   });
+}
+
+// BLE eng-review 2026-05-06 — onboarding profile basics + bio API.
+// `legalName` is captured here for safety routing and is never echoed
+// back via /me; only displayName + gender + city + countryCode round-trip
+// to other users.
+export function saveProfileBasics(
+  token: string,
+  input: ProfileBasicsInput,
+): Promise<{ ok: true }> {
+  return apiFetch('/onboarding/profile', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export interface BioResponse {
+  ok: true;
+  bioApproved: boolean;
+  queuedForReview: boolean;
+}
+
+export function saveBio(token: string, input: BioInput): Promise<BioResponse> {
+  return apiFetch<BioResponse>('/onboarding/bio', {
+    method: 'POST',
+    token,
+    body: JSON.stringify(input),
+  });
+}
+
+export interface CompleteOnboardingResponse {
+  ok: true;
+  onboardingCompleted: true;
+}
+
+export function completeOnboarding(token: string): Promise<CompleteOnboardingResponse> {
+  return apiFetch<CompleteOnboardingResponse>('/onboarding/complete', {
+    method: 'POST',
+    token,
+    body: '{}',
+  });
+}
+
+export interface MeResponse {
+  id: string;
+  email: string;
+  onboardingCompleted: boolean;
+  profile: {
+    displayName: string;
+    gender: 'male' | 'female';
+    city: string;
+    countryCode: string;
+    onboardingStep: OnboardingStep;
+    bio: string | null;
+    bioApproved: boolean;
+  } | null;
+}
+
+export function getMe(token: string): Promise<MeResponse> {
+  return apiFetch<MeResponse>('/me', { method: 'GET', token });
 }
 
 

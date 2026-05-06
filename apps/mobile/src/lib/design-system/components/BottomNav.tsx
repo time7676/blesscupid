@@ -3,7 +3,12 @@ import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import { border, color, fontFamily, fontSize, space } from '../tokens.js';
 import { bottomNavIconSource } from '../../brand/assets.js';
 
-export type NavTabKey = 'today' | 'people' | 'threads' | 'you';
+// v1.2 — collapsed from 4 tabs to 3. People + Threads merged into a single
+// "Conversations" surface (Pending mutuals + Active threads, one screen).
+// `people` and `threads` retained as legacy aliases so any deep-link or
+// nav-state persisted before the collapse routes to Conversations instead
+// of dead-ending. Remove after one release where nothing references them.
+export type NavTabKey = 'today' | 'conversations' | 'you' | 'people' | 'threads';
 
 export type NavTab = {
   key: NavTabKey;
@@ -20,6 +25,10 @@ export type BottomNavProps = {
   onSelect?: (key: NavTabKey) => void;
 };
 
+// Three tabs at v1.2. Conversations replaces the prior People + Threads
+// pair. The legacy `people` / `threads` glyphs are still exported via the
+// asset module for the brief transition window; the live nav uses the
+// `threads` icon for Conversations because it best reads as "talking."
 const DEFAULT_TABS: NavTab[] = [
   {
     key: 'today',
@@ -29,16 +38,8 @@ const DEFAULT_TABS: NavTab[] = [
     iconInactive: bottomNavIconSource('today', false),
   },
   {
-    key: 'people',
-    label: 'People',
-    glyph: '◇',
-    iconActive: bottomNavIconSource('people', true),
-    iconInactive: bottomNavIconSource('people', false),
-    badge: true,
-  },
-  {
-    key: 'threads',
-    label: 'Threads',
+    key: 'conversations',
+    label: 'Conversations',
     glyph: '⌘',
     iconActive: bottomNavIconSource('threads', true),
     iconInactive: bottomNavIconSource('threads', false),

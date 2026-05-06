@@ -212,8 +212,15 @@ export type WelcomedTagsUpdateInput = z.infer<typeof WelcomedTagsUpdateSchema>;
 export const FaithQuestionnaireSchema = FaithProfileSchema;
 export type FaithQuestionnaireInput = z.infer<typeof FaithQuestionnaireSchema>;
 
+// `displayName` is the public NICKNAME visible to other users.
+// `legalName` is PRIVATE — captured for safety/abuse-report routing,
+// surfaced only on /v1/admin and /v1/safety endpoints. Per BLE eng-review
+// 2026-05-06. Optional in the schema so legacy flows that already wrote
+// a profile without legalName don't break — required at the mobile UI
+// layer for v1 onboarding.
 export const ProfileBasicsSchema = z.object({
   displayName: z.string().min(1).max(40),
+  legalName: z.string().min(1).max(80).optional(),
   gender: GenderSchema,
   city: z.string().min(1).max(80),
   countryCode: z.string().length(2),
