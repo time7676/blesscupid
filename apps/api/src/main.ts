@@ -21,6 +21,23 @@ async function bootstrap(): Promise<void> {
   app.enableShutdownHooks();
   app.useGlobalFilters(new SentryExceptionFilter());
 
+  // Alpha-launch request logger — emit method+path+status+ms to stdout so
+  // VPS docker logs surface tester traffic for debugging. Skip /healthz to
+  // keep logs readable. Disable post-alpha by setting LOG_REQUESTS=0.
+  if (process.env.LOG_REQUESTS !== '0') {
+    app.use((req: { method: string; url: string }, res: { statusCode: number; on: (e: string, cb: () => void) => void }, next: () => void) => {
+      const start = Date.now();
+      const url = req.url;
+      if (url === '/healthz' || url === '/health') return next();
+      res.on('finish', () => {
+        const ms = Date.now() - start;
+        // eslint-disable-next-line no-console
+        console.log(`[req] ${req.method} ${url} ${res.statusCode} ${ms}ms`);
+      });
+      next();
+    });
+  }
+
   const port = Number(process.env.PORT ?? 3000);
   await app.listen(port);
   // eslint-disable-next-line no-console
