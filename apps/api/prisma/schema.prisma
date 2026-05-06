@@ -1,5 +1,6 @@
-// BlessCupid API — Prisma schema
-// Postgres. UUID PKs. Strict separation between auth identity and profile/faith data.
+// BlessCupid v1 API — Prisma schema
+// Postgres. UUID PKs. v1-restart hard reset (drops legacy pastor-mode/kyc/coin/encryption/quiet-hours).
+// Companion plan: ~/.claude/plans/i-think-we-need-misty-eclipse.md
 
 generator client {
   provider = "prisma-client-js"
@@ -10,11 +11,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Denomination {
-  catholic
-  protestant
-  orthodox
-  other
+// =====================================================================
+// Enums
+// =====================================================================
+
+enum Role {
+  member
+  admin
+}
+
+enum Locale {
+  en
+  id
 }
 
 enum Gender {
@@ -22,147 +30,30 @@ enum Gender {
   female
 }
 
-enum MarriageIntent {
-  within_1y
-  within_2y
-  within_5y
-  open_timeline
-}
-
-enum ChurchAttendance {
-  weekly
-  monthly
-  occasional
-  rarely
-}
-
-enum SpiritualGift {
-  teaching
-  service
-  mercy
-  exhortation
-  giving
-  leadership
-  evangelism
-  hospitality
-}
-
-// BLE-124 — Q2 surface-routing intent.
-enum Intent {
-  dating
-  friendship
-  community
-  unspecified
-}
-
-// BLE-124 — Q3 dating-side scope. `same_sex` is recorded only as a redirect
-// outcome trigger; matching engine MUST NOT use it as a preference row
-// (see Holy Code §4.2 / BLE-41 onboarding doc).
-enum Seeking {
-  woman
-  man
-  same_sex
-  unspecified
-}
-
-// BLE-124 — Q4 expanded tradition self-ID. Stored alongside legacy
-// `Denomination` for back-compat with FaithProfile.
 enum Tradition {
   catholic
-  protestant_evangelical
-  protestant_pentecostal
-  protestant_reformed
-  protestant_mainline
+  protestant
   orthodox
-  other_christian
-  still_figuring
+  nondenom
+  other
 }
 
-// BLE-124 — Q5 walk stage. Optional, never returned by public profile API.
 enum WalkStage {
-  lifelong
-  came_later
-  recent_convert
-  returning
-  doubting_exploring
-  prefer_not_to_say
+  seeking
+  growing
+  rooted
 }
 
-// BLE-124 — Q6 marriage open. `no` triggers friendship re-route flow.
-enum MarriageOpen {
+enum MarriageIntent {
   yes
   maybe
   no
 }
 
-// BLE-124 — Q7 welcomed-group self-ID tags. Stored set; visibility is held
-// in the per-tag map on `Profile.welcomedTagVisibility`.
-enum WelcomedTag {
-  previously_married
-  single_parent
-  widowed
-  convert_from_non_christian
-  church_hurt
-}
-
-// BLE-124 — Q8 faith practice rhythm. Match relevance only — explicit
-// lint rule in services/matching forbids deprioritization based on these.
-enum PracticeTag {
-  sunday_in_person
-  sunday_online
-  catholic_mass
-  daily_prayer
-  small_group
-  worship_at_home
-  still_finding_a_community
-}
-
-// BLE-124 — Q3 redirect audit. Captures whether the user accepted the
-// friendship re-route or chose to close the account. No tag stored on the
-// user identity — Holy Code §4.2: scope, not identity.
-enum Q3RedirectOutcome {
-  accept_reroute
-  closed_by_user
-}
-
-enum OAuthProvider {
-  apple
-  google
-}
-
-enum KycStatus {
-  none
-  pending
-  approved
-  rejected
-}
-
-enum OnboardingStep {
-  age_gate
-  covenant
-  faith_questionnaire
-  profile_basics
-  first_photo
-  bio
-  done
-}
-
-enum ModerationKind {
-  text_bio
-  text_message
-  photo
-}
-
-enum ModerationDecision {
-  allow
-  review
-  block
-}
-
-enum ModerationStatus {
-  pending
-  approved
-  rejected
+enum ProximityHint {
+  near
+  same_city
+  different_city
 }
 
 enum PhotoStatus {
@@ -172,10 +63,9 @@ enum PhotoStatus {
   rejected
 }
 
-enum UserRole {
-  member
-  pastor
-  ceo
+enum MessageKind {
+  text
+  verse_share
 }
 
 enum MessageStatus {
@@ -184,24 +74,55 @@ enum MessageStatus {
   blocked
 }
 
-enum ModerationQueueKind {
-  text
-  image
+enum DecisionKind {
+  pass
+  like
+  super_like
 }
 
-enum ModerationQueueStatus {
-  pending_review
-  approved
-  rejected
+enum VerseUsedFor {
+  chat_anchor
+  status
+}
+
+enum NotificationKind {
+  match
+  message
+  like
+  verification
+  status
+  other
+}
+
+enum SubscriptionTier {
+  free
+  blessplus
+}
+
+enum SubscriptionStatus {
+  active
+  trialing
+  cancelled
+  expired
+  payment_failed
+  grace_period
+}
+
+enum SubscriptionCycle {
+  weekly
+  monthly
+  quarterly
+  yearly
 }
 
 enum ReportReason {
   sexual_content
   harassment
-  off_platform_pressure
-  scam_or_spam
-  underage
   fake_profile
+  underage
+  hate_or_harassment
+  self_harm_or_crisis
+  spam
   other
 }
 
@@ -209,1075 +130,593 @@ enum ReportStatus {
   open
   under_review
   resolved
-  dismissed
 }
 
-enum ModerationActionKind {
-  dismiss
-  warn
-  suspend
-  ban
+enum ModerationDecision {
+  allow
+  review
+  block
 }
 
-enum AccountDeletionStatus {
-  soft_deleted
-  hard_deleted
-  cancelled
+enum ModerationKind {
+  text_bio
+  text_message
+  photo
+  status_verse
 }
 
-// BLE-136 — Pastor-mode 18+ KYC gate.
-// `none`        = no attempt yet
-// `passed`      = verified adult; pastor-mode surfaces unlocked for this user
-// `neutral_fail`= one neutral failure surface for under-18, OCR fail, doc-quality
-//                 fail, affidavit refused. The user-facing reason is INDISTINGUISHABLE.
-enum PastorModeGateStatus {
-  none
-  passed
-  neutral_fail
+enum OnboardingRejectionReason {
+  seeking_same_sex
+  age_under_18
+  banned_user
 }
 
-enum PastorModeAttestationKind {
-  ktp
-  affidavit
-}
-
-// BLE-131 — Pastor-mode invitation/relationship lifecycle.
-// 1:1 audited-side rule: at most ONE row per auditedUserId in status=`active`.
-// Pastor side has no cap — pastorUserId may have N concurrent active rows.
-enum PastorModeRelationshipStatus {
+enum VerificationStatus {
   pending
-  active
-  ended_by_audited
-  ended_by_pastor
-  declined_by_audited
+  approved
+  rejected
   expired
 }
 
-// BLE-63 — Moderation Playbook v1
-//
-// Triage queues per Appendix A.1. Snake-case in DB; mapped to playbook names
-// (`mod-triage`, `mod-appeals`, `ceo-p0`, `pastor-precedent`) at the API edge.
-enum ModerationQueue {
-  mod_triage
-  mod_appeals
-  ceo_p0
-  pastor_precedent
+enum PastorApprovalKind {
+  verse_seed
+  banned_phrases
+  covenant
 }
 
-// Routing category per A.4. Distinct from ReportReason: a reporter picks a
-// reason; the server projects that to a category for routing decisions.
-enum ReportCategory {
-  abuse
-  suicidal
-  minor
-  other
+enum AuthProvider {
+  apple
+  google
 }
 
-// HCoC tier (T1 nudge → T4 ban). Used by moderation_action_log.
-enum ModerationTier {
-  t1
-  t2
-  t3
-  t4
-}
-
-enum AppealStatus {
-  none
+enum PasswordResetStatus {
   pending
-  upheld
-  overturned
-}
-
-// BLE-132 — Pastor-mode relationship lifecycle.
-//
-// invited → accepted → walking → revoked → sealed → hard_deleted
-//                                  ↑           ↑
-//                     (user action)│           │ (cron, T+90d)
-//                                  │           │
-//                  pastor cannot   │  pastor 403 on transcripts;
-//                  read transcripts│  journal accessible
-//                  yet (instant)   │
-//
-// Soft-seal (state=sealed) at T+24h after revoke. Hard-delete (state=
-// hard_deleted) at T+90d after seal unless legal_hold=true. Asymmetric:
-// pastor loses transcript access; the audited user keeps her own mirror
-// permanently (`audited_user_pastor_views`, separate user-side schema).
-enum PastorRelationshipState {
-  invited
-  accepted
-  walking
-  revoked
-  sealed
-  hard_deleted
-}
-
-// BLE-133 — discriminator for *who* ended a relationship. Server-internal.
-//
-// MUST NEVER be serialized into Pastor-facing responses. The doctrine is
-// information-symmetric: from Pastor's view, "ended" is "ended" — never
-// "she fired me" vs "I stepped away". The same enum drives the audited
-// user's mirror surface (Surface 6), which IS allowed to show why because
-// it's HER own data.
-enum PastorEndReason {
-  audited_revoked
-  pastor_mundur
-  mutual
+  used
   expired
-  system
 }
 
-// ─── Monetization ─────────────────────────────────────────────────
-
-enum SubscriptionTier {
-  free
-  light
-  open
-  deep
-}
-
-enum BillingCycle {
-  weekly
-  monthly
-  quarterly
-  yearly
-}
-
-enum SubscriptionStatus {
-  active
-  cancelled
-  expired
-  grace_period
-  payment_failed
-}
-
-enum PaymentStatus {
-  pending
-  paid
-  failed
-  refunded
-  cancelled
-}
-
-enum PaymentMethod {
-  credit_card
-  ewallet_ovo
-  ewallet_dana
-  ewallet_linkaja
-  ewallet_gopay
-  ewallet_shopeepay
-  direct_debit
-  virtual_account
-}
-
-enum CoinTransactionType {
-  purchase
-  spend
-  refund
-  grant
-  subscription_bonus
-}
+// =====================================================================
+// Auth + identity
+// =====================================================================
 
 model User {
-  id               String    @id @default(uuid()) @db.Uuid
-  email            String    @unique
-  passwordHash     String? // null when only OAuth-linked
-  dob              DateTime  @db.Date
-  ageVerifiedAdult Boolean   @default(false)
-  emailVerified    Boolean   @default(false)
-  phoneNumber      String?   @unique
-  phoneVerifiedAt  DateTime?
-  kycStatus        KycStatus @default(none)
-  isSuspended      Boolean   @default(false)
-  createdAt        DateTime  @default(now())
-  updatedAt        DateTime  @updatedAt
+  id                  String    @id @default(uuid()) @db.Uuid
+  email               String    @unique
+  phoneNumber         String?   @unique
+  passwordHash        String?
+  dob                 DateTime  @db.Date
+  ageVerifiedAdult    Boolean   @default(false)
+  role                Role      @default(member)
+  isSuspended         Boolean   @default(false)
+  deletedAt           DateTime?
+  onboardingCompleted Boolean   @default(false)
+  timezone            String    @default("UTC")
+  localePreference    Locale    @default(en)
+  countryCode         String?   @db.Char(2)
+  consentedAt         DateTime?
+  consentVersion      String?
+  consentLocale       Locale?
+  consentIpHash       String?
+  lastActiveAt        DateTime  @default(now())
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  role UserRole @default(member)
+  // Relations
+  oauthAccounts          OAuthAccount[]
+  sessions               Session[]
+  passwordResets         PasswordReset[]
+  covenantSignatures     CovenantSignature[]
+  profile                Profile?
+  photos                 Photo[]
+  verificationSubmissions VerificationSubmission[]
+  decisionsAsViewer      MatchDecision[]      @relation("decisions_viewer")
+  decisionsAsCandidate   MatchDecision[]      @relation("decisions_candidate")
+  matchesAsA             Match[]              @relation("match_a")
+  matchesAsB             Match[]              @relation("match_b")
+  messagesSent           Message[]            @relation("messages_sender")
+  verseHistory           UserVerseHistory[]
+  statusVerse            StatusVerse?
+  blocksMade             Block[]              @relation("blocks_blocker")
+  blocksReceived         Block[]              @relation("blocks_blocked")
+  reportsFiled           Report[]             @relation("reports_reporter")
+  reportsReceived        Report[]             @relation("reports_reported")
+  pushTokens             PushToken[]
+  notifications          Notification[]
+  subscription           UserSubscription?
+  paymentTransactions    PaymentTransaction[]
+  dailyQuotas            DailyQuota[]
 
-  oauthAccounts   OAuthAccount[]
-  sessions        Session[]
-  covenants       CovenantSignature[]
-  faithProfile    FaithProfile?
-  profile         Profile?
-  photos          Photo[]
-  moderationItems ModerationItem[]
-
-  sentMessages           Message[]                 @relation("MessageSender")
-  receivedMessages       Message[]                 @relation("MessageRecipient")
-  reportsSubmitted       Report[]                  @relation("ReportReporter")
-  reportsAgainst         Report[]                  @relation("ReportReported")
-  blocksAuthored         Block[]                   @relation("BlockBlocker")
-  blocksAgainst          Block[]                   @relation("BlockBlocked")
-  reviewedQueueItems     ModerationQueueItem[]     @relation("QueueReviewer")
-  accountDeletion        AccountDeletionRequest?   @relation("UserDeletion")
-  moderationActionsTaken ModerationAction[]        @relation("ActionActor")
-  // BLE-63 — audit log relations
-  actionLogsAgainst      ModerationActionLog[]     @relation("ActionLogUser")
-  actionLogsTaken        ModerationActionLog[]     @relation("ActionLogActor")
-  evidenceReads          EvidenceDecryptionAudit[] @relation("EvidenceReader")
-  pastorModeGate         PastorModeGate?           @relation("UserPastorModeGate")
-  pastorModeAttempts     PastorModeGateAttempt[]   @relation("UserPastorModeAttempts")
-  pastorModeAsAudited    PastorModeRelationship[]  @relation("PastorModeAudited")
-  pastorModeAsPastor     PastorModeRelationship[]  @relation("PastorModePastor")
-
-  pastorRelationships  PastorRelationship[] @relation("RelationshipPastor")
-  auditedRelationships PastorRelationship[] @relation("RelationshipAudited")
-  kycSubmissions       KycSubmission[]      @relation("UserKyc")
-
-  // ─── Monetization ─────────────────────────────────────────────────
-  subscriptions       UserSubscription[]
-  coinBalance         UserCoinBalance?
-  coinTransactions    CoinTransaction[]
-  paymentTransactions PaymentTransaction[]
-
-  // Soft-delete marker: BLE-10 sets this on `DELETE /me`. Read-paths must
-  // filter `deletedAt IS NULL` to hide the user from feeds and chat lists.
-  deletedAt DateTime?
-
-  // BLE-129 — quiet-hours config (Holy Code §7.4 default = Sunday 09:00–11:30
-  // local). `timezone` is an IANA name; `quietHours` is the JSON-serialized
-  // QuietHoursConfig.windows array. Both nullable so legacy users keep working
-  // until they set a timezone via /me settings; the predicate treats a missing
-  // config as "never quiet".
-  timezone   String?
-  quietHours Json?
-
-  // BLE eng-review 2026-05-06 — PII separation. `legalName` is private,
-  // captured during onboarding for safety/abuse-report routing. NEVER
-  // returned by any public profile endpoint. Public profile shows
-  // `Profile.displayName` (user-chosen nickname). Only /v1/admin and
-  // /v1/safety endpoints may surface legalName.
-  legalName String?
-
-  // BLE eng-review 2026-05-06 — server-side onboarding completion flag.
-  // Replaces client-side SecureStore "bc.onboarding_complete" so reinstall
-  // does not force a redo. Mobile hydrates from /v1/me at app boot.
-  // Set true by `POST /v1/onboarding/complete` after the Bio step;
-  // immutable thereafter (account-deletion clears the row entirely).
-  onboardingCompleted Boolean @default(false)
-
-  // BLE eng-review 2026-05-06 — Lane B (matching).
-  dailyStacks    DailyStack[]    @relation("DailyStackUser")
-  matchDecisions MatchDecision[] @relation("MatchDecisionViewer")
-  matchedAgainst MatchDecision[] @relation("MatchDecisionCandidate")
-
-  // BLE eng-review 2026-05-06 — Lane D (push notifications).
-  // Array of FCM/APNs device tokens. Mobile registers on every cold
-  // boot via POST /me/push-token. Backend dedupes + drops invalid
-  // tokens reported by FCM on send failure. Empty array = no push.
-  pushTokens PushToken[] @relation("PushTokenUser")
-
-  @@index([email])
-  @@index([phoneNumber])
   @@index([deletedAt])
+  @@index([countryCode])
+  @@index([lastActiveAt])
 }
 
 model OAuthAccount {
-  id          String        @id @default(uuid()) @db.Uuid
-  userId      String        @db.Uuid
-  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  provider    OAuthProvider
+  id          String       @id @default(uuid()) @db.Uuid
+  userId      String       @db.Uuid
+  provider    AuthProvider
   providerSub String
-  createdAt   DateTime      @default(now())
+  createdAt   DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerSub])
   @@index([userId])
 }
 
 model Session {
-  id               String    @id @default(uuid()) @db.Uuid
-  userId           String    @db.Uuid
-  user             User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  refreshTokenHash String    @unique
-  userAgent        String?
-  ip               String?
-  expiresAt        DateTime
-  revokedAt        DateTime?
-  createdAt        DateTime  @default(now())
+  id              String    @id @default(uuid()) @db.Uuid
+  userId          String    @db.Uuid
+  refreshTokenHash String   @unique
+  expiresAt       DateTime
+  revokedAt       DateTime?
+  userAgent       String?
+  ipHash          String?
+  createdAt       DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([expiresAt])
 }
 
-// Holy Code of Conduct acceptance. Versioned. Pastor signs the canonical text.
+model PasswordReset {
+  id        String              @id @default(uuid()) @db.Uuid
+  userId    String              @db.Uuid
+  otpHash   String
+  status    PasswordResetStatus @default(pending)
+  attempts  Int                 @default(0)
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime            @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, status])
+  @@index([expiresAt])
+}
+
 model CovenantSignature {
-  id         String   @id @default(uuid()) @db.Uuid
-  userId     String   @db.Uuid
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  version    String
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String?  @db.Uuid
+  version   String
   acceptedAt DateTime @default(now())
-  ipAddress  String?
-  userAgent  String?
+  ipHash    String?
+  userAgent String?
 
-  @@unique([userId, version])
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
   @@index([userId])
 }
 
-model FaithProfile {
-  id               String           @id @default(uuid()) @db.Uuid
-  userId           String           @unique @db.Uuid
-  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  denomination     Denomination
-  churchAttendance ChurchAttendance
-  baptized         Boolean
-  marriageIntent   MarriageIntent
-  spiritualGifts   SpiritualGift[]
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @updatedAt
-}
+// =====================================================================
+// Profile + photos + verification
+// =====================================================================
 
 model Profile {
-  id             String         @id @default(uuid()) @db.Uuid
-  userId         String         @unique @db.Uuid
-  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  displayName    String
-  gender         Gender
-  city           String
-  countryCode    String         @db.Char(2)
-  bio            String?
-  bioApproved    Boolean        @default(false)
-  onboardingStep OnboardingStep @default(age_gate)
+  userId             String   @id @db.Uuid
+  displayName        String
+  gender             Gender
+  seeking            Gender
+  city               String
+  countryCode        String   @db.Char(2)
+  // PRIVATE: server-only, never serialized to API responses
+  lat                Float
+  lng                Float
+  homeChurchName     String?
+  churchLat          Float?
+  churchLng          Float?
+  // /PRIVATE
+  bio                String?
+  bioApprovedAt      DateTime?
+  tradition          Tradition
+  walkStage          WalkStage
+  marriageIntent     MarriageIntent
+  whimsicalAnswers   Json     @default("{}")
+  isVerified         Boolean  @default(false)
+  onboardingStep     Int      @default(0)
+  pausedUntil        DateTime?
+  hideFromUnverified Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  // BLE-124 — onboarding questionnaire v1 fields. All optional from the
-  // schema's POV so legacy rows survive; the API enforces required-when-
-  // dating gates (Q3 seeking, Q6 marriageOpen).
-  intent                Intent?
-  seeking               Seeking?
-  tradition             Tradition?
-  traditionOther        String?
-  walkStage             WalkStage?
-  marriageOpen          MarriageOpen?
-  welcomedTags          WelcomedTag[] @default([])
-  // Per-tag opt-in. Privacy-by-default: any tag absent from the JSON is
-  // treated as `false`. Migration test asserts default `{}` (no public
-  // surfacing) — see services/matching + apps/api privacy lints.
-  welcomedTagVisibility Json          @default("{}")
-  practiceTags          PracticeTag[] @default([])
-  // Q9 bio seed. Stored separately from `bio` so the moderation history is
-  // distinct, and so a flagged seed never silently becomes a published bio.
-  bioSeed               String?
-  bioSeedApproved       Boolean       @default(false)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  q3RedirectEvents Q3RedirectEvent[]
-
-  @@index([countryCode, city])
-  @@index([intent])
-  // BLE eng-review 2026-05-06 — Lane F. Matching predicates filter on
-  // (seeking, intent) for primary eligibility and (tradition, walkStage)
-  // for soft scoring. Composite indexes here keep the nightly cron
-  // pool-fetch off a sequential scan.
-  @@index([seeking, intent])
-  @@index([tradition, walkStage])
-}
-
-// BLE-124 — Q3 same-sex redirect audit row. Created when a dating-intent
-// user picks the same-sex option. The user's `Profile.seeking` is set to
-// `same_sex` only as a transient flag; the redirect outcome (`accept_reroute`
-// → `intent=friendship`, `closed_by_user` → soft-delete request) drives all
-// downstream behavior. No same-sex match-preference row is ever written.
-model Q3RedirectEvent {
-  id        String            @id @default(uuid()) @db.Uuid
-  userId    String            @db.Uuid
-  profile   Profile           @relation(fields: [userId], references: [userId], onDelete: Cascade)
-  outcome   Q3RedirectOutcome
-  createdAt DateTime          @default(now())
-
-  @@index([userId, createdAt])
+  @@index([city])
+  @@index([countryCode, gender, seeking])
+  @@index([isVerified])
 }
 
 model Photo {
-  id               String      @id @default(uuid()) @db.Uuid
-  userId           String      @db.Uuid
-  user             User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  storageKey       String      @unique
-  position         Int
-  status           PhotoStatus @default(uploaded)
-  faceCount        Int?
-  faceAreaRatio    Float?
-  rejectionReasons String[]    @default([])
-  unsafeLabels     String[]    @default([])
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  id                   String      @id @default(uuid()) @db.Uuid
+  userId               String      @db.Uuid
+  position             Int
+  storageKey           String
+  status               PhotoStatus @default(uploaded)
+  faceCount            Int?
+  faceAreaRatio        Float?
+  rejectionReasons     String[]    @default([])
+  unsafeLabels         String[]    @default([])
+  exifStripped         Boolean     @default(false)
+  variantsGeneratedAt  DateTime?
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
 
-  @@index([userId, position])
-}
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model ModerationItem {
-  id           String             @id @default(uuid()) @db.Uuid
-  userId       String?            @db.Uuid
-  user         User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
-  kind         ModerationKind
-  subjectId    String? // photo id, message id, etc.
-  rawContent   String? // text or storage ref
-  decision     ModerationDecision
-  status       ModerationStatus   @default(pending)
-  categories   String[]           @default([])
-  provider     String
-  rawScore     Float?
-  reviewerNote String?
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
-
-  @@index([status, createdAt])
+  // Position uniqueness enforced via DEFERRABLE INITIALLY DEFERRED constraint
+  // applied in raw-SQL migration (allows reorder swaps within single tx)
+  @@unique([userId, position])
   @@index([userId])
+  @@index([status])
 }
 
-// Chat message. Persisted only when delivery decision is delivered or queued.
-// Blocked messages are never persisted to Message; they only land in the
-// ModerationQueueItem audit row (status = rejected).
-model Message {
-  id              String               @id @default(uuid()) @db.Uuid
-  threadId        String               @db.Uuid
-  senderUserId    String               @db.Uuid
-  sender          User                 @relation("MessageSender", fields: [senderUserId], references: [id], onDelete: Cascade)
-  recipientUserId String               @db.Uuid
-  recipient       User                 @relation("MessageRecipient", fields: [recipientUserId], references: [id], onDelete: Cascade)
-  body            String
-  attachmentIds   String[]             @default([])
-  status          MessageStatus
-  queueItemId     String?              @db.Uuid
-  queueItem       ModerationQueueItem? @relation(fields: [queueItemId], references: [id], onDelete: SetNull)
-  createdAt       DateTime             @default(now())
-  deliveredAt     DateTime?
+model VerificationSubmission {
+  id              String             @id @default(uuid()) @db.Uuid
+  userId          String             @db.Uuid
+  selfieKey       String
+  faceMatchScore  Float?
+  status          VerificationStatus @default(pending)
+  decidedAt       DateTime?
+  decidedByUserId String?            @db.Uuid
+  rejectionReason String?
+  // selfieKey auto-deleted from S3 by selfie-cleanup worker 24h after decidedAt
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
-  @@index([threadId, createdAt])
-  @@index([recipientUserId, status])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
 }
 
-// Audit + review queue row for any moderation outcome that wasn't a clean
-// allow. Includes blocked content (status=rejected by system) so operators
-// can spot-check false positives.
-model ModerationQueueItem {
-  id              String                @id @default(uuid()) @db.Uuid
-  kind            ModerationQueueKind
-  status          ModerationQueueStatus @default(pending_review)
-  senderUserId    String?               @db.Uuid
-  recipientUserId String?               @db.Uuid
-  threadId        String?               @db.Uuid
-  uploadId        String?               @db.Uuid
-  storageKey      String?
-  bodyText        String?
-  attachmentIds   String[]              @default([])
-  decision        String // 'allow' | 'block' | 'queue'
-  reasons         String[]              @default([])
-  flags           String[]              @default([])
-  rawScores       Json
-  reviewerNote    String?
-  reviewerUserId  String?               @db.Uuid
-  reviewer        User?                 @relation("QueueReviewer", fields: [reviewerUserId], references: [id], onDelete: SetNull)
-  reviewedAt      DateTime?
-  createdAt       DateTime              @default(now())
+// =====================================================================
+// Matching
+// =====================================================================
 
+model MatchDecision {
+  id                String       @id @default(uuid()) @db.Uuid
+  userId            String       @db.Uuid
+  candidateUserId   String       @db.Uuid
+  decision          DecisionKind
+  day               String       // YYYY-MM-DD in viewer's timezone
+  createdAt         DateTime     @default(now())
+
+  viewer    User @relation("decisions_viewer", fields: [userId], references: [id], onDelete: Cascade)
+  candidate User @relation("decisions_candidate", fields: [candidateUserId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, candidateUserId])
+  @@index([userId, createdAt])
+  @@index([candidateUserId, decision])
+  @@index([userId, day])
+}
+
+// Match = denormalized cache of mutual non-pass decisions, written transactionally
+// in matching.service.recordDecision() within the same tx as MatchDecision upsert.
+// userAId < userBId enforced as canonical pair ordering.
+model Match {
+  id        String   @id @default(uuid()) @db.Uuid
+  userAId   String   @db.Uuid
+  userBId   String   @db.Uuid
+  thread    Thread?
+  createdAt DateTime @default(now())
+
+  userA User @relation("match_a", fields: [userAId], references: [id], onDelete: Cascade)
+  userB User @relation("match_b", fields: [userBId], references: [id], onDelete: Cascade)
+
+  @@unique([userAId, userBId])
+  @@index([userAId, createdAt])
+  @@index([userBId, createdAt])
+}
+
+model DailyQuota {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  day         String   // YYYY-MM-DD in viewer's timezone
+  likesUsed   Int      @default(0)
+  supersUsed  Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+}
+
+// =====================================================================
+// Threads + chat
+// =====================================================================
+
+model Thread {
+  id            String        @id @default(uuid()) @db.Uuid
+  matchId       String        @unique @db.Uuid
+  lastMessageAt DateTime?
+  archivedAt    DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  match    Match         @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  anchor   ThreadAnchor?
   messages Message[]
 
-  @@index([status, createdAt])
+  @@index([lastMessageAt])
+}
+
+model ThreadAnchor {
+  threadId    String  @id @db.Uuid
+  verseRef    String
+  verseText   String
+  attribution String
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+}
+
+model Message {
+  id              String        @id @default(uuid()) @db.Uuid
+  threadId        String        @db.Uuid
+  senderUserId    String        @db.Uuid
+  body            String
+  kind            MessageKind   @default(text)
+  verseRef        String?
+  clientMessageId String        @db.Uuid
+  status          MessageStatus @default(delivered)
+  deliveredAt     DateTime?
+  createdAt       DateTime      @default(now())
+
+  thread Thread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  sender User   @relation("messages_sender", fields: [senderUserId], references: [id], onDelete: Cascade)
+
+  @@unique([threadId, clientMessageId])
+  @@index([threadId, createdAt])
   @@index([senderUserId])
 }
 
+// =====================================================================
+// Verse
+// =====================================================================
+
+model VerseCache {
+  id          String   @id @default(uuid()) @db.Uuid
+  ref         String
+  translation String
+  text        String
+  attribution String
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@unique([ref, translation])
+  @@index([expiresAt])
+}
+
+// Per-user verse de-dup tracker. Separate cones for chat_anchor vs status (no cross-blocking).
+model UserVerseHistory {
+  id        String       @id @default(uuid()) @db.Uuid
+  userId    String       @db.Uuid
+  verseRef  String
+  usedFor   VerseUsedFor
+  createdAt DateTime     @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Primary index supports window-scan dedup query:
+  // WHERE userId IN (a,b) AND usedFor=? AND createdAt > now()-90d
+  @@index([userId, usedFor, createdAt])
+  @@index([verseRef])
+}
+
+model StatusVerse {
+  userId      String    @id @db.Uuid
+  verseRef    String
+  verseText   String
+  attribution String
+  setAt       DateTime  @default(now())
+  expiresAt   DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([setAt])
+}
+
+// =====================================================================
+// Moderation
+// =====================================================================
+
+model ModerationQueueItem {
+  id              String             @id @default(uuid()) @db.Uuid
+  kind            ModerationKind
+  decision        ModerationDecision
+  reasons         String[]           @default([])
+  flags           String[]           @default([])
+  rawScores       Json?
+  senderUserId    String?            @db.Uuid
+  bodyText        String?
+  refId           String?            @db.Uuid // Photo.id or Message.id
+  reviewerUserId  String?            @db.Uuid
+  reviewedAt      DateTime?
+  resolution      String?
+  createdAt       DateTime           @default(now())
+
+  @@index([decision, reviewedAt])
+  @@index([senderUserId])
+  @@index([createdAt])
+}
+
 model Report {
-  id                 String          @id @default(uuid()) @db.Uuid
-  reporterUserId     String          @db.Uuid
-  reporter           User            @relation("ReportReporter", fields: [reporterUserId], references: [id], onDelete: Cascade)
-  reportedUserId     String          @db.Uuid
-  reported           User            @relation("ReportReported", fields: [reportedUserId], references: [id], onDelete: Cascade)
-  threadId           String?         @db.Uuid
-  messageId          String?         @db.Uuid
-  reason             ReportReason
-  freeform           String?
-  // BLE-10 triage fields. Safe defaults so existing BLE-9 inserts are unaffected.
-  severity           Int             @default(0)
-  status             ReportStatus    @default(open)
-  resolvedAt         DateTime?
-  resolvedByUserId   String?         @db.Uuid
-  moderationActionId String?         @db.Uuid
-  // BLE-63 / A.4 — routing category + assigned queue. `category` is derived
-  // from `reason` server-side; `queue` is the routing target. P0 categories
-  // (abuse / suicidal / minor) always land in ceo_p0.
-  category           ReportCategory  @default(other)
-  queue              ModerationQueue @default(mod_triage)
-  autoLockApplied    Boolean         @default(false)
-  createdAt          DateTime        @default(now())
+  id                String       @id @default(uuid()) @db.Uuid
+  reporterUserId    String?      @db.Uuid
+  reporterDeleted   Boolean      @default(false)
+  reportedUserId    String       @db.Uuid
+  reason            ReportReason
+  detail            String?
+  threadId          String?      @db.Uuid
+  messageId         String?      @db.Uuid
+  status            ReportStatus @default(open)
+  reviewerUserId    String?      @db.Uuid
+  reviewedAt        DateTime?
+  resolution        String?
+  createdAt         DateTime     @default(now())
 
-  evidenceFreezes   EvidenceFreeze[]   @relation("FreezeReport")
-  moderationActions ModerationAction[] @relation("ActionReport")
+  reporter User? @relation("reports_reporter", fields: [reporterUserId], references: [id], onDelete: SetNull)
+  reported User  @relation("reports_reported", fields: [reportedUserId], references: [id], onDelete: Cascade)
 
-  @@index([reportedUserId, createdAt])
-  @@index([reporterUserId])
-  @@index([status, severity, createdAt])
-  @@index([queue, status, createdAt])
-}
-
-// BLE-63 / Appendix A.2 — durable audit log of every moderation action.
-// One row per (user, tier-action). Evidence content stored encrypted at rest
-// (AES-256-GCM, per-record DEK wrapped by `MODERATION_EVIDENCE_KEK`).
-model ModerationActionLog {
-  // action_id
-  id                  String          @id @default(uuid()) @db.Uuid
-  userId              String          @db.Uuid
-  user                User            @relation("ActionLogUser", fields: [userId], references: [id], onDelete: Cascade)
-  actorUserId         String          @db.Uuid
-  actor               User            @relation("ActionLogActor", fields: [actorUserId], references: [id], onDelete: Cascade)
-  tier                ModerationTier
-  ruleId              String
-  predicateId         String?
-  // Evidence ciphertext + IV + GCM tag + wrapped DEK.
-  evidenceCipher      Bytes?
-  evidenceIv          Bytes?
-  evidenceAuthTag     Bytes?
-  evidenceWrappedKey  Bytes?
-  // A.2: defaults true except on P0 (queue-derived; service enforces).
-  evidenceUserVisible Boolean         @default(true)
-  appealUrl           String?
-  appealStatus        AppealStatus    @default(none)
-  // Snapshot at time of action — count of action-log rows in last 90d.
-  priorActions90d     Int             @default(0)
-  pastorReviewedAt    DateTime?
-  queue               ModerationQueue @default(mod_triage)
-  reportId            String?         @db.Uuid
-  notes               String?
-  createdAt           DateTime        @default(now())
-
-  decryptionAudits EvidenceDecryptionAudit[]
-
-  @@index([userId, createdAt])
-  @@index([actorUserId, createdAt])
-  @@index([queue, createdAt])
-  @@index([tier, createdAt])
-  @@index([appealStatus])
-}
-
-// BLE-63 / A.2 — every plaintext read of evidenceCipher writes a row.
-model EvidenceDecryptionAudit {
-  id           String              @id @default(uuid()) @db.Uuid
-  actionLogId  String              @db.Uuid
-  actionLog    ModerationActionLog @relation(fields: [actionLogId], references: [id], onDelete: Cascade)
-  readerUserId String              @db.Uuid
-  reader       User                @relation("EvidenceReader", fields: [readerUserId], references: [id], onDelete: Cascade)
-  readerRole   UserRole
-  reason       String
-  createdAt    DateTime            @default(now())
-
-  @@index([actionLogId, createdAt])
-  @@index([readerUserId, createdAt])
+  @@index([reportedUserId])
+  @@index([status, createdAt])
 }
 
 model Block {
   blockerUserId String   @db.Uuid
-  blocker       User     @relation("BlockBlocker", fields: [blockerUserId], references: [id], onDelete: Cascade)
   blockedUserId String   @db.Uuid
-  blocked       User     @relation("BlockBlocked", fields: [blockedUserId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
+
+  blocker User @relation("blocks_blocker", fields: [blockerUserId], references: [id], onDelete: Cascade)
+  blocked User @relation("blocks_blocked", fields: [blockedUserId], references: [id], onDelete: Cascade)
 
   @@id([blockerUserId, blockedUserId])
   @@index([blockedUserId])
 }
 
-// BLE-10 — server-side hold on a chat thread referenced by an open report.
-// Chat redaction/delete paths MUST consult `EvidenceFreeze` before purging
-// any message in the thread; freezes outlive account deletion.
-model EvidenceFreeze {
-  id        String   @id @default(uuid()) @db.Uuid
-  reportId  String   @db.Uuid
-  report    Report   @relation("FreezeReport", fields: [reportId], references: [id], onDelete: Cascade)
-  threadId  String   @db.Uuid
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+// =====================================================================
+// Notifications + push
+// =====================================================================
 
-  @@index([threadId, expiresAt])
-  @@index([expiresAt])
+model PushToken {
+  id          String   @id @default(uuid()) @db.Uuid
+  userId      String   @db.Uuid
+  token       String   @unique
+  platform    String // 'ios' | 'android' | 'web'
+  appVersion  String?
+  lastSeenAt  DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
-// BLE-10 — moderation action recorded by Pastor or CEO from the T&S queue.
-// Persisted for audit; ban-evasion detection uses these rows even after
-// related accounts are hard-deleted.
-model ModerationAction {
-  id          String               @id @default(uuid()) @db.Uuid
-  reportId    String               @db.Uuid
-  report      Report               @relation("ActionReport", fields: [reportId], references: [id], onDelete: Cascade)
-  actorUserId String               @db.Uuid
-  actor       User                 @relation("ActionActor", fields: [actorUserId], references: [id], onDelete: Cascade)
-  kind        ModerationActionKind
-  notes       String?
-  appliedAt   DateTime             @default(now())
+model Notification {
+  id        String           @id @default(uuid()) @db.Uuid
+  userId    String           @db.Uuid
+  kind      NotificationKind
+  title     String
+  body      String
+  payload   Json             @default("{}")
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
 
-  @@index([reportId])
-  @@index([actorUserId, appliedAt])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
 }
 
-// BLE-10 — GDPR + CCPA. Soft-delete is immediate; hard-delete worker runs
-// 30 days later (or 0 days when expedited). Frozen chat threads are
-// preserved past the user's hard-delete date and purged when the freeze
-// expires.
-// BLE-136 — current pastor-mode gate state per user. 1:1 with User.
-// Created lazily on first attempt. `attestationKind` records how the user
-// passed (ktp vs affidavit). DOB is intentionally NOT stored here — the gate
-// is a boolean outcome; raw DOB lives only on User.dob (set during signup
-// age gate per existing flow).
-model PastorModeGate {
-  id              String                     @id @default(uuid()) @db.Uuid
-  userId          String                     @unique @db.Uuid
-  user            User                       @relation("UserPastorModeGate", fields: [userId], references: [id], onDelete: Cascade)
-  status          PastorModeGateStatus       @default(none)
-  attestationKind PastorModeAttestationKind?
-  // 24h cooldown: when status=neutral_fail, the user cannot retry until
-  // cooldownUntil < now. Hides which retry path is allowed when (UU ITE
-  // affidavit attempts have a separate cooldown via attempts table).
-  cooldownUntil   DateTime?
-  passedAt        DateTime?
-  // Last decision time, for audit + cooldown reset.
-  decidedAt       DateTime?
-  createdAt       DateTime                   @default(now())
-  updatedAt       DateTime                   @updatedAt
-
-  @@index([status])
-}
-
-// BLE-136 — append-only audit log of every gate attempt. ZERO PII:
-// no NIK, no DOB, no name, no IP, no userAgent. We keep userId for
-// rate-limit + admin spot-checks, but the row body is a status-only
-// audit trail that can survive hard-delete (cascade kept on user delete
-// because it's not legally required to retain post-delete).
-model PastorModeGateAttempt {
-  id              String                    @id @default(uuid()) @db.Uuid
-  userId          String                    @db.Uuid
-  user            User                      @relation("UserPastorModeAttempts", fields: [userId], references: [id], onDelete: Cascade)
-  attestationKind PastorModeAttestationKind
-  outcome         PastorModeGateStatus // either `passed` or `neutral_fail`
-  // Coarse internal reason for ops triage. NEVER surfaced to user. Examples:
-  // 'underage' | 'invalid_dob' | 'future_dob' | 'ktp_ocr_low_confidence' |
-  // 'doc_quality' | 'affidavit_declined' | 'cooldown_active'
-  internalReason  String?
-  createdAt       DateTime                  @default(now())
-
-  @@index([userId, createdAt])
-  @@index([outcome, createdAt])
-}
-
-model AccountDeletionRequest {
-  id                    String                @id @default(uuid()) @db.Uuid
-  userId                String                @unique @db.Uuid
-  user                  User                  @relation("UserDeletion", fields: [userId], references: [id], onDelete: Cascade)
-  status                AccountDeletionStatus @default(soft_deleted)
-  expedited             Boolean               @default(false)
-  requestedAt           DateTime              @default(now())
-  softDeletedAt         DateTime?
-  hardDeleteScheduledAt DateTime
-  hardDeletedAt         DateTime?
-  cancelledAt           DateTime?
-
-  @@index([status, hardDeleteScheduledAt])
-}
-
-// BLE-132 — Pastor mode relationship (a single audited user paired with a
-// single pastor). Lifecycle in {@link PastorRelationshipState}. Once the
-// audited user revokes (state=revoked), pastor's transcript-read API
-// returns 403 immediately; the *visible* admin sidebar entry flips to
-// "Sudah selesai" after the seal job runs (≤ 24h, T+24h cron).
-//
-// Doctrinal anchor: Wahyu 3:20 — when the door closes, the mentor must
-// withdraw. Indefinite retention is loitering. Hard-delete at T+90d
-// unless `legalHold = true`.
-model PastorRelationship {
-  id            String                  @id @default(uuid()) @db.Uuid
-  pastorUserId  String                  @db.Uuid
-  pastor        User                    @relation("RelationshipPastor", fields: [pastorUserId], references: [id], onDelete: Cascade)
-  auditedUserId String                  @db.Uuid
-  auditedUser   User                    @relation("RelationshipAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
-  state         PastorRelationshipState @default(invited)
-
-  invitedAt     DateTime  @default(now())
-  acceptedAt    DateTime?
-  walkingAt     DateTime?
-  revokedAt     DateTime?
-  sealedAt      DateTime?
-  hardDeletedAt DateTime?
-
-  // BLE-133 — internal-only discriminator. Pastor-facing serializers MUST
-  // strip this. The audited-user mirror (Surface 6) MAY surface it.
-  endReason PastorEndReason?
-
-  // Set by an admin via internal compliance tooling (out of scope for v1
-  // UI). When true, both seal and hard-delete jobs skip the row; the seal
-  // transition still happens, but hard_deleted never does.
-  legalHold Boolean @default(false)
-
-  // Stable identifier surfaced in the 403 body so support tickets can map
-  // back to the seal event. Format: A8F2-YYYY-MM-DD-HH-MM (random prefix +
-  // UTC seal timestamp). Set by the seal job at state=sealed.
-  sealAuditId String?
-
-  notes       PastorNote[]
-  transcripts TranscriptMessage[]
-
-  @@unique([pastorUserId, auditedUserId])
-  @@index([auditedUserId])
-  // Indexed lookups for the seal + hard-delete jobs respectively.
-  @@index([state, revokedAt])
-  @@index([state, sealedAt])
-}
-
-// BLE-132 — Pastor's own private notes about an audited user. Pastor's
-// data, *not* the audited user's. Survives seal: after T+24h the notes
-// move to the read-only journal surface (still keyed to the relationship,
-// but no transcript JOIN exists in the journal resolver).
-//
-// `auditedUserSnapshot` is populated by the seal job so journal queries
-// never need to JOIN past the sealed boundary. After hard-delete the
-// snapshot is the only handle the pastor still has on who Maya was.
-model PastorNote {
-  id             String             @id @default(uuid()) @db.Uuid
-  relationshipId String             @db.Uuid
-  relationship   PastorRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
-  body           String             @db.Text
-  createdAt      DateTime           @default(now())
-  updatedAt      DateTime           @updatedAt
-
-  // {display_name, avatar_color, walked_for_days}. Populated at seal time.
-  auditedUserSnapshot Json?
-
-  @@index([relationshipId, createdAt])
-}
-
-// BLE-132 — transcript message visible to the pastor on the walking-with
-// admin surface. This is a DIFFERENT entity from {@link Message} (chat
-// between matched users); transcripts are the audited user's
-// devotional/prayer journal entries shared with the pastor.
-//
-// Hard-deleted at T+90d post-seal. Pastor read access flips to 403 at
-// state ∈ {revoked, sealed, hard_deleted}.
-model TranscriptMessage {
-  id             String             @id @default(uuid()) @db.Uuid
-  relationshipId String             @db.Uuid
-  relationship   PastorRelationship @relation(fields: [relationshipId], references: [id], onDelete: Cascade)
-  threadId       String             @db.Uuid
-  body           String             @db.Text
-  authoredAt     DateTime           @default(now())
-
-  @@index([relationshipId, threadId, authoredAt])
-}
-
-// BLE-98 — transient verse cache (7-day minimum TTL).
-// Hard rule per BLE-30 / BLE-84: never store verse text in the calendar
-// table or on the client. Source-of-truth is upstream (Sabda / Biblica);
-// this table is rebuilt on demand and purged when expired.
-model VerseCache {
-  ref         String   @db.Text
-  translation String   @db.Text
-  text        String   @db.Text
-  attribution String   @db.Text
-  fetchedAt   DateTime @default(now())
-  expiresAt   DateTime
-
-  @@id([ref, translation])
-  @@index([expiresAt])
-}
-
-// BLE-131 — Pastor-mode relationship between an audited user and a pastor.
-// Lifecycle: pending → active → ended_*. See PastorModeRelationshipStatus.
-//
-// 1:1 audited-side rule:
-//   - At most one row per auditedUserId in status=`active` at a time.
-//   - Multiple `pending` rows allowed (audited can have several queued
-//     invites pre-accept) but only one accept may succeed; once active,
-//     subsequent accept attempts must error with `already_paired` and
-//     surface the gate copy on Surface 2.
-//   - Closed history (`ended_by_*`, `declined_by_audited`, `expired`) is
-//     unbounded — the audited user keeps a permanent read-only journal of
-//     past walks (per BLE-132 audited-mirror retention).
-//
-// 1:N pastor-side rule:
-//   - pastorUserId may have N concurrent active rows (one pastor can walk
-//     beside many disciples).
-//
-// Enforcement layers:
-//   1) Application: PastorModeRelationshipService.accept() runs in a
-//      Serializable transaction, reads the audited user's active row,
-//      and rejects with HTTP 409 + gate copy if one exists.
-//   2) Database: a partial unique index
-//      `pastor_mode_relationship_one_active_per_audited` on
-//      `(auditedUserId) WHERE status='active'` is added by
-//      `prisma db execute` against an idempotent SQL file
-//      (`apps/api/prisma/sql/0001_pastor_mode_relationship_partial_unique.sql`).
-//      Prisma's schema language does not yet support partial unique
-//      indexes, but `prisma db push` does NOT drop indexes that aren't in
-//      the schema, so the partial unique survives subsequent pushes.
-model PastorModeRelationship {
-  id              String                       @id @default(uuid()) @db.Uuid
-  auditedUserId   String                       @db.Uuid
-  audited         User                         @relation("PastorModeAudited", fields: [auditedUserId], references: [id], onDelete: Cascade)
-  pastorUserId    String                       @db.Uuid
-  pastor          User                         @relation("PastorModePastor", fields: [pastorUserId], references: [id], onDelete: Cascade)
-  status          PastorModeRelationshipStatus @default(pending)
-  invitedAt       DateTime                     @default(now())
-  acceptedAt      DateTime?
-  endedAt         DateTime?
-  inviteNote      String?
-  // BLE-132 hook: when status flips to ended_by_audited, this records the
-  // moment the pastor's transcript admin must seal by (ended + 24h).
-  pastorSealDueAt DateTime?
-  createdAt       DateTime                     @default(now())
-  updatedAt       DateTime                     @updatedAt
-
-  @@index([auditedUserId, status])
-  @@index([pastorUserId, status])
-  @@index([status, endedAt])
-}
-
-// KYC submission — Indonesian KTP + selfie for identity verification.
-// Manual admin review with AWS Rekognition face-match as assist.
-model KycSubmission {
-  id              String    @id @default(uuid()) @db.Uuid
-  userId          String    @db.Uuid
-  user            User      @relation("UserKyc", fields: [userId], references: [id], onDelete: Cascade)
-  nik             String // 16-digit Indonesian NIK
-  fullName        String
-  dob             DateTime  @db.Date
-  ktpImageUrl     String
-  selfieImageUrl  String
-  status          KycStatus @default(pending)
-  faceMatchScore  Float?
-  reviewerId      String?   @db.Uuid
-  rejectionReason String?
-  submittedAt     DateTime  @default(now())
-  reviewedAt      DateTime?
-  updatedAt       DateTime  @updatedAt
-
-  @@unique([userId])
-  @@index([status, submittedAt])
-  @@index([nik])
-}
-
-// ─── Monetization models ──────────────────────────────────────────
+// =====================================================================
+// Subscription + payments
+// =====================================================================
 
 model SubscriptionPlan {
-  id           String           @id @default(uuid()) @db.Uuid
-  tier         SubscriptionTier
-  cycle        BillingCycle
-  priceIdr     Int // stored in smallest currency unit (rupiah)
-  xenditPlanId String? // external reference if Xendit supports plan objects
-  features     Json // manifest of included features for mobile rendering
-  coinBonus    Int              @default(0) // bonus coins granted on subscribe
-  isActive     Boolean          @default(true)
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-
-  subscriptions UserSubscription[]
+  id              String            @id @default(uuid()) @db.Uuid
+  tier            SubscriptionTier
+  cycle           SubscriptionCycle
+  priceIdr        Int
+  xenditPlanId    String?
+  features        Json              @default("{}")
+  active          Boolean           @default(true)
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 
   @@unique([tier, cycle])
 }
 
 model UserSubscription {
-  id                  String             @id @default(uuid()) @db.Uuid
-  userId              String             @db.Uuid
-  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  planId              String             @db.Uuid
-  plan                SubscriptionPlan   @relation(fields: [planId], references: [id])
-  tier                SubscriptionTier
-  status              SubscriptionStatus @default(active)
-  startedAt           DateTime           @default(now())
-  expiresAt           DateTime
-  autoRenew           Boolean            @default(true)
-  xenditRecurringId   String? // Xendit recurring payment ID
-  xenditPaymentMethod String? // tokenized payment method ID
-  cancelledAt         DateTime?
-  cancellationReason  String?
-  createdAt           DateTime           @default(now())
-  updatedAt           DateTime           @updatedAt
+  userId            String              @id @db.Uuid
+  tier              SubscriptionTier    @default(free)
+  status            SubscriptionStatus  @default(active)
+  cycle             SubscriptionCycle?
+  startedAt         DateTime?
+  expiresAt         DateTime?
+  trialEndsAt       DateTime?
+  xenditRecurringId String?
+  cancelledAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
 
-  @@index([userId, status])
-  @@index([expiresAt, status])
-}
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-model CoinPackage {
-  id              String   @id @default(uuid()) @db.Uuid
-  coinAmount      Int
-  bonusCoins      Int      @default(0)
-  priceIdr        Int
-  xenditProductId String? // optional external SKU
-  isActive        Boolean  @default(true)
-  createdAt       DateTime @default(now())
-
-  transactions PaymentTransaction[]
-}
-
-model UserCoinBalance {
-  userId    String   @id @db.Uuid
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  balance   Int      @default(0)
-  updatedAt DateTime @updatedAt
-}
-
-model CoinTransaction {
-  id           String              @id @default(uuid()) @db.Uuid
-  userId       String              @db.Uuid
-  user         User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount       Int // positive = credit, negative = debit
-  type         CoinTransactionType
-  balanceAfter Int
-  metadata     Json? // { feature: "beacon", durationMin: 30 }
-  createdAt    DateTime            @default(now())
-
-  @@index([userId, createdAt])
+  @@index([status, expiresAt])
+  @@index([trialEndsAt])
 }
 
 model PaymentTransaction {
-  id                String         @id @default(uuid()) @db.Uuid
-  userId            String         @db.Uuid
-  user              User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-  type              String // "subscription" | "coin_package"
-  amountIdr         Int
-  currency          String         @default("IDR")
-  status            PaymentStatus  @default(pending)
-  method            PaymentMethod?
-  xenditInvoiceId   String?
-  xenditChargeId    String?
-  xenditRecurringId String?
-  paidAt            DateTime?
-  failedAt          DateTime?
-  failureReason     String?
-  refundedAt        DateTime?
-  metadata          Json? // { planId, coinPackageId, coinsGranted }
-  createdAt         DateTime       @default(now())
-  updatedAt         DateTime       @updatedAt
-
-  coinPackageId String?      @db.Uuid
-  coinPackage   CoinPackage? @relation(fields: [coinPackageId], references: [id])
-
-  @@index([userId, status, createdAt])
-  @@index([xenditInvoiceId])
-  @@index([xenditChargeId])
-}
-
-// ─── Matching (BLE eng-review 2026-05-06 — Lane B) ────────────────────
-//
-// Daily stack = the 3-introduction batch surfaced on Today. Computed by
-// nightly cron at 04:00 UTC per active user. `candidateUserIds` is an
-// ordered array (top-scoring first). Stored once per (userId, day) so
-// the user sees the same 3 cards across sessions on the same day.
-//
-// `seenAt` ticks when the user opens Today and renders the stack, used
-// for D2 retention reporting + to dedupe candidate exclusion across days.
-
-enum MatchDecisionKind {
-  pass
-  like
-  favorite
-}
-
-model DailyStack {
   id               String   @id @default(uuid()) @db.Uuid
   userId           String   @db.Uuid
-  user             User     @relation("DailyStackUser", fields: [userId], references: [id], onDelete: Cascade)
-  // ISO date 'YYYY-MM-DD' in viewer's UTC day. Cron uses dayKey() from
-  // services/matching to compute. Unique per user/day.
-  day              String
-  // Top-scoring candidate User IDs, ordered. Length 0..3 (3 standard,
-  // less when pool is sparse, 0 = empty stack day).
-  candidateUserIds String[] @db.Uuid
-  seenAt           DateTime?
+  type             String // 'subscription'
+  amountIdr        Int
+  status           String // 'pending'|'paid'|'failed'|'refunded'|'cancelled'
+  method           String?
+  xenditInvoiceId  String?  @unique
+  xenditChargeId   String?  @unique
+  xenditRecurringId String?
+  paidAt           DateTime?
+  failedAt         DateTime?
+  metadata         Json     @default("{}")
   createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  @@unique([userId, day])
-  @@index([day])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status])
 }
 
-// One row per decision the viewer makes on a candidate. `pass` quietly,
-// `like` sends Begin intent (anchor verse on first message), `favorite`
-// is the scarce 1/day priority signal.
-model MatchDecision {
-  id              String            @id @default(uuid()) @db.Uuid
-  userId          String            @db.Uuid
-  user            User              @relation("MatchDecisionViewer", fields: [userId], references: [id], onDelete: Cascade)
-  candidateUserId String            @db.Uuid
-  candidate       User              @relation("MatchDecisionCandidate", fields: [candidateUserId], references: [id], onDelete: Cascade)
-  decision        MatchDecisionKind
-  // ISO day the decision was taken on (matches DailyStack.day for joining).
-  day             String
-  createdAt       DateTime          @default(now())
+// =====================================================================
+// Onboarding + audit
+// =====================================================================
 
-  @@unique([userId, candidateUserId])
-  @@index([userId, decision])
-  @@index([candidateUserId, decision])
+// User row HARD-DELETED on Q3 same-sex hard-reject (NOT soft-delete + 30d).
+// Only emailHash retained for audit + abuse-prevention (block re-signup with same email
+// after a Q3 reject? — currently no, but emailHash supports future rule.)
+model OnboardingRejection {
+  id        String                    @id @default(uuid()) @db.Uuid
+  emailHash String
+  reason    OnboardingRejectionReason
+  closedAt  DateTime                  @default(now())
+
+  @@index([emailHash])
+  @@index([reason, closedAt])
 }
 
-// BLE eng-review 2026-05-06 — Lane D (push notifications).
-// One row per registered device. The mobile app captures an FCM token
-// from `expo-notifications` on cold boot + after permission grant, and
-// POSTs to /me/push-token. Sends fan out across all tokens for a user
-// so a user with phone + tablet gets both. Stale tokens (FCM returns
-// `messaging/registration-token-not-registered`) are deleted by the
-// sender service on first failure.
-//
-// Platform is captured for marketing diagnostics + APNs vs FCM routing
-// (firebase-admin handles both behind one SDK call).
+// CI deploy gate: production releases blocked unless required PastorApproval rows exist.
+// Examples: { kind: 'verse_seed', version: 'v1' } or { kind: 'banned_phrases', version: 'v1' }
+model PastorApproval {
+  id          String             @id @default(uuid()) @db.Uuid
+  kind        PastorApprovalKind
+  version     String
+  approvedBy  String             @db.Uuid
+  approvedAt  DateTime           @default(now())
+  notes       String?
 
-enum PushPlatform {
-  ios
-  android
-  web
+  @@unique([kind, version])
+  @@index([approvedAt])
 }
 
-model PushToken {
-  id        String       @id @default(uuid()) @db.Uuid
-  userId    String       @db.Uuid
-  user      User         @relation("PushTokenUser", fields: [userId], references: [id], onDelete: Cascade)
-  token     String
-  platform  PushPlatform
-  appVersion String?
-  createdAt DateTime     @default(now())
-  lastSeenAt DateTime    @default(now())
-
-  @@unique([userId, token])
-  @@index([userId])
-}
-
-// ─── Waitlist (BLE 2026-05-06 — pre-launch teaser) ────────────────────
-//
-// Pre-launch waitlist for the public teaser at blesscupid.com. Captures
-// email + intent + city + consent so the founding team can sequence
-// invite waves (Bali first cohort, then PH/SG expansion at v1.1).
-//
-// Privacy: this row is the SUBJECT DATA the user submits. It is the
-// only data we hold about them until they convert to a real account
-// at launch. UU PDP Pasal 4-15 rights apply: access via DPO email,
-// deletion on request, export on request. consentedAt is the explicit
-// consent timestamp required by Pasal 20.
-
-enum WaitlistIntent {
-  dating_marriage
-  christian_friends
-  christian_community
-  exploring
-}
-
-enum WaitlistStatus {
-  signed_up
-  invited
-  onboarded
-  churned
-  unsubscribed
-}
+// =====================================================================
+// Waitlist (untouched from existing — pre-launch teaser site)
+// =====================================================================
 
 model Waitlist {
-  id          String          @id @default(uuid()) @db.Uuid
-  email       String          @unique
-  intent      WaitlistIntent
-  city        String?
-  locale      String          @db.Char(2)
-  source      String?
-  consentedAt DateTime
-  ipAddress   String?
-  userAgent   String?
-  utmCampaign String?
-  utmSource   String?
-  utmMedium   String?
-  status      WaitlistStatus  @default(signed_up)
-  invitedAt   DateTime?
-  invitedCode String?
-  onboardedAt DateTime?
-  createdAt   DateTime        @default(now())
+  id           String    @id @default(uuid()) @db.Uuid
+  email        String    @unique
+  intent       String?
+  city         String?
+  locale       String?   @db.Char(2)
+  consentedAt  DateTime  @default(now())
+  status       String    @default("signed_up")
+  utmCampaign  String?
+  utmSource    String?
+  utmMedium    String?
+  ipHash       String?
+  userAgent    String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  @@index([intent, city])
   @@index([status])
 }
