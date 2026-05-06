@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import * as SecureStore from 'expo-secure-store';
-import { getMe, type AuthTokens } from './api.js';
+import { ApiError, getMe, type AuthTokens } from './api.js';
 
 const ACCESS_KEY = 'bc.access';
 const REFRESH_KEY = 'bc.refresh';
@@ -59,9 +59,26 @@ export const useAuth = create<AuthState>((set) => ({
           }
           set({ onboardingComplete: me.onboardingCompleted });
         }
-      } catch {
-        // Network down or token expired. Keep optimistic cache; the next
-        // boot will reconcile.
+      } catch (e) {
+        // Token invalid/revoked (401) — purge stale session so the app
+        // routes to Login instead of looping 401s. Common after API URL
+        // swap (e.g. LAN dev -> production VPS) or JWT secret rotation.
+        if (e instanceof ApiError && e.status === 401) {
+          await Promise.all([
+            SecureStore.deleteItemAsync(USER_KEY),
+            SecureStore.deleteItemAsync(ACCESS_KEY),
+            SecureStore.deleteItemAsync(REFRESH_KEY),
+            SecureStore.deleteItemAsync(ONBOARDING_DONE_KEY),
+          ]);
+          set({
+            userId: null,
+            accessToken: null,
+            refreshToken: null,
+            onboardingComplete: false,
+          });
+        }
+        // Otherwise (network down, 5xx): keep optimistic cache and let
+        // next boot reconcile.
       }
     }
   },
