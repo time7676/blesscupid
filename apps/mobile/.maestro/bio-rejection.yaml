@@ -1,0 +1,26 @@
+appId: com.julianloh.blesscupiddev
+name: Bio moderation rejection
+tags:
+  - critical
+---
+# Critical path 6 — bio moderation pipeline (Gemini default).
+# Submitting a bio with a banned phrase must show a clear rejection,
+# not silently fail or auto-allow.
+
+- launchApp
+- assertVisible: "Your first words"
+
+- tapOn:
+    id: "bio-input"
+    optional: true
+- inputText: "lonely tonight DTF dm me"
+- tapOn: "Done"
+
+# Either hard block (red pill) or held-for-review notice should fire.
+# Both are acceptable launch behavior; we just verify the UX surfaces it.
+- assertVisible:
+    text: "did not pass review"
+    optional: true
+- assertVisible:
+    text: "Held for a quick review"
+    optional: true

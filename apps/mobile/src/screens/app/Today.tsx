@@ -1,30 +1,36 @@
 /**
- * Today — app shell home screen, v1.2 swipe-pager redesign.
+ * Today — single-profile decision screen, v1.3.
  *
- * Composition (top → bottom, all above-fold or single page):
- *   ScreenHeader (eyebrow date + greeting + bell)
- *   VerseCard.compact (Pastor-locked daily verse)
- *   "Three for today" eyebrow + page indicator (1/3)
- *   IntroductionCard pager (horizontal, paging-enabled, snap-to-width)
- *   BottomNav (active=today)
+ * Per founder direction 2026-05-06: the user lands on Today and sees ONE
+ * profile. They cannot scroll past it — they must decide. Three actions:
  *
- * The prior version stacked all three matches vertically inside a single
- * scroll, which produced an "infinite" feeling for users — see issue
- * surfaced 2026-05-06. The redesign holds the slow-cinema brand promise:
- * one face, one breath, swipe to the next, decide on detail.
+ *   • Pass quietly  (left)   — silent skip, no notification to the other side
+ *   • Begin (Like)  (right)  — sends Begin intent (verse-anchor enforced
+ *                              at chat start)
+ *   • Favorite      (center) — scarce 1/day priority signal
  *
- * Horizontal swipe is NAVIGATION, not yes/no judgment. The decision
- * (Begin a conversation / Pass quietly) lives on Profile detail. This
- * is the core anti-Tinder posture documented in PRODUCT.md §Strategic.
+ * After any decision, the next card slides in. After the day's stack is
+ * exhausted, the empty state shows + the user is told to come back
+ * tomorrow at sunrise.
+ *
+ * Composition:
+ *   ScreenHeader (date eyebrow + greeting)
+ *   VerseCard (Pastor-locked daily verse, the conversation anchor)
+ *   IntroductionCard (current candidate)
+ *   ActionRow (Pass | Favorite | Begin)
+ *   BottomNav
+ *
+ * No horizontal swipe pager between candidates. Swipe-as-navigation
+ * conflicts with swipe-as-judgment in user expectation; we collapse to
+ * explicit buttons. v1.1 may add gesture support once Reanimated 4
+ * worklets are validated on physical devices.
  */
 
-import { useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
-  FlatList,
   Image,
-  type NativeScrollEvent,
-  type NativeSyntheticEvent,
   Pressable,
   StyleSheet,
   Text,
@@ -32,6 +38,7 @@ import {
 } from 'react-native';
 import {
   BottomNav,
+  Button,
   EmptyState,
   GoldRule,
   IntroductionCard,
@@ -48,51 +55,15 @@ import {
 } from '../../lib/design-system/index.js';
 import { BrandGlyph } from '../../lib/brand/BrandGlyph.js';
 import { portraitSource, verseCardBackgrounds } from '../../lib/brand/assets.js';
-
-// Mock matches — replaced by API on integration (BLE-7g matching service).
-type TodayMatch = {
-  id: string;
-  name: string;
-  age: number;
-  place: string;
-  tradition: string;
-  stage: string;
-  echo: string;
-  portrait: number;
-};
-
-const TODAY_MATCHES: TodayMatch[] = [
-  {
-    id: 'naomi',
-    name: 'Naomi',
-    age: 27,
-    place: 'Manila',
-    tradition: 'Catholic',
-    stage: 'lifelong',
-    echo: '“I keep coming back to slow Sundays and a long table.”',
-    portrait: 0,
-  },
-  {
-    id: 'ruth',
-    name: 'Ruth',
-    age: 30,
-    place: 'Singapore',
-    tradition: 'Pentecostal',
-    stage: 'came later',
-    echo: '“Faith found me in my late twenties. Still figuring out what that means at brunch.”',
-    portrait: 2,
-  },
-  {
-    id: 'esther',
-    name: 'Esther',
-    age: 26,
-    place: 'Jakarta',
-    tradition: 'Reformed',
-    stage: 'returning',
-    echo: '“Back in church after a long quiet. Looking for honest company.”',
-    portrait: 4,
-  },
-];
+import {
+  ApiError,
+  getMatchesToday,
+  sendMatchDecision,
+  type MatchTodayCard,
+  type MatchDecision,
+} from '../../lib/api.js';
+import { useAuth } from '../../lib/auth-store.js';
+import { Events } from '../../lib/observability/analytics.js';
 
 const TODAY_VERSE = {
   text: '"Be anxious for nothing, but in everything by prayer…"',
@@ -123,22 +94,61 @@ export type TodayScreenProps = {
 };
 
 export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: TodayScreenProps) {
+  const accessToken = useAuth((s) => s.accessToken);
   const { eyebrow, greeting } = dateString();
+  const [stack, setStack] = useState<MatchTodayCard[] | null>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const listRef = useRef<FlatList<TodayMatch>>(null);
+  const [busy, setBusy] = useState<MatchDecision | null>(null);
+  const [favoriteSpent, setFavoriteSpent] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const screenWidth = Dimensions.get('window').width;
 
-  // FlatList paging fires on any scroll; we use offset / width to derive
-  // the snapped page rather than the gesture velocity, so a partial drag
-  // that springs back doesn't change the indicator.
-  function onScrollEnd(e: NativeSyntheticEvent<NativeScrollEvent>) {
-    const x = e.nativeEvent.contentOffset.x;
-    const next = Math.round(x / screenWidth);
-    if (next !== activeIndex) setActiveIndex(next);
-  }
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      if (!accessToken) return;
+      try {
+        const res = await getMatchesToday(accessToken);
+        if (!cancelled) {
+          setStack(res.stack);
+          Events.dailyStackViewed({ stackSize: res.stack.length, activeIndex: 0 });
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.code : 'matches_load_failed');
+          setStack([]);
+        }
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [accessToken]);
 
-  const matches = TODAY_MATCHES;
-  const empty = matches.length === 0;
+  const current = stack && activeIndex < stack.length ? stack[activeIndex] : null;
+  const exhausted = stack !== null && activeIndex >= stack.length;
+
+  async function decide(decision: MatchDecision) {
+    if (!accessToken || !current || busy) return;
+    setBusy(decision);
+    setError(null);
+    try {
+      await sendMatchDecision(accessToken, current.userId, decision);
+      Events.matchDecision({ decision });
+      if (decision === 'favorite') setFavoriteSpent(true);
+      setActiveIndex((i) => i + 1);
+    } catch (err) {
+      if (err instanceof ApiError && err.code === 'favorite_quota_exhausted') {
+        setFavoriteSpent(true);
+        setError('You have already favorited someone today. Save the next one for tomorrow.');
+      } else {
+        setError(err instanceof ApiError ? err.code : 'decision_failed');
+      }
+    } finally {
+      setBusy(null);
+    }
+  }
 
   return (
     <View style={styles.root}>
@@ -170,16 +180,20 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionEyebrow}>Three for today</Text>
+        <Text style={styles.sectionEyebrow}>One at a time</Text>
         <GoldRule width={28} style={styles.goldRule} />
-        {!empty ? (
+        {stack && stack.length > 0 && !exhausted ? (
           <Text style={styles.pageIndex}>
-            {activeIndex + 1} / {matches.length}
+            {activeIndex + 1} / {stack.length}
           </Text>
         ) : null}
       </View>
 
-      {empty ? (
+      {stack === null ? (
+        <View style={styles.center}>
+          <ActivityIndicator color={color.cobalt[500]} />
+        </View>
+      ) : exhausted ? (
         <View style={styles.emptyWrap}>
           <EmptyState
             eyebrow="Quiet morning"
@@ -187,44 +201,79 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
             body="Come back tomorrow at sunrise. We send three at a time on purpose."
           />
         </View>
-      ) : (
-        <View style={styles.pagerWrap}>
-          <FlatList
-            ref={listRef}
-            data={matches}
-            keyExtractor={(m) => m.id}
-            horizontal
-            pagingEnabled
-            snapToInterval={screenWidth}
-            snapToAlignment="start"
-            decelerationRate="fast"
-            showsHorizontalScrollIndicator={false}
-            onMomentumScrollEnd={onScrollEnd}
-            renderItem={({ item }) => (
-              <IntroductionCard
-                width={screenWidth}
-                name={item.name}
-                age={item.age}
-                place={item.place}
-                tradition={item.tradition}
-                stage={item.stage}
-                echo={item.echo}
-                portrait={portraitSource(item.portrait)}
-                onPress={() => onMatchPress?.(item.id)}
-              />
-            )}
+      ) : current ? (
+        <View style={styles.cardWrap}>
+          <IntroductionCard
+            width={screenWidth}
+            name={current.displayName}
+            age={current.age}
+            place={current.city}
+            tradition={current.tradition ?? '—'}
+            stage={current.walkStage ?? '—'}
+            echo={current.bio ?? undefined}
+            // Photos are returned as opaque storage keys; until the
+            // signed-URL CDN flow lands we fall back to the deterministic
+            // brand portrait gradient set so each card feels distinct.
+            portrait={portraitSource(activeIndex)}
+            onPress={() => onMatchPress?.(current.userId)}
           />
-
-          <View style={styles.dots}>
-            {matches.map((m, i) => (
-              <View
-                key={m.id}
-                style={[styles.dot, i === activeIndex ? styles.dotActive : null]}
-              />
-            ))}
-          </View>
         </View>
-      )}
+      ) : null}
+
+      {error ? (
+        <View style={styles.errorPill}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      ) : null}
+
+      {current && !exhausted ? (
+        <View style={styles.actions}>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Pass quietly"
+            disabled={Boolean(busy)}
+            onPress={() => decide('pass')}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionPass,
+              pressed && styles.actionPressed,
+              busy === 'pass' && styles.actionBusy,
+            ]}
+          >
+            <Text style={styles.actionPassText}>Pass quietly</Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Favorite"
+            disabled={Boolean(busy) || favoriteSpent}
+            onPress={() => decide('favorite')}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionFavorite,
+              pressed && styles.actionPressed,
+              (favoriteSpent || busy === 'favorite') && styles.actionBusy,
+            ]}
+          >
+            <Text style={styles.actionFavoriteText}>
+              {favoriteSpent ? 'Favorite used' : '★ Favorite'}
+            </Text>
+          </Pressable>
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel="Begin a conversation"
+            disabled={Boolean(busy)}
+            onPress={() => decide('like')}
+            style={({ pressed }) => [
+              styles.actionBtn,
+              styles.actionLike,
+              pressed && styles.actionPressed,
+              busy === 'like' && styles.actionBusy,
+            ]}
+          >
+            <Text style={styles.actionLikeText}>Begin</Text>
+          </Pressable>
+        </View>
+      ) : null}
 
       <BottomNav active="today" onSelect={onNavigate ?? (() => {})} />
     </View>
@@ -232,10 +281,7 @@ export function TodayScreen({ name = 'Friend', onNavigate, onMatchPress }: Today
 }
 
 const styles = StyleSheet.create({
-  root: {
-    flex: 1,
-    backgroundColor: color.parchment.default,
-  },
+  root: { flex: 1, backgroundColor: color.parchment.default },
   bellBtn: {
     width: 36,
     height: 36,
@@ -280,32 +326,81 @@ const styles = StyleSheet.create({
     fontVariant: ['tabular-nums'],
   },
 
-  pagerWrap: {
+  center: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cardWrap: {
     flex: 1,
   },
-
-  dots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 6,
-    paddingVertical: space.s3,
-  },
-  dot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: color.hairline.default,
-  },
-  dotActive: {
-    backgroundColor: color.cobalt[500],
-    width: 18,
-  },
-
   emptyWrap: {
     flex: 1,
     paddingHorizontal: space.s6,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+
+  actions: {
+    flexDirection: 'row',
+    paddingHorizontal: space.s5,
+    paddingTop: space.s3,
+    paddingBottom: space.s3,
+    gap: space.s3,
+    backgroundColor: color.parchment.raised,
+    borderTopWidth: 1,
+    borderTopColor: color.hairline.default,
+  },
+  actionBtn: {
+    flex: 1,
+    paddingVertical: space.s4,
+    borderRadius: radius.lg,
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 52,
+  },
+  actionPass: {
+    backgroundColor: color.parchment.default,
+    borderWidth: 1,
+    borderColor: color.hairline.default,
+  },
+  actionFavorite: {
+    backgroundColor: color.warning[100],
+  },
+  actionLike: {
+    backgroundColor: color.cobalt[500],
+  },
+  actionPressed: { opacity: 0.85 },
+  actionBusy: { opacity: 0.6 },
+  actionPassText: {
+    fontFamily: fontFamily.sansMedium,
+    fontSize: fontSize.label,
+    color: color.ink.soft,
+  },
+  actionFavoriteText: {
+    fontFamily: fontFamily.sansSemibold,
+    fontSize: fontSize.label,
+    color: color.warning[700],
+    letterSpacing: 0.4,
+  },
+  actionLikeText: {
+    fontFamily: fontFamily.sansSemibold,
+    fontSize: fontSize.label,
+    color: color.parchment.default,
+    letterSpacing: 0.4,
+  },
+
+  errorPill: {
+    marginHorizontal: space.s5,
+    marginBottom: space.s3,
+    paddingHorizontal: space.s4,
+    paddingVertical: space.s3,
+    backgroundColor: color.warning[100],
+    borderRadius: radius.lg,
+  },
+  errorText: {
+    fontFamily: fontFamily.sans,
+    fontSize: fontSize.caption,
+    color: color.warning[700],
   },
 });

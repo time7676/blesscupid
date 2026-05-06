@@ -1,0 +1,37 @@
+appId: com.julianloh.blesscupiddev
+name: Onboarding reinstall regression
+tags:
+  - critical
+  - regression
+---
+# Critical path 2 — REGRESSION for the 2026-05-06 onboarding loop fix.
+# After completing onboarding, reinstalling the app must NOT force a redo.
+# /me hydrate returns onboardingCompleted=true so RootStack swaps to AppShell.
+#
+# Prerequisite: a user has already completed onboarding (use the email
+# from onboarding-happy.yaml or seed a row via the API admin endpoint).
+# This flow runs ONLY the second-launch path.
+
+- stopApp
+- clearState
+- launchApp
+
+- assertVisible: "Made for those who keep"
+- tapOn: "I already have an account"
+
+- assertVisible: "Welcome back"
+- tapOn:
+    id: "email-input"
+    optional: true
+- inputText: ${BLE_TEST_EMAIL}
+- tapOn:
+    id: "password-input"
+    optional: true
+- inputText: ${BLE_TEST_PASSWORD}
+- tapOn: "Sign in"
+
+# Hydration via /me should land directly on AppShell.
+- assertVisible: "Today"
+- assertVisible: "Conversations"
+- assertNotVisible: "the faith"  # Welcome screen marker — must not appear
+- assertNotVisible: "covenant"   # AgeGate / Covenant marker — must not appear

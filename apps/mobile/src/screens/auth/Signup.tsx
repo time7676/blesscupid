@@ -136,29 +136,37 @@ export function SignupScreen({ navigation }: Props) {
           onPress={onSubmit}
         />
 
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or</Text>
-          <View style={styles.dividerLine} />
-        </View>
+        {/* OAuth gated behind EXPO_PUBLIC_OAUTH_ENABLED. v1 launches with
+            email-only signup to keep the surface area small + skip Apple/
+            Google review surprises. Re-enable for v1.1 by setting the env
+            var to "1" in apps/mobile/.env. */}
+        {process.env.EXPO_PUBLIC_OAUTH_ENABLED === '1' ? (
+          <>
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-        {APPLE_AVAILABLE && (
-          <Button
-            variant="secondary"
-            full
-            label="Continue with Apple"
-            disabled={busy}
-            onPress={() => onOAuth('apple')}
-          />
-        )}
-        <View style={styles.gap} />
-        <Button
-          variant="secondary"
-          full
-          label="Continue with Google"
-          disabled={busy || !google.ready}
-          onPress={() => onOAuth('google')}
-        />
+            {APPLE_AVAILABLE && (
+              <Button
+                variant="secondary"
+                full
+                label="Continue with Apple"
+                disabled={busy}
+                onPress={() => onOAuth('apple')}
+              />
+            )}
+            <View style={styles.gap} />
+            <Button
+              variant="secondary"
+              full
+              label="Continue with Google"
+              disabled={busy || !google.ready}
+              onPress={() => onOAuth('google')}
+            />
+          </>
+        ) : null}
 
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Login')}>
           <Text style={styles.linkText}>Already have an account? Sign in</Text>

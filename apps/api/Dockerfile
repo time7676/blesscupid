@@ -9,8 +9,9 @@ RUN apt-get update -y && apt-get install -y --no-install-recommends openssl ca-c
 COPY pnpm-workspace.yaml package.json pnpm-lock.yaml* tsconfig.base.json ./
 COPY packages/shared ./packages/shared
 COPY services/moderation ./services/moderation
+COPY services/matching ./services/matching
 COPY apps/api ./apps/api
-RUN pnpm install --filter @blesscupid/api... --filter @blesscupid/shared
+RUN pnpm install --filter @blesscupid/api... --filter @blesscupid/shared --filter @blesscupid/matching
 RUN pnpm --filter @blesscupid/api exec prisma generate \
  && pnpm --filter @blesscupid/api run build
 # Prisma v5.22 bug: default.d.ts is empty under pnpm; fix it so imports resolve.
@@ -27,6 +28,7 @@ ENV NODE_ENV=production
 COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/packages/shared ./packages/shared
 COPY --from=build /repo/services/moderation ./services/moderation
+COPY --from=build /repo/services/matching ./services/matching
 COPY --from=build /repo/apps/api/dist ./apps/api/dist
 COPY --from=build /repo/apps/api/prisma ./apps/api/prisma
 COPY --from=build /repo/apps/api/package.json ./apps/api/package.json

@@ -1,0 +1,18 @@
+appId: com.julianloh.blesscupiddev
+name: Photo step skip (face-detect disabled v1)
+tags:
+  - critical
+---
+# Critical path 7 — first photo step. v1 has face-detect disabled
+# (PHOTO_FACE_DETECT_ENABLED=0 on the API). The step still uploads but
+# does not reject for missing-face. The dev `Skip` shortcut continues
+# to ProfileBasics → Bio. This flow exercises the dev skip path.
+
+- launchApp
+- assertVisible: "first photo"
+- runFlow:
+    when:
+      visible: "Dev: skip photo"
+    commands:
+      - tapOn: "Dev: skip photo"
+- assertVisible: "Your first words"

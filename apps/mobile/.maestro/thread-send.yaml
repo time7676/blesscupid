@@ -1,0 +1,22 @@
+appId: com.julianloh.blesscupiddev
+name: Thread send first message
+tags:
+  - critical
+---
+# Critical path 5 — verse-anchored first message lands in chat.
+
+- launchApp
+- tapOn: "Conversations"
+- tapOn:
+    text: "Naomi"
+    optional: true
+
+- assertVisible: "Today's anchor"
+- tapOn:
+    id: "message-input"
+    optional: true
+- inputText: "Phil 4:6 lands on a quiet Tuesday for me."
+- tapOn: "Send"
+
+# Sent message visible in stream
+- assertVisible: "lands on a quiet Tuesday"

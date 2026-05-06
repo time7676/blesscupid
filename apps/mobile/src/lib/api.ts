@@ -317,6 +317,54 @@ export function getMe(token: string): Promise<MeResponse> {
   return apiFetch<MeResponse>('/me', { method: 'GET', token });
 }
 
+// BLE eng-review 2026-05-06 — Lane B (matching).
+//
+// Today screen calls `getMatchesToday` once on mount. The server returns
+// a stable list per UTC day so swiping back-and-forth doesn't reshuffle.
+// Decisions are recorded one-by-one via `sendMatchDecision`. The favorite
+// quota is enforced server-side; the mobile button just needs to be
+// visually disabled when `decision === 'favorite'` returns the
+// `favorite_quota_exhausted` error code.
+
+export interface MatchTodayCard {
+  userId: string;
+  displayName: string;
+  age: number;
+  city: string;
+  tradition: string | null;
+  walkStage: string | null;
+  bio: string | null;
+  photoStorageKey: string | null;
+}
+
+export interface MatchesTodayResponse {
+  stack: MatchTodayCard[];
+}
+
+export function getMatchesToday(token: string): Promise<MatchesTodayResponse> {
+  return apiFetch<MatchesTodayResponse>('/matches/today', { method: 'GET', token });
+}
+
+export type MatchDecision = 'pass' | 'like' | 'favorite';
+
+export interface MatchDecisionResponse {
+  ok: true;
+  decision: MatchDecision;
+  day: string;
+}
+
+export function sendMatchDecision(
+  token: string,
+  candidateUserId: string,
+  decision: MatchDecision,
+): Promise<MatchDecisionResponse> {
+  return apiFetch<MatchDecisionResponse>('/matches/decision', {
+    method: 'POST',
+    token,
+    body: JSON.stringify({ candidateUserId, decision }),
+  });
+}
+
 
 export type PhotoContentType = 'image/jpeg' | 'image/png' | 'image/heic';
 

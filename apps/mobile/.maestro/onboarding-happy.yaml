@@ -1,0 +1,92 @@
+appId: com.julianloh.blesscupiddev
+name: Onboarding happy path
+tags:
+  - critical
+  - regression
+---
+# Critical path 1 — full signup → onboarding → AppShell.
+# Uses dev `Skip` shortcuts where surfaced. Production runs against
+# api.blesscupid.com with a beta+N@blesscupid.com account.
+
+- launchApp:
+    clearState: true
+- assertVisible: "Made for those who keep"
+- tapOn: "Begin"
+
+# Signup
+- assertVisible: "Create your account"
+- tapOn:
+    id: "email-input"
+    optional: true
+- inputText: ${BLE_TEST_EMAIL}
+- tapOn:
+    id: "password-input"
+    optional: true
+- inputText: ${BLE_TEST_PASSWORD}
+- tapOn:
+    id: "dob-input"
+    optional: true
+- inputText: "1995-04-15"
+- tapOn: "Create account"
+
+# AgeGate (auto-advances when DOB confirms 18+)
+- assertVisible:
+    text: "covenant"
+    optional: true
+
+# Covenant accept (text varies, allow soft match)
+- runFlow:
+    when:
+      visible: "Holy Code"
+    commands:
+      - tapOn: "I agree"
+
+# Faith — pick first option per question (smoke)
+- assertVisible: "What brings you to BlessCupid"
+- tapOn: "I'm open to dating with marriage in mind."
+- swipe:
+    start: 50%, 80%
+    end: 50%, 20%
+- tapOn: "Catholic"
+- swipe:
+    start: 50%, 80%
+    end: 50%, 20%
+- tapOn: "Continue"
+
+# ProfileBasics
+- assertVisible: "Tell us a little about you"
+- tapOn:
+    id: "nickname-input"
+    optional: true
+- inputText: "Beta"
+- tapOn:
+    id: "legalName-input"
+    optional: true
+- inputText: "Beta Tester"
+- tapOn: "A woman"
+- tapOn:
+    id: "city-input"
+    optional: true
+- inputText: "Denpasar"
+- tapOn: "Continue"
+
+# FirstPhoto
+- assertVisible: "first photo"
+- runFlow:
+    when:
+      visible: "Dev: skip photo"
+    commands:
+      - tapOn: "Dev: skip photo"
+
+# Bio
+- assertVisible: "Your first words"
+- tapOn:
+    id: "bio-input"
+    optional: true
+- inputText: "Returning to faith and looking for slow Sundays."
+- tapOn: "Done"
+
+# AppShell
+- assertVisible: "Today"
+- assertVisible: "Conversations"
+- assertVisible: "You"

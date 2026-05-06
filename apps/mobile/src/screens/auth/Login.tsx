@@ -125,29 +125,35 @@ export function LoginScreen({ navigation }: Props) {
           onPress={onSubmit}
         />
 
-        <View style={styles.dividerRow}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>or</Text>
-          <View style={styles.dividerLine} />
-        </View>
+        {/* OAuth gated behind EXPO_PUBLIC_OAUTH_ENABLED. See Signup.tsx
+            for rationale. v1 = email only. */}
+        {process.env.EXPO_PUBLIC_OAUTH_ENABLED === '1' ? (
+          <>
+            <View style={styles.dividerRow}>
+              <View style={styles.dividerLine} />
+              <Text style={styles.dividerText}>or</Text>
+              <View style={styles.dividerLine} />
+            </View>
 
-        {APPLE_AVAILABLE && (
-          <Button
-            variant="secondary"
-            full
-            label="Continue with Apple"
-            disabled={busy}
-            onPress={() => onOAuth('apple')}
-          />
-        )}
-        <View style={styles.gap} />
-        <Button
-          variant="secondary"
-          full
-          label="Continue with Google"
-          disabled={busy || !google.ready}
-          onPress={() => onOAuth('google')}
-        />
+            {APPLE_AVAILABLE && (
+              <Button
+                variant="secondary"
+                full
+                label="Continue with Apple"
+                disabled={busy}
+                onPress={() => onOAuth('apple')}
+              />
+            )}
+            <View style={styles.gap} />
+            <Button
+              variant="secondary"
+              full
+              label="Continue with Google"
+              disabled={busy || !google.ready}
+              onPress={() => onOAuth('google')}
+            />
+          </>
+        ) : null}
 
         <Pressable style={styles.linkRow} onPress={() => navigation.navigate('Signup')}>
           <Text style={styles.linkText}>New here? Create an account</Text>

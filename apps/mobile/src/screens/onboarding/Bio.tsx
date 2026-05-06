@@ -38,6 +38,7 @@ import {
 } from '../../lib/design-system/index.js';
 import { ApiError, completeOnboarding, getMe, saveBio } from '../../lib/api.js';
 import { useAuth } from '../../lib/auth-store.js';
+import { Events } from '../../lib/observability/analytics.js';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'OnboardingBio'>;
 
@@ -81,6 +82,7 @@ export function OnboardingBioScreen(_: Props) {
         // will surface the bio once reviewed.
       }
       await completeOnboarding(accessToken);
+      Events.onboardingCompleted();
       // Re-hydrate from /me so the auth-store reflects the server-side
       // flag rather than the client-only fallback.
       try {

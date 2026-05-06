@@ -1,0 +1,29 @@
+appId: com.julianloh.blesscupiddev
+name: Profile detail decision
+tags:
+  - critical
+---
+# Critical path 4 — tapping a card opens ProfileDetail full-screen, the
+# Begin button opens Thread with verse anchor visible.
+
+- launchApp
+- assertVisible: "Today"
+- tapOn: "Read full profile"
+- assertVisible:
+    text: "On faith"
+
+# Pass quietly closes the sheet, returns to Today
+- tapOn: "Pass quietly"
+- assertVisible: "Today"
+
+# Re-open another card (next intro), tap Begin
+- tapOn: "Read full profile"
+- tapOn: "Begin a conversation"
+
+# Thread surface
+- assertVisible:
+    text: "Today's anchor"
+- assertVisible:
+    text: "Phil 4:6"
+    optional: true
+- assertVisible: "Write a slow line."

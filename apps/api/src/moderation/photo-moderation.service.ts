@@ -13,6 +13,25 @@ export class PhotoModerationService {
   constructor(private readonly rekognition: RekognitionPhotoModerator) {}
 
   async moderate(s3Key: string): Promise<PhotoModerationResult> {
+    // BLE v1 launch decision (2026-05-06): face-detection requirement is
+    // disabled. Photos still go through unsafe-label scan (NSFW etc.) but
+    // we no longer reject for missing-face / multi-face / low-confidence.
+    // Re-enable by setting PHOTO_FACE_DETECT_ENABLED=1 in apps/api/.env.
+    const faceDetectEnabled = process.env.PHOTO_FACE_DETECT_ENABLED === '1';
+
+    if (!faceDetectEnabled) {
+      const unsafeLabels = await this.rekognition.detectUnsafeLabels(s3Key);
+      const face: FaceDetectionResult = {
+        faceCount: 0,
+        largestFaceAreaRatio: 0,
+        hasFace: false,
+        passes: true,
+        reasons: [],
+      };
+      const decision = unsafeLabels.length > 0 ? 'block' : 'allow';
+      return { face, unsafeLabels, decision };
+    }
+
     const [faceRaw, unsafeLabels] = await Promise.all([
       this.rekognition.detectFaces(s3Key),
       this.rekognition.detectUnsafeLabels(s3Key),

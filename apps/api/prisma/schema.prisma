@@ -455,6 +455,11 @@ model User {
   // immutable thereafter (account-deletion clears the row entirely).
   onboardingCompleted Boolean @default(false)
 
+  // BLE eng-review 2026-05-06 — Lane B (matching).
+  dailyStacks    DailyStack[]    @relation("DailyStackUser")
+  matchDecisions MatchDecision[] @relation("MatchDecisionViewer")
+  matchedAgainst MatchDecision[] @relation("MatchDecisionCandidate")
+
   @@index([email])
   @@index([phoneNumber])
   @@index([deletedAt])
@@ -552,6 +557,12 @@ model Profile {
 
   @@index([countryCode, city])
   @@index([intent])
+  // BLE eng-review 2026-05-06 — Lane F. Matching predicates filter on
+  // (seeking, intent) for primary eligibility and (tradition, walkStage)
+  // for soft scoring. Composite indexes here keep the nightly cron
+  // pool-fetch off a sequential scan.
+  @@index([seeking, intent])
+  @@index([tradition, walkStage])
 }
 
 // BLE-124 — Q3 same-sex redirect audit row. Created when a dating-intent
@@ -1130,4 +1141,56 @@ model PaymentTransaction {
   @@index([userId, status, createdAt])
   @@index([xenditInvoiceId])
   @@index([xenditChargeId])
+}
+
+// ─── Matching (BLE eng-review 2026-05-06 — Lane B) ────────────────────
+//
+// Daily stack = the 3-introduction batch surfaced on Today. Computed by
+// nightly cron at 04:00 UTC per active user. `candidateUserIds` is an
+// ordered array (top-scoring first). Stored once per (userId, day) so
+// the user sees the same 3 cards across sessions on the same day.
+//
+// `seenAt` ticks when the user opens Today and renders the stack, used
+// for D2 retention reporting + to dedupe candidate exclusion across days.
+
+enum MatchDecisionKind {
+  pass
+  like
+  favorite
+}
+
+model DailyStack {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @db.Uuid
+  user             User     @relation("DailyStackUser", fields: [userId], references: [id], onDelete: Cascade)
+  // ISO date 'YYYY-MM-DD' in viewer's UTC day. Cron uses dayKey() from
+  // services/matching to compute. Unique per user/day.
+  day              String
+  // Top-scoring candidate User IDs, ordered. Length 0..3 (3 standard,
+  // less when pool is sparse, 0 = empty stack day).
+  candidateUserIds String[] @db.Uuid
+  seenAt           DateTime?
+  createdAt        DateTime @default(now())
+
+  @@unique([userId, day])
+  @@index([day])
+}
+
+// One row per decision the viewer makes on a candidate. `pass` quietly,
+// `like` sends Begin intent (anchor verse on first message), `favorite`
+// is the scarce 1/day priority signal.
+model MatchDecision {
+  id              String            @id @default(uuid()) @db.Uuid
+  userId          String            @db.Uuid
+  user            User              @relation("MatchDecisionViewer", fields: [userId], references: [id], onDelete: Cascade)
+  candidateUserId String            @db.Uuid
+  candidate       User              @relation("MatchDecisionCandidate", fields: [candidateUserId], references: [id], onDelete: Cascade)
+  decision        MatchDecisionKind
+  // ISO day the decision was taken on (matches DailyStack.day for joining).
+  day             String
+  createdAt       DateTime          @default(now())
+
+  @@unique([userId, candidateUserId])
+  @@index([userId, decision])
+  @@index([candidateUserId, decision])
 }

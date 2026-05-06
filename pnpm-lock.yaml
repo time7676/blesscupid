@@ -32,6 +32,9 @@ importers:
       '@aws-sdk/s3-request-presigner':
         specifier: ^3.1038.0
         version: 3.1038.0
+      '@blesscupid/matching':
+        specifier: workspace:*
+        version: link:../../services/matching
       '@blesscupid/moderation':
         specifier: workspace:*
         version: link:../../services/moderation
