@@ -1,182 +1,127 @@
 /**
- * BlessCupid — pre-alpha seed.
+ * BlessCupid — v1 dev seed (idempotent).
  *
- * Creates a small but realistic dataset for tester walkthroughs:
- *   • 1 test user (login as julian@seed.blesscupid.test / testpass123)
- *   • 8 candidate match users with profile + faith + 1 photo each
- *   • 2 active conversation threads with sample messages
+ * What it does:
+ *   1. Seed the curated 84-verse pool into VerseCache.
+ *   2. Seed required PastorApproval rows (verse_seed v1, banned_phrases v1,
+ *      covenant v1) so CI deploy gates + local dev don't block.
+ *   3. Optionally create dogfooder users from `DOGFOODER_EMAILS`
+ *      (comma-separated env var). Each gets a basic Profile placeholder so
+ *      mobile login + Today screen render cleanly.
  *
- * All seeded records have an email matching `seed+*@blesscupid.test` OR a
- * profile city of "SEED_*" so `prisma/seed-clean.ts` can wipe them safely
- * before launch. NEVER seed production. Guarded by NODE_ENV check.
+ * Idempotent: every write is an upsert. Safe to run repeatedly.
  *
- * Run:    pnpm -F @blesscupid/api seed
- * Wipe:   pnpm -F @blesscupid/api seed:clean
+ * Run:  pnpm -F @blesscupid/api seed
+ *
+ * NOTE: legacy candidate/match/thread fixtures were dropped in v1-restart;
+ * see prisma/seed-mock.ts (separate file) for richer fixtures once the
+ * mobile-side onboarding flow stabilises.
  */
 
-import {
-  PrismaClient,
-  Tradition,
-  WalkStage,
-  Gender,
-  OnboardingStep,
-  Denomination,
-  ChurchAttendance,
-  MarriageIntent,
-  Intent,
-  Seeking,
-  MarriageOpen,
-  PhotoStatus,
-} from '@prisma/client';
+import { PrismaClient, Gender, Tradition, WalkStage, MarriageIntent } from '@prisma/client';
 import * as argon2 from 'argon2';
+import { seedVerses } from '../src/verse/seed-verses.js';
 
 const prisma = new PrismaClient();
 
 const SEED_EMAIL_DOMAIN = 'seed.blesscupid.test';
-const SEED_CITY_PREFIX = 'SEED_';
+const SEED_CITY = 'Bali';
+const DEFAULT_DOB_ISO = '1995-01-01'; // 30y old → passes age gate
 
-const TEST_USER = {
-  email: `julian@${SEED_EMAIL_DOMAIN}`,
-  password: 'testpass123',
-  displayName: 'Julian',
-  city: `${SEED_CITY_PREFIX}Bali`,
-  countryCode: 'ID',
-  gender: Gender.male,
-  bio: 'Walking with one another in faith. Sunday Mass and quiet kitchens.',
-  tradition: Tradition.catholic,
-  walkStage: WalkStage.lifelong,
-};
-
-type CandidateInput = {
-  emailLocal: string;
-  displayName: string;
-  ageYears: number;
-  city: string;
-  countryCode: string;
-  gender: Gender;
-  bio: string;
-  tradition: Tradition;
-  walkStage: WalkStage;
-};
-
-const CANDIDATES: CandidateInput[] = [
-  {
-    emailLocal: 'mariana',
-    displayName: 'Mariana',
-    ageYears: 28,
-    city: `${SEED_CITY_PREFIX}Manila`,
-    countryCode: 'PH',
-    gender: Gender.female,
-    bio: "Catechist at St. Anthony's. Walks every morning, reads the saints, makes too much coffee.",
-    tradition: Tradition.catholic,
-    walkStage: WalkStage.lifelong,
-  },
-  {
-    emailLocal: 'david',
-    displayName: 'David',
-    ageYears: 31,
-    city: `${SEED_CITY_PREFIX}Singapore`,
-    countryCode: 'SG',
-    gender: Gender.male,
-    bio: 'Software lead by week, choir by Sunday. Curious about everything, talks about Lewis too much.',
-    tradition: Tradition.protestant_mainline,
-    walkStage: WalkStage.lifelong,
-  },
-  {
-    emailLocal: 'hannah',
-    displayName: 'Hannah',
-    ageYears: 26,
-    city: `${SEED_CITY_PREFIX}Cebu`,
-    countryCode: 'PH',
-    gender: Gender.female,
-    bio: 'ICU nurse, runs every Sunday morning before Mass. Honest, steady, looking for steady.',
-    tradition: Tradition.catholic,
-    walkStage: WalkStage.returning,
-  },
-  {
-    emailLocal: 'nathan',
-    displayName: 'Nathan',
-    ageYears: 30,
-    city: `${SEED_CITY_PREFIX}Jakarta`,
-    countryCode: 'ID',
-    gender: Gender.male,
-    bio: 'MDiv year 2, plays piano at a small church in South Jakarta. Wants someone who reads, prays, and laughs at bad puns.',
-    tradition: Tradition.protestant_reformed,
-    walkStage: WalkStage.lifelong,
-  },
-  {
-    emailLocal: 'sophia',
-    displayName: 'Sophia',
-    ageYears: 27,
-    city: `${SEED_CITY_PREFIX}Manila`,
-    countryCode: 'PH',
-    gender: Gender.female,
-    bio: 'Architect, oblate of the Carmelites, climbs every long weekend. Looking for someone who values silence and good design.',
-    tradition: Tradition.catholic,
-    walkStage: WalkStage.lifelong,
-  },
-  {
-    emailLocal: 'joel',
-    displayName: 'Joel',
-    ageYears: 33,
-    city: `${SEED_CITY_PREFIX}Cebu`,
-    countryCode: 'PH',
-    gender: Gender.male,
-    bio: 'Coach and runner. Came back to faith at 28. Looking for someone to grow old slowly with.',
-    tradition: Tradition.protestant_evangelical,
-    walkStage: WalkStage.returning,
-  },
-  {
-    emailLocal: 'naomi',
-    displayName: 'Naomi',
-    ageYears: 29,
-    city: `${SEED_CITY_PREFIX}Manila`,
-    countryCode: 'PH',
-    gender: Gender.female,
-    bio: 'Lifelong Catholic. Returning to confession after a long quiet. Curious, not performative.',
-    tradition: Tradition.catholic,
-    walkStage: WalkStage.returning,
-  },
-  {
-    emailLocal: 'ruth',
-    displayName: 'Ruth',
-    ageYears: 32,
-    city: `${SEED_CITY_PREFIX}Singapore`,
-    countryCode: 'SG',
-    gender: Gender.female,
-    bio: 'Pediatric nurse, choir alto. Slow Sundays, long tables, fewer dishes alone.',
-    tradition: Tradition.protestant_mainline,
-    walkStage: WalkStage.lifelong,
-  },
+const REQUIRED_APPROVALS = [
+  { kind: 'verse_seed' as const, version: 'v1', notes: 'BLE v1 84-verse pool seeded.' },
+  { kind: 'banned_phrases' as const, version: 'v1', notes: 'Holy Code banned-phrase v1 baseline.' },
+  { kind: 'covenant' as const, version: 'v1', notes: 'Covenant v1 pre-launch text.' },
 ];
 
-function ageToDob(years: number): Date {
-  const now = new Date();
-  return new Date(now.getFullYear() - years, now.getMonth(), 15);
+interface DogfooderInput {
+  email: string;
+  displayName: string;
+  password: string;
+  gender: Gender;
+  seeking: Gender;
 }
 
-async function ensureUser(input: CandidateInput | typeof TEST_USER, password: string) {
-  const email = 'emailLocal' in input ? `${input.emailLocal}@${SEED_EMAIL_DOMAIN}` : input.email;
-  const passwordHash = await argon2.hash(password, { type: argon2.argon2id });
-  const dob = 'ageYears' in input ? ageToDob(input.ageYears) : ageToDob(32);
+function parseDogfooders(): DogfooderInput[] {
+  const raw = process.env.DOGFOODER_EMAILS?.trim();
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((email, i) => {
+      const local = email.split('@')[0] ?? `dogfooder${i}`;
+      return {
+        email,
+        displayName: capitalize(local.replace(/[._-]+/g, ' ')),
+        password: 'devpass123',
+        gender: i % 2 === 0 ? Gender.male : Gender.female,
+        seeking: i % 2 === 0 ? Gender.female : Gender.male,
+      };
+    });
+}
 
+function capitalize(s: string): string {
+  return s.length === 0 ? s : s[0]!.toUpperCase() + s.slice(1);
+}
+
+async function ensurePastorApprovals(approverUserId: string): Promise<number> {
+  let upserted = 0;
+  for (const req of REQUIRED_APPROVALS) {
+    await prisma.pastorApproval.upsert({
+      where: { kind_version: { kind: req.kind, version: req.version } },
+      create: {
+        kind: req.kind,
+        version: req.version,
+        approvedBy: approverUserId,
+        notes: req.notes,
+      },
+      update: { notes: req.notes },
+    });
+    upserted += 1;
+  }
+  return upserted;
+}
+
+async function ensureSystemApprover(): Promise<string> {
+  const email = `pastor-approver@${SEED_EMAIL_DOMAIN}`;
+  const passwordHash = await argon2.hash('seedonly');
   const user = await prisma.user.upsert({
     where: { email },
     create: {
       email,
       passwordHash,
-      dob,
+      dob: new Date(DEFAULT_DOB_ISO),
       ageVerifiedAdult: true,
-      emailVerified: true,
+      role: 'admin',
       onboardingCompleted: true,
+      countryCode: 'ID',
+      timezone: 'Asia/Makassar',
+      localePreference: 'en',
     },
-    update: {
-      onboardingCompleted: true,
-    },
+    update: {},
+    select: { id: true },
   });
+  return user.id;
+}
 
-  // Dating-side intent + opposite-sex seeking so the matching pool can pair.
-  const seeking: Seeking = input.gender === Gender.male ? Seeking.woman : Seeking.man;
+async function ensureDogfooder(input: DogfooderInput): Promise<string> {
+  const passwordHash = await argon2.hash(input.password);
+  const user = await prisma.user.upsert({
+    where: { email: input.email },
+    create: {
+      email: input.email,
+      passwordHash,
+      dob: new Date(DEFAULT_DOB_ISO),
+      ageVerifiedAdult: true,
+      onboardingCompleted: false,
+      countryCode: 'ID',
+      timezone: 'Asia/Makassar',
+      localePreference: 'en',
+    },
+    update: {},
+    select: { id: true },
+  });
 
   await prisma.profile.upsert({
     where: { userId: user.id },
@@ -184,97 +129,56 @@ async function ensureUser(input: CandidateInput | typeof TEST_USER, password: st
       userId: user.id,
       displayName: input.displayName,
       gender: input.gender,
-      city: input.city,
-      countryCode: input.countryCode,
-      bio: input.bio,
-      bioApproved: true,
-      onboardingStep: OnboardingStep.done,
-      tradition: input.tradition,
-      walkStage: input.walkStage,
-      intent: Intent.dating,
-      seeking,
-      marriageOpen: MarriageOpen.yes,
+      seeking: input.seeking,
+      city: SEED_CITY,
+      countryCode: 'ID',
+      lat: -8.65,
+      lng: 115.22,
+      tradition: Tradition.catholic,
+      walkStage: WalkStage.growing,
+      marriageIntent: MarriageIntent.maybe,
+      whimsicalAnswers: {},
+      onboardingStep: 0,
     },
-    update: {
-      displayName: input.displayName,
-      city: input.city,
-      bio: input.bio,
-      bioApproved: true,
-      tradition: input.tradition,
-      walkStage: input.walkStage,
-      intent: Intent.dating,
-      seeking,
-      marriageOpen: MarriageOpen.yes,
-    },
+    update: {},
   });
 
-  // Approved primary photo so candidate passes matching engine's photoApproved gate.
-  const existingPhoto = await prisma.photo.findFirst({ where: { userId: user.id } });
-  if (!existingPhoto) {
-    await prisma.photo.create({
-      data: {
-        userId: user.id,
-        storageKey: `seed/placeholder-${user.id}`,
-        position: 0,
-        status: PhotoStatus.approved,
-      },
-    });
-  }
-
-  // Map Tradition → legacy Denomination for back-compat (BLE-124).
-  const denomination: Denomination =
-    input.tradition === Tradition.catholic
-      ? Denomination.catholic
-      : input.tradition === Tradition.orthodox
-        ? Denomination.orthodox
-        : input.tradition === Tradition.other_christian || input.tradition === Tradition.still_figuring
-          ? Denomination.other
-          : Denomination.protestant;
-
-  await prisma.faithProfile.upsert({
-    where: { userId: user.id },
-    create: {
-      userId: user.id,
-      denomination,
-      churchAttendance: ChurchAttendance.weekly,
-      baptized: true,
-      marriageIntent: MarriageIntent.within_2y,
-    },
-    update: {
-      denomination,
-      churchAttendance: ChurchAttendance.weekly,
-      baptized: true,
-      marriageIntent: MarriageIntent.within_2y,
-    },
-  });
-
-  return user;
+  return user.id;
 }
 
-async function main() {
+async function main(): Promise<void> {
   if (process.env.NODE_ENV === 'production') {
-    throw new Error('Refusing to seed in production. Set NODE_ENV=development.');
+    throw new Error('seed.ts refuses to run with NODE_ENV=production');
   }
 
-  console.log('🌱 BlessCupid pre-alpha seed starting…');
+  // 1. Verse pool ---------------------------------------------------------
+  const verseStats = await seedVerses(prisma);
+  console.log(
+    `[seed] verses: en=${verseStats.enUpserted} id=${verseStats.idUpserted}`,
+  );
 
-  const me = await ensureUser(TEST_USER, TEST_USER.password);
-  console.log(`  ✓ test user: ${TEST_USER.email} / ${TEST_USER.password}`);
+  // 2. PastorApproval rows -----------------------------------------------
+  const approverId = await ensureSystemApprover();
+  const approvals = await ensurePastorApprovals(approverId);
+  console.log(`[seed] pastor approvals: ${approvals}`);
 
-  for (const c of CANDIDATES) {
-    const u = await ensureUser(c, 'candidate-pass-123');
-    console.log(`  ✓ candidate ${c.displayName} (${c.city}) — id ${u.id.slice(0, 8)}`);
+  // 3. Dogfooders --------------------------------------------------------
+  const dogfooders = parseDogfooders();
+  for (const d of dogfooders) {
+    const id = await ensureDogfooder(d);
+    console.log(`[seed] dogfooder: ${d.email} → ${id}`);
+  }
+  if (dogfooders.length === 0) {
+    console.log('[seed] no DOGFOODER_EMAILS set; skipping dogfooder users');
   }
 
-  console.log('\n✓ Seed complete.');
-  console.log(`\nLogin: ${TEST_USER.email} / ${TEST_USER.password}`);
-  console.log('Wipe:  pnpm -F @blesscupid/api seed:clean');
+  console.log('[seed] done');
 }
 
 main()
-  .catch((e) => {
-    console.error('Seed failed:', e);
-    process.exit(1);
+  .catch((err) => {
+    console.error('[seed] failed:', err);
+    process.exitCode = 1;
   })
   .finally(async () => {
     await prisma.$disconnect();

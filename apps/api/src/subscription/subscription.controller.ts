@@ -1,6 +1,26 @@
-import { Controller, Get, Post, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  UseGuards,
+  Req,
+  HttpCode,
+  HttpStatus,
+  BadRequestException,
+} from '@nestjs/common';
 import { SubscriptionService } from './subscription.service.js';
-import { JwtAuthGuard } from '../auth/jwt.guard.js';
+import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
+import type { SubscriptionCycle } from '@prisma/client';
+
+const CYCLES: ReadonlyArray<SubscriptionCycle> = ['weekly', 'monthly', 'quarterly', 'yearly'];
+
+function parseCycle(value: unknown): SubscriptionCycle {
+  if (typeof value !== 'string' || !CYCLES.includes(value as SubscriptionCycle)) {
+    throw new BadRequestException({ code: 'invalid_cycle', allowed: CYCLES });
+  }
+  return value as SubscriptionCycle;
+}
 
 @Controller('subscription')
 @UseGuards(JwtAuthGuard)
@@ -9,21 +29,31 @@ export class SubscriptionController {
 
   @Get('plans')
   async getPlans() {
-    return this.subscriptionService.getActivePlans();
+    return { plans: await this.subscriptionService.getPlans() };
   }
 
   @Get('me')
-  async getMySubscription(@Request() req: any) {
-    return this.subscriptionService.getActiveSubscription(req.user.sub);
+  async getMySubscription(@Req() req: AuthedRequest) {
+    return this.subscriptionService.getCurrentSubscription(req.user.userId);
+  }
+
+  @Post('start-trial')
+  @HttpCode(HttpStatus.CREATED)
+  async startTrial(@Req() req: AuthedRequest, @Body() body: { cycle?: unknown }) {
+    const cycle = parseCycle(body.cycle);
+    return this.subscriptionService.startTrial(req.user.userId, cycle);
   }
 
   @Post('purchase')
-  async purchase(@Request() req: any, @Body() body: { planId: string; method: string }) {
-    return this.subscriptionService.initiatePurchase(req.user.sub, body.planId, body.method);
+  @HttpCode(HttpStatus.CREATED)
+  async purchase(@Req() req: AuthedRequest, @Body() body: { cycle?: unknown }) {
+    const cycle = parseCycle(body.cycle);
+    return this.subscriptionService.purchase(req.user.userId, cycle);
   }
 
   @Post('cancel')
-  async cancel(@Request() req: any, @Body() body: { reason?: string }) {
-    return this.subscriptionService.cancelSubscription(req.user.sub, body.reason);
+  @HttpCode(HttpStatus.OK)
+  async cancel(@Req() req: AuthedRequest) {
+    return this.subscriptionService.cancel(req.user.userId);
   }
 }

@@ -14,7 +14,6 @@ class FakePrisma {
     create: vi.fn().mockResolvedValue({}),
     update: vi.fn().mockResolvedValue({}),
   };
-  coinTransaction = { create: vi.fn().mockResolvedValue({}) };
   user = { update: vi.fn().mockResolvedValue({}) };
 }
 

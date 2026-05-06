@@ -1,28 +1,22 @@
+// BLE v1-restart — ChatModule.
+//
+// Wires ChatService + ChatController against the rebuilt v1 surface.
+// PrismaModerationStore stays in this folder for the time being because
+// other domains (blocks, reports, admin) still import it; we no longer
+// register it through ChatModule.
+
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { PrismaModule } from '../prisma/prisma.module.js';
-import { ModerationModule } from '../moderation/moderation.module.js';
+import { NotificationsModule } from '../notifications/notifications.module.js';
+import { VerseModule } from '../verse/verse.module.js';
 import { ChatController } from './chat.controller.js';
-import { ChatExtensionController } from './chat-extension.controller.js';
 import { ChatService } from './chat.service.js';
-import { ChatModerationPipeline } from './moderation-pipeline.provider.js';
-import { PrismaModerationStore } from './prisma-moderation-store.js';
-import { EvidenceFreezeGuard } from './evidence-freeze.guard.js';
 
 @Module({
-  imports: [PrismaModule, ModerationModule, JwtModule.register({})],
-  controllers: [ChatController, ChatExtensionController],
-  providers: [
-    ChatService,
-    ChatModerationPipeline,
-    PrismaModerationStore,
-    EvidenceFreezeGuard,
-  ],
-  exports: [
-    ChatService,
-    ChatModerationPipeline,
-    PrismaModerationStore,
-    EvidenceFreezeGuard,
-  ],
+  imports: [PrismaModule, NotificationsModule, VerseModule, JwtModule.register({})],
+  controllers: [ChatController],
+  providers: [ChatService],
+  exports: [ChatService],
 })
 export class ChatModule {}

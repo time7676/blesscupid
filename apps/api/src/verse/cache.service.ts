@@ -12,7 +12,7 @@ export type CachedVerse = {
   translation: Translation;
   text: string;
   attribution: string;
-  fetchedAt: Date;
+  createdAt: Date;
   expiresAt: Date;
 };
 
@@ -31,7 +31,7 @@ export class VerseCacheService {
       translation: row.translation as Translation,
       text: row.text,
       attribution: row.attribution,
-      fetchedAt: row.fetchedAt,
+      createdAt: row.createdAt,
       expiresAt: row.expiresAt,
     };
   }
@@ -42,8 +42,7 @@ export class VerseCacheService {
     text: string;
     attribution: string;
   }): Promise<void> {
-    const now = new Date();
-    const expiresAt = new Date(now.getTime() + TTL_MS);
+    const expiresAt = new Date(Date.now() + TTL_MS);
     await this.prisma.verseCache.upsert({
       where: {
         ref_translation: { ref: entry.ref, translation: entry.translation },
@@ -53,13 +52,11 @@ export class VerseCacheService {
         translation: entry.translation,
         text: entry.text,
         attribution: entry.attribution,
-        fetchedAt: now,
         expiresAt,
       },
       update: {
         text: entry.text,
         attribution: entry.attribution,
-        fetchedAt: now,
         expiresAt,
       },
     });

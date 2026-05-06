@@ -3,6 +3,10 @@ import { PrismaService } from '../prisma/prisma.service.js';
 import { JwtAuthGuard } from '../auth/jwt.guard.js';
 import { RolesGuard } from '../common/roles.guard.js';
 
+/**
+ * Admin monetization: read/write SubscriptionPlan rows. Single Bless+ tier
+ * (4 cycles). Coin packages removed in v1-restart.
+ */
 @Controller('admin/monetization')
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class AdminMonetizationController {
@@ -17,34 +21,14 @@ export class AdminMonetizationController {
 
   @Post('plans')
   async createPlan(@Body() body: Record<string, unknown>) {
-    return this.prisma.subscriptionPlan.create({ data: body as any });
+    return this.prisma.subscriptionPlan.create({ data: body as never });
   }
 
   @Patch('plans/:id')
   async updatePlan(@Param('id') id: string, @Body() body: Record<string, unknown>) {
     return this.prisma.subscriptionPlan.update({
       where: { id },
-      data: body as any,
-    });
-  }
-
-  @Get('packages')
-  async getPackages() {
-    return this.prisma.coinPackage.findMany({
-      orderBy: { coinAmount: 'asc' },
-    });
-  }
-
-  @Post('packages')
-  async createPackage(@Body() body: Record<string, unknown>) {
-    return this.prisma.coinPackage.create({ data: body as any });
-  }
-
-  @Patch('packages/:id')
-  async updatePackage(@Param('id') id: string, @Body() body: Record<string, unknown>) {
-    return this.prisma.coinPackage.update({
-      where: { id },
-      data: body as any,
+      data: body as never,
     });
   }
 }

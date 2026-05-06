@@ -174,7 +174,11 @@ export class AccountController {
    * APNs (iOS) / FCM (Android) is handled by firebase-admin Messaging
    * once the APNs certificate is uploaded to the Firebase project.
    * Until the paid Apple Dev account is provisioned, iOS tokens are
-   * stored but `notifications-sender.service.ts` no-ops on send.
+   * stored but `FirebaseService` no-ops on send (PUSH_ENABLED != 1).
+   *
+   * NOTE: prefer `/v1/me/push-token` (NotificationsController) for new
+   * clients. This legacy `/me/push-token` route stays for back-compat
+   * until mobile migrates to the v1 path.
    */
   @Post('push-token')
   @HttpCode(200)

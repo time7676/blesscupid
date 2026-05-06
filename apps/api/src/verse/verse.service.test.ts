@@ -117,7 +117,7 @@ class FakeCache implements Pick<VerseCacheService, 'read' | 'write' | 'purgeExpi
     const now = new Date();
     this.store.set(`${entry.ref}|${entry.translation}`, {
       ...entry,
-      fetchedAt: now,
+      createdAt: now,
       expiresAt: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000),
     });
   }

@@ -1,22 +1,24 @@
 /**
- * BillingAliasController — mobile uses /billing/* paths historically.
- * Map them to the canonical /subscription/* surface so existing client
- * code keeps working without server-mobile coordination.
+ * BillingAliasController — historical mobile path. Maps `/billing/plans` to
+ * the canonical /subscription/plans surface. Single Bless+ tier.
  */
 
 import { Controller, Get } from '@nestjs/common';
+import { SubscriptionService } from './subscription.service.js';
 
 @Controller('billing')
 export class BillingAliasController {
+  constructor(private readonly subscriptionService: SubscriptionService) {}
+
   @Get('plans')
   async plans() {
-    // Mirrors /subscription/plans output. Pre-alpha hardcoded tier list.
+    const plans = await this.subscriptionService.getPlans();
     return {
       plans: [
         {
           id: 'free',
           name: 'Free',
-          priceMonthly: 0,
+          priceIdr: 0,
           features: [
             '8 decisions per day',
             '1 Super-Bless per day',
@@ -24,10 +26,12 @@ export class BillingAliasController {
             'Verse interlude every 5 swipes',
           ],
         },
-        {
-          id: 'plus',
+        ...plans.map((p) => ({
+          id: p.id,
           name: 'Bless+',
-          priceMonthly: 14.99,
+          cycle: p.cycle,
+          priceIdr: p.priceIdr,
+          priceFormatted: p.priceFormatted,
           features: [
             'Unlimited decisions',
             'See who Blessed you',
@@ -35,7 +39,7 @@ export class BillingAliasController {
             'Heart-of-Week feature',
             'Unlimited swipe-to-back undo',
           ],
-        },
+        })),
       ],
     };
   }
