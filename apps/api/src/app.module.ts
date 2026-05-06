@@ -21,6 +21,8 @@ import { AccountModule } from './account/account.module.js';
 import { VerseModule } from './verse/verse.module.js';
 import { SubscriptionModule } from './subscription/subscription.module.js';
 import { PaymentModule } from './payment/payment.module.js';
+import { StatusModule } from './status/status.module.js';
+import { VerificationModule } from './verification/verification.module.js';
 
 @Module({
   imports: [
@@ -50,11 +52,12 @@ import { PaymentModule } from './payment/payment.module.js';
     VerseModule,
     SubscriptionModule,
     PaymentModule,
-    // v1-restart: NEW modules to be added by Lane 2 agents
-    // - StatusModule (sticky StatusVerse)
-    // - VerificationModule (selfie face-match)
-    // - I18nModule (extend existing)
-    // - QuotaModule (DailyQuota helpers)
+    StatusModule,
+    VerificationModule,
+    // v1-restart pending:
+    // - I18nModule extension (keys for new screens)
+    // - DailyQuota helpers folded into MatchingService (DONE per matching agent)
+    // - BullMQ root config (BullModule.forRoot connection) — TODO
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
