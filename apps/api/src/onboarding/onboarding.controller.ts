@@ -23,7 +23,7 @@ import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
  * Plan: `~/.claude/plans/i-think-we-need-misty-eclipse.md` §"8-card
  * onboarding".
  */
-@Controller('onboarding')
+@Controller({ path: 'onboarding', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class OnboardingController {
   constructor(private readonly onboarding: OnboardingService) {}

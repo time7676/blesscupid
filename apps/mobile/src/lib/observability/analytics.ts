@@ -66,7 +66,7 @@ export const Events = {
     track('daily_stack_viewed', props),
   profileOpened: (props: { source: 'today' | 'conversations' }) =>
     track('profile_opened', props),
-  matchDecision: (props: { decision: 'pass' | 'like' | 'favorite' }) =>
+  matchDecision: (props: { decision: 'pass' | 'like' | 'super_like' }) =>
     track('match_decision', props),
   conversationBegan: () => track('conversation_began'),
   messageSent: (props: { threadAge: 'first' | 'reply' }) =>

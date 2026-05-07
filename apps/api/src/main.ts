@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
+import { VersioningType } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 import { initSentry, flushSentry } from './observability/sentry.js';
 import { SentryExceptionFilter } from './observability/sentry.exception-filter.js';
@@ -20,6 +21,11 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: false });
   app.enableShutdownHooks();
   app.useGlobalFilters(new SentryExceptionFilter());
+
+  // URI versioning so controllers declared with `version: '1'` mount under
+  // /v1/* (e.g. AccountController @Controller({ path: 'me', version: '1' })
+  // serves /v1/me). Controllers without a version stay at their flat path.
+  app.enableVersioning({ type: VersioningType.URI });
 
   // Alpha-launch request logger — emit method+path+status+ms to stdout so
   // VPS docker logs surface tester traffic for debugging. Skip /healthz to

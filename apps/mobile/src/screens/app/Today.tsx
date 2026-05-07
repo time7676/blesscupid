@@ -79,7 +79,7 @@ function toDeckProfile(c: MatchTodayCard): DeckProfileCard {
 function actionToDecision(action: SwipeAction): MatchDecision {
   if (action === 'pass') return 'pass';
   if (action === 'bless') return 'like';
-  return 'favorite';
+  return 'super_like';
 }
 
 export type TodayScreenProps = {

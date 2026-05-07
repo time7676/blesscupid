@@ -405,7 +405,7 @@ export function getMe(token: string): Promise<MeResponse> {
 // Privacy → Export my data. The blob is opaque from the client's POV
 // (we don't promise a specific schema beyond best-effort completeness).
 export function exportMe(token: string): Promise<unknown> {
-  return apiFetch<unknown>('/me/export', { method: 'GET', token });
+  return apiFetch<unknown>('/v1/me/export', { method: 'GET', token });
 }
 
 // Push notification token registration. Mobile calls this on cold boot
@@ -417,7 +417,7 @@ export function registerPushToken(
   authToken: string,
   input: { token: string; platform: PushPlatform; appVersion?: string },
 ): Promise<{ ok: true }> {
-  return apiFetch('/me/push-token', {
+  return apiFetch('/v1/me/push-token', {
     method: 'POST',
     token: authToken,
     body: JSON.stringify(input),
@@ -449,20 +449,21 @@ export interface MatchesTodayResponse {
 }
 
 export function getMatchesToday(token: string): Promise<MatchesTodayResponse> {
-  return apiFetch<MatchesTodayResponse>('/matches/today', { method: 'GET', token });
+  return apiFetch<MatchesTodayResponse>('/v1/matches/today', { method: 'GET', token });
 }
 
-export type MatchDecision = 'pass' | 'like' | 'favorite';
+export type MatchDecision = 'pass' | 'like' | 'super_like';
 
 export interface MatchDecisionResponse {
   ok: true;
   decision: MatchDecision;
-  day: string;
   /**
-   * True when the candidate has independently liked/favorited the viewer.
-   * Mobile fires the MatchSheet ceremony on this signal.
+   * Non-null when the candidate independently liked/super-liked the viewer.
+   * Carries the threadId so mobile can route directly to chat.
+   * Mobile fires the MatchSheet ceremony on a non-null value.
    */
-  match: boolean;
+  match: { matchId: string; threadId: string } | null;
+  quotaRemaining: { decisions: number; supers: number };
 }
 
 export function sendMatchDecision(
@@ -470,7 +471,7 @@ export function sendMatchDecision(
   candidateUserId: string,
   decision: MatchDecision,
 ): Promise<MatchDecisionResponse> {
-  return apiFetch<MatchDecisionResponse>('/matches/decision', {
+  return apiFetch<MatchDecisionResponse>('/v1/matches/decision', {
     method: 'POST',
     token,
     body: JSON.stringify({ candidateUserId, decision }),
@@ -490,7 +491,7 @@ export interface MatchQuotaResponse {
 }
 
 export function getMatchQuota(token: string): Promise<MatchQuotaResponse> {
-  return apiFetch<MatchQuotaResponse>('/matches/quota', { method: 'GET', token });
+  return apiFetch<MatchQuotaResponse>('/v1/matches/quota', { method: 'GET', token });
 }
 
 
@@ -641,7 +642,7 @@ export function createConversationFromMatch(
   token: string,
   matchUserId: string,
 ): Promise<{ threadId: string }> {
-  return apiFetch<{ threadId: string }>(`/matches/${matchUserId}/conversations`, {
+  return apiFetch<{ threadId: string }>(`/v1/matches/${matchUserId}/conversations`, {
     method: 'POST',
     token,
   });
@@ -669,7 +670,7 @@ export interface IncomingBlessesResponse {
 }
 
 export function getIncomingBlesses(token: string): Promise<IncomingBlessesResponse> {
-  return apiFetch<IncomingBlessesResponse>('/matches/incoming', { method: 'GET', token });
+  return apiFetch<IncomingBlessesResponse>('/v1/matches/incoming', { method: 'GET', token });
 }
 
 // =============================================================
@@ -690,7 +691,7 @@ export interface MatchDetailResponse {
 }
 
 export function getMatchDetail(token: string, matchUserId: string): Promise<MatchDetailResponse> {
-  return apiFetch<MatchDetailResponse>(`/matches/${matchUserId}`, { method: 'GET', token });
+  return apiFetch<MatchDetailResponse>(`/v1/matches/${matchUserId}`, { method: 'GET', token });
 }
 
 export { API_BASE_URL };

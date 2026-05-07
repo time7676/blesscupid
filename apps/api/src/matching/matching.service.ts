@@ -217,6 +217,39 @@ export class MatchingService {
           };
         }
 
+        // 4.5. Alpha-launch reviewer auto-match: when ALPHA_AUTO_LIKE=1 and
+        // the candidate is a reviewer-decoy account, write the reverse
+        // MatchDecision so step 5 sees a mutual interest. Triggers full
+        // Match + Thread + ThreadAnchor + Notification creation in this
+        // same transaction. Disable in production by unsetting env var.
+        if (process.env.ALPHA_AUTO_LIKE === '1') {
+          const candidate = await tx.user.findUnique({
+            where: { id: candidateUserId },
+            select: { email: true },
+          });
+          if (
+            candidate &&
+            candidate.email.startsWith('reviewer-') &&
+            candidate.email.endsWith('@seed.blesscupid.test')
+          ) {
+            await tx.matchDecision.upsert({
+              where: {
+                userId_candidateUserId: {
+                  userId: candidateUserId,
+                  candidateUserId: userId,
+                },
+              },
+              create: {
+                userId: candidateUserId,
+                candidateUserId: userId,
+                decision: 'like',
+                day,
+              },
+              update: {},
+            });
+          }
+        }
+
         // 5. Mutual check.
         const reverse = await tx.matchDecision.findUnique({
           where: {

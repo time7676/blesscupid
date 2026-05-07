@@ -181,7 +181,7 @@ export function AppShell() {
     setDeleteVisible(false);
     if (accessToken) {
       try {
-        await apiFetch('/me', { method: 'DELETE', token: accessToken });
+        await apiFetch('/v1/me', { method: 'DELETE', token: accessToken });
       } catch {
         // non-fatal in pre-alpha
       }

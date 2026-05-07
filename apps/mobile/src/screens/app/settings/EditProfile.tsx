@@ -69,7 +69,7 @@ export function EditProfileScreen({ onBack, onEditPhotos }: EditProfileScreenPro
     setBusy(true);
     setError(null);
     try {
-      await apiFetch('/me/profile', {
+      await apiFetch('/v1/me/profile', {
         method: 'PATCH',
         token: accessToken,
         body: JSON.stringify({ displayName, bio, city }),

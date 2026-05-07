@@ -53,7 +53,7 @@ export function PreferencesScreen({ onBack }: { onBack: () => void }) {
     if (!accessToken || busy) return;
     setBusy(true);
     try {
-      await apiFetch('/me/preferences', {
+      await apiFetch('/v1/me/preferences', {
         method: 'PATCH',
         token: accessToken,
         body: JSON.stringify({ traditions, ageMin, ageMax }),
@@ -189,7 +189,7 @@ export function NotificationsScreen({ onBack }: { onBack: () => void }) {
   function toggle(k: string) {
     setState((prev) => {
       const next = { ...prev, [k]: !prev[k] };
-      void apiFetch('/me/notifications', {
+      void apiFetch('/v1/me/notifications', {
         method: 'PATCH',
         token: accessToken ?? undefined,
         body: JSON.stringify(next),
@@ -228,7 +228,7 @@ export function PrivacyScreen({ onBack }: { onBack: () => void }) {
   function toggle(k: keyof typeof state) {
     setState((prev) => {
       const next = { ...prev, [k]: !prev[k] };
-      void apiFetch('/me/privacy', {
+      void apiFetch('/v1/me/privacy', {
         method: 'PATCH',
         token: accessToken ?? undefined,
         body: JSON.stringify(next),
@@ -343,7 +343,7 @@ export function PauseProfileScreen({ onBack }: { onBack: () => void }) {
   function toggle() {
     setPaused((prev) => {
       const next = !prev;
-      void apiFetch('/me/pause', {
+      void apiFetch('/v1/me/pause', {
         method: 'POST',
         token: accessToken ?? undefined,
         body: JSON.stringify({ paused: next }),
@@ -386,7 +386,7 @@ export function AccountScreen({
     if (!accessToken || exporting) return;
     setExporting(true);
     try {
-      await apiFetch('/me/export', { method: 'GET', token: accessToken });
+      await apiFetch('/v1/me/export', { method: 'GET', token: accessToken });
       setExported(true);
     } catch {
       // non-fatal
