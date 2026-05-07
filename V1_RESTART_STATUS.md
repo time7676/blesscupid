@@ -4,9 +4,9 @@
 > Plan: `~/.claude/plans/i-think-we-need-misty-eclipse.md`
 > Companion: `DESIGN.md` (v1 additions)
 
-## Headline (updated 2026-05-07)
+## Headline (updated 2026-05-07 session 2)
 
-**Lane 1 + Lane 2 DONE. API typecheck 0 errors. API boots green ("Nest application successfully started"). 9 commits, +12547 / -12529 lines, ~196 files touched. Mobile, admin web, tests deferred to next session.**
+**Lane 1 + Lane 2 + Lane 3 C1+C2 DONE. API + Mobile both typecheck 0 errors. API boots green. 11 commits, +13889 / -14365 lines, 214 files touched. Mobile Lane 3 C3-C7 (tabs/sheets/settings/visual polish) + admin web + tests deferred.**
 
 ## What landed
 
@@ -73,14 +73,32 @@ API now compiles + boots clean. All 23 NestJS modules instantiate. Wave 3 cleanu
 - `pnpm dev` → "Nest application successfully started"
 - All 23 modules + BullMQ + ThrottlerModule + JwtModule load clean
 
-## Known Mobile Breakage (Lane 3)
+## Lane 3 C1 + C2 — DONE (session 2)
 
-Mobile (`apps/mobile/`) does NOT build. Onboarding screens import stripped types:
-- `Intent`, `Seeking`, `MarriageOpen` (replaced by `WhimsicalAnswers` + `MarriageIntent` enum)
-- `WelcomedTag`, `PracticeTag` (dropped)
-- `BioInput`, `FaithQuestionnaireInput`, `ProfileBasicsInput`, `Q3RedirectInput` (replaced by `OnboardingStep[1..8]Body`)
+Mobile NOW BUILDS. `pnpm --filter @blesscupid/mobile exec tsc --noEmit` → 0 errors.
 
-Will rebuild as Lane 3 (mobile from scratch with new 8-card flow).
+- **i18n**: i18next + react-i18next + expo-localization. en.json + id.json under `v1.*` namespace (~250 keys per locale).
+- **8-card onboarding**: OnboardingFlow driver + 8 cards in `screens/onboarding/cards/`:
+  - Card1Animal, Card3Sunday, Card5Afternoon, Card7Verse → composes WhimsicalCard shared base
+  - Card2NameDob, Card4Identity (Q3 hard-reject signal), Card6Location, Card8Photo → custom essentials
+  - OnboardingDone (4s auto-advance), Q3RejectSheet (amber-not-red destructive)
+- **api-onboarding.ts**: client wraps /v1/onboarding/* + verse picker stub
+- **App.tsx**: rewritten — single OnboardingFlow render, initI18n at boot, removed Storybook gate
+- **api.ts**: cut 155 lines of legacy onboarding endpoints; MeResponse type added inline; /v1/me path
+
+**Visual state:** cards are compilable stubs, not Garden Hours-finalized. Real polish per DESIGN.md (Cormorant headers, gold-halo rings, sandstone-warm fills with gold borders, Continue button pressed/disabled states, ProgressDots) is next-session work.
+
+## Lane 3 C3-C7 — DEFERRED
+
+Remaining mobile work:
+- C3: AppShell linking config (deep-link routing for push)
+- C4: Today (SwipeCard w/ Status ring, ActionDeck w/ Bless+ undo)
+- C5: Matches tab (Likes-You + Connections sections)
+- C6: Chats list + Thread (verse-share + suggestion chips)
+- C7: You hub + 12 settings sub-screens
+- Sheets: StatusComposer, VerifySelfie, NotificationsSheet, UpgradeSheet, ReportSheet, BlockConfirm, MatchSheet ceremony
+- ProfileDetail full sheet
+- Visual polish across all surfaces per DESIGN.md spec
 
 ## What's NOT done (deferred to future sessions)
 
