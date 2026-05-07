@@ -234,5 +234,110 @@
     "note": {
       "template": "{reviewerHandle} on {timestamp}: {decision}. {freeTextNote}"
     }
+  },
+  "v1": {
+    "common": {
+      "continue": "Continue",
+      "back": "Back",
+      "save": "Save",
+      "cancel": "Cancel",
+      "retry": "Try again",
+      "loading": "Loading…",
+      "offline": "You're offline. Showing last loaded."
+    },
+    "auth": {
+      "welcome": {
+        "tagline": "FAITH-FIRST DATING",
+        "headline": "Meet someone who walks with God.",
+        "createAccount": "Create account",
+        "haveAccount": "I have an account"
+      },
+      "signup": { "title": "Make a beginning", "email": "Email", "password": "Password" },
+      "login": { "title": "Welcome back", "forgot": "Forgot?" },
+      "forgot": { "title": "Reset your password", "sendCode": "Send code" }
+    },
+    "onboarding": {
+      "card1": { "title": "If you woke up as one of these, which one?", "body": "First instinct. No wrong answer." },
+      "card2": { "title": "What should we call you, and how old are you?", "body": "We use this on your profile." },
+      "card3": { "title": "Sunday morning vibe?", "body": "Pick the one that's most you." },
+      "card4": { "title": "Tell us a little about who you are.", "body": "We'll match you accordingly." },
+      "card5": { "title": "If God gave you a free afternoon...?", "body": "Where do you go?" },
+      "card6": { "title": "Where are you and where do you worship?", "body": "We use this to find people near you and your church." },
+      "card7": { "title": "Pick a verse that found you lately.", "body": "It's the first thing your matches will see." },
+      "card8": { "title": "One photo and a short hello.", "body": "Your face, lit naturally. One sentence about you." },
+      "done": { "headline": "Today's deck is ready.", "body": "Step in slowly. There's no rush.", "openToday": "Open Today" },
+      "q3Reject": {
+        "title": "BlessCupid is for opposite-sex covenant relationships.",
+        "body": "We're not the right home for what you're looking for, and we don't want to make a wrong promise.",
+        "closeAccount": "Close my account",
+        "goBack": "Go back"
+      },
+      "options": {
+        "elephant": "Elephant", "mouse": "Mouse", "dolphin": "Dolphin", "owl": "Owl",
+        "full_pew": "Full pew", "kitchen_prayer": "Kitchen prayer", "mountain_trail": "Mountain trail", "candle_alone": "Candle alone",
+        "rest": "Rest", "serve": "Serve", "create": "Create", "study": "Study",
+        "male": "Man", "female": "Woman",
+        "catholic": "Catholic", "protestant": "Protestant", "orthodox": "Orthodox", "nondenom": "Non-denominational"
+      }
+    },
+    "today": {
+      "actions": { "pass": "Pass", "bless": "Bless", "super": "Super like" },
+      "quota": "{{used}} of {{limit}} blesses today",
+      "empty": { "title": "No one nearby today.", "body": "Come back tomorrow, or widen your distance." },
+      "distance": {
+        "near": "near you", "nearby": "nearby",
+        "inCity": "in {{city}}", "farFrom": "far from {{city}}"
+      },
+      "undoToast": "Blessed {{name}}", "undo": "Undo"
+    },
+    "matches": {
+      "likesYou": "Likes you", "connections": "Connections",
+      "empty": { "title": "No likes yet.", "body": "Bless someone today and they'll see you here." }
+    },
+    "chats": {
+      "empty": { "title": "Your conversations will live here.", "body": "Bless someone in Today to start one." }
+    },
+    "thread": {
+      "composerPlaceholder": "Write a message",
+      "verseShareLabel": "{{name}} sent a verse"
+    },
+    "you": {
+      "editProfile": "Edit profile", "preferences": "Preferences", "privacy": "Privacy",
+      "notifications": "Notifications", "blocked": "Blocked users", "pause": "Pause profile",
+      "account": "Account & data", "verify": "Verify your photo", "signOut": "Sign out",
+      "noStatus": "No verse status. Tap to set one.", "updateStatus": "Update"
+    },
+    "status": {
+      "set": "Set status", "set_success": "Status set",
+      "themes": {
+        "peace": "Peace", "joy": "Joy", "strength": "Strength", "love": "Love",
+        "wisdom": "Wisdom", "comfort": "Comfort", "praise": "Praise", "purpose": "Purpose",
+        "forgiveness": "Forgiveness", "gratitude": "Gratitude", "hope": "Hope", "faith": "Faith"
+      }
+    },
+    "verify": {
+      "title": "Verify your photo", "capture": "Capture", "checking": "Checking…",
+      "verified": "Verified", "tryAgain": "Try again"
+    },
+    "upgrade": {
+      "headline": "More blesses. Less noise.",
+      "subscribe": "Subscribe", "tryFree": "Try free for 7 days"
+    },
+    "report": {
+      "title": "Report {{name}}", "submit": "Submit", "thanks": "Thanks. We'll take it from here."
+    },
+    "block": {
+      "title": "Block {{name}}?", "confirm": "Block", "blocked": "Blocked."
+    },
+    "match": {
+      "headline": "You've blessed each other",
+      "sendVerse": "Send a verse", "keepBlessing": "Keep blessing"
+    },
+    "permission": {
+      "camera": { "title": "Use your camera?", "body": "We use it for verification photos." },
+      "photos": { "title": "Access your photo library?", "body": "Choose photos for your profile." },
+      "location": { "title": "Use your location?", "body": "We use distance to find matches near you." },
+      "notifications": { "title": "Send notifications?", "body": "Tell you about new matches and messages." }
+    }
   }
 }

@@ -1,0 +1,107 @@
+{
+  "v1": {
+    "common": {
+      "continue": "Lanjut",
+      "back": "Kembali",
+      "save": "Simpan",
+      "cancel": "Batal",
+      "retry": "Coba lagi",
+      "loading": "Memuat…",
+      "offline": "Sedang offline. Menampilkan data terakhir."
+    },
+    "auth": {
+      "welcome": {
+        "tagline": "KENCAN BERLANDASKAN IMAN",
+        "headline": "Bertemu dengan seseorang yang berjalan bersama Tuhan.",
+        "createAccount": "Buat akun",
+        "haveAccount": "Saya sudah punya akun"
+      },
+      "signup": { "title": "Mulai perjalananmu", "email": "Email", "password": "Kata sandi" },
+      "login": { "title": "Selamat datang kembali", "forgot": "Lupa?" },
+      "forgot": { "title": "Atur ulang kata sandi", "sendCode": "Kirim kode" }
+    },
+    "onboarding": {
+      "card1": { "title": "Kalau kamu bangun jadi salah satu hewan ini, yang mana?", "body": "Insting pertama. Tidak ada yang salah." },
+      "card2": { "title": "Kami panggil kamu apa, dan berapa umurmu?", "body": "Kami pakai ini di profilmu." },
+      "card3": { "title": "Suasana Minggu pagimu?", "body": "Pilih yang paling kamu." },
+      "card4": { "title": "Cerita sedikit tentang kamu.", "body": "Kami akan mencocokkanmu sesuai itu." },
+      "card5": { "title": "Kalau Tuhan kasih kamu sore yang luang...?", "body": "Kamu pergi ke mana?" },
+      "card6": { "title": "Di mana kamu dan di mana kamu beribadah?", "body": "Kami pakai ini untuk menemukan orang dekat kamu dan gerejamu." },
+      "card7": { "title": "Pilih ayat yang baru-baru ini menjumpaimu.", "body": "Ini hal pertama yang dilihat pasanganmu." },
+      "card8": { "title": "Satu foto dan sapaan singkat.", "body": "Wajahmu, dengan cahaya alami. Satu kalimat tentang kamu." },
+      "done": { "headline": "Dek hari ini sudah siap.", "body": "Masuk pelan-pelan. Tidak terburu-buru.", "openToday": "Buka Today" },
+      "q3Reject": {
+        "title": "BlessCupid untuk relasi perjanjian lawan jenis.",
+        "body": "Kami bukan tempat yang tepat untuk yang kamu cari, dan kami tidak ingin memberi janji yang salah.",
+        "closeAccount": "Tutup akun saya",
+        "goBack": "Kembali"
+      },
+      "options": {
+        "elephant": "Gajah", "mouse": "Tikus", "dolphin": "Lumba-lumba", "owl": "Burung hantu",
+        "full_pew": "Bangku gereja penuh", "kitchen_prayer": "Doa di dapur", "mountain_trail": "Jalur gunung", "candle_alone": "Lilin sendirian",
+        "rest": "Istirahat", "serve": "Melayani", "create": "Berkarya", "study": "Belajar",
+        "male": "Pria", "female": "Wanita",
+        "catholic": "Katolik", "protestant": "Protestan", "orthodox": "Ortodoks", "nondenom": "Non-denominasi"
+      }
+    },
+    "today": {
+      "actions": { "pass": "Lewati", "bless": "Bless", "super": "Super like" },
+      "quota": "{{used}} dari {{limit}} bless hari ini",
+      "empty": { "title": "Tidak ada yang dekat hari ini.", "body": "Datang lagi besok, atau perluas jarakmu." },
+      "distance": {
+        "near": "dekat dengan kamu", "nearby": "tidak jauh",
+        "inCity": "di {{city}}", "farFrom": "jauh dari {{city}}"
+      },
+      "undoToast": "Memberkati {{name}}", "undo": "Batal"
+    },
+    "matches": {
+      "likesYou": "Menyukaimu", "connections": "Koneksi",
+      "empty": { "title": "Belum ada yang menyukai.", "body": "Berkati seseorang hari ini, dan mereka akan melihatmu di sini." }
+    },
+    "chats": {
+      "empty": { "title": "Percakapanmu akan ada di sini.", "body": "Berkati seseorang di Today untuk memulai." }
+    },
+    "thread": {
+      "composerPlaceholder": "Tulis pesan",
+      "verseShareLabel": "{{name}} mengirim ayat"
+    },
+    "you": {
+      "editProfile": "Edit profil", "preferences": "Preferensi", "privacy": "Privasi",
+      "notifications": "Notifikasi", "blocked": "Pengguna diblokir", "pause": "Jeda profil",
+      "account": "Akun & data", "verify": "Verifikasi fotomu", "signOut": "Keluar",
+      "noStatus": "Belum ada status ayat. Ketuk untuk mengatur.", "updateStatus": "Perbarui"
+    },
+    "status": {
+      "set": "Atur status", "set_success": "Status diatur",
+      "themes": {
+        "peace": "Damai", "joy": "Sukacita", "strength": "Kekuatan", "love": "Kasih",
+        "wisdom": "Hikmat", "comfort": "Penghiburan", "praise": "Pujian", "purpose": "Tujuan",
+        "forgiveness": "Pengampunan", "gratitude": "Syukur", "hope": "Harapan", "faith": "Iman"
+      }
+    },
+    "verify": {
+      "title": "Verifikasi fotomu", "capture": "Ambil", "checking": "Memeriksa…",
+      "verified": "Terverifikasi", "tryAgain": "Coba lagi"
+    },
+    "upgrade": {
+      "headline": "Lebih banyak bless. Lebih sedikit gangguan.",
+      "subscribe": "Berlangganan", "tryFree": "Coba gratis 7 hari"
+    },
+    "report": {
+      "title": "Laporkan {{name}}", "submit": "Kirim", "thanks": "Terima kasih. Kami akan menanganinya."
+    },
+    "block": {
+      "title": "Blokir {{name}}?", "confirm": "Blokir", "blocked": "Diblokir."
+    },
+    "match": {
+      "headline": "Kalian saling memberkati",
+      "sendVerse": "Kirim ayat", "keepBlessing": "Lanjut memberkati"
+    },
+    "permission": {
+      "camera": { "title": "Gunakan kameramu?", "body": "Kami pakai untuk foto verifikasi." },
+      "photos": { "title": "Akses galeri foto?", "body": "Pilih foto untuk profilmu." },
+      "location": { "title": "Gunakan lokasimu?", "body": "Kami pakai jarak untuk menemukan pasangan dekatmu." },
+      "notifications": { "title": "Kirim notifikasi?", "body": "Memberitahumu tentang match baru dan pesan." }
+    }
+  }
+}

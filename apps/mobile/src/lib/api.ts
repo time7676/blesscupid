@@ -362,164 +362,42 @@ export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
   });
 }
 
-import type {
-  BioInput,
-  CovenantAcceptInput,
-  FaithQuestionnaireInput,
-  OnboardingStep,
-  ProfileBasicsInput,
-  Q3RedirectInput,
-  QuestionnaireSubmitInput,
-  WelcomedTagsUpdateInput,
-} from '@blesscupid/shared';
 
-export interface OnboardingStateResponse {
-  ageVerifiedAdult: boolean;
-  covenantSigned: boolean;
-  faithComplete: boolean;
-  profileComplete: boolean;
-  hasPhoto: boolean;
-  bioApproved: boolean;
-  onboardingStep: OnboardingStep;
-  nextStep: OnboardingStep;
-}
-
-export function getOnboardingState(token: string): Promise<OnboardingStateResponse> {
-  return apiFetch<OnboardingStateResponse>('/onboarding/state', {
-    method: 'GET',
-    token,
-  });
-}
-
-export function acceptCovenant(
-  token: string,
-  input: CovenantAcceptInput,
-): Promise<{ ok: true }> {
-  return apiFetch('/onboarding/covenant', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export function saveFaith(
-  token: string,
-  input: FaithQuestionnaireInput,
-): Promise<{ ok: true }> {
-  return apiFetch('/onboarding/faith', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export interface QuestionnaireSubmitResponse {
-  ok: boolean;
-  q3Redirect?: boolean;
-  bioSeedFlagged?: boolean;
-  // Soft-suggest revision payload when Q9 bio seed is blocked.
-  code?: 'bio_seed_flagged';
-  decision?: 'block';
-  categories?: string[];
-}
-
-export function saveQuestionnaire(
-  token: string,
-  input: QuestionnaireSubmitInput,
-): Promise<QuestionnaireSubmitResponse> {
-  return apiFetch<QuestionnaireSubmitResponse>('/onboarding/questionnaire', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export interface Q3RedirectResponse {
-  ok: true;
-  intent: 'friendship' | 'closed_by_user';
-}
-
-export function acceptQ3Redirect(
-  token: string,
-  input: Q3RedirectInput,
-): Promise<Q3RedirectResponse> {
-  return apiFetch<Q3RedirectResponse>('/onboarding/q3-redirect', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export function updateWelcomedTags(
-  token: string,
-  input: WelcomedTagsUpdateInput,
-): Promise<{ ok: true; welcomedTags: string[]; welcomedTagVisibility: Record<string, boolean> }> {
-  return apiFetch('/onboarding/welcomed-tags', {
-    method: 'PATCH',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-// BLE eng-review 2026-05-06 — onboarding profile basics + bio API.
-// `legalName` is captured here for safety routing and is never echoed
-// back via /me; only displayName + gender + city + countryCode round-trip
-// to other users.
-export function saveProfileBasics(
-  token: string,
-  input: ProfileBasicsInput,
-): Promise<{ ok: true }> {
-  return apiFetch('/onboarding/profile', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export interface BioResponse {
-  ok: true;
-  bioApproved: boolean;
-  queuedForReview: boolean;
-}
-
-export function saveBio(token: string, input: BioInput): Promise<BioResponse> {
-  return apiFetch<BioResponse>('/onboarding/bio', {
-    method: 'POST',
-    token,
-    body: JSON.stringify(input),
-  });
-}
-
-export interface CompleteOnboardingResponse {
-  ok: true;
-  onboardingCompleted: true;
-}
-
-export function completeOnboarding(token: string): Promise<CompleteOnboardingResponse> {
-  return apiFetch<CompleteOnboardingResponse>('/onboarding/complete', {
-    method: 'POST',
-    token,
-    body: '{}',
-  });
-}
+// v1-restart: legacy onboarding endpoints (covenant/faith/questionnaire/etc) removed.
+// New onboarding lives in apps/mobile/src/lib/api-onboarding.ts (8-card flow).
 
 export interface MeResponse {
-  id: string;
-  email: string;
-  onboardingCompleted: boolean;
+  user: {
+    id: string;
+    email: string;
+    role: 'member' | 'admin';
+    onboardingCompleted: boolean;
+    localePreference: 'en' | 'id';
+  };
   profile: {
     displayName: string;
     gender: 'male' | 'female';
+    seeking: 'male' | 'female';
     city: string;
     countryCode: string;
-    onboardingStep: OnboardingStep;
     bio: string | null;
-    bioApproved: boolean;
+    tradition: 'catholic' | 'protestant' | 'orthodox' | 'nondenom' | 'other';
+    walkStage: 'seeking' | 'growing' | 'rooted';
+    marriageIntent: 'yes' | 'maybe' | 'no';
+    isVerified: boolean;
+    onboardingStep: number;
+    pausedUntil: string | null;
+    hideFromUnverified: boolean;
   } | null;
+  counts?: {
+    matches?: number;
+    threads?: number;
+    notificationsUnread?: number;
+  };
 }
 
 export function getMe(token: string): Promise<MeResponse> {
-  return apiFetch<MeResponse>('/me', { method: 'GET', token });
+  return apiFetch<MeResponse>('/v1/me', { method: 'GET', token });
 }
 
 // UU PDP Pasal 11 — right to data portability. Returns a JSON blob the
