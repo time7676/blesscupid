@@ -1,9 +1,8 @@
 // BLE v1-restart — ChatModule.
 //
 // Wires ChatService + ChatController against the rebuilt v1 surface.
-// PrismaModerationStore stays in this folder for the time being because
-// other domains (blocks, reports, admin) still import it; we no longer
-// register it through ChatModule.
+// PrismaModerationStore moved to `moderation/` and is provided by
+// ModerationModule (consumed by blocks/admin/reports).
 
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';

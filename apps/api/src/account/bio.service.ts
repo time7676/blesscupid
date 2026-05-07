@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { TextModerationService } from '../moderation/text-moderation.service.js';
 
@@ -10,9 +14,13 @@ export class BioService {
   ) {}
 
   /**
-   * Re-classify and persist a bio edit. Unlike the onboarding flow, this
-   * never advances `onboardingStep` — the user has already finished onboarding.
-   * `block` decisions throw and the existing bio is left unchanged.
+   * Re-classify and persist a bio edit. Unlike onboarding, this never advances
+   * `onboardingStep` — the user has already finished onboarding.
+   *
+   * Decisions:
+   *   allow  → write bio, stamp `bioApprovedAt = now`, no queue row.
+   *   review → write bio, clear `bioApprovedAt`, push a ModerationQueueItem.
+   *   block  → throw 400; existing bio left unchanged.
    */
   async reclassify(userId: string, bio: string) {
     const profile = await this.prisma.profile.findUnique({ where: { userId } });
@@ -29,21 +37,27 @@ export class BioService {
     const approved = moderation.decision === 'allow';
     await this.prisma.profile.update({
       where: { userId },
-      data: { bio, bioApproved: approved },
-    });
-    await this.prisma.moderationItem.create({
-      data: {
-        userId,
-        kind: 'text_bio',
-        rawContent: bio,
-        decision: moderation.decision,
-        status: approved ? 'approved' : 'pending',
-        categories: moderation.categories,
-        provider: moderation.provider,
-        rawScore: moderation.rawScore,
-      },
+      data: { bio, bioApprovedAt: approved ? new Date() : null },
     });
 
-    return { ok: true, bioApproved: approved, queuedForReview: !approved };
+    if (!approved) {
+      await this.prisma.moderationQueueItem.create({
+        data: {
+          kind: 'text_bio',
+          decision: moderation.decision,
+          reasons: moderation.categories,
+          flags: [],
+          rawScores: { score: moderation.rawScore, provider: moderation.provider },
+          senderUserId: userId,
+          bodyText: bio,
+        },
+      });
+    }
+
+    return {
+      ok: true,
+      bioApproved: approved,
+      queuedForReview: !approved,
+    };
   }
 }

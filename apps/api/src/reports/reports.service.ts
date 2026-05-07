@@ -1,244 +1,193 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
-import { makeReport, type ReportReason } from '@blesscupid/moderation';
+import type { Prisma, ReportReason } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
-import { PrismaModerationStore } from '../chat/prisma-moderation-store.js';
-import { routeFromReason } from '../moderation-actions/routing.js';
 
+/**
+ * v1-restart Reports surface.
+ *
+ * Drops legacy `EvidenceFreeze`, `ModerationAction`, `routing` /
+ * `queue-acl` modules. Reports are simple `Report` rows with `status` +
+ * optional `resolution` string. Admin actions: dismiss / warn / suspend7d
+ * / ban — `suspend7d` and `ban` flip `User.isSuspended` on the reported
+ * user. Optional `autoBlock` on create writes both directions of `Block`.
+ */
 export interface CreateReportInput {
   reportedUserId: string;
   reason: ReportReason;
+  detail?: string;
   threadId?: string;
   messageId?: string;
-  freeform?: string;
+  autoBlock?: boolean;
 }
 
-export type ModerationActionKind = 'dismiss' | 'warn' | 'suspend' | 'ban';
+export type ResolutionAction = 'dismiss' | 'warn' | 'suspend7d' | 'ban';
 
-export interface ApplyActionInput {
+export interface ResolveReportInput {
   reportId: string;
   actorUserId: string;
-  kind: ModerationActionKind;
-  notes?: string;
+  resolution: string;
+  action?: ResolutionAction;
 }
-
-/** BLE-10 — chat-thread freeze duration on a report. */
-export const EVIDENCE_FREEZE_DAYS = 90;
-
-const REASON_WEIGHT: Record<string, number> = {
-  sexual_content: 60,
-  underage: 90,
-  harassment: 50,
-  off_platform_pressure: 35,
-  scam_or_spam: 30,
-  fake_profile: 30,
-  impersonation: 40,
-  other: 20,
-};
 
 @Injectable()
 export class ReportsService {
-  constructor(
-    private readonly prisma: PrismaService,
-    private readonly store: PrismaModerationStore,
-  ) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async create(reporterUserId: string, input: CreateReportInput) {
     if (input.reportedUserId === reporterUserId) {
       throw new BadRequestException({ code: 'cannot_report_self' });
     }
 
-    const report = makeReport({
-      id: crypto.randomUUID(),
-      reporterUserId,
-      reportedUserId: input.reportedUserId,
-      reason: input.reason,
-      ...(input.threadId ? { threadId: input.threadId } : {}),
-      ...(input.messageId ? { messageId: input.messageId } : {}),
-      ...(input.freeform ? { freeform: input.freeform } : {}),
-    });
-    await this.store.recordReport(report);
-
-    // BLE-10 triage fields. moderation/makeReport doesn't know about these,
-    // so patch them on after the row is in place.
-    const severity = this.computeSeverity(input.reason);
-
-    // BLE-63 / A.4 routing: project reason → category → queue. P0 categories
-    // (abuse / suicidal / minor) bypass classifiers, land in ceo_p0.
-    const decision = routeFromReason(input.reason);
-
-    await this.prisma.report.update({
-      where: { id: report.id },
+    const report = await this.prisma.report.create({
       data: {
-        severity,
+        reporterUserId,
+        reportedUserId: input.reportedUserId,
+        reason: input.reason,
+        ...(input.detail ? { detail: input.detail } : {}),
+        ...(input.threadId ? { threadId: input.threadId } : {}),
+        ...(input.messageId ? { messageId: input.messageId } : {}),
         status: 'open',
-        category: decision.category,
-        queue: decision.queue,
       },
     });
 
-    // A.4 — minor: auto-lock account immediately.
-    if (decision.autoLockAccount) {
-      await this.prisma.user.update({
-        where: { id: input.reportedUserId },
-        data: { isSuspended: true },
+    if (input.autoBlock) {
+      // Bidirectional block: reporter <-> reported.
+      await this.prisma.block.upsert({
+        where: {
+          blockerUserId_blockedUserId: {
+            blockerUserId: reporterUserId,
+            blockedUserId: input.reportedUserId,
+          },
+        },
+        update: {},
+        create: {
+          blockerUserId: reporterUserId,
+          blockedUserId: input.reportedUserId,
+        },
       });
-      await this.prisma.report.update({
-        where: { id: report.id },
-        data: { autoLockApplied: true },
-      });
-    }
-
-    // Evidence preservation: 90-day server-side freeze on the chat thread.
-    if (input.threadId) {
-      await this.prisma.evidenceFreeze.create({
-        data: {
-          reportId: report.id,
-          threadId: input.threadId,
-          expiresAt: new Date(Date.now() + EVIDENCE_FREEZE_DAYS * 86_400_000),
+      await this.prisma.block.upsert({
+        where: {
+          blockerUserId_blockedUserId: {
+            blockerUserId: input.reportedUserId,
+            blockedUserId: reporterUserId,
+          },
+        },
+        update: {},
+        create: {
+          blockerUserId: input.reportedUserId,
+          blockedUserId: reporterUserId,
         },
       });
     }
 
     return {
       id: report.id,
-      createdAt: report.createdAt,
-      severity,
-      category: decision.category,
-      queue: decision.queue,
-      autoLockApplied: decision.autoLockAccount,
+      status: report.status,
+      createdAt: report.createdAt.toISOString(),
     };
   }
 
-  async listAll(limit = 100) {
+  /**
+   * Admin cursor-paginated open-report list. Returns reporter + reported
+   * user summaries; reporter is REDACTED when `reporterDeleted=true` (User
+   * row was hard-deleted via cascade on a SET NULL FK).
+   */
+  async listOpen(opts: { cursor?: string; limit?: number } = {}) {
+    const limit = Math.min(opts.limit ?? 50, 200);
+    const where: Prisma.ReportWhereInput = { status: 'open' };
     const rows = await this.prisma.report.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
-      take: limit,
+      take: limit + 1,
+      ...(opts.cursor ? { cursor: { id: opts.cursor }, skip: 1 } : {}),
       select: {
         id: true,
         reporterUserId: true,
+        reporterDeleted: true,
         reportedUserId: true,
+        reason: true,
+        detail: true,
         threadId: true,
         messageId: true,
-        reason: true,
-        freeform: true,
-        severity: true,
-        status: true,
-        resolvedAt: true,
-        resolvedByUserId: true,
-        createdAt: true,
-      },
-    });
-    return { reports: rows };
-  }
-
-  /**
-   * T&S triage queue ordered by severity desc, then age asc.
-   * Pastor + CEO consume this view from `GET /admin/safety/queue`.
-   */
-  async listTriageQueue(limit = 50) {
-    const rows = await this.prisma.report.findMany({
-      where: { status: { in: ['open', 'under_review'] } },
-      orderBy: [{ severity: 'desc' }, { createdAt: 'asc' }],
-      take: limit,
-      select: {
-        id: true,
-        reporterUserId: true,
-        reportedUserId: true,
-        threadId: true,
-        reason: true,
-        freeform: true,
-        severity: true,
         status: true,
         createdAt: true,
+        reporter: {
+          select: { id: true, email: true, role: true, deletedAt: true },
+        },
+        reported: {
+          select: {
+            id: true,
+            email: true,
+            role: true,
+            isSuspended: true,
+            deletedAt: true,
+          },
+        },
       },
     });
-    return { items: rows };
+
+    const hasMore = rows.length > limit;
+    const items = (hasMore ? rows.slice(0, limit) : rows).map((r) => ({
+      id: r.id,
+      reason: r.reason,
+      detail: r.detail,
+      threadId: r.threadId,
+      messageId: r.messageId,
+      status: r.status,
+      createdAt: r.createdAt.toISOString(),
+      reporter: r.reporterDeleted ? null : r.reporter,
+      reported: r.reported,
+    }));
+
+    return {
+      items,
+      nextCursor: hasMore ? items[items.length - 1]?.id ?? null : null,
+    };
   }
 
-  async listForUser(reportedUserId: string) {
-    return this.store.reportsForUser(reportedUserId);
-  }
-
-  /**
-   * Pastor / CEO applies a moderation decision from the T&S queue.
-   * Records the action for audit, resolves the linked report, and on
-   * `suspend` / `ban` flips `User.isSuspended` so the user is locked out.
-   * Returns the persisted action + the now-closed report.
-   */
-  async applyModerationAction(input: ApplyActionInput) {
+  async resolve(input: ResolveReportInput) {
     const report = await this.prisma.report.findUnique({
       where: { id: input.reportId },
     });
     if (!report) {
       throw new NotFoundException({ code: 'report_not_found' });
     }
-    if (report.status === 'resolved' || report.status === 'dismissed') {
-      throw new BadRequestException({
-        code: 'report_already_closed',
-        status: report.status,
-      });
+    if (report.status === 'resolved') {
+      throw new BadRequestException({ code: 'report_already_resolved' });
     }
 
     const now = new Date();
-    const newStatus = input.kind === 'dismiss' ? 'dismissed' : 'resolved';
-
-    const [, action] = await this.prisma.$transaction([
+    const ops: Prisma.PrismaPromise<unknown>[] = [
       this.prisma.report.update({
         where: { id: report.id },
         data: {
-          status: newStatus,
-          resolvedAt: now,
-          resolvedByUserId: input.actorUserId,
+          status: 'resolved',
+          reviewerUserId: input.actorUserId,
+          reviewedAt: now,
+          resolution: input.action
+            ? `${input.action}: ${input.resolution}`
+            : input.resolution,
         },
       }),
-      this.prisma.moderationAction.create({
-        data: {
-          reportId: report.id,
-          actorUserId: input.actorUserId,
-          kind: input.kind,
-          notes: input.notes ?? null,
-          appliedAt: now,
-        },
-      }),
-      // suspend / ban → flip User.isSuspended on the reported user.
-      ...(input.kind === 'suspend' || input.kind === 'ban'
-        ? [
-            this.prisma.user.update({
-              where: { id: report.reportedUserId },
-              data: { isSuspended: true },
-            }),
-          ]
-        : []),
-    ]);
+    ];
 
-    // Patch moderationActionId after the action row exists so the FK is
-    // pointing at a real row.
-    await this.prisma.report.update({
-      where: { id: report.id },
-      data: { moderationActionId: action.id },
-    });
+    if (input.action === 'suspend7d' || input.action === 'ban') {
+      ops.push(
+        this.prisma.user.update({
+          where: { id: report.reportedUserId },
+          data: { isSuspended: true },
+        }),
+      );
+    }
+
+    await this.prisma.$transaction(ops);
 
     return {
-      action: {
-        id: action.id,
-        reportId: action.reportId,
-        actorUserId: action.actorUserId,
-        kind: action.kind,
-        notes: action.notes,
-        appliedAt: action.appliedAt.toISOString(),
-      },
-      report: {
-        id: report.id,
-        status: newStatus,
-        resolvedAt: now.toISOString(),
-        resolvedByUserId: input.actorUserId,
-        moderationActionId: action.id,
-      },
+      id: report.id,
+      status: 'resolved' as const,
+      resolution: input.resolution,
+      action: input.action ?? null,
+      reviewedAt: now.toISOString(),
     };
-  }
-
-  private computeSeverity(reason: string): number {
-    const w = REASON_WEIGHT[reason] ?? 20;
-    return Math.max(0, Math.min(100, w));
   }
 }

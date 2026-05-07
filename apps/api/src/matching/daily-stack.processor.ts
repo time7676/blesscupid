@@ -15,9 +15,8 @@
  */
 
 import { Injectable, Logger } from '@nestjs/common';
-import { Process, Processor } from '@nestjs/bullmq';
+import { Processor, WorkerHost, InjectQueue } from '@nestjs/bullmq';
 import { Cron } from '@nestjs/schedule';
-import { InjectQueue } from '@nestjs/bullmq';
 import type { Job, Queue } from 'bullmq';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { MatchingService } from './matching.service.js';
@@ -31,14 +30,16 @@ interface JobData {
 
 @Injectable()
 @Processor(DAILY_STACK_QUEUE)
-export class DailyStackProcessor {
+export class DailyStackProcessor extends WorkerHost {
   private readonly logger = new Logger(DailyStackProcessor.name);
 
   constructor(
     private readonly prisma: PrismaService,
     private readonly matching: MatchingService,
     @InjectQueue(DAILY_STACK_QUEUE) private readonly queue: Queue<JobData>,
-  ) {}
+  ) {
+    super();
+  }
 
   /**
    * Cron — runs at 04:00 UTC daily and enqueues one job per active user.
@@ -76,8 +77,7 @@ export class DailyStackProcessor {
     }
   }
 
-  @Process('compute')
-  async handle(job: Job<JobData>): Promise<void> {
+  async process(job: Job<JobData>): Promise<void> {
     const { userId } = job.data;
     try {
       const ids = await this.matching.computeAndCacheDeck(userId, 30);

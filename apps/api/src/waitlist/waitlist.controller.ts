@@ -26,7 +26,9 @@ import { Throttle } from '@nestjs/throttler';
 import { z } from 'zod';
 import { ZodValidate } from '../common/zod.pipe.js';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
+import { AdminGuard } from '../verification/admin.guard.js';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { createHash } from 'node:crypto';
 
 const WAITLIST_INTENTS = [
   'dating_marriage',
@@ -63,7 +65,11 @@ export class WaitlistController {
   ) {
     const email = body.email.trim().toLowerCase();
     const ip = req.ip ?? null;
+    const ipHash = ip ? createHash('sha256').update(ip).digest('hex') : null;
     const ua = (req.headers['user-agent'] as string | undefined) ?? null;
+    // `body.source` is captured on the wire but not persisted — schema has
+    // no `source` column. UTM fields cover attribution; drop `source` if
+    // we ever need it back, add a column.
     try {
       const row = await this.prisma.waitlist.upsert({
         where: { email },
@@ -72,9 +78,8 @@ export class WaitlistController {
           intent: body.intent,
           city: body.city ?? null,
           locale: body.locale,
-          source: body.source ?? null,
           consentedAt: new Date(),
-          ipAddress: ip,
+          ipHash,
           userAgent: ua,
           utmCampaign: body.utmCampaign ?? null,
           utmSource: body.utmSource ?? null,
@@ -85,7 +90,7 @@ export class WaitlistController {
           city: body.city ?? null,
           locale: body.locale,
           consentedAt: new Date(),
-          // Don't overwrite UTM/source on resubmit so the original
+          // Don't overwrite UTM on resubmit so the original
           // attribution is preserved. Just bump the consent timestamp.
         },
         select: { id: true, status: true },
@@ -99,30 +104,19 @@ export class WaitlistController {
     }
   }
 
-  // Admin-only CSV export for invite-wave email blasts. JWT-gated;
-  // role check enforced at the service layer when a non-admin role
-  // calls. For v1 we ship the CSV path simply; future hardening
-  // adds a CEO/Pastor role guard.
+  // Admin-only CSV export for invite-wave email blasts. JWT + AdminGuard
+  // (role=admin per User.role enum). v1-restart collapsed the legacy
+  // pastor/ceo roles into a single `admin` role.
   @Get('admin.csv')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Header('Content-Type', 'text/csv; charset=utf-8')
   @Header('Content-Disposition', 'attachment; filename="blesscupid-waitlist.csv"')
   async exportCsv(
-    @Req() req: AuthedRequest,
+    @Req() _req: AuthedRequest,
     @Query('status') status?: string,
     @Query('city') city?: string,
     @Query('intent') intent?: string,
   ) {
-    // Role gate: only `pastor` and `ceo` users (per UserRole enum) can
-    // export. `member` callers get a synthetic empty CSV so the route
-    // never leaks data via a casual probe.
-    const me = await this.prisma.user.findUnique({
-      where: { id: req.user.userId },
-      select: { role: true },
-    });
-    if (!me || (me.role !== 'pastor' && me.role !== 'ceo')) {
-      return 'forbidden\n';
-    }
     const where: Record<string, unknown> = {};
     if (status) where.status = status;
     if (city) where.city = city;
@@ -133,15 +127,14 @@ export class WaitlistController {
       take: 5000,
     });
     const header =
-      'email,intent,city,locale,source,status,utm_source,utm_campaign,created_at\n';
+      'email,intent,city,locale,status,utm_source,utm_campaign,created_at\n';
     const body = rows
       .map((r) =>
         [
           r.email,
-          r.intent,
+          r.intent ?? '',
           r.city ?? '',
-          r.locale,
-          r.source ?? '',
+          r.locale ?? '',
           r.status,
           r.utmSource ?? '',
           r.utmCampaign ?? '',

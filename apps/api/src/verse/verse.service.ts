@@ -9,7 +9,7 @@
 //      separated by `usedFor` enum (chat_anchor | status). All callers go
 //      through the single `pickAvailable` helper to keep dedup logic DRY.
 
-import { Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import type { VerseUsedFor, Locale as PrismaLocale } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { AdapterError, fetchTranslation } from './adapters.js';
@@ -76,19 +76,17 @@ export class VerseService {
 
   constructor(
     private readonly cache: VerseCacheService,
-    fetcherOrPrisma?: Fetcher | PrismaService,
-    @Optional() maybePrisma?: PrismaService,
+    @Inject(PrismaService) prisma: PrismaService,
+    @Optional() @Inject('VERSE_FETCHER') fetcher?: Fetcher,
   ) {
-    // Backward-compat shim: legacy tests construct with
-    // `new VerseService(cache, fetcher)`; production DI passes
-    // `(cache, prisma)` and the fetcher defaults to the real adapter.
-    // Distinguish a plain Fetcher fn from PrismaService (an object).
-    if (typeof fetcherOrPrisma === 'function') {
-      this.fetcher = fetcherOrPrisma;
-      this.prisma = (maybePrisma ?? null) as unknown as PrismaService;
+    // Tests swap the adapter via the optional `VERSE_FETCHER` provider token.
+    // Production DI uses the real `fetchTranslation` adapter.
+    if (typeof fetcher === 'function') {
+      this.fetcher = fetcher;
+      this.prisma = prisma;
     } else {
       this.fetcher = fetchTranslation;
-      this.prisma = (fetcherOrPrisma ?? maybePrisma ?? null) as unknown as PrismaService;
+      this.prisma = prisma;
     }
   }
 

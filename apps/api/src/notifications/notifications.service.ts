@@ -64,7 +64,7 @@ export interface NotificationDTO {
   createdAt: string;
 }
 
-interface ListPage {
+export interface ListPage {
   items: NotificationDTO[];
   nextCursor: string | null;
 }

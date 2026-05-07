@@ -1,11 +1,35 @@
+/**
+ * AccountController — `/v1/me/*` self-service endpoints (auth-required).
+ *
+ * Surface (v1-restart):
+ *   GET    /v1/me                  — User + Profile + activity counts
+ *   PATCH  /v1/me/profile          — partial Profile update; invalidates deck
+ *                                    cache when matching-relevant fields change
+ *   PATCH  /v1/me/preferences      — STUB; v1.1 introduces a Preferences table.
+ *                                    Schema today has no ageRangeMin etc.
+ *   PATCH  /v1/me/privacy          — Profile.hideFromUnverified
+ *   PATCH  /v1/me/notifications    — STUB; v1.1 introduces a NotificationPref
+ *                                    table. Schema today has no per-channel
+ *                                    enable flags on User/Profile.
+ *   POST   /v1/me/pause            — Profile.pausedUntil
+ *   DELETE /v1/me/pause            — clear pausedUntil
+ *   DELETE /v1/me                  — soft-delete (User.deletedAt = now);
+ *                                    confirmText must equal "DELETE"
+ *   POST   /v1/me/restore          — clear deletedAt within 30d or 403
+ *   GET    /v1/me/export           — UU PDP Pasal 11 JSON dump (inline at v1)
+ *
+ * Push-token registration is now owned by NotificationsController; the legacy
+ * `/me/push-token` route was retired together with the AccountDeletionRequest
+ * table in BLE-160.
+ */
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
   Get,
   HttpCode,
-  NotFoundException,
-  Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -13,210 +37,142 @@ import {
 import { z } from 'zod';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 import { ZodValidate } from '../common/zod.pipe.js';
-import { PrismaService } from '../prisma/prisma.service.js';
-import { AccountDeletionService } from './account-deletion.service.js';
+import { AccountService } from './account.service.js';
+
+const TraditionEnum = z.enum(['catholic', 'protestant', 'orthodox', 'nondenom', 'other']);
+const WalkStageEnum = z.enum(['seeking', 'growing', 'rooted']);
+const MarriageIntentEnum = z.enum(['yes', 'maybe', 'no']);
+
+const ProfilePatchSchema = z.object({
+  displayName: z.string().min(1).max(40).optional(),
+  bio: z.string().max(280).optional(),
+  tradition: TraditionEnum.optional(),
+  walkStage: WalkStageEnum.optional(),
+  marriageIntent: MarriageIntentEnum.optional(),
+  city: z.string().max(80).optional(),
+  homeChurchName: z.string().max(120).nullable().optional(),
+});
+
+const PreferencesSchema = z.object({
+  ageRangeMin: z.number().int().min(18).max(99).optional(),
+  ageRangeMax: z.number().int().min(18).max(99).optional(),
+  distanceKm: z.number().int().min(1).max(20_000).optional(),
+  traditionFilter: z.array(TraditionEnum).optional(),
+});
+
+const PrivacySchema = z.object({
+  hideFromUnverified: z.boolean().optional(),
+});
+
+const NotificationsSchema = z.object({
+  matchesEnabled: z.boolean().optional(),
+  messagesEnabled: z.boolean().optional(),
+});
+
+const PauseSchema = z.object({
+  duration: z.enum(['1d', '1w', 'indefinite']),
+});
 
 const DeleteMeSchema = z.object({
-  expedited: z.boolean().optional(),
+  confirmText: z.literal('DELETE'),
 });
 
-const PushTokenSchema = z.object({
-  token: z.string().min(1).max(4096),
-  platform: z.enum(['ios', 'android', 'web']),
-  appVersion: z.string().max(40).optional(),
-});
-
-@Controller('me')
+@Controller({ path: 'me', version: '1' })
 @UseGuards(JwtAuthGuard)
 export class AccountController {
-  constructor(
-    private readonly deletion: AccountDeletionService,
-    private readonly prisma: PrismaService,
-  ) {}
+  constructor(private readonly account: AccountService) {}
 
-  // BLE eng-review 2026-05-06 — server-side hydration for mobile boot.
-  // Mobile auth-store calls this after every cold start to learn whether
-  // onboarding is complete (so reinstall doesn't force a redo) and to
-  // populate the local cache. NEVER returns legalName — that field is PII
-  // gated behind /v1/admin and /v1/safety routes.
   @Get()
-  async getMe(@Req() req: AuthedRequest) {
-    const user = await this.prisma.user.findUnique({
-      where: { id: req.user.userId },
-      select: {
-        id: true,
-        email: true,
-        onboardingCompleted: true,
-        profile: {
-          select: {
-            displayName: true,
-            gender: true,
-            city: true,
-            countryCode: true,
-            onboardingStep: true,
-            bio: true,
-            bioApproved: true,
-          },
-        },
-      },
-    });
-    if (!user) throw new NotFoundException('user_not_found');
-    return user;
+  getMe(@Req() req: AuthedRequest) {
+    return this.account.getMe(req.user.userId);
+  }
+
+  @Patch('profile')
+  patchProfile(
+    @Req() req: AuthedRequest,
+    @Body(ZodValidate(ProfilePatchSchema)) body: z.infer<typeof ProfilePatchSchema>,
+  ) {
+    return this.account.updateProfile(req.user.userId, body);
   }
 
   /**
-   * `DELETE /me` — soft-deletes the calling user and schedules hard delete
-   * in 30 days (or 0 days if `expedited`, for CCPA right-to-immediate).
+   * PATCH /v1/me/preferences — STUB.
+   *
+   * The current schema has no Preferences table and no ageRange/distance
+   * columns on User or Profile. v1.1 plan = introduce a `Preferences` model.
+   * Until then this endpoint accepts the shape and returns 200 so the mobile
+   * Settings screen has a stable API to bind to.
    */
+  @Patch('preferences')
+  @HttpCode(200)
+  patchPreferences(
+    @Req() req: AuthedRequest,
+    @Body(ZodValidate(PreferencesSchema)) body: z.infer<typeof PreferencesSchema>,
+  ) {
+    void req;
+    void body;
+    // TODO(v1.1): persist to Preferences table, then call MatchingService.invalidateCache.
+    return { ok: true, persisted: false };
+  }
+
+  @Patch('privacy')
+  patchPrivacy(
+    @Req() req: AuthedRequest,
+    @Body(ZodValidate(PrivacySchema)) body: z.infer<typeof PrivacySchema>,
+  ) {
+    return this.account.updatePrivacy(req.user.userId, body);
+  }
+
+  /**
+   * PATCH /v1/me/notifications — STUB.
+   *
+   * No per-channel enable column on User/Profile yet; v1.1 introduces a
+   * NotificationPref table. Endpoint exists so mobile can bind a real route.
+   */
+  @Patch('notifications')
+  @HttpCode(200)
+  patchNotifications(
+    @Req() req: AuthedRequest,
+    @Body(ZodValidate(NotificationsSchema)) body: z.infer<typeof NotificationsSchema>,
+  ) {
+    void req;
+    void body;
+    // TODO(v1.1): persist to NotificationPref table.
+    return { ok: true, persisted: false };
+  }
+
+  @Post('pause')
+  pauseMe(
+    @Req() req: AuthedRequest,
+    @Body(ZodValidate(PauseSchema)) body: z.infer<typeof PauseSchema>,
+  ) {
+    return this.account.pauseProfile(req.user.userId, body.duration);
+  }
+
+  @Delete('pause')
+  unpauseMe(@Req() req: AuthedRequest) {
+    return this.account.unpauseProfile(req.user.userId);
+  }
+
   @Delete()
   @HttpCode(202)
   async deleteMe(
     @Req() req: AuthedRequest,
     @Body(ZodValidate(DeleteMeSchema)) body: z.infer<typeof DeleteMeSchema>,
   ) {
-    return this.deletion.requestDeletion(req.user.userId, {
-      expedited: body.expedited ?? false,
-    });
+    if (body.confirmText !== 'DELETE') {
+      throw new BadRequestException({ code: 'confirm_text_mismatch' });
+    }
+    return this.account.softDelete(req.user.userId);
   }
 
-  /** `POST /me/restore` — undo a pending soft-delete within the hold window. */
   @Post('restore')
-  async restoreMe(@Req() req: AuthedRequest) {
-    const ok = await this.deletion.cancelDeletion(req.user.userId);
-    return { ok };
+  restoreMe(@Req() req: AuthedRequest) {
+    return this.account.restore(req.user.userId);
   }
 
-  /**
-   * `GET /me/export` — UU PDP Pasal 11 right to data portability.
-   * Returns a JSON snapshot of every field tied to this user that is
-   * not derivative of another user's data. Format = JSON; the user can
-   * pipe to disk via the mobile UI (Settings → Privacy → Export my data).
-   *
-   * Per UU PDP Pasal 9, the response must arrive within 3×24 hours;
-   * since this endpoint is synchronous and small (one user's rows are
-   * O(KB), not O(MB) at v1 scale), we return inline with a 200 OK.
-   *
-   * Excluded by design: other users' messages addressed to this user
-   * (those are the senders' personal data, not yours), moderation
-   * decisions made by reviewers (operational records), audit logs.
-   */
   @Get('export')
-  async exportMe(@Req() req: AuthedRequest) {
-    const userId = req.user.userId;
-    const [user, sessions, photos, decisions, sentMessages] = await Promise.all([
-      this.prisma.user.findUnique({
-        where: { id: userId },
-        include: {
-          profile: true,
-          faithProfile: true,
-          covenants: true,
-          oauthAccounts: { select: { provider: true, createdAt: true } },
-        },
-      }),
-      this.prisma.session.findMany({
-        where: { userId },
-        select: { id: true, userAgent: true, ip: true, createdAt: true, revokedAt: true },
-      }),
-      this.prisma.photo.findMany({
-        where: { userId },
-        select: {
-          id: true,
-          position: true,
-          status: true,
-          storageKey: true,
-          createdAt: true,
-          updatedAt: true,
-        },
-      }),
-      this.prisma.matchDecision.findMany({
-        where: { userId },
-        select: {
-          candidateUserId: true,
-          decision: true,
-          day: true,
-          createdAt: true,
-        },
-      }),
-      this.prisma.message.findMany({
-        where: { senderUserId: userId },
-        select: {
-          id: true,
-          threadId: true,
-          recipientUserId: true,
-          createdAt: true,
-          status: true,
-          // Body is your own content — you sent it, you can export it.
-          body: true,
-        },
-        take: 5000,
-      }),
-    ]);
-    if (!user) throw new NotFoundException('user_not_found');
-    return {
-      exportedAt: new Date().toISOString(),
-      uuPdpClause: 'Pasal 11 (right to data portability)',
-      user,
-      sessions,
-      photos,
-      matchDecisions: decisions,
-      sentMessages,
-    };
-  }
-
-  /**
-   * `POST /me/push-token` — register an FCM/APNs device token for push.
-   * Idempotent on (userId, token); re-registering same token bumps
-   * `lastSeenAt`. Mobile calls this after permission grant + on every
-   * cold boot. Backend dedupes + the notifications service deletes
-   * stale tokens reported by FCM as not-registered.
-   *
-   * BLE eng-review 2026-05-06 — Lane D scaffold. Token routing to
-   * APNs (iOS) / FCM (Android) is handled by firebase-admin Messaging
-   * once the APNs certificate is uploaded to the Firebase project.
-   * Until the paid Apple Dev account is provisioned, iOS tokens are
-   * stored but `FirebaseService` no-ops on send (PUSH_ENABLED != 1).
-   *
-   * NOTE: prefer `/v1/me/push-token` (NotificationsController) for new
-   * clients. This legacy `/me/push-token` route stays for back-compat
-   * until mobile migrates to the v1 path.
-   */
-  @Post('push-token')
-  @HttpCode(200)
-  async registerPushToken(
-    @Req() req: AuthedRequest,
-    @Body(ZodValidate(PushTokenSchema)) body: z.infer<typeof PushTokenSchema>,
-  ) {
-    await this.prisma.pushToken.upsert({
-      where: {
-        userId_token: { userId: req.user.userId, token: body.token },
-      },
-      create: {
-        userId: req.user.userId,
-        token: body.token,
-        platform: body.platform,
-        appVersion: body.appVersion,
-      },
-      update: {
-        platform: body.platform,
-        appVersion: body.appVersion,
-        lastSeenAt: new Date(),
-      },
-    });
-    return { ok: true };
-  }
-
-  /**
-   * `DELETE /me/push-token/:token` — explicit unregister, e.g. on
-   * logout or notification-permission revoke.
-   */
-  @Delete('push-token/:token')
-  @HttpCode(204)
-  async unregisterPushToken(
-    @Req() req: AuthedRequest,
-    @Param('token') token: string,
-  ) {
-    await this.prisma.pushToken.deleteMany({
-      where: { userId: req.user.userId, token },
-    });
+  exportMe(@Req() req: AuthedRequest) {
+    return this.account.exportData(req.user.userId);
   }
 }

@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaModerationStore } from '../chat/prisma-moderation-store.js';
+import { PrismaModerationStore } from '../moderation/prisma-moderation-store.js';
 
 /**
  * Blocks are **bidirectional** by acceptance: once A blocks B, neither party

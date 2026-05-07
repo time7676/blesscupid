@@ -82,7 +82,14 @@ function svc(
       };
     },
   };
-  return new PhotosService(fakes.prisma as never, moderation as never, storage as never);
+  const stubQueue = { add: async () => undefined } as never;
+  return new PhotosService(
+    fakes.prisma as never,
+    moderation as never,
+    storage as never,
+    stubQueue,
+    stubQueue,
+  );
 }
 
 describe('PhotosService.finalize', () => {

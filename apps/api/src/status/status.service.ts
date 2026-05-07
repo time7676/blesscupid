@@ -113,6 +113,22 @@ export class StatusService {
     locale: Locale,
     themeTag?: string,
   ): Promise<{ verses: Array<{ ref: string; text: string; attribution: string; themeTag: string }> }> {
-    return this.verse.dailyPick(userId, locale, themeTag);
+    // verse.dailyPick takes (userId, themeTag?) — not locale; localize inline.
+    const picked = await this.verse.dailyPick(
+      userId,
+      themeTag as Parameters<typeof this.verse.dailyPick>[1],
+    );
+    if (!picked) return { verses: [] };
+    const localized = localizeVerse(picked, locale);
+    return {
+      verses: [
+        {
+          ref: picked.ref,
+          text: localized.text,
+          attribution: localized.attribution,
+          themeTag: picked.themeTag,
+        },
+      ],
+    };
   }
 }

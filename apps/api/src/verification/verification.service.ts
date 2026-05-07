@@ -36,7 +36,7 @@ export class VerificationService {
   ): Promise<VerificationSubmitResult> {
     // Rate limit
     const rateLimitKey = `verify_rate:${userId}`;
-    const recent = await this.redis.client.get(rateLimitKey);
+    const recent = await this.redis.getClient().get(rateLimitKey);
     if (recent) {
       return {
         status: 'rate_limited',
@@ -232,7 +232,7 @@ export class VerificationService {
   // ---------------------------------------------------------------------------
 
   private async setRateLimit(userId: string): Promise<void> {
-    await this.redis.client.set(
+    await this.redis.getClient().set(
       `verify_rate:${userId}`,
       '1',
       'EX',

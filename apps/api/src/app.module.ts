@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { BullModule } from '@nestjs/bullmq';
 import { ObservabilityModule } from './observability/observability.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { RedisModule } from './redis/redis.module.js';
@@ -33,6 +34,12 @@ import { VerificationModule } from './verification/verification.module.js';
       { name: 'message', ttl: 60_000, limit: 30 },
       { name: 'decision', ttl: 60_000, limit: 60 },
     ]),
+    BullModule.forRoot({
+      connection: {
+        host: process.env.REDIS_HOST ?? '127.0.0.1',
+        port: Number(process.env.REDIS_PORT ?? '6379'),
+      },
+    }),
     ObservabilityModule,
     HealthModule,
     PrismaModule,
@@ -57,7 +64,7 @@ import { VerificationModule } from './verification/verification.module.js';
     // v1-restart pending:
     // - I18nModule extension (keys for new screens)
     // - DailyQuota helpers folded into MatchingService (DONE per matching agent)
-    // - BullMQ root config (BullModule.forRoot connection) — TODO
+    // - BullMQ root config — DONE (BullModule.forRoot above)
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

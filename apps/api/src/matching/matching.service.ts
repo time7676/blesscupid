@@ -555,9 +555,10 @@ export class MatchingService {
         isSuspended: false,
         deletedAt: null,
         profile: {
-          isNot: null,
-          gender: viewer.seeking,
-          seeking: viewer.gender,
+          is: {
+            gender: viewer.seeking,
+            seeking: viewer.gender,
+          },
         },
       },
       include: { profile: true },

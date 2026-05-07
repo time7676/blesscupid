@@ -1,25 +1,51 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Query, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { z } from 'zod';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 import { ZodValidate } from '../common/zod.pipe.js';
-import { Roles, RolesGuard } from '../common/roles.guard.js';
+import { AdminGuard } from '../verification/admin.guard.js';
 import { ModerationQueueService } from './moderation-queue.service.js';
 
+/**
+ * Admin moderation-queue surface. Admin-role-gated.
+ *
+ *   GET  /v1/admin/moderation-queue?cursor=&limit=50&decision=review|block
+ *   POST /v1/admin/moderation-queue/:id/resolve  { resolution, notes? }
+ */
 const ResolveSchema = z.object({
-  action: z.enum(['approve', 'reject']),
-  note: z.string().max(1000).optional(),
+  resolution: z.enum(['approved', 'rejected']),
+  notes: z.string().max(2000).optional(),
 });
 
-@Controller('admin/moderation-queue')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles('pastor', 'ceo')
+const DecisionFilter = z.enum(['allow', 'review', 'block']);
+
+@Controller('v1/admin/moderation-queue')
+@UseGuards(JwtAuthGuard, AdminGuard)
 export class ModerationQueueController {
   constructor(private readonly queue: ModerationQueueService) {}
 
   @Get()
-  async list(@Query('limit') limit?: string) {
-    const n = limit ? Math.min(Number(limit), 200) : 50;
-    return this.queue.listPending(Number.isFinite(n) ? n : 50);
+  async list(
+    @Query('cursor') cursor?: string,
+    @Query('limit') limitRaw?: string,
+    @Query('decision') decisionRaw?: string,
+  ) {
+    const n = limitRaw ? Math.min(Number(limitRaw), 200) : 50;
+    const decision = decisionRaw ? DecisionFilter.parse(decisionRaw) : undefined;
+    return this.queue.listPending({
+      ...(cursor ? { cursor } : {}),
+      limit: Number.isFinite(n) ? n : 50,
+      ...(decision ? { decision } : {}),
+    });
   }
 
   @Post(':id/resolve')
@@ -29,6 +55,6 @@ export class ModerationQueueController {
     @Param('id') id: string,
     @Body(ZodValidate(ResolveSchema)) input: z.infer<typeof ResolveSchema>,
   ) {
-    return this.queue.resolve(id, input.action, req.user.userId, input.note);
+    return this.queue.resolve(id, input.resolution, req.user.userId, input.notes);
   }
 }

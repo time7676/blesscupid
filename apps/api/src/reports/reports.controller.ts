@@ -1,40 +1,62 @@
-import { Body, Controller, Get, HttpCode, Param, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Param,
+  Post,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { z } from 'zod';
 import { JwtAuthGuard, type AuthedRequest } from '../auth/jwt.guard.js';
 import { ZodValidate } from '../common/zod.pipe.js';
-import { Roles, RolesGuard } from '../common/roles.guard.js';
+import { AdminGuard } from '../verification/admin.guard.js';
 import { ReportsService } from './reports.service.js';
 
-const ModerationActionSchema = z.object({
-  kind: z.enum(['dismiss', 'warn', 'suspend', 'ban']),
-  notes: z.string().max(2000).optional(),
-});
-
+/**
+ * Reports controller — v1-restart.
+ *
+ * Public endpoints (JWT-gated):
+ *   POST /v1/reports                    — file a report on another user
+ *
+ * Admin-only endpoints (JWT + AdminGuard, role=admin):
+ *   GET  /v1/admin/reports              — cursor-paginated open report list
+ *   POST /v1/admin/reports/:id/resolve  — resolve a report w/ optional action
+ */
 const ReportReasonSchema = z.enum([
   'sexual_content',
   'harassment',
-  'off_platform_pressure',
-  'scam_or_spam',
-  'underage',
   'fake_profile',
+  'underage',
+  'hate_or_harassment',
+  'self_harm_or_crisis',
+  'spam',
   'other',
 ]);
 
 const CreateReportSchema = z.object({
   reportedUserId: z.string().uuid(),
   reason: ReportReasonSchema,
+  detail: z.string().max(2000).optional(),
   threadId: z.string().uuid().optional(),
   messageId: z.string().uuid().optional(),
-  freeform: z.string().max(1000).optional(),
+  autoBlock: z.boolean().optional(),
+});
+
+const ResolveSchema = z.object({
+  resolution: z.string().min(1).max(2000),
+  action: z.enum(['dismiss', 'warn', 'suspend7d', 'ban']).optional(),
 });
 
 @Controller()
-@UseGuards(JwtAuthGuard)
 export class ReportsController {
   constructor(private readonly reports: ReportsService) {}
 
-  @Post('reports')
+  @Post('v1/reports')
   @HttpCode(201)
+  @UseGuards(JwtAuthGuard)
   async create(
     @Req() req: AuthedRequest,
     @Body(ZodValidate(CreateReportSchema)) input: z.infer<typeof CreateReportSchema>,
@@ -42,44 +64,32 @@ export class ReportsController {
     return this.reports.create(req.user.userId, input);
   }
 
-  @Get('admin/reports')
-  @UseGuards(RolesGuard)
-  @Roles('pastor', 'ceo')
-  async listAll() {
-    return this.reports.listAll();
+  @Get('v1/admin/reports')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async list(
+    @Query('cursor') cursor?: string,
+    @Query('limit') limitRaw?: string,
+  ) {
+    const limit = limitRaw ? Math.min(Number(limitRaw), 200) : 50;
+    return this.reports.listOpen({
+      ...(cursor ? { cursor } : {}),
+      limit: Number.isFinite(limit) ? limit : 50,
+    });
   }
 
-  /**
-   * T&S triage queue. Severity desc, age asc. Pastor + CEO only.
-   */
-  @Get('admin/safety/queue')
-  @UseGuards(RolesGuard)
-  @Roles('pastor', 'ceo')
-  async triageQueue() {
-    return this.reports.listTriageQueue();
-  }
-
-  /**
-   * Pastor / CEO records a moderation decision against a report.
-   * `dismiss` closes the report as `dismissed`; `warn`/`suspend`/`ban`
-   * close as `resolved`. `suspend` and `ban` also flip
-   * `User.isSuspended` on the reported user.
-   */
-  @Post('admin/safety/reports/:id/action')
+  @Post('v1/admin/reports/:id/resolve')
   @HttpCode(200)
-  @UseGuards(RolesGuard)
-  @Roles('pastor', 'ceo')
-  async applyAction(
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  async resolve(
     @Req() req: AuthedRequest,
     @Param('id') reportId: string,
-    @Body(ZodValidate(ModerationActionSchema))
-    body: z.infer<typeof ModerationActionSchema>,
+    @Body(ZodValidate(ResolveSchema)) body: z.infer<typeof ResolveSchema>,
   ) {
-    return this.reports.applyModerationAction({
+    return this.reports.resolve({
       reportId,
       actorUserId: req.user.userId,
-      kind: body.kind,
-      ...(body.notes !== undefined ? { notes: body.notes } : {}),
+      resolution: body.resolution,
+      ...(body.action ? { action: body.action } : {}),
     });
   }
 }

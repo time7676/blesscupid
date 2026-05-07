@@ -28,7 +28,7 @@ import type { Request } from 'express';
 
 type StepNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-interface StepResult {
+export interface StepResult {
   currentStep: number;
   nextHint?: string;
 }

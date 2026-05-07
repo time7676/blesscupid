@@ -144,7 +144,7 @@ describe('VerseService', () => {
       attribution: attributionFor('tb2'),
     });
     const fetcher = vi.fn();
-    const svc = new VerseService(cache as unknown as VerseCacheService, fetcher);
+    const svc = new VerseService(cache as unknown as VerseCacheService, ({} as any), fetcher);
     const out = await svc.getVerse('Yohanes 3:16', 'tb2');
     expect(out.cached).toBe(true);
     expect(out.fallback).toBe(false);
@@ -157,7 +157,7 @@ describe('VerseService', () => {
     const fetcher = vi
       .fn()
       .mockResolvedValue({ text: 'fresh', effective: 'tb2' as Translation });
-    const svc = new VerseService(cache as unknown as VerseCacheService, fetcher);
+    const svc = new VerseService(cache as unknown as VerseCacheService, ({} as any), fetcher);
     const out = await svc.getVerse('Yohanes 3:16', 'tb2');
     expect(out.cached).toBe(false);
     expect(out.fallback).toBe(false);
@@ -171,7 +171,7 @@ describe('VerseService', () => {
     const fetcher = vi
       .fn()
       .mockResolvedValue({ text: 'TB text', effective: 'tb' as Translation });
-    const svc = new VerseService(cache as unknown as VerseCacheService, fetcher);
+    const svc = new VerseService(cache as unknown as VerseCacheService, ({} as any), fetcher);
     const out = await svc.getVerse('Yohanes 3:16', 'tb2');
     expect(out.effective).toBe('tb');
     expect(out.fallback).toBe(true);
@@ -188,7 +188,7 @@ describe('VerseService', () => {
   test('upstream null → VerseNotFoundError (404 mapping)', async () => {
     const cache = new FakeCache();
     const fetcher = vi.fn().mockResolvedValue(null);
-    const svc = new VerseService(cache as unknown as VerseCacheService, fetcher);
+    const svc = new VerseService(cache as unknown as VerseCacheService, ({} as any), fetcher);
     await expect(svc.getVerse('Bogus 99:99', 'tb2')).rejects.toBeInstanceOf(
       VerseNotFoundError,
     );
@@ -199,7 +199,7 @@ describe('VerseService', () => {
     const fetcher = vi.fn().mockRejectedValue(
       new AdapterError('sabda', 503, 'Sabda 503'),
     );
-    const svc = new VerseService(cache as unknown as VerseCacheService, fetcher);
+    const svc = new VerseService(cache as unknown as VerseCacheService, ({} as any), fetcher);
     await expect(svc.getVerse('Yohanes 3:16', 'tb2')).rejects.toBeInstanceOf(
       VerseUpstreamError,
     );
