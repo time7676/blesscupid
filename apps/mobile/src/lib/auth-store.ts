@@ -51,13 +51,13 @@ export const useAuth = create<AuthState>((set) => ({
     if (accessToken) {
       try {
         const me = await getMe(accessToken);
-        if (me.user.onboardingCompleted !== (onboardingFlag === '1')) {
-          if (me.user.onboardingCompleted) {
+        if (me.onboardingCompleted !== (onboardingFlag === '1')) {
+          if (me.onboardingCompleted) {
             await SecureStore.setItemAsync(ONBOARDING_DONE_KEY, '1');
           } else {
             await SecureStore.deleteItemAsync(ONBOARDING_DONE_KEY);
           }
-          set({ onboardingComplete: me.user.onboardingCompleted });
+          set({ onboardingComplete: me.onboardingCompleted });
         }
       } catch (e) {
         // Token invalid/revoked (401) — purge stale session so the app

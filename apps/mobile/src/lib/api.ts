@@ -366,14 +366,24 @@ export function refreshTokens(refreshToken: string): Promise<AuthTokens> {
 // v1-restart: legacy onboarding endpoints (covenant/faith/questionnaire/etc) removed.
 // New onboarding lives in apps/mobile/src/lib/api-onboarding.ts (8-card flow).
 
+// Backend `/v1/me` returns User fields flat at the top level alongside
+// `profile` and `counts`. NOT wrapped in `{ user: {...} }`. Match the
+// service's actual select shape so consumers can read `me.onboardingCompleted`
+// directly without a `.user` indirection.
 export interface MeResponse {
-  user: {
-    id: string;
-    email: string;
-    role: 'member' | 'admin';
-    onboardingCompleted: boolean;
-    localePreference: 'en' | 'id';
-  };
+  id: string;
+  email: string;
+  phoneNumber: string | null;
+  role: 'member' | 'admin';
+  isSuspended: boolean;
+  deletedAt: string | null;
+  onboardingCompleted: boolean;
+  timezone: string;
+  localePreference: 'en' | 'id';
+  countryCode: string | null;
+  emailVerifiedAt: string | null;
+  lastActiveAt: string;
+  createdAt: string;
   profile: {
     displayName: string;
     gender: 'male' | 'female';
