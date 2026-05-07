@@ -1,12 +1,12 @@
 # v1-restart Status Report
 
-> Branch: `v1-restart` off `development`. Session 1 (2026-05-06).
+> Branch: `v1-restart` off `development`. Sessions 1-2 (2026-05-06 → 2026-05-07).
 > Plan: `~/.claude/plans/i-think-we-need-misty-eclipse.md`
 > Companion: `DESIGN.md` (v1 additions)
 
-## Headline
+## Headline (updated 2026-05-07)
 
-**Lane 1 + Lane 2 mostly done. ~7 commits, +10991 / -10457 lines, 153 files touched. API does NOT compile yet — see Known Breakage. Mobile, admin web, tests deferred.**
+**Lane 1 + Lane 2 DONE. API typecheck 0 errors. API boots green ("Nest application successfully started"). 9 commits, +12547 / -12529 lines, ~196 files touched. Mobile, admin web, tests deferred to next session.**
 
 ## What landed
 
@@ -54,20 +54,33 @@
 
 **Verification** (4 files, ~350 lines): Selfie face-match via AWS Rekognition CompareFaces vs Photo[0]. Auto-approve ≥90, else admin queue. 24h rate limit per user via Redis. Dev fallback returns 95 when `AWS_REKOGNITION_ENABLED` unset. Inline `AdminGuard` (User.role === 'admin' check). Admin endpoints under `/v1/admin/verification`. `notifications.notifyVerification` integration.
 
-## Known Breakage (next session must fix)
+## Lane 1 + Lane 2 — DONE (session 2 close-out, 2026-05-07)
 
-**API does not compile.** ~40+ TypeScript errors remain in modules that still reference deleted Prisma fields or models. Listed in priority order:
+API now compiles + boots clean. All 23 NestJS modules instantiate. Wave 3 cleanup landed:
 
-1. **`apps/api/src/account/`** — references `AccountDeletionRequest`, `FaithProfile`. Hard-delete worker pattern exists. Needs simplification: drop AccountDeletionRequest table use, write soft-delete + 30d hard-delete path against new schema.
-2. **`apps/api/src/photos/`** — needs new `image-variants.processor.ts` (sharp-based 200/800/2000 variants), EXIF strip on upload finalize, Photo position deferred-constraint reorder logic.
-3. **`apps/api/src/reports/`** — references `EvidenceFreeze`, `ModerationAction`. Simplify: just `Report` + admin queue. Strip evidence-encryption layer.
-4. **`apps/api/src/blocks/`** — likely OK; verify imports.
-5. **`apps/api/src/admin/`** — `moderation-queue.service.ts` etc. references `ModerationItem` (deleted), `ModerationActionLog` (deleted). Simplify to just `ModerationQueueItem` queries.
-6. **`apps/api/src/observability/`** — verify still wires Sentry + PostHog cleanly.
-7. **`apps/api/src/waitlist/`** — minor adjustments.
-8. **`apps/api/src/chat/prisma-moderation-store.ts`** — flagged by chat agent; consumed by blocks/admin/reports. 13 type errors against new schema. Move or rewrite.
-9. **BullModule.forRoot** connection config not added to `app.module.ts` — daily-stack-processor + push-fanout-processor won't run until added.
-10. **Mobile (`apps/mobile/`)** — onboarding screens import stripped types (Intent, Seeking, MarriageOpen, WelcomedTag, PracticeTag, BioInput, FaithQuestionnaireInput, etc). Will not build until Lane 3 rebuild.
+- **account** ✓ — `/v1/me*` endpoints, soft-delete via User.deletedAt, 30d hard-delete worker, bio writes Profile.bio
+- **photos** ✓ — image-variants.processor (sharp 200/800/2000 variants), photo-moderation-retry.processor, photos.queues, EXIF strip path
+- **reports** ✓ — POST /v1/reports + admin queue + resolve, simplified (no EvidenceFreeze)
+- **admin** ✓ — moderation-queue + admin-monetization, AdminGuard role check
+- **waitlist** ✓ — AdminGuard on CSV export
+- **blocks** ✓ — uses moderation/prisma-moderation-store
+- **chat/prisma-moderation-store** → moved to **moderation/prisma-moderation-store** ✓
+- **VerseService DI** ✓ — fixed dual-shape constructor → @Inject(PrismaService) + optional VERSE_FETCHER token
+- **BullModule.forRoot** ✓ — connection wired in app.module.ts
+
+**Smoke results:**
+- `pnpm --filter @blesscupid/api exec tsc --noEmit` → 0 errors
+- `pnpm dev` → "Nest application successfully started"
+- All 23 modules + BullMQ + ThrottlerModule + JwtModule load clean
+
+## Known Mobile Breakage (Lane 3)
+
+Mobile (`apps/mobile/`) does NOT build. Onboarding screens import stripped types:
+- `Intent`, `Seeking`, `MarriageOpen` (replaced by `WhimsicalAnswers` + `MarriageIntent` enum)
+- `WelcomedTag`, `PracticeTag` (dropped)
+- `BioInput`, `FaithQuestionnaireInput`, `ProfileBasicsInput`, `Q3RedirectInput` (replaced by `OnboardingStep[1..8]Body`)
+
+Will rebuild as Lane 3 (mobile from scratch with new 8-card flow).
 
 ## What's NOT done (deferred to future sessions)
 
